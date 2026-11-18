@@ -77,8 +77,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <BrandLogo size="md" showTagline={false} />
-          <h1 className="text-2xl font-black text-[#1E0938] tracking-tight">
-            Social Experience & Paid Companionship
+          <h1 className="text-[20px] font-black text-[#1E0938] tracking-tight">
+            Social Experience<br/>& Paid Companionship
           </h1>
           <p className="text-xs text-slate-500">
             
