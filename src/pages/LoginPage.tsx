@@ -3,6 +3,8 @@ import { BrandLogo } from '../components/common/BrandLogo';
 import { Lock, Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
 import { supabase } from '../lib/supabase';
+import { isEmailNotConfirmed, translateAuthError } from '../lib/authErrors';
+import { ResendConfirmation } from '../components/auth/ResendConfirmation';
 
 interface LoginPageProps {
   onNavigate: (path: AppRoute) => void;
@@ -14,21 +16,24 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
+    setNeedsConfirmation(false);
     setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
 
       if (error) {
-        setErrorMsg(error.message);
+        setErrorMsg(translateAuthError(error));
+        setNeedsConfirmation(isEmailNotConfirmed(error));
       } else if (data.user) {
         const { data: userRow } = await supabase
           .from('users')
@@ -60,7 +65,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         }, 1200);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal masuk ke akun.');
+      setErrorMsg(translateAuthError(err) || 'Gagal masuk ke akun.');
     } finally {
       setLoading(false);
     }
@@ -86,6 +91,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             <p className="leading-relaxed">{errorMsg}</p>
           </div>
         )}
+
+        {needsConfirmation && <ResendConfirmation email={email} />}
 
         {successMsg && (
           <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5">

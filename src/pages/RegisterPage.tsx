@@ -3,6 +3,8 @@ import { BrandLogo } from '../components/common/BrandLogo';
 import { User, Mail, Lock, Phone, ArrowRight, CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
 import { supabase } from '../lib/supabase';
+import { translateAuthError } from '../lib/authErrors';
+import { ResendConfirmation } from '../components/auth/ResendConfirmation';
 
 interface RegisterPageProps {
   onNavigate: (path: AppRoute) => void;
@@ -31,7 +33,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           data: {
@@ -43,12 +45,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
       });
 
       if (error) {
-        setErrorMsg(error.message);
+        setErrorMsg(translateAuthError(error));
       } else {
         setIsRegistered(true);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Terjadi kesalahan saat pendaftaran.');
+      setErrorMsg(translateAuthError(err) || 'Terjadi kesalahan saat pendaftaran.');
     } finally {
       setLoading(false);
     }
@@ -221,11 +223,13 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-slate-900 text-base">
-              Pendaftaran Akun Berhasil
+              Satu langkah lagi: konfirmasi email
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Akun Anda telah berhasil dibuat di Supabase. Silakan masuk untuk mulai menggunakan YUKU.
+              Kami mengirim link konfirmasi ke <strong className="text-slate-800">{email.trim()}</strong>.
+              Klik link tersebut (cek juga folder Spam) sebelum masuk ke YUKU.
             </p>
+            <ResendConfirmation email={email} startCooldown />
             <button
               onClick={() => onNavigate('/login')}
               className="px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800"
