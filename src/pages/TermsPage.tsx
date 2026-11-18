@@ -13,7 +13,7 @@ export const TermsPage: React.FC = () => {
             <FileText className="w-4 h-4" />
             <span>Dokumen Ketentuan Layanan</span>
           </div>
-          <h1 className="text-[18px] leading-[24px] sm:text-[18px] leading-[24px] font-black text-[#1E0938] tracking-tight mb-2">
+          <h1 className="text-3xl sm:text-4xl font-black text-[#1E0938] tracking-tight mb-2">
             Syarat dan Ketentuan Penggunaan YUKU
           </h1>
           <p className="text-xs text-slate-500">
