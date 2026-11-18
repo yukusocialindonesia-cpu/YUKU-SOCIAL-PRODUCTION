@@ -77,7 +77,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <BrandLogo size="md" showTagline={false} />
-          <h1 className="text-[22px] leading-[28px] leading-[28px] font-black text-[#1E0938] tracking-tight">
+          <h1 className="text-[20px] font-black text-[#1E0938] tracking-tight">
             Social Experience<br/>& Paid Companionship
           </h1>
           <p className="text-xs text-slate-500">
@@ -139,14 +139,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => onNavigate('/lupa-sandi')}
-                className="text-[22px] leading-[28px] leading-[28px] font-bold text-purple-700 hover:underline cursor-pointer"
+                className="text-[11px] font-bold text-purple-700 hover:underline cursor-pointer"
               >
                 Lupa kata sandi?
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[22px] leading-[28px] leading-[28px] text-slate-600">
+          <div className="flex items-center justify-between text-[11px] text-slate-600">
             <label className="flex items-center gap-1.5 cursor-pointer">
               <input type="checkbox" className="accent-purple-700 rounded" />
               <span>Ingat saya</span>

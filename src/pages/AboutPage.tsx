@@ -18,7 +18,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <Sparkles className="w-3.5 h-3.5 text-purple-700" />
             <span>Kisah & Visi Kami</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-[#1E0938] tracking-tight mb-4">
+          <h1 className="text-[18px] leading-[24px] sm:text-5xl font-black text-[#1E0938] tracking-tight mb-4">
             Tentang YUKU
           </h1>
           <p className="text-base sm:text-lg text-purple-900/80 font-bold mb-4">
@@ -32,7 +32,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         {/* Brand Story & Philosophy */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-16">
           <div className="lg:col-span-6 space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-[18px] leading-[24px] font-black text-slate-900 tracking-tight">
               Menghadirkan Solusi Kesepian Modern di Tengah Hiruk-Pikuk Kota
             </h2>
             <p>
@@ -70,7 +70,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         {/* 4 Pillars of Values */}
         <div className="mb-16">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1E0938]">
+            <h2 className="text-[18px] leading-[24px] sm:text-[18px] leading-[24px] font-extrabold text-[#1E0938]">
               Pilar Nilai Utama Kami
             </h2>
           </div>
@@ -95,7 +95,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
         {/* Call to action */}
         <div className="bg-white rounded-3xl border border-purple-200 p-8 sm:p-12 text-center max-w-4xl mx-auto shadow-xs">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">
+          <h2 className="text-[18px] leading-[24px] sm:text-[18px] leading-[24px] font-extrabold text-slate-900 mb-3">
             Ingin Mengalami Momen Nyata Bersama Teman Baru?
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mb-6">
