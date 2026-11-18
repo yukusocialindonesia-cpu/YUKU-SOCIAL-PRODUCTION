@@ -47,3 +47,4 @@ Migration 24 prevents automatic full Talent earning reversal while Customer canc
 Perbandingan repo dengan proyek `yuku-staging` menemukan: riwayat migrasi staging tidak identik dengan repo (migrasi 28–30 dan 35 tidak tercatat dengan nama yang sama, ada migrasi staging yang tidak ada di repo); flag `payment_checkout` menyala di staging padahal Edge Function belum ter-deploy; skema `yuku_private` (`payment_simulation_config`, snapshot) hanya ada di staging. Ekspor skema staging sebagai baseline migrasi masih perlu dikerjakan sebelum produksi. Leaked password protection di Supabase Auth juga perlu diaktifkan.
 
 Setelah mengubah `package.json`, jalankan `npm install` untuk memperbarui `package-lock.json`. Proyek memiliki dua lockfile (`bun.lock` dan `package-lock.json`); pilih satu.
+
