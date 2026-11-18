@@ -78,10 +78,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         <div className="text-center space-y-2">
           <BrandLogo size="md" showTagline={false} />
           <h1 className="text-2xl font-black text-[#1E0938] tracking-tight">
-            Masuk ke Akun YUKU
+            Social Experience & Paid Companionship
           </h1>
           <p className="text-xs text-slate-500">
-            Masuk untuk mengelola jadwal teman aktivitas atau profil Talent-mu.
+            
           </p>
         </div>
 
