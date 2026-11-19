@@ -304,12 +304,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onNavigate={handleLinkClick}
               />
             ) : (
-              <button
-                onClick={() => handleLinkClick('/register')}
-                className="px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-md shadow-xs"
-              >
-                Daftar
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleLinkClick('/login')}
+                  className="px-2.5 py-2 text-xs font-semibold text-slate-700 hover:text-purple-900 rounded-lg transition-colors"
+                >
+                  Masuk
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLinkClick('/register')}
+                  className="px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-sm"
+                >
+                  Daftar
+                </button>
+              </div>
             )}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
