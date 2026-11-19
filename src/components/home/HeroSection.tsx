@@ -250,14 +250,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         <div className="mt-4 md:mt-8 md:max-w-3xl pointer-events-auto">
           <SearchActivityWidget onSearch={onSearch} />
-          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-slate-800">
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-purple-600" />Ruang publik & aman</span>
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-purple-600" />Verifikasi 18+</span>
+          {/* HP: poin keamanan 2 kolom rapi, tombol daftar satu baris penuh di bawahnya.
+              Layar lebar: tetap satu baris seperti semula. */}
+          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-800 md:flex md:flex-wrap md:items-center md:gap-x-5 md:gap-y-1.5">
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Ruang publik & aman</span>
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
             <button
               type="button"
               onClick={onRegisterCustomerClick}
-              className="px-4 py-1.5 rounded-full border border-purple-300 bg-white/90 hover:bg-white font-bold text-purple-800 hover:text-purple-950 shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="col-span-2 mt-1 md:mt-0 w-full md:w-auto px-4 py-2.5 md:py-1.5 rounded-full border border-purple-300 bg-white/90 hover:bg-white font-bold text-purple-800 hover:text-purple-950 shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
             >
               Daftar gratis
             </button>
