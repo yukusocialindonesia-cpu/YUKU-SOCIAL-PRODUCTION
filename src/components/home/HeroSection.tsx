@@ -1,303 +1,223 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
-import { SearchActivityWidget } from './SearchActivityWidget';
-import { HeroSlideRow } from '../../types/database';
-import { fetchHeroSlidesFromSupabase } from '../../utils/supabaseMarketplace';
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Search,
+} from 'lucide-react';
+import SearchActivityWidget from '../SearchActivityWidget';
+import type { HeroSlideRow } from '../../types/hero';
+import { fetchHeroSlidesFromSupabase } from '../../lib/heroSlides';
 
-interface HeroSectionProps {
-  onExploreClick: () => void;
-  onSearch: (activity: string, city: string) => void;
-  onRegisterCustomerClick: () => void;
-  /** Dipanggil saat slide dengan tautan internal (diawali "/") diklik. */
-  onSlideLinkClick?: (path: string) => void;
-}
+const DEFAULT_SLIDES: HeroSlideRow[] = [
+  {
+    id: 'default-1',
+    title: 'Temukan Teman untuk Setiap Momen',
+    subtitle: 'Real Friends. Real Moments.',
+    description:
+      'Cari teman untuk ngopi, jalan-jalan, nonton, menghadiri acara, atau sekadar ngobrol.',
+    image_url:
+      'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1800&q=85',
+    button_text: 'Cari Talent',
+    button_url: '/talent',
+    is_active: true,
+    sort_order: 1,
+  },
+];
 
-const SLIDE_INTERVAL_MS = 6000;
-const SLIDES_CACHE_KEY = 'yuku_hero_slides_cache_v1';
-
-/** Baca slide terakhir yang tersimpan di HP agar foto langsung tampil saat dibuka/refresh. */
-function readCachedSlides(): HeroSlideRow[] {
-  try {
-    const raw = localStorage.getItem(SLIDES_CACHE_KEY);
-    if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as HeroSlideRow[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeCachedSlides(rows: HeroSlideRow[]) {
-  try {
-    if (rows.length > 0) localStorage.setItem(SLIDES_CACHE_KEY, JSON.stringify(rows));
-    else localStorage.removeItem(SLIDES_CACHE_KEY);
-  } catch {
-    // Penyimpanan penuh atau diblokir: abaikan, hero tetap berfungsi tanpa cache.
-  }
-}
-
-/**
- * Hero Beranda berupa slide gambar yang diatur Admin
- * (Admin > "Slide Hero", tabel public.hero_slides).
- * Jika belum ada slide aktif, memakai /hero-home.jpg atau gradasi bermerek.
- */
-export const HeroSection: React.FC<HeroSectionProps> = ({
-  onSearch,
-  onRegisterCustomerClick,
-  onSlideLinkClick,
-}) => {
-  const [slides, setSlides] = useState<HeroSlideRow[]>(() => readCachedSlides());
+export default function HeroSection() {
+  const [slides, setSlides] = useState<HeroSlideRow[]>([]);
   const [slidesLoaded, setSlidesLoaded] = useState(false);
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [broken, setBroken] = useState<Record<string, boolean>>({});
-  const [fallbackOk, setFallbackOk] = useState(true);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    fetchHeroSlidesFromSupabase().then((rows) => {
-      if (!mounted) return;
-      setSlides(rows);
-      setSlidesLoaded(true);
-      writeCachedSlides(rows);
-    });
+
+    fetchHeroSlidesFromSupabase()
+      .then((rows) => {
+        if (!mounted) return;
+
+        const nextSlides = rows.length > 0 ? rows : DEFAULT_SLIDES;
+        setSlides(nextSlides);
+        setSlidesLoaded(true);
+      })
+      .catch(() => {
+        if (!mounted) return;
+
+        setSlides(DEFAULT_SLIDES);
+        setSlidesLoaded(true);
+      });
+
     return () => {
       mounted = false;
     };
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(media.matches);
-    const listener = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, []);
+    if (activeIndex >= slides.length && slides.length > 0) {
+      setActiveIndex(0);
+    }
+  }, [activeIndex, slides.length]);
 
-  const total = slides.length;
+  const goToPrevious = useCallback(() => {
+    setActiveIndex((current) =>
+      slides.length > 0
+        ? (current - 1 + slides.length) % slides.length
+        : 0,
+    );
+  }, [slides.length]);
 
-  useEffect(() => {
-    if (active >= total) setActive(0);
-  }, [total, active]);
-
-  const next = useCallback(() => {
-    if (total > 1) setActive((i) => (i + 1) % total);
-  }, [total]);
-  const prev = useCallback(() => {
-    if (total > 1) setActive((i) => (i - 1 + total) % total);
-  }, [total]);
+  const goToNext = useCallback(() => {
+    setActiveIndex((current) =>
+      slides.length > 0 ? (current + 1) % slides.length : 0,
+    );
+  }, [slides.length]);
 
   useEffect(() => {
-    if (total <= 1 || paused || reducedMotion) return;
-    const timer = window.setInterval(next, SLIDE_INTERVAL_MS);
+    if (slides.length <= 1) return;
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % slides.length);
+    }, 7000);
+
     return () => window.clearInterval(timer);
-  }, [total, paused, reducedMotion, next, active]);
+  }, [slides.length]);
 
-  const currentLink = total > 0 ? slides[active]?.link_url?.trim() || '' : '';
-  const isExternal = /^https?:\/\//i.test(currentLink);
-  const isInternal = currentLink.startsWith('/');
+  const activeSlide = slides[activeIndex];
 
-  const handleBackdropClick = () => {
-    if (isInternal && onSlideLinkClick) onSlideLinkClick(currentLink);
+  if (!slidesLoaded) {
+    return (
+      <section className="relative min-h-[620px] overflow-hidden bg-slate-900">
+        <div className="absolute inset-0 animate-pulse bg-slate-800" />
+        <div className="relative z-10 mx-auto flex min-h-[620px] max-w-7xl items-center px-4 py-20 sm:px-6 lg:px-8">
+          <div className="w-full max-w-3xl">
+            <div className="mb-5 h-5 w-40 rounded bg-white/10" />
+            <div className="mb-4 h-16 w-full max-w-2xl rounded bg-white/10" />
+            <div className="mb-8 h-16 w-4/5 max-w-xl rounded bg-white/10" />
+            <div className="h-12 w-40 rounded-xl bg-white/10" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!activeSlide) {
+    return null;
+  }
+
+  const handleButtonClick = () => {
+    if (!activeSlide.button_url) return;
+
+    if (activeSlide.button_url.startsWith('http')) {
+      window.location.href = activeSlide.button_url;
+      return;
+    }
+
+    window.history.pushState({}, '', activeSlide.button_url);
+    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   return (
-    <section
-      aria-roledescription="carousel"
-      aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-white md:bg-gradient-to-br md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onTouchStart={(e) => {
-        setTouchStartX(e.touches[0]?.clientX ?? null);
-        setPaused(true);
-      }}
-      onTouchEnd={(e) => {
-        const endX = e.changedTouches[0]?.clientX ?? null;
-        if (touchStartX !== null && endX !== null) {
-          const dx = endX - touchStartX;
-          if (dx <= -50) next();
-          else if (dx >= 50) prev();
-        }
-        setTouchStartX(null);
-        setPaused(false);
-      }}
-    >
-      {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
-          Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
-      {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-4 mt-3 h-[200px] sm:h-[260px] rounded-3xl overflow-hidden md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible">
-        {total > 0 ? (
-          slides.map((slide, index) => {
-            const isCurrent = index === active;
-            return (
-              <div
-                key={slide.id}
-                aria-hidden={!isCurrent}
-                className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${
-                  isCurrent ? 'opacity-100' : 'opacity-0'
-                }`}
+    <section className="relative min-h-[620px] overflow-hidden bg-slate-900">
+      <div className="absolute inset-0">
+        {!imageLoaded && (
+          <div className="absolute inset-0 animate-pulse bg-slate-800" />
+        )}
+
+        <img
+          key={activeSlide.id}
+          src={activeSlide.image_url}
+          alt={activeSlide.title || 'YUKU'}
+          className={`h-full w-full object-cover transition-opacity duration-500 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageLoaded(true)}
+        />
+
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/45 to-black/20" />
+      </div>
+
+      <div className="relative z-10 mx-auto flex min-h-[620px] max-w-7xl items-center px-4 py-20 sm:px-6 lg:px-8">
+        <div className="w-full max-w-4xl text-white">
+          {activeSlide.subtitle && (
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+              <MapPin className="h-4 w-4" />
+              {activeSlide.subtitle}
+            </div>
+          )}
+
+          {activeSlide.title && (
+            <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+              {activeSlide.title}
+            </h1>
+          )}
+
+          {activeSlide.description && (
+            <p className="mt-6 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
+              {activeSlide.description}
+            </p>
+          )}
+
+          <div className="mt-8 flex flex-wrap gap-4">
+            {activeSlide.button_text && (
+              <button
+                type="button"
+                onClick={handleButtonClick}
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-slate-900 shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-100"
               >
-                {broken[slide.id] ? (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400" />
-                ) : (
-                  <picture>
-                    {slide.mobile_image_url && (
-                      <source media="(max-width: 767px)" srcSet={slide.mobile_image_url} />
-                    )}
-                    <img
-                      src={slide.image_url}
-                      alt={slide.title}
-                      referrerPolicy="no-referrer"
-                      loading={index === 0 ? 'eager' : 'lazy'}
-                      onError={() => setBroken((p) => ({ ...p, [slide.id]: true }))}
-                      className={`w-full h-full object-cover md:object-[70%_20%] ${
-                        slide.mobile_image_url ? 'object-center' : 'object-[70%_20%]'
-                      }`}
-                    />
-                  </picture>
-                )}
-              </div>
-            );
-          })
-        ) : !slidesLoaded ? (
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-slate-200/70 animate-pulse motion-reduce:animate-none"
-          />
-        ) : fallbackOk ? (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%]">
-            <img
-              src="/hero-home.jpg"
-              alt=""
-              aria-hidden="true"
-              onError={() => setFallbackOk(false)}
-              className="w-full h-full object-cover object-[60%_18%] md:[mask-image:linear-gradient(to_left,black_72%,transparent)]"
-            />
+                {activeSlide.button_text}
+                <ArrowRight className="h-5 w-5" />
+              </button>
+            )}
           </div>
-        ) : (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400 opacity-90 md:rounded-l-[8rem]" />
-        )}
 
-        {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}
-        {total > 0 && (
-          <div className="hidden md:block absolute inset-0 pointer-events-none md:bg-gradient-to-r md:from-white/90 md:via-white/55 md:to-transparent md:w-[62%]" />
-        )}
+          <div className="mt-10 max-w-3xl">
+            <SearchActivityWidget />
+          </div>
+        </div>
+      </div>
 
-        {/* Area klik slide (di belakang konten) */}
-        {isExternal && (
-          <a
-            href={currentLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={slides[active]?.title}
-            className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-700"
-          />
-        )}
-        {isInternal && (
+      {slides.length > 1 && (
+        <>
           <button
             type="button"
-            onClick={handleBackdropClick}
-            aria-label={slides[active]?.title}
-            className="absolute inset-0 w-full h-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-700"
-          />
-        )}
+            aria-label="Slide sebelumnya"
+            onClick={goToPrevious}
+            className="absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-white/20 bg-black/25 p-3 text-white backdrop-blur-sm transition hover:bg-black/45 sm:block"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
 
-        {/* Kontrol slide: panah + titik */}
-        {total > 1 && (
-          <div className="absolute z-20 bottom-2 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-5 md:right-6 flex items-center gap-2">
-            <div role="tablist" aria-label="Pilih slide" className="flex items-center mr-1">
-              {slides.map((slide, index) => {
-                const isCurrent = index === active;
-                return (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={isCurrent}
-                    aria-label={`Slide ${index + 1}: ${slide.title}`}
-                    onClick={() => setActive(index)}
-                    className="min-w-[28px] min-h-[40px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700 rounded-lg"
-                  >
-                    <span
-                      className={`block h-2 rounded-full transition-all duration-200 ${
-                        isCurrent ? 'w-6 bg-white shadow' : 'w-2 bg-white/60 hover:bg-white/90'
-                      }`}
-                    />
-                  </button>
-                );
-              })}
-            </div>
-            <button
-              type="button"
-              onClick={prev}
-              aria-label="Slide sebelumnya"
-              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-purple-900 shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Slide berikutnya"
-              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-purple-900 shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+          <button
+            type="button"
+            aria-label="Slide berikutnya"
+            onClick={goToNext}
+            className="absolute right-4 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-white/20 bg-black/25 p-3 text-white backdrop-blur-sm transition hover:bg-black/45 sm:block"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+
+          <div className="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+            {slides.map((slide, index) => (
+              <button
+                key={slide.id}
+                type="button"
+                aria-label={`Buka slide ${index + 1}`}
+                onClick={() => setActiveIndex(index)}
+                className={`h-2 rounded-full transition-all ${
+                  index === activeIndex
+                    ? 'w-8 bg-white'
+                    : 'w-2 bg-white/50 hover:bg-white/80'
+                }`}
+              />
+            ))}
           </div>
-        )}
-      </div>
-
-      {/* Konten tetap di depan slide */}
-      <div
-        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 md:pt-16 md:pb-16"
-      >
-        <div className="md:max-w-xl">
-          {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1.5 text-[10.5px] font-bold uppercase tracking-wider text-purple-700">
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-            <span>Social Experience & Paid Companionship</span>
-          </p>
-          <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-purple-200/80 rounded-full text-purple-900 text-xs font-semibold mb-5">
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-purple-700" />
-            <span className="truncate">Social Experience & Paid Companionship</span>
-          </div>
-
-          <h1 className="text-[1.7rem] leading-[1.08] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-2 md:mb-4">
-            Real Friends.{' '}
-            <br className="md:hidden" />
-            <span className="bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
-              Real Moments.
-            </span>
-          </h1>
-
-          <p className="text-[13px] sm:text-base md:text-lg text-slate-800 leading-relaxed">
-            Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
-          </p>
-        </div>
-
-        <div className="mt-4 md:mt-8 md:max-w-3xl pointer-events-auto">
-          <SearchActivityWidget onSearch={onSearch} />
-          {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
-              Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-2 text-[10.5px] leading-tight whitespace-nowrap text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Ruang publik & aman</span>
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
-            <button
-              type="button"
-              onClick={onRegisterCustomerClick}
-              className="basis-full mt-1 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2.5 md:py-1.5 rounded-full border border-purple-300 bg-white/90 hover:bg-white font-bold text-purple-800 hover:text-purple-950 shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
-            >
-              Daftar gratis
-            </button>
-          </div>
-        </div>
-      </div>
-
+        </>
+      )}
     </section>
   );
-};
+}
