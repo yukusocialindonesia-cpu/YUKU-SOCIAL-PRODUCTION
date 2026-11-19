@@ -28,7 +28,28 @@ import { AppRoute } from './types/navigation';
 import { supabase } from './lib/supabase';
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState<AppRoute>('/');
+  const [currentPath, setCurrentPath] = useState<AppRoute>(() => {
+    const pathname = window.location.pathname;
+    if (pathname === '/talent') return '/talent';
+    if (pathname.startsWith('/talent/')) return '/talent/:id';
+    if (pathname === '/cara-kerja') return '/cara-kerja';
+    if (pathname === '/daftar-talent') return '/daftar-talent';
+    if (pathname === '/dashboard-talent') return '/dashboard-talent';
+    if (pathname === '/riwayat-booking') return '/riwayat-booking';
+    if (pathname === '/admin') return '/admin';
+    if (pathname === '/tentang') return '/tentang';
+    if (pathname === '/faq') return '/faq';
+    if (pathname === '/bantuan') return '/bantuan';
+    if (pathname === '/login') return '/login';
+    if (pathname === '/register') return '/register';
+    if (pathname === '/ganti-sandi') return '/ganti-sandi';
+    if (pathname === '/lupa-sandi') return '/lupa-sandi';
+    if (pathname === '/reset-sandi') return '/reset-sandi';
+    if (pathname === '/verifikasi-ktp') return '/verifikasi-ktp';
+    if (pathname === '/syarat-ketentuan') return '/syarat-ketentuan';
+    if (pathname === '/kebijakan-privasi') return '/kebijakan-privasi';
+    return '/';
+  });
   const [activeTalentId, setActiveTalentId] = useState<string>('');
   const [initialActivityFilter, setInitialActivityFilter] = useState<string>('all');
   const [initialCityFilter, setInitialCityFilter] = useState<string>('Semua Kota');
