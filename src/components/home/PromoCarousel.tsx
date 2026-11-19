@@ -114,7 +114,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
         </div>
 
         {isLoading ? (
-          <div className="w-full aspect-[16/7] sm:aspect-[21/7] rounded-2xl bg-slate-100 animate-pulse border border-slate-200/80" />
+          <div className="w-full h-[200px] sm:h-[260px] md:h-auto md:aspect-[12/5] rounded-3xl bg-slate-100 animate-pulse border border-slate-200/80" />
         ) : totalSlides === 0 ? (
           <div className="w-full min-h-[144px] sm:aspect-[21/6] rounded-2xl border border-slate-200 bg-gradient-to-r from-[#FAF8FC] via-purple-50/60 to-amber-50/50 px-4 py-5 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3 sm:gap-4 max-w-2xl">
@@ -162,7 +162,8 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
               setIsPaused(false);
             }}
           >
-            <div className="w-full aspect-[16/8] sm:aspect-[21/7] rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 relative touch-pan-y">
+            {/* Ukuran disamakan dengan banner Hero: tinggi tetap di HP, rasio 12:5 (1920x800) di layar lebar. */}
+            <div className="w-full h-[200px] sm:h-[260px] md:h-auto md:aspect-[12/5] rounded-3xl overflow-hidden border border-slate-200 bg-slate-900 relative touch-pan-y">
               <div
                 className="flex h-full transition-transform duration-500 ease-out motion-reduce:transition-none"
                 style={{ transform: `translateX(-${activeIndex * 100}%)` }}
