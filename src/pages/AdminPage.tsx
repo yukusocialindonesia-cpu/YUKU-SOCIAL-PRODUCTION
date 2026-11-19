@@ -2048,7 +2048,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     Pasang Poster Promosi Baru
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Unggah gambar poster promosi (disarankan rasio lebar 21:7 atau 16:6). Poster aktif langsung tampil berjalan di Beranda.
+                    Unggah gambar poster promosi (disarankan 1920×1080 px, rasio 16:9). Kotak poster di Beranda mengikuti ukuran gambar, jadi poster tampil utuh tanpa terpotong. Poster aktif langsung tampil berjalan di Beranda.
                   </p>
                 </div>
 
@@ -2083,7 +2083,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <span className="text-[11px] font-semibold text-slate-500 block">
                       Pratinjau Tampilan di Beranda
                     </span>
-                    <div className="w-full aspect-[21/7] rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
+                    <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
                       <img
                         src={promoPreviewUrl || promoImageUrlInput.trim()}
                         alt="Pratinjau poster promosi"
@@ -2204,7 +2204,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         key={poster.id}
                         className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/70 space-y-3"
                       >
-                        <div className="w-full aspect-[21/7] rounded-lg overflow-hidden border border-slate-200 bg-slate-900">
+                        <div className="w-full aspect-[16/9] rounded-lg overflow-hidden border border-slate-200 bg-slate-900">
                           <img
                             src={poster.image_url}
                             alt={poster.title}
