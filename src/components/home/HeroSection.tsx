@@ -250,8 +250,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         <div className="mt-4 md:mt-8 md:max-w-3xl pointer-events-auto">
           <SearchActivityWidget onSearch={onSearch} />
-          {/* HP: poin keamanan 2 kolom rapi, tombol daftar satu baris penuh di bawahnya.
-              Layar lebar: tetap satu baris seperti semula. */}
+          {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
+              Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
           <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-2 text-[10.5px] leading-tight whitespace-nowrap text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Ruang publik & aman</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
