@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Pause, Play, ArrowUpRight, Megaphone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowUpRight, Megaphone } from 'lucide-react';
 import { PromotionRow } from '../../types/database';
 import { AppRoute } from '../../types/navigation';
 
@@ -8,6 +8,10 @@ interface PromoCarouselProps {
   isLoading?: boolean;
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
 }
+
+// Sama dengan banner Hero di atasnya.
+const SLIDE_INTERVAL_MS = 6000;
+const DEFAULT_RATIO = 16 / 9;
 
 export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   promotions,
@@ -40,7 +44,6 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   }, [promotions.length, activeIndex]);
 
   const totalSlides = promotions.length;
-  const DEFAULT_RATIO = 16 / 9;
   const rawRatio = imageRatios[promotions[activeIndex]?.id ?? ''] ?? DEFAULT_RATIO;
   const frameRatio = Math.min(3, Math.max(1.5, rawRatio));
 
@@ -54,13 +57,12 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
     setActiveIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
   }, [totalSlides]);
 
+  // Geser otomatis. Dihentikan saat disentuh/di-hover atau jika pengguna meminta mengurangi gerakan.
   useEffect(() => {
     if (totalSlides <= 1 || isPaused || prefersReducedMotion) return;
-    const timer = window.setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % totalSlides);
-    }, 5000);
+    const timer = window.setInterval(handleNext, SLIDE_INTERVAL_MS);
     return () => window.clearInterval(timer);
-  }, [totalSlides, isPaused, prefersReducedMotion]);
+  }, [totalSlides, isPaused, prefersReducedMotion, handleNext, activeIndex]);
 
   const handlePosterClick = (promo: PromotionRow) => {
     const rawLink = promo.link_url?.trim();
@@ -71,54 +73,8 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section
-      aria-label="Ruang Promosi YUKU"
-      className="py-8 bg-white border-b border-slate-100"
-    >
+    <section aria-label="Ruang Promosi YUKU" className="py-5 sm:py-8 bg-white border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <h2 className="text-lg sm:text-xl font-bold text-[#1E0938] tracking-tight truncate">
-              Ruang Promosi &amp; Info YUKU
-            </h2>
-            {totalSlides > 0 && (
-              <span className="text-xs font-mono tabular-nums text-slate-500 whitespace-nowrap shrink-0">
-                {activeIndex + 1} / {totalSlides}
-              </span>
-            )}
-          </div>
-
-          {totalSlides > 1 && (
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsPaused((prev) => !prev)}
-                aria-label={isPaused ? 'Putar slide promosi' : 'Jeda slide promosi'}
-                className="min-w-[40px] min-h-[40px] px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
-              >
-                {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
-                <span className="hidden sm:inline">{isPaused ? 'Putar' : 'Jeda'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={handlePrev}
-                aria-label="Poster sebelumnya"
-                className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                aria-label="Poster berikutnya"
-                className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-
         {isLoading ? (
           <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-3xl bg-slate-100 animate-pulse border border-slate-200/80" />
         ) : totalSlides === 0 ? (
@@ -173,107 +129,129 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
               className="w-full rounded-3xl overflow-hidden border border-slate-200 bg-slate-900 relative touch-pan-y"
               style={{ aspectRatio: String(frameRatio) }}
             >
-              <div
-                className="flex h-full transition-transform duration-500 ease-out motion-reduce:transition-none"
-                style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-              >
-                {promotions.map((promo) => {
-                  const isBroken = Boolean(brokenImageIds[promo.id]);
-                  const link = promo.link_url?.trim() || '';
-                  const isExternal = link.startsWith('http://') || link.startsWith('https://');
-                  const isInternal = link.startsWith('/');
+              {promotions.map((promo, index) => {
+                const isCurrent = index === activeIndex;
+                const isBroken = Boolean(brokenImageIds[promo.id]);
+                const link = promo.link_url?.trim() || '';
+                const isExternal = link.startsWith('http://') || link.startsWith('https://');
+                const isInternal = link.startsWith('/');
 
-                  const slideBody = (
-                    <div className="relative w-full h-full">
-                      {isBroken ? (
-                        <div className="w-full h-full bg-gradient-to-br from-purple-950 via-[#2D1052] to-slate-900 flex flex-col items-center justify-center p-6 text-center text-white">
-                          <Megaphone className="w-8 h-8 text-amber-400 mb-2" />
-                          <p className="text-sm sm:text-base font-bold">{promo.title}</p>
-                        </div>
-                      ) : (
-                        <img
-                          src={promo.image_url}
-                          alt={promo.title || 'Poster promosi YUKU'}
-                          referrerPolicy="no-referrer"
-                          onLoad={(e) => {
-                            const { naturalWidth, naturalHeight } = e.currentTarget;
-                            if (naturalWidth > 0 && naturalHeight > 0) {
-                              setImageRatios((prev) => ({
-                                ...prev,
-                                [promo.id]: naturalWidth / naturalHeight,
-                              }));
-                            }
-                          }}
-                          onError={() =>
-                            setBrokenImageIds((prev) => ({ ...prev, [promo.id]: true }))
+                const slideBody = (
+                  <div className="relative w-full h-full">
+                    {isBroken ? (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-950 via-[#2D1052] to-slate-900 flex flex-col items-center justify-center p-6 text-center text-white">
+                        <Megaphone className="w-8 h-8 text-amber-400 mb-2" />
+                        <p className="text-sm sm:text-base font-bold">{promo.title}</p>
+                      </div>
+                    ) : (
+                      <img
+                        src={promo.image_url}
+                        alt={promo.title || 'Poster promosi YUKU'}
+                        referrerPolicy="no-referrer"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        onLoad={(e) => {
+                          const { naturalWidth, naturalHeight } = e.currentTarget;
+                          if (naturalWidth > 0 && naturalHeight > 0) {
+                            setImageRatios((prev) => ({
+                              ...prev,
+                              [promo.id]: naturalWidth / naturalHeight,
+                            }));
                           }
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-
-                      {(isInternal || isExternal) && (
-                        <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 px-3.5 py-2 rounded-xl bg-slate-950/80 text-white text-xs font-bold inline-flex items-center gap-1.5 backdrop-blur-xs">
-                          <span>Lihat Promo</span>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
-                        </div>
-                      )}
-                    </div>
-                  );
-
-                  return (
-                    <div key={promo.id} className="w-full h-full shrink-0">
-                      {isExternal ? (
-                        <a
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400"
-                          aria-label={promo.title}
-                        >
-                          {slideBody}
-                        </a>
-                      ) : isInternal ? (
-                        <button
-                          type="button"
-                          onClick={() => handlePosterClick(promo)}
-                          className="block w-full h-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400"
-                          aria-label={promo.title}
-                        >
-                          {slideBody}
-                        </button>
-                      ) : (
-                        slideBody
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {totalSlides > 1 && (
-              <div className="flex items-center justify-center gap-1 mt-3" role="tablist" aria-label="Pilih poster promosi">
-                {promotions.map((promo, index) => {
-                  const isCurrent = index === activeIndex;
-                  return (
-                    <button
-                      key={promo.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={isCurrent}
-                      aria-label={`Tampilkan poster ${index + 1}: ${promo.title}`}
-                      onClick={() => setActiveIndex(index)}
-                      className="min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700 rounded-lg"
-                    >
-                      <span
-                        className={`block h-1.5 rounded-full transition-all duration-200 ${
-                          isCurrent ? 'w-7 bg-purple-700' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
-                        }`}
+                        }}
+                        onError={() => setBrokenImageIds((prev) => ({ ...prev, [promo.id]: true }))}
+                        className="w-full h-full object-cover"
                       />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+                    )}
+
+                    {(isInternal || isExternal) && (
+                      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 px-3.5 py-2 rounded-xl bg-slate-950/80 text-white text-xs font-bold inline-flex items-center gap-1.5 backdrop-blur-xs">
+                        <span>Lihat Promo</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
+                      </div>
+                    )}
+                  </div>
+                );
+
+                return (
+                  <div
+                    key={promo.id}
+                    aria-hidden={!isCurrent}
+                    className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${
+                      isCurrent ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'
+                    }`}
+                  >
+                    {isExternal ? (
+                      <a
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        tabIndex={isCurrent ? 0 : -1}
+                        className="block w-full h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400"
+                        aria-label={promo.title}
+                      >
+                        {slideBody}
+                      </a>
+                    ) : isInternal ? (
+                      <button
+                        type="button"
+                        onClick={() => handlePosterClick(promo)}
+                        tabIndex={isCurrent ? 0 : -1}
+                        className="block w-full h-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400"
+                        aria-label={promo.title}
+                      >
+                        {slideBody}
+                      </button>
+                    ) : (
+                      slideBody
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* Kontrol: titik di atas gambar (seperti Hero), panah hanya di layar lebar */}
+              {totalSlides > 1 && (
+                <div className="absolute z-20 bottom-2 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-4 md:right-5 flex items-center gap-2">
+                  <div role="tablist" aria-label="Pilih poster promosi" className="flex items-center mr-1">
+                    {promotions.map((promo, index) => {
+                      const isCurrent = index === activeIndex;
+                      return (
+                        <button
+                          key={promo.id}
+                          type="button"
+                          role="tab"
+                          aria-selected={isCurrent}
+                          aria-label={`Tampilkan poster ${index + 1}: ${promo.title}`}
+                          onClick={() => setActiveIndex(index)}
+                          className="min-w-[28px] min-h-[40px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700 rounded-lg"
+                        >
+                          <span
+                            className={`block h-2 rounded-full transition-all duration-200 ${
+                              isCurrent ? 'w-6 bg-white shadow' : 'w-2 bg-white/60 hover:bg-white/90'
+                            }`}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handlePrev}
+                    aria-label="Poster sebelumnya"
+                    className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-purple-900 shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    aria-label="Poster berikutnya"
+                    className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-purple-900 shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
