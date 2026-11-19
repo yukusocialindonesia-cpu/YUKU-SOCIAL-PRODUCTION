@@ -24,6 +24,7 @@ import { AppRoute } from '../types/navigation';
 import { ActivityCategory } from '../types/talent';
 import { fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { INDONESIA_CITIES } from '../utils/cities';
 
 interface BecomeTalentPageProps {
@@ -38,7 +39,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
   const [categoryError, setCategoryError] = useState<string | null>(null);
 
   // Authentication check
-  const [currentSessionUser, setCurrentSessionUser] = useState<any | null>(null);
+  const { user: currentSessionUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successInfo, setSuccessInfo] = useState<{
@@ -110,40 +111,18 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     }
   }, []);
 
-  // Check if user is already logged in
+  // Isi otomatis formulir dari akun yang sudah login (data dari AuthContext).
+  const currentSessionUserId = currentSessionUser?.id ?? null;
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setCurrentSessionUser(session.user);
-        setFormData((prev) => ({
-          ...prev,
-          email: session.user.email || prev.email,
-          fullName: session.user.user_metadata?.full_name || prev.fullName,
-          phone: session.user.user_metadata?.phone_number || prev.phone,
-        }));
-      }
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setCurrentSessionUser(session.user);
-        setFormData((prev) => ({
-          ...prev,
-          email: session.user.email || prev.email,
-          fullName: session.user.user_metadata?.full_name || prev.fullName,
-          phone: session.user.user_metadata?.phone_number || prev.phone,
-        }));
-      } else {
-        setCurrentSessionUser(null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    if (!currentSessionUser) return;
+    setFormData((prev) => ({
+      ...prev,
+      email: currentSessionUser.email || prev.email,
+      fullName: currentSessionUser.user_metadata?.full_name || prev.fullName,
+      phone: currentSessionUser.user_metadata?.phone_number || prev.phone,
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSessionUserId]);
 
   useEffect(() => {
     let isMounted = true;

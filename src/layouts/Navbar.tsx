@@ -3,7 +3,7 @@ import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, Ch
 import { BrandLogo } from '../components/common/BrandLogo';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { AppRoute } from '../types/navigation';
-import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NavbarProps {
   currentPath: string;
@@ -13,70 +13,24 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const { user: currentUser, role: userRole, isAuthLoading, signOut } = useAuth();
 
   useEffect(() => {
     const openMenu = () => setIsMobileMenuOpen(true);
     window.addEventListener('yuku:open-menu', openMenu);
     return () => window.removeEventListener('yuku:open-menu', openMenu);
   }, []);
+
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadUserRole = async (userId: string) => {
-      const { data: userRow } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (isMounted) {
-        setUserRole(userRow?.role ?? null);
-      }
-    };
-
-    // Check initial active session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const user = session?.user ?? null;
-      if (!isMounted) return;
-      setCurrentUser(user);
-      if (user) {
-        loadUserRole(user.id);
-      } else {
-        setUserRole(null);
-      }
-    });
-
-    // Listen for auth state changes (login, logout, token refresh)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const user = session?.user ?? null;
-      if (!isMounted) return;
-      setCurrentUser(user);
-      if (user) {
-        loadUserRole(user.id);
-      } else {
-        setUserRole(null);
-      }
-    });
-
     const handleClickOutside = (event: MouseEvent) => {
       if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
         setIsAccountMenuOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const navLinks: { label: string; href: AppRoute }[] = [
@@ -94,8 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUserRole(null);
+    await signOut();
     setIsAccountMenuOpen(false);
     setIsMobileMenuOpen(false);
     onNavigate('/');
@@ -105,6 +58,25 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     currentUser?.user_metadata?.full_name ||
     currentUser?.email?.split('@')[0] ||
     'Pengguna';
+
+  // Selama sesi + role belum pulih: hanya logo, tanpa menu / tombol Masuk / Daftar.
+  // Tetap SATU <header> dengan tinggi yang sama agar layout tidak bergeser.
+  if (isAuthLoading) {
+    return (
+      <header
+        className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs"
+        aria-busy="true"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-8 h-18">
+            <div className="shrink-0 flex items-center">
+              <BrandLogo size="md" showTagline={false} onClick={() => onNavigate('/')} />
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">

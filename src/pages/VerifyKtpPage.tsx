@@ -17,6 +17,7 @@ import {
   Camera,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 
 interface VerifyKtpPageProps {
@@ -42,8 +43,7 @@ interface UserAccountInfo {
 }
 
 export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { user: currentUser, isAuthLoading: isCheckingAuth } = useAuth();
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   const [identity, setIdentity] = useState<IdentityRecord | null>(null);
@@ -126,37 +126,18 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
     }
   }, []);
 
+  const currentUserId = currentUser?.id ?? null;
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const user = session?.user ?? null;
-      setCurrentUser(user);
-      setIsCheckingAuth(false);
-      if (user) {
-        loadIdentityData(user);
-      } else {
-        setIsLoadingData(false);
-      }
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const user = session?.user ?? null;
-      setCurrentUser(user);
-      setIsCheckingAuth(false);
-      if (user) {
-        loadIdentityData(user);
-      } else {
-        setIdentity(null);
-        setUserInfo(null);
-        setIsLoadingData(false);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [loadIdentityData]);
+    if (isCheckingAuth) return;
+    if (currentUser) {
+      void loadIdentityData(currentUser);
+    } else {
+      setIdentity(null);
+      setUserInfo(null);
+      setIsLoadingData(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCheckingAuth, currentUserId, loadIdentityData]);
 
   useEffect(() => {
     return () => {

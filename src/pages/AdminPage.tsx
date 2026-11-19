@@ -33,6 +33,7 @@ import {
   ArrowDown,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 import { formatRupiah } from '../utils/formatters';
 import { Modal } from '../components/common/Modal';
@@ -165,9 +166,7 @@ interface AdminReportItem {
 }
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [isAdminAuthorized, setIsAdminAuthorized] = useState(false);
+  const { user: currentUser, role, isAuthLoading: isCheckingAuth } = useAuth();
 
   // Active Tab
   const [activeTab, setActiveTab] = useState<
@@ -218,49 +217,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [holdBookingOnDispute, setHoldBookingOnDispute] = useState(false);
   const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
-  // Check auth and admin role
-  useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const user = session?.user ?? null;
-      setCurrentUser(user);
-
-      if (user) {
-        // Check public.users role
-        const { data: userRow } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        setIsAdminAuthorized(userRow?.role === 'admin');
-      } else {
-        setIsAdminAuthorized(false);
-      }
-      setIsCheckingAuth(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const user = session?.user ?? null;
-      setCurrentUser(user);
-      if (user) {
-        const { data: userRow } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        setIsAdminAuthorized(userRow?.role === 'admin');
-      } else {
-        setIsAdminAuthorized(false);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  const isAdminAuthorized = role === 'admin';
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {

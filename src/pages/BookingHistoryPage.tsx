@@ -19,6 +19,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 import { formatRupiah } from '../utils/formatters';
 import { Modal } from '../components/common/Modal';
@@ -87,8 +88,7 @@ interface BookingItem {
 }
 
 export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNavigate }) => {
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { user: currentUser, isAuthLoading: isCheckingAuth } = useAuth();
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const hasLoadedOnceRef = useRef(false);
@@ -117,31 +117,6 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
 
   // Real-Time Chat Modal State
   const [chatTarget, setChatTarget] = useState<BookingItem | null>(null);
-
-  // Monitor Auth
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setCurrentUser(session?.user ?? null);
-      setIsCheckingAuth(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      // Jangan buat objek user baru jika user-nya sama. Supabase memicu event
-      // SIGNED_IN setiap tab kembali aktif (mis. setelah memilih file di HP),
-      // yang sebelumnya membuat daftar booking dimuat ulang & form upload ter-reset.
-      const nextUser = session?.user ?? null;
-      setCurrentUser((prev: any) =>
-        prev && nextUser && prev.id === nextUser.id ? prev : nextUser
-      );
-      setIsCheckingAuth(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   const loadBookings = useCallback(async () => {
     if (!currentUser) {
