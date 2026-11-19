@@ -13,6 +13,28 @@ interface HeroSectionProps {
 }
 
 const SLIDE_INTERVAL_MS = 6000;
+const SLIDES_CACHE_KEY = 'yuku_hero_slides_cache_v1';
+
+/** Baca slide terakhir yang tersimpan di HP agar foto langsung tampil saat dibuka/refresh. */
+function readCachedSlides(): HeroSlideRow[] {
+  try {
+    const raw = localStorage.getItem(SLIDES_CACHE_KEY);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as HeroSlideRow[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCachedSlides(rows: HeroSlideRow[]) {
+  try {
+    if (rows.length > 0) localStorage.setItem(SLIDES_CACHE_KEY, JSON.stringify(rows));
+    else localStorage.removeItem(SLIDES_CACHE_KEY);
+  } catch {
+    // Penyimpanan penuh atau diblokir: abaikan, hero tetap berfungsi tanpa cache.
+  }
+}
 
 /**
  * Hero Beranda berupa slide gambar yang diatur Admin
@@ -24,7 +46,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onRegisterCustomerClick,
   onSlideLinkClick,
 }) => {
-  const [slides, setSlides] = useState<HeroSlideRow[]>([]);
+  const [slides, setSlides] = useState<HeroSlideRow[]>(() => readCachedSlides());
+  const [slidesLoaded, setSlidesLoaded] = useState(false);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -35,7 +58,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   useEffect(() => {
     let mounted = true;
     fetchHeroSlidesFromSupabase().then((rows) => {
-      if (mounted) setSlides(rows);
+      if (!mounted) return;
+      setSlides(rows);
+      setSlidesLoaded(true);
+      writeCachedSlides(rows);
     });
     return () => {
       mounted = false;
@@ -137,6 +163,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
             );
           })
+        ) : !slidesLoaded ? (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-slate-200/70 animate-pulse motion-reduce:animate-none"
+          />
         ) : fallbackOk ? (
           <div className="absolute top-0 right-0 h-full w-full md:w-[60%]">
             <img
