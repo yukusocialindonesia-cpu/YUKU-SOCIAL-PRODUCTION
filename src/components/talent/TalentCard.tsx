@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Star, MapPin, Check, ArrowRight, Mic, Video, Image as ImageIcon } from 'lucide-react';
+import { Star, MapPin, ArrowRight, Mic, Video, Image as ImageIcon } from 'lucide-react';
+import { VerifiedBadge } from './VerifiedBadge';
 import { supabase } from '../../lib/supabase';
 import { TalentProfile } from '../../types/talent';
 import { formatRupiah } from '../../utils/formatters';
@@ -101,14 +102,6 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         {/* Badges (atas) */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span
-              role="img"
-              aria-label="Terverifikasi"
-              title="Terverifikasi"
-              className="shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center ring-2 ring-white/80 shadow-sm"
-            >
-              <Check className="w-3.5 h-3.5" strokeWidth={3} />
-            </span>
             {availableToday && (
               <span className="min-w-0 inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-950/65 backdrop-blur-md border border-white/25 text-white text-[10.5px] font-semibold">
                 <span className="relative flex shrink-0 w-1.5 h-1.5">
@@ -171,6 +164,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <h3 className="font-extrabold text-[#1E0938] text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
+            <VerifiedBadge className="ml-1.5 -mt-0.5" />
           </h3>
           {!isNew && talent.rating !== undefined && (
             <div className="shrink-0 inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-xs font-bold px-2 py-1 rounded-full tabular-nums">

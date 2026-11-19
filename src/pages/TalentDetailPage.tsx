@@ -31,6 +31,7 @@ import { TalentProfile, ActivityCategory } from '../types/talent';
 import { formatRupiah } from '../utils/formatters';
 import { AppRoute } from '../types/navigation';
 import { Modal } from '../components/common/Modal';
+import { VerifiedBadge } from '../components/talent/VerifiedBadge';
 import { fetchTalentByIdFromSupabase, fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
 import { supabase } from '../lib/supabase';
 import { TalentAvailabilityRow, TalentMediaRow } from '../types/database';
@@ -512,7 +513,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <div className="relative -mt-6 rounded-t-3xl bg-[#FAF8FC] px-4 pt-4 space-y-3">
                       {/* Nama + rating */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <h1 className="text-xl font-extrabold text-slate-900">{talent.name}</h1>
+                        <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
+                          {talent.name}
+                          <VerifiedBadge />
+                        </h1>
                         <div className="flex items-center gap-1 text-sm font-bold text-slate-800 tabular-nums">
                           <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                           <span>{effectiveReviewCount > 0 ? effectiveRating.toFixed(1) : 'Baru'}</span>
@@ -647,8 +651,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 {/* Identity Info */}
                 <div className="flex-1 w-full text-center sm:text-left">
                   <div className="flex flex-wrap items-center justify-center sm:justify-between gap-2 mb-1">
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                      {talent.name}{talent.age ? `, ${talent.age}` : ''}
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 inline-flex items-center gap-2">
+                      <span>{talent.name}{talent.age ? `, ${talent.age}` : ''}</span>
+                      <VerifiedBadge size="md" />
                     </h1>
                     {(() => {
                       const effectiveReviewCount =
