@@ -40,6 +40,7 @@ import { PromotionRow, ReportStatus } from '../types/database';
 import { getReportCategoryLabel, getReportStatusMeta } from '../utils/reportHelpers';
 import { QrisAdminPanel } from '../components/booking/QrisAdminPanel';
 import { BrandingAdminPanel } from '../components/admin/BrandingAdminPanel';
+import { PaymentCheckoutToggle } from '../components/admin/PaymentCheckoutToggle';
 import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
 
 interface AdminPageProps {
@@ -1378,7 +1379,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         )}
 
-        {activeTab === 'qris' && <QrisAdminPanel />}
+        {activeTab === 'qris' && (
+          <>
+            <PaymentCheckoutToggle />
+            <QrisAdminPanel />
+          </>
+        )}
         {activeTab === 'branding' && <BrandingAdminPanel />}
         {activeTab === 'hero' && <HeroSlidesAdminPanel />}
 

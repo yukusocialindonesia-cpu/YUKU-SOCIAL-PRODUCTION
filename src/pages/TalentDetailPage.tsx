@@ -340,7 +340,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           throw new Error('KTP Anda belum terverifikasi');
         }
         if (rawMessage.includes('Customer account is not eligible')) {
-          throw new Error('akun belum memenuhi syarat');
+          // Customer baru berstatus pending_verification sampai KTP disetujui Admin.
+          // Pesan harus menyebut "KTP" agar tombol "Ajukan Verifikasi KTP" ikut tampil.
+          throw new Error('Akun kamu belum terverifikasi. Ajukan verifikasi KTP (18+) terlebih dahulu agar bisa memesan.');
         }
         if (rawMessage.includes('Talent is not available')) {
           throw new Error('talent sedang tidak tersedia');
