@@ -3,6 +3,7 @@ import { Lock, ArrowRight, CheckCircle2, AlertCircle, Eye, EyeOff, KeyRound } fr
 import { BrandLogo } from '../components/common/BrandLogo';
 import { AppRoute } from '../types/navigation';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ChangePasswordPageProps {
   onNavigate: (path: AppRoute) => void;
@@ -23,7 +24,7 @@ function translateAuthError(message?: string): string {
 }
 
 export const ChangePasswordPage: React.FC<ChangePasswordPageProps> = ({ onNavigate }) => {
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { user, isAuthLoading: isCheckingAuth } = useAuth();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -33,31 +34,8 @@ export const ChangePasswordPage: React.FC<ChangePasswordPageProps> = ({ onNaviga
   const [successMsg, setSuccessMsg] = useState('');
 
   useEffect(() => {
-    let isMounted = true;
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!isMounted) return;
-      if (!session?.user) {
-        onNavigate('/login');
-        return;
-      }
-      setIsCheckingAuth(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!isMounted) return;
-      if (!session?.user) {
-        onNavigate('/login');
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, [onNavigate]);
+    if (!isCheckingAuth && !user) onNavigate('/login');
+  }, [isCheckingAuth, user, onNavigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

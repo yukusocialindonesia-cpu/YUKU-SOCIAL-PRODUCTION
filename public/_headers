@@ -1,0 +1,7 @@
+# Cloudflare Workers Static Assets — dibaca saat `wrangler deploy` (file ini disalin Vite ke dist/).
+# index.html & semua rute SPA: browser wajib revalidasi, tidak boleh memakai HTML/JS lama dari cache.
+/*
+  Cache-Control: no-cache
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin

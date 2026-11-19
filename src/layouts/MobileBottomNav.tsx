@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Home, Search, Bookmark, User } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 
 interface MobileBottomNavProps {
@@ -15,28 +15,8 @@ type NavEntry = { label: string; route: AppRoute | null; icon: React.ReactNode; 
  * Isi menu menyesuaikan status login dan peran pengguna.
  */
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, onNavigate }) => {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [role, setRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-
-    const load = async (userId: string | null) => {
-      if (!userId) {
-        if (alive) { setLoggedIn(false); setRole(null); }
-        return;
-      }
-      if (alive) setLoggedIn(true);
-      const { data } = await supabase.from('users').select('role').eq('id', userId).maybeSingle();
-      if (alive) setRole(data?.role ?? null);
-    };
-
-    supabase.auth.getSession().then(({ data: { session } }) => load(session?.user?.id ?? null));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      load(session?.user?.id ?? null);
-    });
-    return () => { alive = false; subscription.unsubscribe(); };
-  }, []);
+  const { user, role, isAuthLoading } = useAuth();
+  const loggedIn = Boolean(user);
 
   const icon = 'w-6 h-6';
   const ordersRoute: AppRoute =
@@ -58,6 +38,19 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     },
     { label: 'Profil', route: null, icon: <User className={icon} />, onPress: openProfile },
   ];
+
+  // Selama auth belum siap, sisakan ruang kosong dengan tinggi yang sama (tanpa label apa pun).
+  if (isAuthLoading) {
+    return (
+      <nav
+        aria-hidden="true"
+        className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t border-purple-100"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="min-h-[56px]" />
+      </nav>
+    );
+  }
 
   return (
     <nav

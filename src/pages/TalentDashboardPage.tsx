@@ -42,6 +42,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 import { formatRupiah } from '../utils/formatters';
 import { YUKU_BUSINESS_RULES } from '../utils/businessRules';
@@ -192,8 +193,7 @@ type BookingStatusFilter =
   | 'expired';
 
 export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavigate }) => {
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { user: currentUser, isAuthLoading: isCheckingAuth } = useAuth();
 
   // Profile & Verification
   const [profile, setProfile] = useState<TalentProfileData | null>(null);
@@ -573,31 +573,16 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     }
   }, []);
 
+  const currentUserId = currentUser?.id ?? null;
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setCurrentUser(session?.user ?? null);
-      setIsCheckingAuth(false);
-      if (session?.user) {
-        loadDashboardData(session.user.id);
-      } else {
-        setIsLoadingProfile(false);
-        setIsLoadingData(false);
-      }
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCurrentUser(session?.user ?? null);
-      if (session?.user) {
-        loadDashboardData(session.user.id);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [loadDashboardData]);
+    if (isCheckingAuth) return;
+    if (currentUserId) {
+      void loadDashboardData(currentUserId);
+    } else {
+      setIsLoadingProfile(false);
+      setIsLoadingData(false);
+    }
+  }, [isCheckingAuth, currentUserId, loadDashboardData]);
 
   useEffect(() => {
     return () => {

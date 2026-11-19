@@ -34,6 +34,7 @@ import { Modal } from '../components/common/Modal';
 import { VerifiedBadge } from '../components/talent/VerifiedBadge';
 import { fetchTalentByIdFromSupabase, fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { TalentAvailabilityRow, TalentMediaRow } from '../types/database';
 import {
   DAY_OF_WEEK_OPTIONS,
@@ -109,7 +110,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Auth state for booking
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const { user: currentUser } = useAuth();
 
   // Real Booking Form States
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -140,23 +141,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     status: string;
     payment_expires_at: string;
   } | null>(null);
-
-  // Monitor Auth Session
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setCurrentUser(session?.user ?? null);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCurrentUser(session?.user ?? null);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   const loadTalentDetail = async () => {
     setLoading(true);
