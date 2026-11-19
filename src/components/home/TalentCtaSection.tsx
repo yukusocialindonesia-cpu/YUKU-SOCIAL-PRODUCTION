@@ -13,7 +13,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
   onRegisterClick,
 }) => {
   return (
-    <section className="py-16 bg-gradient-to-r from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative">
+    <section className="py-10 md:py-16 bg-gradient-to-r from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           {/* Left Content: Customer-First */}

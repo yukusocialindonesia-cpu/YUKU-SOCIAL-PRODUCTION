@@ -222,7 +222,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Konten tetap di depan slide */}
       <div
-        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6 md:pt-16 md:pb-16"
+        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 md:pt-16 md:pb-16"
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
