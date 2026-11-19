@@ -60,9 +60,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             : '/talent';
 
         setSuccessMsg(`Selamat datang kembali, ${data.user.email}!`);
-        setTimeout(() => {
-          onNavigate(targetRoute);
-        }, 1200);
+        // Navigasi langsung setelah autentikasi berhasil agar tidak kembali
+        // ke halaman lama/default saat state aplikasi masih berpindah.
+        onNavigate(targetRoute);
       }
     } catch (err: any) {
       setErrorMsg(translateAuthError(err) || 'Gagal masuk ke akun.');
