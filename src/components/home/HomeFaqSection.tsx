@@ -14,13 +14,13 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
   };
 
   return (
-    <section className="py-20 bg-white border-t border-slate-100">
+    <section className="py-10 md:py-20 bg-white border-t border-slate-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 md:mb-12">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
             Pertanyaan Umum
           </span>
-          <h2 className="text-3xl font-extrabold text-[#1E0938] tracking-tight mb-3">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E0938] tracking-tight mb-3">
             Sering Ditanyakan Seputar YUKU
           </h2>
           <p className="text-slate-600 text-sm">
@@ -32,7 +32,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
           {FAQ_ITEMS.slice(0, 5).map((item, idx) => (
             <div
               key={item.q}
-              className="border border-slate-200/90 rounded-xl overflow-hidden transition-colors"
+              className={`border border-slate-200/90 rounded-xl overflow-hidden transition-colors ${idx >= 4 ? 'hidden md:block' : ''}`}
             >
               <button
                 type="button"

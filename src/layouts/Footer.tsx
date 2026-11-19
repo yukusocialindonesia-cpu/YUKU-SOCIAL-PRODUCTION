@@ -9,11 +9,11 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="bg-[#140624] text-slate-400 pt-16 pb-12 border-t border-purple-950">
+    <footer className="bg-[#140624] text-slate-400 pt-10 pb-8 md:pt-16 md:pb-12 border-t border-purple-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-purple-900/40">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-8 md:gap-10 pb-8 md:pb-12 border-b border-purple-900/40">
           {/* Brand Col */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="col-span-2 space-y-4">
             <BrandLogo size="md" showTagline={true} inverted={true} />
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm mt-3">
               YUKU adalah platform Social Experience & Paid Companionship Marketplace pertama di Indonesia yang menghubungkan individu untuk berbagi momen aktivitas sosial yang positif, aman, dan beradab.
@@ -111,7 +111,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           </div>
 
           {/* Legal & Compliance Col */}
-          <div>
+          <div className="col-span-2 lg:col-span-1">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
               Ketentuan Hukum
             </h4>
@@ -140,7 +140,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         </div>
 
         {/* Bottom Bar with Mandatory Legal Disclaimers */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+        <div className="pt-6 md:pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
           <p>
             © {new Date().getFullYear()} YUKU (PT Inovasi Sosial Teman Indonesia). Seluruh hak cipta dilindungi undang-undang.
           </p>

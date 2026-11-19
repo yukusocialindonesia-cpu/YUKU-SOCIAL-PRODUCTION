@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard-talent
+Disallow: /riwayat-booking
+Disallow: /verifikasi-ktp
+Disallow: /ganti-sandi
+Disallow: /reset-sandi
+
+Sitemap: https://yuku-friends.yukusocial-indonesia.workers.dev/sitemap.xml

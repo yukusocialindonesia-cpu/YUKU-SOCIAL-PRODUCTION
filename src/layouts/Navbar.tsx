@@ -308,14 +308,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 <button
                   type="button"
                   onClick={() => handleLinkClick('/login')}
-                  className="px-2.5 py-2 text-xs font-semibold text-slate-700 hover:text-purple-900 rounded-lg transition-colors"
+                  className="px-3 min-h-11 text-sm font-semibold text-slate-700 hover:text-purple-900 rounded-lg transition-colors"
                 >
                   Masuk
                 </button>
                 <button
                   type="button"
                   onClick={() => handleLinkClick('/register')}
-                  className="px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-sm"
+                  className="px-4 min-h-11 text-sm font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-sm"
                 >
                   Daftar
                 </button>
@@ -323,7 +323,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             )}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+              className="p-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -334,7 +334,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 shadow-xl max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="xl:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 shadow-xl max-h-[calc(100dvh-4.5rem-4rem)] md:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
           {currentUser && (
             <div className="mb-3 p-3 bg-purple-50 rounded-xl flex items-center justify-between border border-purple-100">
               <div className="flex items-center gap-2.5">
@@ -357,7 +357,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 {userRole === 'admin' && (
                   <button
                     onClick={() => handleLinkClick('/admin')}
-                    className={`text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                    className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                       currentPath === '/admin'
                         ? 'bg-amber-500 text-slate-950'
                         : 'bg-amber-50 text-amber-950 hover:bg-amber-100'
@@ -371,7 +371,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 {userRole === 'talent' && (
                   <button
                     onClick={() => handleLinkClick('/dashboard-talent')}
-                    className={`text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                    className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                       currentPath === '/dashboard-talent'
                         ? 'bg-purple-700 text-white'
                         : 'bg-purple-50 text-purple-900 hover:bg-purple-100'
@@ -386,7 +386,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   <>
                     <button
                       onClick={() => handleLinkClick('/riwayat-booking')}
-                      className={`text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                      className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                         currentPath === '/riwayat-booking'
                           ? 'bg-purple-100 text-purple-900'
                           : 'hover:bg-slate-50 text-slate-700'
@@ -398,7 +398,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
                     <button
                       onClick={() => handleLinkClick('/verifikasi-ktp')}
-                      className={`text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                      className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                         currentPath === '/verifikasi-ktp'
                           ? 'bg-purple-100 text-purple-900'
                           : 'hover:bg-slate-50 text-slate-700'
@@ -412,7 +412,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
                 <button
                   onClick={() => handleLinkClick('/ganti-sandi')}
-                  className={`text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                  className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                     currentPath === '/ganti-sandi'
                       ? 'bg-purple-100 text-purple-900'
                       : 'hover:bg-slate-50 text-slate-700'
@@ -428,7 +428,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               <button
                 key={link.href}
                 onClick={() => handleLinkClick(link.href)}
-                className={`text-left px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${
                   currentPath === link.href
                     ? 'bg-purple-50 text-purple-900 font-bold'
                     : 'text-slate-700 hover:bg-slate-50'
@@ -439,7 +439,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             ))}
             <button
               onClick={() => handleLinkClick('/bantuan')}
-              className="text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="text-left px-3 py-3 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               Pusat Bantuan
             </button>
@@ -449,7 +449,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             {currentUser ? (
               <button
                 onClick={handleLogout}
-                className="w-full py-2.5 text-center text-sm font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 text-center text-sm font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Keluar dari Akun</span>
@@ -458,13 +458,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               <>
                 <button
                   onClick={() => handleLinkClick('/login')}
-                  className="w-full py-2.5 text-center text-sm font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  className="w-full py-3 text-center text-sm font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                 >
                   Masuk ke Akun
                 </button>
                 <button
                   onClick={() => handleLinkClick('/register')}
-                  className="w-full py-2.5 text-center text-sm font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-xs"
+                  className="w-full py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-xs"
                 >
                   Daftar Akun Customer
                 </button>

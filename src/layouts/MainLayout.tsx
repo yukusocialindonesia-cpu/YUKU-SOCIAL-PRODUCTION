@@ -16,11 +16,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
   onNavigate,
   children,
 }) => {
-  // Halaman profil talent sudah punya tombol "Ajukan Booking" tetap di bawah layar, jadi menu bawah disembunyikan di sana.
-  const showBottomNav = currentPath !== '/talent/:id';
+  const HIDE_BOTTOM_NAV: string[] = ['/talent/:id', '/login', '/register', '/lupa-sandi', '/reset-sandi', '/ganti-sandi'];
+  const showBottomNav = !HIDE_BOTTOM_NAV.includes(currentPath);
 
   return (
-    <div className={`min-h-screen flex flex-col bg-[#FAF8FC] text-slate-800 ${showBottomNav ? 'pb-16 xl:pb-0' : ''}`}>
+    <div className={`min-h-screen flex flex-col bg-[#FAF8FC] text-slate-800 ${showBottomNav ? 'pb-16 md:pb-0' : ''}`}>
       {/* Main navigation header */}
       <Navbar currentPath={currentPath} onNavigate={onNavigate} />
 
@@ -28,7 +28,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
       <main className="flex-1">{children}</main>
 
       {/* Reassuring safety pledge before footer */}
-      <SafetyPledgeBanner />
+      {currentPath !== '/' && <SafetyPledgeBanner />}
 
       {/* Site footer */}
       <Footer onNavigate={onNavigate} />

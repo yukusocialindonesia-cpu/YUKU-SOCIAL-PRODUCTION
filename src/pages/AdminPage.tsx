@@ -1258,7 +1258,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold text-slate-600 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold text-slate-600 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>button]:shrink-0 [&>button]:whitespace-nowrap">
           <button
             onClick={() => setActiveTab('talents')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1588,7 +1588,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             ) : (
               <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <table className="w-full text-left text-xs min-w-[720px]">
                     <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
                       <tr>
                         <th className="p-3.5">Nomor Payout</th>
@@ -1775,7 +1775,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[720px]">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
                     <tr>
                       <th className="p-3.5">Kode Booking</th>

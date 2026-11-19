@@ -98,7 +98,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
           {/* Right Visual Card: Customer Quick Steps + Subtle Talent Link */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="p-7 rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 text-white">
+            <div className="hidden lg:block p-7 rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 text-white">
               <div className="inline-block px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-amber-300 mb-5">
                 Langkah Mulai untuk Customer
               </div>
