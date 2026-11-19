@@ -53,7 +53,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   const gridClass = 'flex gap-3 overflow-x-auto snap-x pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
 
   return (
-    <section className="py-6 sm:py-10 bg-white">
+    <section className="py-4 sm:py-10 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 sm:mb-6 gap-1 md:gap-4">
           <div>

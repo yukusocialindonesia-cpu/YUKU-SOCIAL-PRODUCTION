@@ -3,12 +3,12 @@ import { ShieldCheck, Ban, Lock, AlertCircle, FileCheck, PhoneCall } from 'lucid
 
 export const SafetySection: React.FC = () => {
   return (
-    <section className="py-20 bg-[#17082A] text-white relative overflow-hidden">
+    <section className="py-12 md:py-20 bg-[#17082A] text-white relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="max-w-3xl mb-14">
+        <div className="max-w-3xl mb-8 md:mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-900/60 border border-purple-700/60 rounded-full text-purple-300 text-xs font-semibold mb-4">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Protokol Keamanan & Integritas Komunitas</span>
@@ -22,7 +22,7 @@ export const SafetySection: React.FC = () => {
         </div>
 
         {/* 3 Pillar Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
           {/* Card 1: Anti-Dating & Anti-Sexual Services */}
           <div className="p-6 rounded-2xl bg-purple-950/40 border border-purple-800/50 backdrop-blur-xs flex flex-col justify-between">
             <div>

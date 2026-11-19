@@ -73,7 +73,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="py-5 sm:py-8 bg-white border-b border-slate-100">
+    <section aria-label="Ruang Promosi YUKU" className="py-4 sm:py-8 bg-white border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
           <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-3xl bg-slate-100 animate-pulse border border-slate-200/80" />
