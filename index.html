@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#FAF8FC" />
+    <meta name="color-scheme" content="light" />
     <title>YUKU — Real Friends. Real Moments.</title>
     <meta name="description" content="Social Experience & Paid Companionship Marketplace pertama di Indonesia untuk teman aktivitas sosial dan mengobrol yang aman dan terpercaya." />
     <meta property="og:title" content="YUKU — Real Friends. Real Moments." />
@@ -15,8 +17,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body class="bg-[#FAF8FC] text-slate-800 antialiased selection:bg-purple-200 selection:text-purple-900">
-    <div id="root"></div>
+    <div id="root">
+      <div id="yuku-app-loading" aria-live="polite" style="min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#FAF8FC;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;color:#5F2AA5">
+          <div aria-hidden="true" style="width:34px;height:34px;border:3px solid #E9D5FF;border-top-color:#7E22CE;border-radius:50%;animation:yuku-spin 800ms linear infinite"></div>
+          <span style="font-size:12px;font-weight:700;letter-spacing:.02em">Memuat YUKU...</span>
+        </div>
+      </div>
+      <style>
+        @keyframes yuku-spin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) { #yuku-app-loading [aria-hidden="true"] { animation-duration: 1600ms; } }
+      </style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
