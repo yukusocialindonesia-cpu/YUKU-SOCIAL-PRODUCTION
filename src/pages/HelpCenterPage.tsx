@@ -48,10 +48,12 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
               </p>
             </div>
             <a
-              href="mailto:halo@yuku.co.id"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=yukufriends@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-xs font-bold text-purple-700 hover:text-purple-900"
             >
-              halo@yuku.co.id
+              yukufriends@gmail.com
             </a>
           </div>
 
