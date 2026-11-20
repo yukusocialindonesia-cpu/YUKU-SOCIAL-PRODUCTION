@@ -2,23 +2,50 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.119.0";
 import webpush from "npm:web-push@3.6.7";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": Deno.env.get("APP_ORIGIN") ?? "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-yuku-push-secret",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Content-Type": "application/json",
-};
+const allowedOrigin = Deno.env.get("APP_ORIGIN")?.replace(/\/$/, "");
 
-const json = (body: Record<string, unknown>, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: corsHeaders });
+function responseHeaders(origin: string | null): Headers {
+  const headers = new Headers({
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-yuku-push-secret",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+    "Vary": "Origin",
+  });
+  if (origin && allowedOrigin && origin === allowedOrigin) {
+    headers.set("Access-Control-Allow-Origin", allowedOrigin);
+  }
+  return headers;
+}
+
+const json = (body: Record<string, unknown>, status = 200, origin: string | null = null) =>
+  new Response(JSON.stringify(body), { status, headers: responseHeaders(origin) });
+
+function getDefaultSecretKey(variable: string): string | null {
+  const raw = Deno.env.get(variable);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const value = parsed.default;
+    return typeof value === "string" && value.length > 0 ? value : null;
+  } catch {
+    return null;
+  }
+}
 
 Deno.serve(async (request) => {
-  if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (request.method !== "POST") return json({ ok: false, message: "Method not allowed" }, 405);
+  const origin = request.headers.get("origin");
+  if (origin && (!allowedOrigin || origin !== allowedOrigin)) {
+    return json({ ok: false, message: "Origin not allowed." }, 403);
+  }
+  if (request.method === "OPTIONS") {
+    if (!origin || !allowedOrigin) return new Response("CORS is not configured.", { status: 403 });
+    return new Response("ok", { headers: responseHeaders(origin) });
+  }
+  if (request.method !== "POST") return json({ ok: false, message: "Method not allowed" }, 405, origin);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!supabaseUrl || !serviceRoleKey) return json({ ok: false, message: "Server configuration is incomplete." }, 500);
+  const serviceRoleKey = getDefaultSecretKey("SUPABASE_SECRET_KEYS") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceRoleKey) return json({ ok: false, message: "Server configuration is incomplete." }, 500, origin);
 
   const admin = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -28,15 +55,15 @@ Deno.serve(async (request) => {
   try {
     payload = await request.json();
   } catch {
-    return json({ ok: false, message: "Invalid JSON body." }, 400);
+    return json({ ok: false, message: "Invalid JSON body." }, 400, origin);
   }
 
   const action = payload.action;
 
   if (action === "subscribe" || action === "unsubscribe") {
     const authorization = request.headers.get("Authorization");
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    if (!authorization || !anonKey) return json({ ok: false, message: "Authentication required." }, 401);
+    const anonKey = getDefaultSecretKey("SUPABASE_PUBLISHABLE_KEYS") ?? Deno.env.get("SUPABASE_ANON_KEY");
+    if (!authorization || !anonKey) return json({ ok: false, message: "Authentication required." }, 401, origin);
 
     const token = authorization.replace(/^Bearer\s+/i, "");
     const userClient = createClient(supabaseUrl, anonKey, {
@@ -44,7 +71,7 @@ Deno.serve(async (request) => {
       auth: { persistSession: false, autoRefreshToken: false },
     });
     const { data: userData, error: userError } = await userClient.auth.getUser(token);
-    if (userError || !userData.user) return json({ ok: false, message: "Session tidak valid. Silakan login kembali." }, 401);
+    if (userError || !userData.user) return json({ ok: false, message: "Session tidak valid. Silakan login kembali." }, 401, origin);
     const userId = userData.user.id;
 
     if (action === "subscribe") {
@@ -57,7 +84,7 @@ Deno.serve(async (request) => {
       const p256dh = subscription?.keys?.p256dh;
       const auth = subscription?.keys?.auth;
       if (!endpoint || !endpoint.startsWith("https://") || !p256dh || !auth) {
-        return json({ ok: false, message: "Data langganan perangkat tidak valid." }, 400);
+        return json({ ok: false, message: "Data langganan perangkat tidak valid." }, 400, origin);
       }
 
       const { data: existingEndpoint, error: lookupError } = await admin
@@ -65,9 +92,9 @@ Deno.serve(async (request) => {
         .select("user_id")
         .eq("endpoint", endpoint)
         .maybeSingle();
-      if (lookupError) return json({ ok: false, message: "Could not verify existing device registration." }, 500);
+      if (lookupError) return json({ ok: false, message: "Could not verify existing device registration." }, 500, origin);
       if (existingEndpoint && existingEndpoint.user_id !== userId) {
-        return json({ ok: false, message: "Perangkat ini sudah terdaftar pada akun lain." }, 409);
+        return json({ ok: false, message: "Perangkat ini sudah terdaftar pada akun lain." }, 409, origin);
       }
 
       const { error } = await admin.from("push_subscriptions").upsert({
@@ -80,22 +107,22 @@ Deno.serve(async (request) => {
         updated_at: new Date().toISOString(),
       }, { onConflict: "endpoint" });
 
-      if (error) return json({ ok: false, message: "Gagal menyimpan perangkat. Pastikan tabel push sudah dipasang." }, 500);
-      return json({ ok: true });
+      if (error) return json({ ok: false, message: "Gagal menyimpan perangkat. Pastikan tabel push sudah dipasang." }, 500, origin);
+      return json({ ok: true }, 200, origin);
     }
 
     const endpoint = typeof payload.endpoint === "string" ? payload.endpoint : "";
-    if (!endpoint.startsWith("https://")) return json({ ok: false, message: "Alamat perangkat tidak valid." }, 400);
+    if (!endpoint.startsWith("https://")) return json({ ok: false, message: "Alamat perangkat tidak valid." }, 400, origin);
     const { error } = await admin.from("push_subscriptions").delete().eq("user_id", userId).eq("endpoint", endpoint);
-    if (error) return json({ ok: false, message: "Gagal menghapus perangkat." }, 500);
-    return json({ ok: true });
+    if (error) return json({ ok: false, message: "Gagal menghapus perangkat." }, 500, origin);
+    return json({ ok: true }, 200, origin);
   }
 
   if (action === "send") {
     const expectedSecret = Deno.env.get("YUKU_PUSH_WEBHOOK_SECRET");
     const suppliedSecret = request.headers.get("x-yuku-push-secret");
     if (!expectedSecret || !suppliedSecret || suppliedSecret !== expectedSecret) {
-      return json({ ok: false, message: "Unauthorized webhook." }, 401);
+      return json({ ok: false, message: "Unauthorized webhook." }, 401, origin);
     }
 
     const notificationId =
@@ -103,26 +130,26 @@ Deno.serve(async (request) => {
       typeof (payload.record as Record<string, unknown> | undefined)?.id === "string"
         ? (payload.record as Record<string, unknown>).id as string
         : null;
-    if (!notificationId) return json({ ok: false, message: "notification_id is required." }, 400);
+    if (!notificationId) return json({ ok: false, message: "notification_id is required." }, 400, origin);
 
     const { data: notification, error: notificationError } = await admin
       .from("notifications")
       .select("id, user_id, title, message, metadata")
       .eq("id", notificationId)
       .maybeSingle();
-    if (notificationError || !notification) return json({ ok: false, message: "Notification not found." }, 404);
+    if (notificationError || !notification) return json({ ok: false, message: "Notification not found." }, 404, origin);
 
     const publicKey = Deno.env.get("VAPID_PUBLIC_KEY");
     const privateKey = Deno.env.get("VAPID_PRIVATE_KEY");
     const subject = Deno.env.get("VAPID_SUBJECT");
-    if (!publicKey || !privateKey || !subject) return json({ ok: false, message: "VAPID keys are not configured." }, 500);
+    if (!publicKey || !privateKey || !subject) return json({ ok: false, message: "VAPID keys are not configured." }, 500, origin);
 
     webpush.setVapidDetails(subject, publicKey, privateKey);
     const { data: subscriptions, error: subscriptionsError } = await admin
       .from("push_subscriptions")
       .select("endpoint, p256dh, auth")
       .eq("user_id", notification.user_id);
-    if (subscriptionsError) return json({ ok: false, message: "Could not load device subscriptions." }, 500);
+    if (subscriptionsError) return json({ ok: false, message: "Could not load device subscriptions." }, 500, origin);
 
     const route = (notification.metadata as Record<string, unknown> | null)?.route;
     const pushPayload = JSON.stringify({
@@ -150,8 +177,8 @@ Deno.serve(async (request) => {
       }
     }
 
-    return json({ ok: true, sent, expired });
+    return json({ ok: true, sent, expired }, 200, origin);
   }
 
-  return json({ ok: false, message: "Unknown action." }, 400);
+  return json({ ok: false, message: "Unknown action." }, 400, origin);
 });
