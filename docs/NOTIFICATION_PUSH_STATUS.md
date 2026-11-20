@@ -32,8 +32,8 @@ All implementation work is isolated to `feature/notification-push`.
 7. Run the Deno check and full website checks on the latest branch commit, then test on Android Chrome with YUKU closed.
 
 ## Verification and safety
-- The website TypeScript check and build passed on an earlier branch commit, before the latest hardening changes.
-- The Deno check is now configured in GitHub Actions but has not yet produced a result for the latest commit.
+- Latest GitHub Actions run passed: website TypeScript check, Vite production build, and Deno type-check for the Web Push Edge Function.
+- Dependency installation reported zero npm vulnerabilities in that run.
 - No production SQL has been run.
 - No production migration has been applied.
 - No Edge Function has been deployed.
