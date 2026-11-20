@@ -1,27 +1,42 @@
 # YUKU notifications — implementation status
 
-This branch is isolated from production.
+All implementation work is isolated to `feature/notification-push`.
 
 ## Implemented in this branch
 - In-app notification sound preference remains stored locally in the browser.
 - The service worker is registered on secure origins (HTTPS).
-- The notification panel now has a control to request browser permission and enable/disable push on the current device.
-- Browser push subscriptions are sent to the `yuku-push` Edge Function using the signed-in Supabase session.
-- The Edge Function validates the user session before saving/removing a device subscription.
-- The Edge Function includes a protected sender action for database webhook events and removes expired endpoints.
-- The service worker displays incoming push notifications and opens only same-origin paths when clicked.
-- Public VAPID key is configured through a frontend build variable; private VAPID and service-role keys remain server-side.
+- The notification panel has an enable/disable control for signed-in users.
+- Browser permission is requested only after the user presses the button.
+- Browser subscriptions are sent using the signed-in Supabase session.
+- The Edge Function verifies the user token before registering or removing a device.
+- The server sender accepts webhook events only with a private secret.
+- CORS is restricted to the exact configured `APP_ORIGIN`; there is no wildcard fallback.
+- The server supports current Supabase secret-key environment variables and legacy names.
+- Push subscription data is designed for a private RLS-enabled table, with browser-role access revoked.
+- The service worker accepts only same-origin relative paths when a notification is clicked.
+- A Deno type-check step has been added to GitHub Actions for the Edge Function.
+
+## Read-only production inspection
+- `public.notifications` exists and has the expected fields: `id`, `user_id`, `title`, `message`, `type`, `is_read`, `metadata`, and `created_at`.
+- RLS is enabled on `public.notifications`.
+- `public.push_subscriptions` does not exist yet.
+- No Edge Functions are currently listed in the production project.
 
 ## Still required before end-to-end delivery
-1. Generate a real VAPID key pair and set the public key as `VITE_WEB_PUSH_PUBLIC_KEY` in the frontend build environment.
-2. Generate a formal migration using the Supabase CLI based on `docs/sql/push_subscriptions_draft.sql`, review it, and apply it only after separate approval.
-3. Deploy `supabase/functions/yuku-push/index.ts` with its required secrets.
-4. Configure a Database Webhook for INSERT on `public.notifications`, pointing to the Edge Function with the private `x-yuku-push-secret` header.
-5. Test on Android Chrome with YUKU closed and confirm account isolation.
+1. Create a formal migration with `supabase migration new <name>`, then put the reviewed SQL into the generated file. The current workspace does not have the Supabase CLI, so no migration filename has been invented.
+2. Review and separately approve applying that migration to production.
+3. Generate VAPID keys and set the private values as Edge Function secrets; set only the public VAPID key in the frontend build environment.
+4. Confirm the canonical production website origin and set it as `APP_ORIGIN`.
+5. Deploy the Edge Function with JWT verification disabled only after its internal user-token and webhook-secret checks have been reviewed.
+6. Configure the Database Webhook for INSERT on `public.notifications`.
+7. Run the Deno check and full website checks on the latest branch commit, then test on Android Chrome with YUKU closed.
 
-## Production safety
-- No production database was changed.
-- No migration was applied.
-- No Edge Function was deployed.
-- No secrets or webhook settings were changed.
-- The SQL in `docs/sql/push_subscriptions_draft.sql` is a draft for review, not an applied migration.
+## Verification and safety
+- The website TypeScript check and build passed on an earlier branch commit, before the latest hardening changes.
+- The Deno check is now configured in GitHub Actions but has not yet produced a result for the latest commit.
+- No production SQL has been run.
+- No production migration has been applied.
+- No Edge Function has been deployed.
+- No secrets have been set.
+- No Database Webhook has been configured.
+- `docs/sql/push_subscriptions_draft.sql` remains a draft, not a migration.
