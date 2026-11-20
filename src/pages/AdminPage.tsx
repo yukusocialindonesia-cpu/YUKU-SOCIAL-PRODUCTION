@@ -1344,7 +1344,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           <div className="space-y-4">
             {/* Filter & Search Bar */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-1.5 text-xs">
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 {[
                   { label: `Perlu Review (${talents.filter((t) => !t.is_approved).length})`, val: 'pending' },
                   { label: `Sudah Disetujui (${talents.filter((t) => t.is_approved).length})`, val: 'approved' },
@@ -1396,11 +1396,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {filteredTalents.map((t) => (
                   <div
                     key={t.id}
-                    className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:border-purple-200 transition-all space-y-4"
+                    className="bg-white rounded-2xl border border-slate-200/80 p-3 sm:p-5 shadow-xs hover:border-purple-200 transition-all space-y-3 sm:space-y-4"
                   >
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       {/* Avatar and Basic Info */}
-                      <div className="flex items-center gap-3.5">
+                      <div className="flex items-start gap-3 min-w-0">
                         <div className="w-14 h-14 rounded-xl overflow-hidden bg-purple-50 border border-purple-200 shrink-0 relative flex items-center justify-center">
                           {t.avatar_url ? (
                             <img src={t.avatar_url} alt={t.display_name} className="w-full h-full object-cover" />
@@ -1410,8 +1410,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </div>
 
                         <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-base font-black text-slate-900">{t.display_name}</h3>
+                          <div className="flex flex-wrap items-center gap-2 min-w-0">
+                            <h3 className="text-sm sm:text-base font-black text-slate-900 break-words">{t.display_name}</h3>
                             <span className="text-xs text-slate-400">({t.gender}, {t.city})</span>
                             {t.is_approved ? (
                               <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">
@@ -1477,7 +1477,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                         <button
                           onClick={() => handleRejectTalent(t)}
                           disabled={isSubmittingAction}
