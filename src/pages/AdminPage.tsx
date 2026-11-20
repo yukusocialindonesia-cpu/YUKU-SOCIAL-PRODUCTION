@@ -1786,6 +1786,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             {refunds.length === 0 ? (
               <div className="py-12 bg-white rounded-2xl border border-slate-200 text-center text-xs text-slate-500">Belum ada permintaan refund.</div>
             ) : (
+              <>
               <div className="sm:hidden p-3 space-y-3">
                 {refunds.map((refund) => (
                   <article key={refund.id} className="rounded-xl border border-slate-200 p-3 space-y-3">
@@ -1837,6 +1838,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </tbody>
                 </table>
               </div>
+              </>
             )}
           </div>
         )}
