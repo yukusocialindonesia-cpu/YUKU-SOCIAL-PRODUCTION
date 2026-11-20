@@ -2539,7 +2539,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           <div className="w-full max-w-3xl max-h-[92vh] bg-white rounded-2xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between gap-3 p-3 sm:p-4 border-b border-slate-200">
               <div className="min-w-0">
-                <h3 className="font-black text-sm text-slate-900">Foto e-KTP Customer</h3>
+                <h3 className="font-black text-sm text-slate-900">Foto e-KTP Pengguna</h3>
                 <p className="text-xs text-slate-500 truncate">{selectedCustomerKtpImage.name}</p>
               </div>
               <button type="button" onClick={() => setSelectedCustomerKtpImage(null)} className="shrink-0 px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Tutup</button>
