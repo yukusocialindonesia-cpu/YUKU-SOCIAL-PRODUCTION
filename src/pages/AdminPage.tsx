@@ -42,6 +42,7 @@ import { getReportCategoryLabel, getReportStatusMeta } from '../utils/reportHelp
 import { QrisAdminPanel } from '../components/booking/QrisAdminPanel';
 import { BrandingAdminPanel } from '../components/admin/BrandingAdminPanel';
 import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
+import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
 
 interface AdminPageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
@@ -170,7 +171,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   // Active Tab
   const [activeTab, setActiveTab] = useState<
-    'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'overview'
+    'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview'
   >('talents');
 
   // Data States
@@ -1347,6 +1348,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <span>Slide Hero</span>
           </button>
           <button
+            onClick={() => setActiveTab('affiliate')}
+            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'affiliate' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'
+            }`}
+          >
+            <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'affiliate' ? 'text-white' : 'text-emerald-600'}`} />
+            <span>Affiliate</span>
+          </button>
+          <button
             onClick={() => setActiveTab('branding')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'branding' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'
@@ -1378,6 +1388,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         {activeTab === 'qris' && <QrisAdminPanel />}
         {activeTab === 'branding' && <BrandingAdminPanel />}
         {activeTab === 'hero' && <HeroSlidesAdminPanel />}
+        {activeTab === 'affiliate' && <AffiliateAdminPanel />}
 
         {/* TAB 1: TALENT CURATION & KTP APPROVAL */}
         {activeTab === 'talents' && (
