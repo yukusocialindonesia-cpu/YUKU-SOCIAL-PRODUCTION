@@ -180,6 +180,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [talentServiceHistory, setTalentServiceHistory] = useState<any[]>([]);
   const [pendingIdentityChanges, setPendingIdentityChanges] = useState<any[]>([]);
   const [customerKtps, setCustomerKtps] = useState<CustomerKtpItem[]>([]);
+  const [selectedCustomerKtpImage, setSelectedCustomerKtpImage] = useState<{ url: string; name: string } | null>(null);
+  const [loadingCustomerKtpId, setLoadingCustomerKtpId] = useState<string | null>(null);
   const [payouts, setPayouts] = useState<AdminPayoutItem[]>([]);
   const [refunds, setRefunds] = useState<AdminRefundItem[]>([]);
   const [customerCancellationCases, setCustomerCancellationCases] = useState<CustomerCancellationCaseItem[]>([]);
@@ -755,6 +757,32 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setErrorMessage(`Gagal memproses penarikan saldo: ${err?.message}`);
     } finally {
       setIsSubmittingAction(false);
+    }
+  };
+
+  // Action: Open private Customer KTP image using a short-lived signed URL
+  const handleViewCustomerKtp = async (item: CustomerKtpItem) => {
+    if (!item.ktp_storage_path) {
+      setErrorMessage('Foto KTP belum diunggah oleh Customer ini.');
+      return;
+    }
+
+    setLoadingCustomerKtpId(item.id);
+    setErrorMessage(null);
+    try {
+      const { data, error } = await supabase.storage
+        .from('ktp-documents')
+        .createSignedUrl(item.ktp_storage_path, 300);
+
+      if (error || !data?.signedUrl) {
+        throw new Error(error?.message || 'Tautan foto KTP tidak berhasil dibuat.');
+      }
+
+      setSelectedCustomerKtpImage({ url: data.signedUrl, name: item.full_legal_name });
+    } catch (err: any) {
+      setErrorMessage(`Foto KTP tidak dapat dibuka: ${err?.message || 'Terjadi kesalahan'}`);
+    } finally {
+      setLoadingCustomerKtpId(null);
     }
   };
 
@@ -1962,13 +1990,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <div>
                         <strong>WhatsApp / Darurat:</strong> {c.emergency_contact_phone || '-'}
                       </div>
-                      {c.ktp_storage_path && (
-                        <div>
-                          <strong>Storage Path:</strong>{' '}
-                          <code className="text-[11px] bg-purple-50 text-purple-900 px-1.5 py-0.5 rounded">
-                            {c.ktp_storage_path}
-                          </code>
+                      {c.ktp_storage_path ? (
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                          <span className="text-slate-500">Dokumen KTP tersimpan secara privat.</span>
+                          <button
+                            type="button"
+                            onClick={() => handleViewCustomerKtp(c)}
+                            disabled={loadingCustomerKtpId === c.id}
+                            className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-xs hover:bg-indigo-100 disabled:opacity-50"
+                          >
+                            {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
+                          </button>
                         </div>
+                      ) : (
+                        <span className="text-rose-700 font-semibold">Foto KTP belum diunggah.</span>
                       )}
                       {c.ktp_rejection_reason && (
                         <div className="text-rose-700">
@@ -2481,6 +2516,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         )}
       </Modal>
+
+      {selectedCustomerKtpImage && (
+        <div className="fixed inset-0 z-[120] bg-black/80 p-3 sm:p-6 flex items-center justify-center" onClick={() => setSelectedCustomerKtpImage(null)}>
+          <div className="w-full max-w-3xl max-h-[92vh] bg-white rounded-2xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between gap-3 p-3 sm:p-4 border-b border-slate-200">
+              <div className="min-w-0">
+                <h3 className="font-black text-sm text-slate-900">Foto e-KTP Customer</h3>
+                <p className="text-xs text-slate-500 truncate">{selectedCustomerKtpImage.name}</p>
+              </div>
+              <button type="button" onClick={() => setSelectedCustomerKtpImage(null)} className="shrink-0 px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Tutup</button>
+            </div>
+            <div className="p-2 sm:p-4 overflow-auto flex items-center justify-center bg-slate-100">
+              <img src={selectedCustomerKtpImage.url} alt={`Foto e-KTP ${selectedCustomerKtpImage.name}`} className="max-w-full max-h-[76vh] object-contain rounded-lg" />
+            </div>
+            <p className="px-3 py-2 text-[10px] text-slate-500 text-center">Dokumen rahasia. Tautan foto hanya berlaku sementara dan hanya dapat dibuat oleh Admin berwenang.</p>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: MODERASI LAPORAN INSIDEN */}
       <Modal
