@@ -1506,8 +1506,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         {/* TAB 2: PAYOUT REQUESTS APPROVAL */}
         {activeTab === 'payouts' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-1.5 text-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 {[
                   { label: `Menunggu Transfer (${payouts.filter((p) => p.payout_status === 'requested').length})`, val: 'requested' },
                   { label: `Diproses (${payouts.filter((p) => p.payout_status === 'processing').length})`, val: 'processing' },
@@ -1543,7 +1543,51 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </p>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
+              <div className="sm:hidden space-y-3">
+                {filteredPayouts.map((p) => (
+                  <article key={p.id} className="bg-white rounded-xl border border-slate-200 p-3 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-mono text-xs font-black text-purple-900 break-all">{p.payout_number}</p>
+                        <p className="mt-1 text-sm font-bold text-slate-900 break-words">{p.talent_name}</p>
+                      </div>
+                      <span className={`shrink-0 px-2 py-1 rounded-full text-[10px] font-bold ${
+                        p.payout_status === 'completed_provider_confirmed' ? 'bg-emerald-100 text-emerald-800' :
+                        p.payout_status === 'processing' ? 'bg-purple-100 text-purple-900' :
+                        p.payout_status === 'rejected' || p.payout_status === 'failed' ? 'bg-rose-100 text-rose-800' :
+                        'bg-amber-100 text-amber-800'
+                      }`}>
+                        {p.payout_status === 'completed_provider_confirmed' ? 'Selesai Ditransfer' :
+                         p.payout_status === 'processing' ? 'Sedang Diproses' :
+                         p.payout_status === 'rejected' ? 'Ditolak' :
+                         p.payout_status === 'failed' ? 'Gagal Ditransfer' : 'Menunggu Transfer'}
+                      </span>
+                    </div>
+                    <div className="rounded-lg bg-slate-50 p-3 space-y-2 text-xs">
+                      <div className="flex justify-between gap-3"><span className="text-slate-500">Bank / E-Wallet</span><strong className="text-slate-800 text-right">{p.bank_name}</strong></div>
+                      <div className="flex justify-between gap-3"><span className="text-slate-500">Nomor Rekening</span><strong className="font-mono text-slate-800 text-right break-all">{p.bank_account_number}</strong></div>
+                      <div className="flex justify-between gap-3"><span className="text-slate-500">Atas Nama</span><strong className="text-slate-800 text-right break-words">{p.bank_account_holder_name}</strong></div>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-2">
+                      <span className="text-xs text-slate-500">Nominal Transfer</span>
+                      <strong className="text-base text-slate-900 tabular-nums">{formatRupiah(p.amount)}</strong>
+                    </div>
+                    {p.payout_status === 'requested' && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <button onClick={() => handleProcessPayout(p.id, 'rejected')} disabled={isSubmittingAction} className="py-2.5 bg-rose-50 text-rose-700 rounded-lg text-xs font-bold disabled:opacity-50">Tolak</button>
+                        <button onClick={() => handleProcessPayout(p.id, 'processing')} disabled={isSubmittingAction} className="py-2.5 bg-purple-700 text-white rounded-lg text-xs font-bold disabled:opacity-50">Mulai Proses</button>
+                      </div>
+                    )}
+                    {p.payout_status === 'processing' && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <button onClick={() => handleProcessPayout(p.id, 'rejected')} disabled={isSubmittingAction} className="py-2.5 bg-rose-50 text-rose-700 rounded-lg text-xs font-bold disabled:opacity-50">Tolak</button>
+                        <button onClick={() => handleProcessPayout(p.id, 'completed_provider_confirmed')} disabled={isSubmittingAction} className="py-2.5 bg-emerald-600 text-white rounded-lg text-xs font-bold disabled:opacity-50">Konfirmasi Transfer</button>
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+              <div className="hidden sm:block bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs min-w-[720px]">
                     <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
