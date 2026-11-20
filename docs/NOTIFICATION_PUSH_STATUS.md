@@ -1,21 +1,27 @@
 # YUKU notifications — implementation status
 
-This branch is intentionally isolated from production.
+This branch is isolated from production.
 
 ## Implemented in this branch
 - In-app notification sound preference remains stored locally in the browser.
-- AudioContext is resumed when the user enables sound, improving compatibility with mobile browsers that suspend audio until a user gesture.
-- The service worker is registered on secure origins (HTTPS) and can display a Web Push event delivered by a push service.
-- Clicking a push notification focuses the existing YUKU tab or opens the target page.
+- The service worker is registered on secure origins (HTTPS).
+- The notification panel now has a control to request browser permission and enable/disable push on the current device.
+- Browser push subscriptions are sent to the `yuku-push` Edge Function using the signed-in Supabase session.
+- The Edge Function validates the user session before saving/removing a device subscription.
+- The Edge Function includes a protected sender action for database webhook events and removes expired endpoints.
+- The service worker displays incoming push notifications and opens only same-origin paths when clicked.
+- Public VAPID key is configured through a frontend build variable; private VAPID and service-role keys remain server-side.
 
-## Not yet enabled
-The service worker is only a receiver. Push delivery while YUKU is closed is not active until all of these are completed:
-1. Generate a VAPID key pair and configure the public key in the frontend build environment.
-2. Add a private push_subscriptions table with RLS and ownership policies.
-3. Add an authenticated subscription-management endpoint and a server-side sender using the VAPID private key stored as a Supabase Edge Function secret.
-4. Connect notification creation to the sender and test on Android Chrome, including with the website closed.
+## Still required before end-to-end delivery
+1. Generate a real VAPID key pair and set the public key as `VITE_WEB_PUSH_PUBLIC_KEY` in the frontend build environment.
+2. Generate a formal migration using the Supabase CLI based on `docs/sql/push_subscriptions_draft.sql`, review it, and apply it only after separate approval.
+3. Deploy `supabase/functions/yuku-push/index.ts` with its required secrets.
+4. Configure a Database Webhook for INSERT on `public.notifications`, pointing to the Edge Function with the private `x-yuku-push-secret` header.
+5. Test on Android Chrome with YUKU closed and confirm account isolation.
 
 ## Production safety
-- No Supabase database, migration, Edge Function, or production secret was changed by this branch.
-- Do not expose VAPID private keys or Supabase secret/service-role keys to browser code.
-- The database migration must be generated with the Supabase CLI, reviewed, and applied only to an isolated development database first. It must not be applied to production without separate explicit approval.
+- No production database was changed.
+- No migration was applied.
+- No Edge Function was deployed.
+- No secrets or webhook settings were changed.
+- The SQL in `docs/sql/push_subscriptions_draft.sql` is a draft for review, not an applied migration.
