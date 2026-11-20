@@ -44,7 +44,10 @@ Deno.serve(async (request) => {
   if (request.method !== "POST") return json({ ok: false, message: "Method not allowed" }, 405, origin);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = getDefaultSecretKey("SUPABASE_SECRET_KEYS") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  // supabase-js sends its configured key as Authorization: Bearer by default.
+  // The newer sb_secret_ keys are not JWTs, so use the legacy JWT service-role
+  // key here until this client is migrated to @supabase/server.
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceRoleKey) return json({ ok: false, message: "Server configuration is incomplete." }, 500, origin);
 
   const admin = createClient(supabaseUrl, serviceRoleKey, {
