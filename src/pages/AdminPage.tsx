@@ -376,12 +376,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setBookings(enrichedBookings);
 
       // 4. Fetch Customer KTP Verifications (non-talent users who submitted user_identities)
-      const { data: allIdentityRows } = await supabase
+      const { data: allIdentityRows, error: identityFetchError } = await supabase
         .from('user_identities')
         .select(
           'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
         )
         .order('created_at', { ascending: false });
+
+      if (identityFetchError) {
+        throw new Error(`Gagal memuat data KTP Customer: ${identityFetchError.message}`);
+      }
 
       if (allIdentityRows && allIdentityRows.length > 0) {
         const talentIdSet = new Set((talentRows || []).map((t) => t.id));
