@@ -34,8 +34,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const seenNotificationIds = useRef<Set<string> | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const playNotificationSound = useCallback((type: NotificationType) => {
-    if (!soundEnabled || typeof window === 'undefined') return;
+  const playNotificationSound = useCallback((type: NotificationType, force = false) => {
+    if ((!soundEnabled && !force) || typeof window === 'undefined') return;
 
     try {
       const AudioContextClass = window.AudioContext;
@@ -280,7 +280,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 } catch {
                   // Keep the preference for this session if storage is unavailable.
                 }
-                if (next) playNotificationSound('booking_update');
+                if (next) playNotificationSound('booking_update', true);
               }}
               className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-purple-800 cursor-pointer"
               aria-label={soundEnabled ? 'Matikan suara notifikasi' : 'Aktifkan suara notifikasi'}
