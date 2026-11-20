@@ -1998,21 +1998,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <div>
                         <strong>WhatsApp / Darurat:</strong> {c.emergency_contact_phone || '-'}
                       </div>
-                      {c.ktp_storage_path ? (
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                          <span className="text-slate-500">Dokumen KTP tersimpan secara privat.</span>
-                          <button
-                            type="button"
-                            onClick={() => handleViewCustomerKtp(c)}
-                            disabled={loadingCustomerKtpId === c.id}
-                            className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-xs hover:bg-indigo-100 disabled:opacity-50"
-                          >
-                            {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-rose-700 font-semibold">Foto KTP belum diunggah.</span>
-                      )}
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <span className={c.ktp_storage_path ? "text-slate-500" : "text-rose-700"}>
+                          {c.ktp_storage_path ? 'Dokumen KTP tersimpan secara privat.' : 'Foto KTP belum tercatat.'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleViewCustomerKtp(c)}
+                          disabled={loadingCustomerKtpId === c.id}
+                          className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-xs hover:bg-indigo-100 disabled:opacity-50"
+                        >
+                          {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
+                        </button>
+                      </div>
                       {c.ktp_rejection_reason && (
                         <div className="text-rose-700">
                           <strong>Alasan Penolakan:</strong> {c.ktp_rejection_reason}
