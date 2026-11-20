@@ -15,7 +15,7 @@ self.addEventListener('push', (event) => {
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     tag: typeof payload.tag === 'string' ? payload.tag : 'yuku-notification',
-    data: { url: typeof payload.url === 'string' && payload.url.startsWith('/') ? payload.url : '/' },
+    data: { url: typeof payload.url === 'string' && payload.url.startsWith('/') && !payload.url.startsWith('//') ? payload.url : '/' },
     renotify: false,
   };
 
@@ -24,10 +24,11 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = new URL(
-    event.notification.data && event.notification.data.url ? event.notification.data.url : '/',
-    self.location.origin,
-  ).href;
+  const requestedPath = event.notification.data && typeof event.notification.data.url === 'string'
+    ? event.notification.data.url
+    : '/';
+  const safePath = requestedPath.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/';
+  const targetUrl = new URL(safePath, self.location.origin).href;
 
   event.waitUntil((async () => {
     const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
