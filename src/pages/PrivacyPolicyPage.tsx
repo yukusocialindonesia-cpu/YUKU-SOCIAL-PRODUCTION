@@ -76,7 +76,7 @@ export const PrivacyPolicyPage: React.FC = () => {
               5. Hak Pengguna & Pengajuan Informasi
             </h2>
             <p>
-              Anda memiliki hak untuk memperbarui informasi profil Anda, meminta salinan data pribadi, atau mengajukan permohonan penutupan akun dengan menghubungi Pusat Bantuan YUKU melalui <a href="mailto:halo@yuku.co.id" className="text-purple-700 underline font-semibold">halo@yuku.co.id</a>.
+              Anda memiliki hak untuk memperbarui informasi profil Anda, meminta salinan data pribadi, atau mengajukan permohonan penutupan akun dengan menghubungi Pusat Bantuan YUKU melalui <a href="mailto:yukufriends@gmail.com" className="text-purple-700 underline font-semibold">yukufriends@gmail.com</a>.
             </p>
           </section>
         </div>
