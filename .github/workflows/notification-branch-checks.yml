@@ -5,6 +5,7 @@ on:
     branches:
       - feature/notification-push
   pull_request:
+    types: [opened, synchronize, reopened, edited]
     branches:
       - main
 
