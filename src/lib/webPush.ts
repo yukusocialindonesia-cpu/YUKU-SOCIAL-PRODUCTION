@@ -4,7 +4,11 @@ function decodeBase64Url(value: string): Uint8Array {
   const padding = '='.repeat((4 - (value.length % 4)) % 4);
   const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
   const raw = window.atob(base64);
-  return Uint8Array.from(raw, (character) => character.charCodeAt(0));
+  const bytes = Uint8Array.from(raw, (character) => character.charCodeAt(0));
+  if (bytes.length !== 65 || bytes[0] !== 4) {
+    throw new Error('Kunci notifikasi YUKU tidak valid. Periksa kunci publik VAPID (harus 65 byte dan diawali 04).');
+  }
+  return bytes;
 }
 
 export type PushSetupResult =
@@ -29,7 +33,7 @@ export async function enableYukuPush(): Promise<PushSetupResult> {
     const existing = await registration.pushManager.getSubscription();
     const subscription = existing ?? await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: decodeBase64Url(PUBLIC_VAPID_KEY) as BufferSource,
+      applicationServerKey: decodeBase64Url(PUBLIC_VAPID_KEY).buffer as ArrayBuffer,
     });
 
     const { data, error } = await (await import('./supabase')).supabase.functions.invoke('yuku-push', {
