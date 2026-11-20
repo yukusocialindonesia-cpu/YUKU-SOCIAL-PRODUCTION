@@ -3,6 +3,15 @@ import App from './App.tsx';
 import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 
+// Register the service worker so supported browsers can receive Web Push events.
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.warn('YUKU: service worker belum dapat didaftarkan.', error);
+    });
+  }, { once: true });
+}
+
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
