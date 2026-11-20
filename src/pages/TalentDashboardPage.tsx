@@ -1654,7 +1654,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </div>
 
           {/* Card 3: Pesanan Menunggu Konfirmasi */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-semibold text-slate-500 uppercase">Perlu Tanggapan</span>
               <Clock className="w-4 h-4 text-amber-600" />
@@ -1678,7 +1678,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </div>
 
           {/* Card 4: Jadwal Aktif Mendatang */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-semibold text-slate-500 uppercase">Jadwal Terkonfirmasi</span>
               <Calendar className="w-4 h-4 text-purple-700" />
@@ -1717,7 +1717,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </button>
           <button
             onClick={() => setActiveTab('availability')}
-            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
               activeTab === 'availability'
                 ? 'bg-purple-700 text-white shadow-xs'
                 : 'hover:bg-slate-100 text-slate-700'
@@ -1728,14 +1728,14 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </button>
           <button
             onClick={() => setActiveTab('services')}
-            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'services' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'}`}
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${activeTab === 'services' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'}`}
           >
             <Settings className="w-3.5 h-3.5" />
             <span>Layanan Saya ({talentServices.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('media')}
-            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
               activeTab === 'media'
                 ? 'bg-purple-700 text-white shadow-xs'
                 : 'hover:bg-slate-100 text-slate-700'
@@ -1746,7 +1746,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </button>
           <button
             onClick={() => setActiveTab('referral')}
-            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
               activeTab === 'referral'
                 ? 'bg-purple-700 text-white shadow-xs'
                 : 'hover:bg-slate-100 text-slate-700'
@@ -1757,7 +1757,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </button>
           <button
             onClick={() => setActiveTab('payouts')}
-            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
               activeTab === 'payouts'
                 ? 'bg-purple-700 text-white shadow-xs'
                 : 'hover:bg-slate-100 text-slate-700'
@@ -1768,7 +1768,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </button>
           <button
             onClick={() => setActiveTab('safety')}
-            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
               activeTab === 'safety'
                 ? 'bg-purple-700 text-white shadow-xs'
                 : 'hover:bg-slate-100 text-slate-700'
@@ -2825,7 +2825,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
               {/* 3 Referral Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-500 uppercase">Talent Terundang</span>
                     <Users className="w-4 h-4 text-purple-700" />
@@ -2838,7 +2838,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   </p>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-500 uppercase">Bonus Dikreditkan</span>
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -2851,7 +2851,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   </p>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-500 uppercase">Bonus Tertunda</span>
                     <Clock className="w-4 h-4 text-amber-600" />
@@ -2866,7 +2866,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               </div>
 
               {/* Optional: Bind Referrer Code if not yet linked */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+              <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
                 {myReferrer ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2 text-slate-700">
