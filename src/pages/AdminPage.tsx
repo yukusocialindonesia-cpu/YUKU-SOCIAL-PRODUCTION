@@ -2043,7 +2043,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   return (
                     <div
                       key={rep.id}
-                      className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-3"
+                      className="bg-white rounded-2xl border border-slate-200/80 p-3 sm:p-5 shadow-xs space-y-3"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
                         <div className="space-y-0.5">
@@ -2057,7 +2057,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               </span>
                             )}
                           </div>
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] text-slate-500 break-words leading-relaxed">
                             Pelapor: <strong className="text-slate-700">{rep.reporter_name}</strong> • Terlapor:{' '}
                             <strong className="text-rose-700">{rep.reported_user_name}</strong> •{' '}
                             {new Date(rep.created_at).toLocaleDateString('id-ID', {
@@ -2075,7 +2075,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </span>
                       </div>
 
-                      <p className="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                      <p className="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-100 break-words">
                         {rep.description}
                       </p>
 
@@ -2085,11 +2085,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </div>
                       )}
 
-                      <div className="flex items-center justify-end pt-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end pt-1">
                         <button
                           type="button"
                           onClick={() => openReportModerationModal(rep)}
-                          className="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
+                          className="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
                         >
                           Tinjau & Ubah Status
                         </button>
