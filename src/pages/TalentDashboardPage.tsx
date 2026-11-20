@@ -1490,8 +1490,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   }
 
   return (
-    <div className="py-8 bg-[#FAF8FC] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div className="py-4 sm:py-8 bg-[#FAF8FC] min-h-screen overflow-x-hidden">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-4 sm:space-y-6 min-w-0">
         {/* Top Notification Alerts */}
         {errorMessage && (
           <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start justify-between gap-3 shadow-xs">
@@ -1524,9 +1524,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         )}
 
         {/* Talent Profile Header Card */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-purple-50 border-2 border-purple-200 shrink-0 relative flex items-center justify-center">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 min-w-0">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full md:w-auto">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-purple-50 border-2 border-purple-200 shrink-0 relative flex items-center justify-center">
               {profile?.avatar_url ? (
                 <img
                   src={profile.avatar_url}
@@ -1538,9 +1538,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               )}
             </div>
 
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 break-words">
                   {profile?.display_name || 'Talent YUKU'}
                 </h1>
 
@@ -1574,7 +1574,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                 {profile?.headline || 'Teman pendamping ramah & menyenangkan'}
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] sm:text-xs text-slate-500">
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-amber-600" />
                   <span>{profile?.city || 'Jakarta'}</span>
@@ -1588,10 +1588,10 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </div>
 
           {/* Quick Actions */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <div className="flex items-center gap-2 w-full md:w-auto">
             <button
               onClick={() => setIsEditProfileModalOpen(true)}
-              className="flex-1 md:flex-none px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              className="flex-1 md:flex-none min-h-11 px-3 sm:px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Settings className="w-3.5 h-3.5" />
               <span>Ubah Tarif & Bio</span>
@@ -1599,7 +1599,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             <button
               onClick={() => currentUser && loadDashboardData(currentUser.id)}
               disabled={isLoadingData}
-              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors cursor-pointer"
+              className="min-w-11 min-h-11 p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors cursor-pointer"
               title="Perbarui data"
             >
               <RefreshCw className={`w-4 h-4 ${isLoadingData ? 'animate-spin text-purple-700' : ''}`} />
@@ -1608,14 +1608,14 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         </div>
 
         {/* 4 Financial & Operational Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 min-w-0">
           {/* Card 1: Available Balance */}
-          <div className="bg-gradient-to-br from-purple-900 via-purple-950 to-[#1E0938] text-white p-5 rounded-2xl shadow-sm relative overflow-hidden">
+          <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-purple-900 via-purple-950 to-[#1E0938] text-white p-4 sm:p-5 rounded-2xl shadow-sm relative overflow-hidden min-w-0">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-purple-200">Saldo Siap Dicairkan</span>
               <DollarSign className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-2xl sm:text-3xl font-black tracking-tight text-white tabular-nums">
+            <div className="text-2xl sm:text-3xl font-black tracking-tight text-white tabular-nums break-words">
               {formatRupiah(availableBalance)}
             </div>
             <p className="text-[11px] text-purple-300 mt-1">
@@ -1632,12 +1632,12 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </div>
 
           {/* Card 2: Total Akumulasi Pendapatan & Dana di Escrow */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-semibold text-slate-500 uppercase">Total Pendapatan</span>
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="text-2xl font-black text-slate-900 tabular-nums">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tabular-nums break-words">
               {formatRupiah(totalEarnedShare)}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -1659,7 +1659,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               <span className="text-xs font-semibold text-slate-500 uppercase">Perlu Tanggapan</span>
               <Clock className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="text-2xl font-black text-amber-600 tabular-nums">
+            <div className="text-xl sm:text-2xl font-black text-amber-600 tabular-nums">
               {bookings.filter((b) => b.status === 'paid_held_in_escrow').length}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -1683,7 +1683,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               <span className="text-xs font-semibold text-slate-500 uppercase">Jadwal Terkonfirmasi</span>
               <Calendar className="w-4 h-4 text-purple-700" />
             </div>
-            <div className="text-2xl font-black text-purple-900 tabular-nums">
+            <div className="text-xl sm:text-2xl font-black text-purple-900 tabular-nums">
               {bookings.filter((b) => b.status === 'confirmed_by_talent').length}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -1703,10 +1703,10 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold text-slate-600 overflow-x-auto">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-slate-200 pb-3 text-[11px] sm:text-xs font-bold text-slate-600 min-w-0">
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
               activeTab === 'bookings'
                 ? 'bg-purple-700 text-white shadow-xs'
                 : 'hover:bg-slate-100 text-slate-700'
