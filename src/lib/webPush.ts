@@ -74,7 +74,7 @@ export async function disableYukuPush(): Promise<PushSetupResult> {
 }
 
 export async function getYukuPushStatus(): Promise<'unsupported' | 'enabled' | 'disabled' | 'permission-denied'> {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return 'unsupported';
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return 'unsupported';
   if (Notification.permission === 'denied') return 'permission-denied';
   try {
     const registration = await navigator.serviceWorker.ready;
