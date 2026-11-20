@@ -2909,7 +2909,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   </p>
                 </div>
 
-                <div className="bg-white/10 backdrop-blur-xs border border-white/15 rounded-2xl p-4 min-w-[270px] space-y-3">
+                <div className="w-full min-w-0 lg:min-w-[270px] bg-white/10 backdrop-blur-xs border border-white/15 rounded-2xl p-4 space-y-3">
                   <div>
                     <span className="text-[11px] text-purple-200 font-semibold block">
                       Kode Referral Unik Anda
