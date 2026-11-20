@@ -22,7 +22,7 @@ The service-role key and VAPID private key remain on the server. The browser rec
 1. Generate a VAPID key pair. Set `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT` as Edge Function secrets. The subject should be a valid `mailto:` or HTTPS contact URI.
 2. Set `YUKU_PUSH_WEBHOOK_SECRET` to a long random secret in Edge Function secrets. Use the exact same value in the Database Webhook header; do not put it in Git or the browser.
 3. Set the public key only as frontend build variable `VITE_WEB_PUSH_PUBLIC_KEY`.
-4. Set `APP_ORIGIN` to the exact website origin, such as `https://your-domain.example` (no path and no trailing slash). The function rejects browser requests from other origins; there is no wildcard CORS fallback.
+4. Set `APP_ORIGIN` to the exact website origin, `https://yuku-friends.yukusocial-indonesia.workers.dev` (confirmed) (no path and no trailing slash). The function rejects browser requests from other origins; there is no wildcard CORS fallback.
 5. Generate a formal migration using the Supabase CLI based on `docs/sql/push_subscriptions_draft.sql`. The draft enables RLS, revokes browser-role access, and grants table access only to `service_role`.
 6. Deploy `supabase/functions/yuku-push/index.ts` with JWT verification disabled because the function validates user JWTs itself and validates the separate private webhook secret for the send action.
 7. Configure a Database Webhook on `public.notifications`, event INSERT, POST to the deployed function URL, with a JSON body containing the inserted row and header `x-yuku-push-secret` set to the same private secret.
