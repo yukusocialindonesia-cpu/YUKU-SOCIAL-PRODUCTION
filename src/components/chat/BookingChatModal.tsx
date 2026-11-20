@@ -525,8 +525,8 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
 
         {/* Inline Error */}
         {errorMsg && (
-          <div className="px-4 py-2 bg-rose-50 border-t border-rose-200 text-[11px] text-rose-800 flex items-center justify-between gap-2 shrink-0">
-            <span className="truncate">{errorMsg}</span>
+          <div className="px-4 py-2 bg-rose-50 border-t border-rose-200 text-[11px] text-rose-800 flex flex-wrap items-start justify-between gap-2 shrink-0">
+            <span className="min-w-0 flex-1 whitespace-normal break-words leading-relaxed">{errorMsg}</span>
             <button
               type="button"
               onClick={() => setErrorMsg(null)}
