@@ -8,6 +8,8 @@ import {
   Gift,
   Wallet,
   Loader2,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { NotificationRow, NotificationType } from '../../types/database';
@@ -28,9 +30,53 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const seenNotificationIds = useRef<Set<string> | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const loadNotifications = useCallback(async () => {
+  const playNotificationSound = useCallback((type: NotificationType) => {
+    if (!soundEnabled || typeof window === 'undefined') return;
+
+    try {
+      const AudioContextClass = window.AudioContext;
+      if (!AudioContextClass) return;
+      const audioContext = new AudioContextClass();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const frequencies: Record<string, number> = {
+        booking_update: 660,
+        payment_status: 880,
+        payout_status: 740,
+        referral_bonus: 990,
+        system_alert: 520,
+      };
+
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequencies[type] ?? 660;
+      gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.22);
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.24);
+      oscillator.onended = () => {
+        void audioContext.close();
+      };
+    } catch {
+      // Audio may be blocked until the user interacts with the page.
+    }
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    try {
+      setSoundEnabled(window.localStorage.getItem('yuku-notification-sound') === 'on');
+    } catch {
+      setSoundEnabled(false);
+    }
+  }, []);
+
+  const loadNotifications = useCallback(async (playForNew = false) => {
     if (!userId) return;
     setIsLoading(true);
     try {
@@ -42,12 +88,19 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
         .limit(20);
 
       if (!error && data) {
-        setNotifications(data as NotificationRow[]);
+        const rows = data as NotificationRow[];
+        const previousIds = seenNotificationIds.current;
+        if (previousIds && playForNew) {
+          const newest = rows.find((item) => !item.is_read && !previousIds.has(item.id));
+          if (newest) playNotificationSound(newest.type);
+        }
+        seenNotificationIds.current = new Set(rows.map((item) => item.id));
+        setNotifications(rows);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  }, [userId, playNotificationSound]);
 
   useEffect(() => {
     loadNotifications();
@@ -67,7 +120,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
           filter: `user_id=eq.${userId}`,
         },
         () => {
-          loadNotifications();
+          loadNotifications(true);
         }
       )
       .subscribe();
@@ -216,6 +269,26 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 </span>
               )}
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                const next = !soundEnabled;
+                setSoundEnabled(next);
+                try {
+                  window.localStorage.setItem('yuku-notification-sound', next ? 'on' : 'off');
+                } catch {
+                  // Keep the preference for this session if storage is unavailable.
+                }
+                if (next) playNotificationSound('booking_update');
+              }}
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-purple-800 cursor-pointer"
+              aria-label={soundEnabled ? 'Matikan suara notifikasi' : 'Aktifkan suara notifikasi'}
+              title={soundEnabled ? 'Suara notifikasi aktif' : 'Suara notifikasi mati'}
+            >
+              {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+              <span>{soundEnabled ? 'Suara aktif' : 'Suara mati'}</span>
+            </button>
 
             {unreadCount > 0 && (
               <button
