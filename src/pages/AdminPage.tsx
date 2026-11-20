@@ -1923,12 +1923,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {customerKtps.map((c) => (
                   <div
                     key={c.id}
-                    className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-3"
+                    className="bg-white rounded-2xl border border-slate-200/80 p-3 sm:p-5 shadow-xs space-y-3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                      <div>
-                        <h3 className="text-sm font-black text-slate-900">{c.full_legal_name}</h3>
-                        <p className="text-[11px] text-slate-500">
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-black text-slate-900 break-words">{c.full_legal_name}</h3>
+                        <p className="text-[11px] text-slate-500 break-words leading-relaxed">
                           Email: <strong>{c.email || '-'}</strong> • Tanggal Lahir: <strong>{c.date_of_birth}</strong>
                         </p>
                       </div>
@@ -1954,7 +1954,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       </div>
                     </div>
 
-                    <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 space-y-1">
+                    <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 space-y-2 break-words">
                       <div>
                         <strong>NIK e-KTP:</strong>{' '}
                         <span className="font-mono">{c.ktp_number || '-'}</span>
@@ -1978,18 +1978,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     </div>
 
                     {c.ktp_verification_status === 'pending_review' && (
-                      <div className="flex items-center justify-end gap-2 pt-1">
+                      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 pt-1">
                         <button
                           onClick={() => handleReviewCustomerKtp(c, 'rejected')}
                           disabled={isSubmittingAction}
-                          className="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg cursor-pointer"
+                          className="w-full sm:w-auto px-3.5 py-2.5 sm:py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg cursor-pointer"
                         >
                           Tolak KTP
                         </button>
                         <button
                           onClick={() => handleReviewCustomerKtp(c, 'verified')}
                           disabled={isSubmittingAction}
-                          className="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
+                          className="w-full sm:w-auto justify-center px-4 py-2.5 sm:py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Setujui KTP 18+</span>
