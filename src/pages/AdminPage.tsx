@@ -1583,6 +1583,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </p>
               </div>
             ) : (
+              <>
               <div className="sm:hidden space-y-3">
                 {filteredPayouts.map((p) => (
                   <article key={p.id} className="bg-white rounded-xl border border-slate-200 p-3 space-y-3">
@@ -1718,6 +1719,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </table>
                 </div>
               </div>
+              </>
             )}
           </div>
         )}
