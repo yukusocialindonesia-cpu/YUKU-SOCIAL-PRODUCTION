@@ -4,8 +4,27 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
-  // Log only whether the public key exists; never print the key itself.
-  console.log('[YUKU] Web Push public key configured:', Boolean(process.env.VITE_WEB_PUSH_PUBLIC_KEY?.trim()));
+  // Log safe VAPID diagnostics only; never print the key itself.
+  const vapidKey = process.env.VITE_WEB_PUSH_PUBLIC_KEY?.trim() ?? '';
+  let vapidDecodedLength = 0;
+  let vapidFirstByte = 'missing';
+  if (vapidKey) {
+    try {
+      const normalized = vapidKey.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
+      const decoded = Buffer.from(padded, 'base64');
+      vapidDecodedLength = decoded.length;
+      vapidFirstByte = decoded.length ? decoded[0].toString(16).padStart(2, '0') : 'empty';
+    } catch {
+      vapidFirstByte = 'decode-error';
+    }
+  }
+  console.log('[YUKU] Web Push VAPID diagnostics:', {
+    configured: Boolean(vapidKey),
+    characters: vapidKey.length,
+    decodedBytes: vapidDecodedLength,
+    firstByte: vapidFirstByte,
+  });
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
