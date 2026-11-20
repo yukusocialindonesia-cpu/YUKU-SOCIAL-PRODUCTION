@@ -1696,7 +1696,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {customerCancellationCases.filter((c) => c.status === 'pending_admin_review').length === 0 ? (
                 <div className="p-4 text-xs text-slate-500">Tidak ada sisa dana yang menunggu peninjauan.</div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="sm:hidden p-3 space-y-3">
+                  {customerCancellationCases.filter((c) => c.status === 'pending_admin_review').map((c) => (
+                    <article key={c.id} className="rounded-xl border border-amber-200 p-3 space-y-3">
+                      <div><p className="font-mono text-xs font-bold text-purple-900">{c.booking_code}</p><p className="text-sm font-semibold text-slate-900">{c.customer_name}</p><p className="text-[11px] text-slate-500">{c.policy_code === '6_to_24h' ? 'Pembatalan 6–24 jam' : 'Pembatalan kurang dari 6 jam'}</p></div>
+                      <div className="bg-amber-50 rounded-lg p-2.5 space-y-2 text-xs">
+                        <div className="flex justify-between gap-2"><span>Refund Customer</span><strong>{formatRupiah(Number(c.automatic_refund_amount))}</strong></div>
+                        <div className="flex justify-between gap-2"><span>Ditahan untuk Admin</span><strong className="text-amber-800">{formatRupiah(Number(c.retained_pending_admin_amount))}</strong></div>
+                        <div className="text-[10px] text-slate-600">Batas penahanan: {c.admin_hold_until ? new Date(c.admin_hold_until).toLocaleString('id-ID') : 'Belum diperpanjang'}</div>
+                      </div>
+                      <div className="grid grid-cols-1 gap-2">
+                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'refund_customer')} className="py-2.5 rounded-lg bg-blue-600 text-white text-xs font-bold disabled:opacity-50">Refund Customer</button>
+                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'compensate_talent')} className="py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-50">Kompensasi Talent</button>
+                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'extend_hold')} className="py-2.5 rounded-lg bg-amber-600 text-white text-xs font-bold disabled:opacity-50">Perpanjang Tahan</button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                <div className="hidden sm:block overflow-x-auto">
                   <table className="w-full text-left text-xs min-w-[700px]">
                     <thead className="bg-amber-50 text-slate-500"><tr><th className="p-3">Booking</th><th className="p-3">Customer</th><th className="p-3">Aturan</th><th className="p-3">Refund Customer</th><th className="p-3">Ditahan untuk Admin</th><th className="p-3">Batas Penahanan</th><th className="p-3">Keputusan Admin</th></tr></thead>
                     <tbody className="divide-y divide-slate-100">
@@ -1725,7 +1742,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             {refunds.length === 0 ? (
               <div className="py-12 bg-white rounded-2xl border border-slate-200 text-center text-xs text-slate-500">Belum ada permintaan refund.</div>
             ) : (
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
+              <div className="sm:hidden p-3 space-y-3">
+                {refunds.map((refund) => (
+                  <article key={refund.id} className="rounded-xl border border-slate-200 p-3 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0"><p className="font-mono text-xs font-bold text-purple-900 break-all">{refund.booking_code}</p><p className="mt-1 text-sm font-semibold text-slate-900">{refund.customer_name}</p></div>
+                      <span className={`shrink-0 px-2 py-1 rounded-full text-[10px] font-bold ${refund.status === 'processed' ? 'bg-emerald-100 text-emerald-800' : refund.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}`}>{refund.status === 'processed' ? 'Selesai' : refund.status === 'rejected' ? 'Ditolak' : 'Menunggu Proses'}</span>
+                    </div>
+                    <div className="text-base font-black text-slate-900">{formatRupiah(Number(refund.refund_amount))}</div>
+                    <p className="text-xs text-slate-600 break-words">{refund.reason}</p>
+                    {refund.provider_refund_id && <p className="text-[10px] text-slate-500 break-all">Referensi: {refund.provider_refund_id}</p>}
+                    {(refund.status === 'requested' || refund.status === 'approved') && <button onClick={() => handleProcessRefund(refund.id)} disabled={isSubmittingAction} className="w-full py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-50">Konfirmasi Refund</button>}
+                  </article>
+                ))}
+              </div>
+              <div className="hidden sm:block bg-white rounded-2xl border border-slate-200 overflow-x-auto">
                 <table className="w-full text-left text-xs min-w-[760px]">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
                     <tr>
