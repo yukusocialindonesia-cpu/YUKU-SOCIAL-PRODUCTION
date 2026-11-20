@@ -33,4 +33,4 @@ jobs:
         with:
           deno-version: v2.1.4
       - name: Type-check Supabase Edge Function
-        run: deno check --node-modules-dir=auto supabase/functions/yuku-push/index.ts
+        run: deno check --config supabase/functions/yuku-push/deno.json --node-modules-dir=auto supabase/functions/yuku-push/index.ts
