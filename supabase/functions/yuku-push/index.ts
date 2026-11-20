@@ -60,6 +60,16 @@ Deno.serve(async (request) => {
         return json({ ok: false, message: "Data langganan perangkat tidak valid." }, 400);
       }
 
+      const { data: existingEndpoint, error: lookupError } = await admin
+        .from("push_subscriptions")
+        .select("user_id")
+        .eq("endpoint", endpoint)
+        .maybeSingle();
+      if (lookupError) return json({ ok: false, message: "Could not verify existing device registration." }, 500);
+      if (existingEndpoint && existingEndpoint.user_id !== userId) {
+        return json({ ok: false, message: "Perangkat ini sudah terdaftar pada akun lain." }, 409);
+      }
+
       const { error } = await admin.from("push_subscriptions").upsert({
         user_id: userId,
         endpoint,
