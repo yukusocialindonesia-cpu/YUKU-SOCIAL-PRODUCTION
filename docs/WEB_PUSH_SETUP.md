@@ -16,7 +16,7 @@ The Edge Function supports:
 - `unsubscribe`: verifies the user's token and deletes only that user's endpoint.
 - `send`: accepts database webhook requests only when the private `x-yuku-push-secret` matches.
 
-The service-role key and VAPID private key remain on the server. The browser receives only the public VAPID key.
+The service-role key and VAPID private key remain on the server. The browser receives only the public VAPID key. Supabase automatically provides `SUPABASE_SERVICE_ROLE_KEY` to hosted Edge Functions, so do not add it manually to Function Secrets.
 
 ## Required configuration before end-to-end delivery
 1. Generate a VAPID key pair. Set `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT` as Edge Function secrets. The subject should be a valid `mailto:` or HTTPS contact URI.
