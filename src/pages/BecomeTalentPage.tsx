@@ -779,7 +779,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
                             setKtpFile(e.target.files[0]);
                           }
                         }}
-                        className="w-full p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
+                        className="w-full min-w-0 p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
                       />
                       <span className="text-[10px] text-slate-400 mt-1 block">
                         *Tersimpan di bucket storage privat terisolasi (hanya diverifikasi oleh Admin YUKU).
