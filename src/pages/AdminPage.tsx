@@ -1738,6 +1738,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {customerCancellationCases.filter((c) => c.status === 'pending_admin_review').length === 0 ? (
                 <div className="p-4 text-xs text-slate-500">Tidak ada sisa dana yang menunggu peninjauan.</div>
               ) : (
+                <>
                 <div className="sm:hidden p-3 space-y-3">
                   {customerCancellationCases.filter((c) => c.status === 'pending_admin_review').map((c) => (
                     <article key={c.id} className="rounded-xl border border-amber-200 p-3 space-y-3">
@@ -1779,6 +1780,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     </tbody>
                   </table>
                 </div>
+                </>
               )}
             </div>
             {refunds.length === 0 ? (
