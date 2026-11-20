@@ -14,7 +14,7 @@ BEGIN
     jsonb_build_object(
       'booking_id', NEW.id,
       'booking_code', NEW.booking_code,
-      'route', '/admin/bookings'
+      'route', '/admin'
     )
   );
   RETURN NEW;
