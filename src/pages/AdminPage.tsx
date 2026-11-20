@@ -1726,12 +1726,61 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         {activeTab === 'bookings' && (
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <div className="p-3 sm:p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
                 <h3 className="text-sm font-bold text-slate-900">Seluruh Transaksi Booking Platform YUKU</h3>
                 <span className="text-xs text-slate-500">Total: {bookings.length} Transaksi</span>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="sm:hidden divide-y divide-slate-100">
+                {bookings.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-slate-500">Belum ada transaksi booking.</div>
+                ) : bookings.map((b) => (
+                  <article key={b.id} className="p-3 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-mono text-xs font-black text-purple-900 break-all">{b.booking_code}</p>
+                        <p className="mt-1 text-[11px] text-slate-500">{new Date(b.created_at).toLocaleString('id-ID')}</p>
+                      </div>
+                      <div className="shrink-0">
+                        {b.status === 'completed' ? (
+                          <span className="inline-block px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Selesai</span>
+                        ) : b.status === 'confirmed' ? (
+                          <span className="inline-block px-2 py-1 rounded-full bg-purple-100 text-purple-900 text-[10px] font-bold">Terkonfirmasi</span>
+                        ) : b.status === 'cancelled' ? (
+                          <span className="inline-block px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">Dibatalkan</span>
+                        ) : (
+                          <span className="inline-block px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">Menunggu Bayar</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="rounded-lg bg-slate-50 p-2 min-w-0">
+                        <p className="text-[10px] text-slate-500">Customer</p>
+                        <p className="font-semibold text-slate-800 break-words">{b.customer_name}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 p-2 min-w-0">
+                        <p className="text-[10px] text-slate-500">Talent</p>
+                        <p className="font-semibold text-purple-900 break-words">{b.talent_name}</p>
+                      </div>
+                    </div>
+                    <div className="text-[11px] text-slate-600">
+                      <span className="text-slate-500">Lokasi:</span> {b.meeting_location_name || '-'}
+                    </div>
+                    <div className="rounded-lg border border-slate-100 p-2.5 grid grid-cols-1 gap-2">
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        <span className="text-slate-500">Total Bayar</span><strong className="text-slate-900 tabular-nums">{formatRupiah(b.gross_amount)}</strong>
+                      </div>
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        <span className="text-slate-500">Fee YUKU (20%)</span><strong className="text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount)}</strong>
+                      </div>
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        <span className="text-slate-500">Bagian Talent (80%)</span><strong className="text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share)}</strong>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+              <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-left text-xs min-w-[720px]">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
                     <tr>
