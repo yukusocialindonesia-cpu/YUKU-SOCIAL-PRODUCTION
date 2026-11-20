@@ -28,3 +28,9 @@ jobs:
         run: npm run lint
       - name: Build website
         run: npm run build
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Supabase Edge Function
+        run: deno check --node-modules-dir=auto supabase/functions/yuku-push/index.ts
