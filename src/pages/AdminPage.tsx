@@ -1093,8 +1093,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   }
 
   return (
-    <div className="py-8 bg-[#FAF8FC] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div className="py-4 sm:py-8 bg-[#FAF8FC] min-h-screen">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Top Notification Alerts */}
         {errorMessage && (
           <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start justify-between gap-3 shadow-xs">
@@ -1121,14 +1121,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         )}
 
         {/* Admin Header */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-700 to-amber-600 text-white flex items-center justify-center font-black shadow-xs">
               <ShieldCheck className="w-7 h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 leading-tight">
                   Panel Kurasi & Admin YUKU
                 </h1>
                 <span className="px-2.5 py-0.5 bg-purple-100 text-purple-900 text-[10px] font-black rounded-full uppercase tracking-wider">
@@ -1160,13 +1160,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* 4 Financial & Operational Platform Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Talent Menunggu Review</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Talent Menunggu Review</span>
               <Clock className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="text-2xl font-black text-amber-600 tabular-nums">
+            <div className="text-xl sm:text-2xl font-black text-amber-600 tabular-nums">
               {talents.filter((t) => !t.is_approved).length}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -1174,12 +1174,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Permohonan Tarik Dana</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Permohonan Tarik Dana</span>
               <CreditCard className="w-4 h-4 text-purple-700" />
             </div>
-            <div className="text-2xl font-black text-purple-900 tabular-nums">
+            <div className="text-xl sm:text-2xl font-black text-purple-900 tabular-nums">
               {payouts.filter((p) => p.payout_status === 'requested').length}
             </div>
             <p className="text-[11px] text-purple-700 font-semibold mt-1">
@@ -1187,12 +1187,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Pendapatan Platform (20%)</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Pendapatan Platform (20%)</span>
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="text-2xl font-black text-emerald-700 tabular-nums">
+            <div className="text-xl sm:text-2xl font-black text-emerald-700 tabular-nums">
               {formatRupiah(platformRevenueFee)}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -1200,12 +1200,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Total Nilai Transaksi (GMV)</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Total Nilai Transaksi (GMV)</span>
               <DollarSign className="w-4 h-4 text-slate-700" />
             </div>
-            <div className="text-2xl font-black text-slate-900 tabular-nums">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tabular-nums">
               {formatRupiah(grossMarketplaceVolume)}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -1215,7 +1215,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold text-slate-600 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>button]:shrink-0 [&>button]:whitespace-nowrap">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-slate-200 pb-3 text-xs font-bold text-slate-600 sm:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>button]:min-w-0 [&>button]:w-full [&>button]:justify-start [&>button]:text-left sm:[&>button]:w-auto sm:[&>button]:whitespace-nowrap">
           <button
             onClick={() => setActiveTab('talents')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
