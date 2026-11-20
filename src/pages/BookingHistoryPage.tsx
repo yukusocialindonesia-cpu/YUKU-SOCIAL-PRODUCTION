@@ -642,11 +642,11 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
         {/* Role Selector Tabs (shown only if user also has bookings as Talent) */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           {bookings.some((b) => b.talent_id === currentUser?.id) ? (
-            <div className="flex items-center gap-2 p-1 bg-slate-200/70 rounded-xl text-xs font-bold">
+            <div className="flex w-full flex-wrap items-center gap-2 p-1 bg-slate-200/70 rounded-xl text-xs font-bold sm:w-auto">
               <button
                 type="button"
                 onClick={() => setRoleFilter('customer')}
-                className={`px-4 py-2 rounded-lg transition-all cursor-pointer ${
+                className={`min-w-0 flex-1 whitespace-normal text-center px-4 py-2 rounded-lg transition-all cursor-pointer ${
                   roleFilter === 'customer'
                     ? 'bg-white text-purple-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -657,7 +657,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
               <button
                 type="button"
                 onClick={() => setRoleFilter('talent')}
-                className={`px-4 py-2 rounded-lg transition-all cursor-pointer ${
+                className={`min-w-0 flex-1 whitespace-normal text-center px-4 py-2 rounded-lg transition-all cursor-pointer ${
                   roleFilter === 'talent'
                     ? 'bg-white text-purple-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
