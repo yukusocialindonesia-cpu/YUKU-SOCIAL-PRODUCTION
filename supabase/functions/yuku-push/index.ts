@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.119.0";
-import webpush from "npm:web-push@3.6.7";
+import { createClient } from "@supabase/supabase-js";
+import webpush from "web-push";
 
 const allowedOrigin = Deno.env.get("APP_ORIGIN")?.replace(/\/$/, "");
 
