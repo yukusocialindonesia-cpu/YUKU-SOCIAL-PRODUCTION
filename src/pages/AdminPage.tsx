@@ -761,9 +761,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   // Action: Open private Customer KTP image using a short-lived signed URL
-  const handleViewCustomerKtp = async (item: CustomerKtpItem) => {
+  const handleViewCustomerKtp = async (item: {
+    id: string;
+    ktp_storage_path: string | null;
+    full_legal_name?: string | null;
+    display_name?: string | null;
+  }) => {
     if (!item.ktp_storage_path) {
-      setErrorMessage('Foto KTP belum diunggah oleh Customer ini.');
+      setErrorMessage('Foto KTP belum diunggah oleh pengguna ini.');
       return;
     }
 
@@ -778,7 +783,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         throw new Error(error?.message || 'Tautan foto KTP tidak berhasil dibuat.');
       }
 
-      setSelectedCustomerKtpImage({ url: data.signedUrl, name: item.full_legal_name });
+      setSelectedCustomerKtpImage({
+        url: data.signedUrl,
+        name: item.full_legal_name || item.display_name || 'Pengguna YUKU',
+      });
     } catch (err: any) {
       setErrorMessage(`Foto KTP tidak dapat dibuka: ${err?.message || 'Terjadi kesalahan'}`);
     } finally {
@@ -2474,12 +2482,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <span>Dokumen e-KTP Privat Terlampir</span>
                 </div>
                 <p className="text-[11px] text-purple-800">
-                  Berkas foto e-KTP tersimpan di bucket terenkripsi privat <code>ktp-documents</code> pada path:
-                  <br />
-                  <code className="bg-purple-100 px-1 py-0.5 rounded text-[10px] mt-1 inline-block">
-                    {selectedKtpItem.ktp_storage_path}
-                  </code>
+                  Berkas foto e-KTP tersimpan secara privat. Admin dapat membuka foto untuk memeriksa kecocokan identitas.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => handleViewCustomerKtp({
+                    id: selectedKtpItem.id,
+                    ktp_storage_path: selectedKtpItem.ktp_storage_path || null,
+                    full_legal_name: selectedKtpItem.full_legal_name,
+                    display_name: selectedKtpItem.display_name,
+                  })}
+                  disabled={loadingCustomerKtpId === selectedKtpItem.id}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-700 text-white font-bold text-xs hover:bg-indigo-800 disabled:opacity-50"
+                >
+                  {loadingCustomerKtpId === selectedKtpItem.id ? 'Membuka foto...' : 'Lihat Foto KTP Talent'}
+                </button>
               </div>
             ) : (
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-[11px]">
