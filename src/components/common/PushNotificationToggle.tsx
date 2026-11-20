@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { BellRing, BellOff, Loader2 } from 'lucide-react';
 import { disableYukuPush, enableYukuPush, getYukuPushStatus } from '../../lib/webPush';
+import { useAuth } from '../../contexts/AuthContext';
 
 type PushStatus = 'checking' | 'unsupported' | 'enabled' | 'disabled' | 'permission-denied';
 
 export const PushNotificationToggle: React.FC = () => {
+  const { isAuthenticated, isAuthLoading } = useAuth();
   const [status, setStatus] = useState<PushStatus>('checking');
   const [isBusy, setIsBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -15,8 +17,15 @@ export const PushNotificationToggle: React.FC = () => {
   };
 
   useEffect(() => {
-    void refreshStatus();
-  }, []);
+    if (isAuthLoading || !isAuthenticated) return;
+    let active = true;
+    void getYukuPushStatus().then((next) => {
+      if (active) setStatus(next);
+    });
+    return () => {
+      active = false;
+    };
+  }, [isAuthLoading, isAuthenticated]);
 
   const handleToggle = async () => {
     if (isBusy) return;
@@ -28,12 +37,16 @@ export const PushNotificationToggle: React.FC = () => {
         : await enableYukuPush();
       setMessage(result.message);
       await refreshStatus();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Terjadi kesalahan. Coba lagi.');
     } finally {
       setIsBusy(false);
     }
   };
 
   const unavailable = status === 'unsupported' || status === 'permission-denied';
+
+  if (isAuthLoading || !isAuthenticated) return null;
 
   return (
     <div className="mx-3 my-3 rounded-xl border border-purple-100 bg-purple-50/60 p-3">
