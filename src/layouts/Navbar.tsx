@@ -275,24 +275,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 userRole={userRole}
                 onNavigate={handleLinkClick}
               />
-            ) : (
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleLinkClick('/login')}
-                  className="px-3 min-h-11 text-sm font-semibold text-slate-700 hover:text-purple-900 rounded-lg transition-colors"
-                >
-                  Masuk
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLinkClick('/register')}
-                  className="px-4 min-h-11 text-sm font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-sm"
-                >
-                  Daftar
-                </button>
-              </div>
-            )}
+            ) : null}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
