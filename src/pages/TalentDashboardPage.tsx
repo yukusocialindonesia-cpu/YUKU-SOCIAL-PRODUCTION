@@ -3032,7 +3032,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                         Jika Anda diundang oleh Talent lain namun belum memasukkan kodenya saat mendaftar, tautkan di sini (1 kali & permanen).
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                       <input
                         type="text"
                         maxLength={20}
@@ -3041,12 +3041,12 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                         onChange={(e) =>
                           setReferralInputCode(e.target.value.toUpperCase().replace(/\s+/g, ''))
                         }
-                        className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs uppercase focus:outline-none focus:border-purple-600 w-40"
+                        className="w-full sm:w-40 min-w-0 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs uppercase focus:outline-none focus:border-purple-600"
                       />
                       <button
                         type="submit"
                         disabled={isSubmittingReferral || !referralInputCode.trim()}
-                        className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                        className="w-full sm:w-auto px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl cursor-pointer disabled:opacity-50 whitespace-nowrap"
                       >
                         {isSubmittingReferral ? 'Menautkan...' : 'Tautkan Kode'}
                       </button>
