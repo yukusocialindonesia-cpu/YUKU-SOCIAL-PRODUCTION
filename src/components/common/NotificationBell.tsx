@@ -14,6 +14,7 @@ import {
 import { supabase } from '../../lib/supabase';
 import { NotificationRow, NotificationType } from '../../types/database';
 import { AppRoute } from '../../types/navigation';
+import { PushNotificationToggle } from './PushNotificationToggle';
 
 interface NotificationBellProps {
   userId: string;
@@ -304,6 +305,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               </button>
             )}
           </div>
+
+          <PushNotificationToggle />
 
           <div className="max-h-96 overflow-y-auto divide-y divide-slate-100">
             {isLoading && notifications.length === 0 ? (
