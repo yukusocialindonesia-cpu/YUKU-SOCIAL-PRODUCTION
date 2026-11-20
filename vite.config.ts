@@ -4,6 +4,8 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
+  // Log only whether the public key exists; never print the key itself.
+  console.log('[YUKU] Web Push public key configured:', Boolean(process.env.VITE_WEB_PUSH_PUBLIC_KEY?.trim()));
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
