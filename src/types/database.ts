@@ -293,6 +293,20 @@ export interface TalentEarningRow {
   created_at: string;
 }
 
+/** public.talent_affiliate_earnings (Bonus Affiliate yang dapat dicairkan) */
+export interface TalentAffiliateEarningRow {
+  id: string;
+  talent_id: string;
+  referral_reward_id: string;
+  reward_amount: number;
+  allocated_payout_amount: number;
+  paid_out_amount: number;
+  status: TalentEarningStatus;
+  status_before_dispute: TalentEarningStatus | null;
+  available_at: string;
+  created_at: string;
+}
+
 /** 14. public.referral_relationships (1-Tier, Permanent, Anti Self-Referral) */
 export interface ReferralRelationshipRow {
   id: string; // UUID
@@ -340,7 +354,8 @@ export interface PayoutRequestRow {
 export interface PayoutEarningsAllocationRow {
   id: string; // UUID
   payout_request_id: string; // UUID
-  talent_earning_id: string; // UUID
+  talent_earning_id: string | null; // UUID for booking earnings
+  affiliate_earning_id: string | null; // UUID for affiliate earnings
   allocated_amount: number; // BIGINT
   status: PayoutAllocationStatus;
   created_at: string;

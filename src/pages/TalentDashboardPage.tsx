@@ -96,6 +96,14 @@ interface TalentEarningItem {
   status: string;
 }
 
+interface TalentAffiliateEarningItem {
+  id: string;
+  reward_amount: number;
+  allocated_payout_amount: number;
+  paid_out_amount: number;
+  status: string;
+}
+
 interface UserIdentityData {
   ktp_verification_status: 'unsubmitted' | 'pending_review' | 'verified' | 'rejected';
   full_legal_name: string;
@@ -204,6 +212,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   // Bookings & Ledgers
   const [bookings, setBookings] = useState<TalentBookingItem[]>([]);
   const [earnings, setEarnings] = useState<TalentEarningItem[]>([]);
+  const [affiliateEarnings, setAffiliateEarnings] = useState<TalentAffiliateEarningItem[]>([]);
   const [payouts, setPayouts] = useState<PayoutItem[]>([]);
   const [availabilitySlots, setAvailabilitySlots] = useState<TalentAvailabilityRow[]>([]);
   const [talentServices, setTalentServices] = useState<any[]>([]);
@@ -458,6 +467,18 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
       setEarnings((earningRows as TalentEarningItem[]) || []);
 
+      // 5a. Fetch Affiliate Earnings Ledger (only credited rewards are withdrawable)
+      const { data: affiliateEarningRows, error: affiliateEarningErr } = await supabase
+        .from('talent_affiliate_earnings')
+        .select('id, reward_amount, allocated_payout_amount, paid_out_amount, status')
+        .eq('talent_id', userId);
+
+      if (affiliateEarningErr) {
+        console.warn('Gagal membaca saldo Affiliate Talent:', affiliateEarningErr.message);
+      }
+
+      setAffiliateEarnings((affiliateEarningRows as TalentAffiliateEarningItem[]) || []);
+
       // 6. Fetch Talent Availability Schedule
       const { data: availabilityRows, error: availabilityErr } = await supabase
         .from('talent_availability')
@@ -614,35 +635,57 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   // Financial Calculations (derived from talent_earnings ledger)
   const completedBookings = bookings.filter((b) => b.status === 'completed');
 
-  const availableBalance = Math.max(
-    0,
-    earnings
-      .filter((e) => e.status === 'available_for_payout' || e.status === 'partially_paid_out')
-      .reduce(
-        (sum, e) =>
-          sum +
-          Math.max(
-            0,
-            Number(e.net_earning || 0) -
-              Number(e.allocated_payout_amount || 0) -
-              Number(e.paid_out_amount || 0)
-          ),
-        0
-      )
-  );
+  const availableBookingBalance = earnings
+    .filter((e) => e.status === 'available_for_payout' || e.status === 'partially_paid_out')
+    .reduce(
+      (sum, e) =>
+        sum +
+        Math.max(
+          0,
+          Number(e.net_earning || 0) -
+            Number(e.allocated_payout_amount || 0) -
+            Number(e.paid_out_amount || 0)
+        ),
+      0
+    );
+
+  const availableAffiliateBalance = affiliateEarnings
+    .filter((e) => e.status === 'available_for_payout' || e.status === 'partially_paid_out')
+    .reduce(
+      (sum, e) =>
+        sum +
+        Math.max(
+          0,
+          Number(e.reward_amount || 0) -
+            Number(e.allocated_payout_amount || 0) -
+            Number(e.paid_out_amount || 0)
+        ),
+      0
+    );
+
+  const availableBalance = Math.max(0, availableBookingBalance + availableAffiliateBalance);
 
   const escrowBalance = earnings
     .filter((e) => e.status === 'held_in_escrow' || e.status === 'disputed_hold')
     .reduce((sum, e) => sum + Number(e.net_earning || 0), 0);
 
-  const totalEarnedShare = earnings
-    .filter(
-      (e) =>
-        e.status === 'available_for_payout' ||
-        e.status === 'partially_paid_out' ||
-        e.status === 'paid_out'
-    )
-    .reduce((sum, e) => sum + Number(e.net_earning || 0), 0);
+  const totalEarnedShare =
+    earnings
+      .filter(
+        (e) =>
+          e.status === 'available_for_payout' ||
+          e.status === 'partially_paid_out' ||
+          e.status === 'fully_paid_out'
+      )
+      .reduce((sum, e) => sum + Number(e.net_earning || 0), 0) +
+    affiliateEarnings
+      .filter(
+        (e) =>
+          e.status === 'available_for_payout' ||
+          e.status === 'partially_paid_out' ||
+          e.status === 'fully_paid_out'
+      )
+      .reduce((sum, e) => sum + Number(e.reward_amount || 0), 0);
 
   const totalPaidOut = payouts
     .filter((p) => p.payout_status === 'completed_provider_confirmed')
@@ -1576,7 +1619,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               {formatRupiah(availableBalance)}
             </div>
             <p className="text-[11px] text-purple-300 mt-1">
-              Bersih setelah pembagian komisi 80% Talent.
+              Termasuk penghasilan booking dan bonus Affiliate yang sudah tersedia.
             </p>
             <button
               onClick={() => setIsPayoutModalOpen(true)}
