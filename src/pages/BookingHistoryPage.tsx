@@ -761,11 +761,11 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
               >
                 {/* Top Row: Code, Date created, Status */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-extrabold text-purple-900 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-md">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="font-mono text-xs font-extrabold text-purple-900 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-md shrink-0">
                       {item.booking_code}
                     </span>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="min-w-0 break-words text-[11px] text-slate-400">
                       Diajukan {formatDateTime(item.created_at)}
                     </span>
                   </div>
