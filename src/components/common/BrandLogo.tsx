@@ -18,7 +18,8 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   className = '',
   onClick,
 }) => {
-  const { logoUrl, iconUrl } = useBranding();
+  const { logoUrl, iconUrl, isLoaded } = useBranding();
+  const visibilityClass = isLoaded ? '' : 'invisible';
   const heightClasses = {
     sm: 'h-8',
     md: 'h-11',
@@ -44,7 +45,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         <img
           src={iconUrl}
           alt="YUKU"
-          className={`${iconSizes[size]} object-contain`}
+          className={`${iconSizes[size]} object-contain ${visibilityClass}`}
           loading="eager"
         />
       </div>
@@ -65,7 +66,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           <img
             src={logoUrl}
             alt="YUKU — Real Friends. Real Moments."
-            className={`${heightClasses[size]} w-auto object-contain block`}
+            className={`${heightClasses[size]} w-auto object-contain block ${visibilityClass}`}
             loading="eager"
           />
         </div>
@@ -83,7 +84,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       <img
         src={logoUrl}
         alt="YUKU — Real Friends. Real Moments."
-        className={`${heightClasses[size]} w-auto object-contain block`}
+        className={`${heightClasses[size]} w-auto object-contain block ${visibilityClass}`}
         loading="eager"
       />
     </div>
