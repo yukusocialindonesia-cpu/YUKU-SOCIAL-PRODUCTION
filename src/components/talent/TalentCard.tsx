@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Star, MapPin, ArrowRight, Mic, Video, Image as ImageIcon } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
-import { supabase } from '../../lib/supabase';
 import { TalentProfile } from '../../types/talent';
 import { formatRupiah } from '../../utils/formatters';
 
@@ -34,32 +33,9 @@ function initialsOf(name: string): string {
   return letters.toUpperCase();
 }
 
-// Cache sederhana: jenis media (photo/video/voice) per talent, supaya kartu yang sama tidak query ulang.
-const mediaTypesCache = new Map<string, string[]>();
-
 export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday }) => {
   const [imageFailed, setImageFailed] = useState(false);
-  const [mediaTypes, setMediaTypes] = useState<string[]>(() => mediaTypesCache.get(talent.id) ?? []);
-
-  useEffect(() => {
-    if (mediaTypesCache.has(talent.id)) return;
-    let alive = true;
-    (async () => {
-      try {
-        const { data } = await supabase
-          .from('talent_media')
-          .select('media_type')
-          .eq('talent_id', talent.id);
-        const types = Array.from(new Set((data ?? []).map((m: any) => String(m.media_type))));
-        mediaTypesCache.set(talent.id, types);
-        if (alive) setMediaTypes(types);
-      } catch {
-        // Indikator media hanya pemanis; abaikan jika gagal.
-      }
-    })();
-    return () => { alive = false; };
-  }, [talent.id]);
-
+  const mediaTypes = talent.mediaTypes ?? [];
   const hasVoice = mediaTypes.includes('voice');
   const hasVideo = mediaTypes.includes('video');
   const hasPhoto = mediaTypes.includes('photo');
