@@ -249,7 +249,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
           setIsOpen(next);
           if (next) loadNotifications();
         }}
-        className="relative p-2 rounded-xl bg-slate-50 hover:bg-purple-50 border border-slate-200 hover:border-purple-200 text-slate-700 hover:text-purple-900 transition-colors cursor-pointer"
+        className="relative rounded-2xl border border-purple-100/80 bg-white/85 p-2.5 text-slate-700 shadow-[0_8px_22px_rgba(76,29,149,0.09)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-purple-200 hover:bg-purple-50 hover:text-purple-900 cursor-pointer"
         aria-label="Notifikasi"
         aria-expanded={isOpen}
       >
@@ -262,8 +262,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] sm:w-96 max-w-[calc(100vw-2rem)] bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2 bg-slate-50/70">
+        <div className="absolute right-0 z-50 mt-3 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[1.4rem] border border-white/90 bg-white/95 shadow-[0_24px_70px_rgba(36,12,64,0.2)] ring-1 ring-purple-100/80 backdrop-blur-2xl sm:w-96">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-purple-100/80 bg-[linear-gradient(135deg,rgba(250,245,255,0.98),rgba(255,255,255,0.96))] px-4 py-3.5">
             <div className="flex items-center gap-2">
               <span className="text-xs font-extrabold text-slate-900">Notifikasi</span>
               {unreadCount > 0 && (
@@ -308,14 +308,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
           <PushNotificationToggle />
 
-          <div className="max-h-96 overflow-y-auto divide-y divide-slate-100">
+          <div className="max-h-96 divide-y divide-purple-50/90 overflow-y-auto bg-[linear-gradient(180deg,#FFFFFF_0%,#FCFAFF_100%)]">
             {isLoading && notifications.length === 0 ? (
               <div className="py-10 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-purple-700" />
                 <span>Memuat notifikasi...</span>
               </div>
             ) : notifications.length === 0 ? (
-              <div className="py-10 px-4 text-center space-y-1">
+              <div className="space-y-2 px-5 py-12 text-center">
                 <Bell className="w-7 h-7 text-slate-300 mx-auto" />
                 <p className="text-xs font-bold text-slate-700">Belum ada notifikasi baru</p>
                 <p className="text-[11px] text-slate-400">
@@ -328,13 +328,13 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   key={item.id}
                   type="button"
                   onClick={() => handleNotificationClick(item)}
-                  className={`w-full text-left px-4 py-3 transition-colors flex items-start gap-3 cursor-pointer ${
+                  className={`flex w-full cursor-pointer items-start gap-3 px-4 py-3.5 text-left transition-all duration-200 ${
                     item.is_read
-                      ? 'bg-white hover:bg-slate-50'
-                      : 'bg-purple-50/50 hover:bg-purple-50'
+                      ? 'bg-white/70 hover:bg-purple-50/70'
+                      : 'bg-purple-50/80 shadow-[inset_3px_0_0_rgba(147,51,234,0.75)] hover:bg-purple-100/70'
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/80 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-purple-100 bg-white shadow-[0_6px_16px_rgba(76,29,149,0.09)]">
                     {renderIcon(item.type)}
                   </div>
                   <div className="flex-1 min-w-0 space-y-0.5">
@@ -343,7 +343,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                         {item.title}
                       </p>
                       {!item.is_read && (
-                        <span className="w-2 h-2 rounded-full bg-purple-600 shrink-0 mt-1" />
+                        <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-700 shadow-[0_0_0_3px_rgba(216,180,254,0.28)]" />
                       )}
                     </div>
                     <p className="text-[11px] text-slate-600 leading-relaxed line-clamp-2">
