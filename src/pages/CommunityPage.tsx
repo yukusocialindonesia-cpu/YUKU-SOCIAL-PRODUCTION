@@ -242,7 +242,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[#FAF8FC] pb-24 md:pb-8">
+    <div className="min-h-screen bg-[#FAF8FC] pb-8">
       <section className="relative isolate overflow-hidden border-b border-purple-100 bg-gradient-to-br from-white via-[#F7F0FF] to-[#FFF3F7] text-slate-900">
         <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
@@ -424,6 +424,38 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
             <div className="mt-3 space-y-4">
               {isLoading ? (
                 <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
+              ) : errorMessage ? null : visiblePosts.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-purple-200 bg-white px-5 py-9 text-center shadow-sm">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-700">
+                    <MessageCircle className="h-6 w-6" />
+                  </div>
+                  <h3 className="mt-3 text-sm font-extrabold text-slate-900">
+                    {activeTopic === 'Semua' ? 'Belum ada cerita di komunitas' : `Belum ada cerita di topik ${activeTopic}`}
+                  </h3>
+                  <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-500">
+                    {activeTopic === 'Semua'
+                      ? 'Jadilah yang pertama berbagi cerita, minat, atau rencana aktivitas bersama anggota YUKU.'
+                      : 'Coba pilih topik lain atau lihat semua cerita yang dibagikan anggota YUKU.'}
+                  </p>
+                  {activeTopic === 'Semua' ? (
+                    isAuthenticated ? (
+                      <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        className="mt-4 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800">
+                        Buat cerita pertama
+                      </button>
+                    ) : (
+                      <button type="button" onClick={() => onNavigate('/login')}
+                        className="mt-4 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800">
+                        Login untuk mulai berbagi
+                      </button>
+                    )
+                  ) : (
+                    <button type="button" onClick={() => setActiveTopic('Semua')}
+                      className="mt-4 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-800 transition hover:bg-purple-100">
+                      Lihat semua cerita
+                    </button>
+                  )}
+                </div>
               ) : visiblePosts.map((post) => (
                 <article key={post.id} className="group rounded-2xl border border-purple-100/80 bg-white p-4 shadow-[0_5px_20px_rgba(76,29,149,0.045)] transition duration-200 hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-[0_12px_28px_rgba(76,29,149,0.09)] sm:rounded-3xl sm:p-5">
                   <div className="flex items-center gap-3">
