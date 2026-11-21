@@ -154,8 +154,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }, 0);
     });
 
+    // Muat ulang izin saat pengguna kembali ke tab aplikasi.
+    // Ini membuat perubahan izin/nonaktif Admin segera tercermin tanpa harus logout.
+    const handleWindowFocus = () => {
+      if (!isMounted) return;
+      void supabase.auth.getSession().then(({ data: { session } }) => {
+        if (isMounted) void applySession(session?.user ?? null, true);
+      }).catch((error) => {
+        console.error('YUKU: gagal memperbarui izin Admin saat aplikasi aktif', error);
+      });
+    };
+    window.addEventListener('focus', handleWindowFocus);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('focus', handleWindowFocus);
       subscription.unsubscribe();
     };
   }, [applySession]);
