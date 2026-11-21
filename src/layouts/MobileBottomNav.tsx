@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Search, Bookmark, User } from 'lucide-react';
+import { Home, Search, Bookmark, User, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 
@@ -30,6 +30,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   const items: NavEntry[] = [
     { label: 'Beranda', route: '/', icon: <Home className={icon} />, onPress: () => onNavigate('/') },
     { label: 'Cari', route: '/talent', icon: <Search className={icon} />, onPress: () => onNavigate('/talent') },
+    { label: 'Komunitas', route: '/komunitas', icon: <Users className={icon} />, onPress: () => onNavigate('/komunitas') },
     {
       label: role === 'admin' ? 'Admin' : role === 'talent' ? 'Dashboard' : 'Pesanan',
       route: ordersRoute,
@@ -58,9 +59,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
       className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t border-purple-100 shadow-[0_-4px_16px_rgba(76,29,149,0.08)]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {items.map((item) => {
-          const active = item.route !== null && currentPath === item.route && (loggedIn || item.route === '/' || item.route === '/talent');
+          const active = item.route !== null && currentPath === item.route;
           return (
             <li key={item.label}>
               <button
