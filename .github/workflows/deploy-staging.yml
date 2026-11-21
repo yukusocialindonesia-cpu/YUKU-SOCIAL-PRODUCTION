@@ -29,7 +29,6 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
-          VITE_WEB_PUSH_PUBLIC_KEY: ${{ secrets.STAGING_WEB_PUSH_PUBLIC_KEY }}
 
       - name: Deploy only the dedicated Staging Worker
         uses: cloudflare/wrangler-action@v3
