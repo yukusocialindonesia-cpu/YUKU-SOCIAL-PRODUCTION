@@ -49,3 +49,15 @@
 - Pembatasan semua tabel/RPC/Storage dan penyesuaian halaman Admin masih harus dikerjakan sebelum akses terbatas benar-benar aktif.
 - Belum ada perubahan kode aplikasi atau deployment.
 - Production tidak disentuh.
+
+## Status terbaru — 21 November 2026
+
+Fondasi akses dan pembatasan backend telah diterapkan di Supabase Staging melalui migrasi 48–61. Hak akses per menu sudah diuji dengan akun sementara dan seluruh perubahan pengujian dibatalkan.
+
+Frontend branch sekarang memuat izin dari database, menyembunyikan menu yang tidak diberikan, memuat data per modul, serta menyembunyikan metrik keuangan dan kolom nominal booking dari Admin biasa.
+
+Panel **Pengaturan Admin** sudah ditambahkan untuk Super Admin: undang Admin melalui email, centang beberapa izin sekaligus, simpan izin, serta aktifkan/nonaktifkan akun. Edge Function undangan aktif di Staging dengan verifikasi JWT. Belum ada undangan nyata dikirim.
+
+Booking Admin memakai RPC kolom-minimal; Finance tidak mendapat akses langsung ke tabel booking; KTP Customer dan Talent dipisahkan. Semua perubahan tetap di Staging. Production belum disentuh, belum ada merge ke main, dan Xendit tetap nonaktif/tidak diubah.
+
+Pemeriksaan build frontend masih menunggu run CI; workflow build/type-check sudah ditambahkan ke branch, tetapi belum ada run yang tercatat.
