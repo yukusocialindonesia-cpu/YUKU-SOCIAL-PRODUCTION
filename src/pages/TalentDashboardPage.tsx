@@ -2637,7 +2637,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                             handleClearRecordedVoice();
                           }
                         }}
-                        className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
+                        className="w-full min-w-0 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
                       />
                     </div>
 
