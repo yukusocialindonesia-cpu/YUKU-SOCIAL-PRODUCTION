@@ -67,6 +67,7 @@ export const AdminManagementPanel: React.FC = () => {
       if (inviteError) throw inviteError;
       if (data?.error) throw new Error(data.error);
       setEmail('');
+      setInvitePermissions([]);
       setMessage('Undangan Admin berhasil dikirim. Admin baru dapat masuk setelah menerima undangan melalui email.');
       await load();
     } catch (err: any) {
