@@ -3,10 +3,10 @@ import { ShieldCheck, Lock, Eye, FileText } from 'lucide-react';
 
 export const PrivacyPolicyPage: React.FC = () => {
   return (
-    <div className="py-12 bg-[#FAF8FC]">
+    <div className="relative isolate min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8 pb-6 border-b border-slate-200">
+        <div className="mb-8 rounded-[2rem] border border-white/80 bg-white/70 p-6 shadow-[0_24px_70px_-35px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:p-8">
           <div className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider mb-2">
             <Lock className="w-4 h-4" />
             <span>Kerahasiaan & Perlindungan Data Pribadi</span>
@@ -20,8 +20,8 @@ export const PrivacyPolicyPage: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-10 shadow-xs space-y-8 text-xs sm:text-sm text-slate-700 leading-relaxed">
-          <section className="space-y-3">
+        <div className="space-y-8 rounded-[2rem] border border-white/80 bg-white/80 p-6 text-xs leading-relaxed text-slate-700 shadow-[0_28px_75px_-38px_rgba(76,29,149,0.4)] backdrop-blur-xl sm:p-10 sm:text-sm">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               1. Komitmen Privasi YUKU
             </h2>
@@ -30,7 +30,7 @@ export const PrivacyPolicyPage: React.FC = () => {
             </p>
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               2. Data yang Diproses
             </h2>
@@ -50,7 +50,7 @@ export const PrivacyPolicyPage: React.FC = () => {
             </ul>
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               3. Penggunaan & Pembatasan Informasi
             </h2>
@@ -62,7 +62,7 @@ export const PrivacyPolicyPage: React.FC = () => {
             </p>
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               4. Komitmen Pengamanan Data
             </h2>
@@ -71,7 +71,7 @@ export const PrivacyPolicyPage: React.FC = () => {
             </p>
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               5. Hak Pengguna & Pengajuan Informasi
             </h2>
