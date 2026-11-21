@@ -26,12 +26,15 @@ import { VerifyKtpPage } from './pages/VerifyKtpPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { AdminInviteSetupPage } from './pages/AdminInviteSetupPage';
 import { AppRoute } from './types/navigation';
 import { supabase } from './lib/supabase';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<AppRoute>(() => {
     const pathname = window.location.pathname;
+    const inviteParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    if (pathname === '/aktivasi-admin' || inviteParams.get('type') === 'invite') return '/aktivasi-admin';
     if (pathname === '/talent') return '/talent';
     if (pathname === '/komunitas') return '/komunitas';
     if (pathname.startsWith('/talent/')) return '/talent/:id';
@@ -62,6 +65,7 @@ export default function App() {
   // Parse path and params from current location
   const parseCurrentLocation = useCallback(() => {
     const pathname = window.location.pathname;
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     const searchParams = new URLSearchParams(window.location.search);
 
     const act = searchParams.get('activity') || 'all';
@@ -69,7 +73,9 @@ export default function App() {
     setInitialActivityFilter(act);
     setInitialCityFilter(city);
 
-    if (pathname === '/' || pathname === '') {
+    if (pathname === '/aktivasi-admin' || hashParams.get('type') === 'invite') {
+      setCurrentPath('/aktivasi-admin');
+    } else if (pathname === '/' || pathname === '') {
       setCurrentPath('/');
     } else if (pathname === '/komunitas') {
       setCurrentPath('/komunitas');
@@ -219,6 +225,8 @@ export default function App() {
         return <ChangePasswordPage onNavigate={handleNavigate} />;
       case '/lupa-sandi':
         return <ForgotPasswordPage onNavigate={handleNavigate} />;
+      case '/aktivasi-admin':
+        return <AdminInviteSetupPage onNavigate={handleNavigate} />;
       case '/reset-sandi':
         return (
           <ResetPasswordPage
