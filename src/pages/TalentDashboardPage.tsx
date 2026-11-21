@@ -1522,7 +1522,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         )}
 
         {/* Talent Profile Header Card */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 min-w-0">
+        <div className="relative bg-white/90 rounded-[28px] border border-white p-4 sm:p-6 shadow-[0_16px_42px_rgba(76,29,149,0.10),0_3px_12px_rgba(76,29,149,0.05)] ring-1 ring-purple-100/70 backdrop-blur-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 min-w-0">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full md:w-auto">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-purple-50 border-2 border-purple-200 shrink-0 relative flex items-center justify-center">
               {profile?.avatar_url ? (
@@ -1608,7 +1608,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         {/* 4 Financial & Operational Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 min-w-0">
           {/* Card 1: Available Balance */}
-          <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-purple-900 via-purple-950 to-[#1E0938] text-white p-4 sm:p-5 rounded-2xl shadow-sm relative overflow-hidden min-w-0">
+          <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-purple-900 via-purple-950 to-[#1E0938] text-white p-4 sm:p-5 rounded-[28px] shadow-[0_18px_42px_rgba(49,18,88,0.25)] ring-1 ring-purple-300/30 relative overflow-hidden min-w-0">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-purple-200">Saldo Siap Dicairkan</span>
               <DollarSign className="w-4 h-4 text-amber-400" />
@@ -1630,7 +1630,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </div>
 
           {/* Card 2: Total Akumulasi Pendapatan & Dana di Escrow */}
-          <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
+          <div className="bg-white/95 p-3.5 sm:p-5 rounded-[26px] border border-white shadow-[0_12px_32px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg min-w-0 transition-transform duration-300 hover:-translate-y-0.5">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-semibold text-slate-500 uppercase">Total Pendapatan</span>
               <TrendingUp className="w-4 h-4 text-emerald-600" />
@@ -1652,7 +1652,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </div>
 
           {/* Card 3: Pesanan Menunggu Konfirmasi */}
-          <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
+          <div className="bg-white/95 p-3.5 sm:p-5 rounded-[26px] border border-white shadow-[0_12px_32px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg min-w-0 transition-transform duration-300 hover:-translate-y-0.5">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-semibold text-slate-500 uppercase">Perlu Tanggapan</span>
               <Clock className="w-4 h-4 text-amber-600" />
@@ -1676,7 +1676,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           </div>
 
           {/* Card 4: Jadwal Aktif Mendatang */}
-          <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
+          <div className="bg-white/95 p-3.5 sm:p-5 rounded-[26px] border border-white shadow-[0_12px_32px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg min-w-0 transition-transform duration-300 hover:-translate-y-0.5">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-semibold text-slate-500 uppercase">Jadwal Terkonfirmasi</span>
               <Calendar className="w-4 h-4 text-purple-700" />
@@ -1701,7 +1701,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         </div>
 
         {/* Tab Navigation */}
-        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-slate-200 pb-3 text-[11px] sm:text-xs font-bold text-slate-600 min-w-0">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border border-white/90 bg-white/75 backdrop-blur-xl rounded-[24px] p-2 shadow-[0_10px_28px_rgba(76,29,149,0.08)] text-[11px] sm:text-xs font-bold text-slate-600 min-w-0">
           <button
             onClick={() => setActiveTab('bookings')}
             className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
@@ -1834,7 +1834,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   return (
                     <div
                       key={b.id}
-                      className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs transition-all hover:border-purple-200 space-y-4"
+                      className="bg-white/95 rounded-[26px] border border-white p-5 shadow-[0_14px_34px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(76,29,149,0.13)] space-y-4"
                     >
                       {/* Top Row: Code, Status & Compensation */}
                       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -2090,7 +2090,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         {activeTab === 'availability' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Form Add Schedule */}
-            <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+            <div className="lg:col-span-5 bg-white/95 p-6 rounded-[28px] border border-white shadow-[0_14px_36px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 space-y-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
                   Tambah Slot Ketersediaan
@@ -2229,7 +2229,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             </div>
 
             {/* Existing Slots List */}
-            <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+            <div className="lg:col-span-7 bg-white/95 p-6 rounded-[28px] border border-white shadow-[0_14px_36px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <h3 className="text-base font-bold text-slate-900">
@@ -2339,7 +2339,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               </div>
             </div>
 
-            <form onSubmit={handleRequestNewService} className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm space-y-4">
+            <form onSubmit={handleRequestNewService} className="rounded-[26px] border border-white bg-white/95 p-4 sm:p-5 shadow-[0_14px_34px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg space-y-4">
               <div className="flex items-center gap-2">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-700">
                   <Plus className="h-4 w-4" />
@@ -2421,7 +2421,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                     ? 'bg-rose-50 text-rose-700'
                     : 'bg-amber-50 text-amber-700';
                 return (
-                  <div key={service.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <div key={service.id} className="rounded-[24px] border border-white bg-white/95 p-4 shadow-[0_10px_26px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h4 className="break-words text-sm font-bold leading-snug text-slate-900">{category?.title || service.activity_category_id}</h4>
@@ -2959,7 +2959,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
               {/* 3 Referral Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
+                <div className="bg-white/95 p-3.5 sm:p-5 rounded-[26px] border border-white shadow-[0_12px_32px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg min-w-0 transition-transform duration-300 hover:-translate-y-0.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-500 uppercase">Talent Terundang</span>
                     <Users className="w-4 h-4 text-purple-700" />
@@ -2972,7 +2972,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   </p>
                 </div>
 
-                <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
+                <div className="bg-white/95 p-3.5 sm:p-5 rounded-[26px] border border-white shadow-[0_12px_32px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg min-w-0 transition-transform duration-300 hover:-translate-y-0.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-500 uppercase">Bonus Dikreditkan</span>
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -2985,7 +2985,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   </p>
                 </div>
 
-                <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
+                <div className="bg-white/95 p-3.5 sm:p-5 rounded-[26px] border border-white shadow-[0_12px_32px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg min-w-0 transition-transform duration-300 hover:-translate-y-0.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-500 uppercase">Bonus Tertunda</span>
                     <Clock className="w-4 h-4 text-amber-600" />
@@ -3000,7 +3000,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               </div>
 
               {/* Optional: Bind Referrer Code if not yet linked */}
-              <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs min-w-0">
+              <div className="bg-white/95 p-3.5 sm:p-5 rounded-[26px] border border-white shadow-[0_12px_32px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg min-w-0 transition-transform duration-300 hover:-translate-y-0.5">
                 {myReferrer ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2 text-slate-700">
@@ -3154,7 +3154,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         {/* TAB 3: PAYOUT HISTORY */}
         {activeTab === 'payouts' && (
           <div className="space-y-4">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bg-white/95 p-5 rounded-[26px] border border-white shadow-[0_14px_34px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 backdrop-blur-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
                   Riwayat Pencairan Penghasilan (Payout Requests)
@@ -3182,7 +3182,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                 </p>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
+              <div className="bg-white/95 rounded-[26px] border border-white overflow-hidden shadow-[0_14px_34px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
