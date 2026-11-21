@@ -24,7 +24,7 @@ export const SafetySection: React.FC = () => {
         {/* 3 Pillar Cards */}
         <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-3 md:gap-6 mb-8 md:mb-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {/* Card 1: Anti-Dating & Anti-Sexual Services */}
-          <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-5 md:p-6 rounded-2xl bg-purple-950/40 border border-purple-800/50 backdrop-blur-xs flex flex-col justify-between">
+          <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-5 md:p-6 rounded-[26px] bg-white/[0.08] border border-white/15 backdrop-blur-xl shadow-[0_18px_40px_rgba(0,0,0,0.18)] ring-1 ring-white/5 flex flex-col justify-between">
             <div>
               <div className="w-12 h-12 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center mb-4">
                 <Ban className="w-6 h-6" />

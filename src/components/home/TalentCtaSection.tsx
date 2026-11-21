@@ -13,7 +13,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
   onRegisterClick,
 }) => {
   return (
-    <section className="py-10 md:py-16 bg-gradient-to-r from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative">
+    <section className="py-12 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           {/* Left Content: Customer-First */}
@@ -98,7 +98,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
           {/* Right Visual Card: Customer Quick Steps + Subtle Talent Link */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="hidden lg:block p-7 rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 text-white">
+            <div className="hidden lg:block p-7 rounded-[30px] bg-white/[0.10] backdrop-blur-xl border border-white/20 shadow-[0_24px_60px_rgba(0,0,0,0.24)] ring-1 ring-white/10 text-white">
               <div className="inline-block px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-amber-300 mb-5">
                 Langkah Mulai untuk Customer
               </div>
@@ -124,7 +124,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             </div>
 
             {/* Secondary subtle Talent invitation */}
-            <div className="p-4 rounded-2xl bg-purple-950/60 border border-purple-700/50 flex items-center justify-between gap-3">
+            <div className="p-4 rounded-[22px] bg-white/[0.08] backdrop-blur-xl border border-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.18)] flex items-center justify-between gap-3">
               <div className="text-xs">
                 <span className="font-bold text-white block">Ingin bergabung menjadi Talent?</span>
                 <span className="text-purple-200/75 text-[11px]">
