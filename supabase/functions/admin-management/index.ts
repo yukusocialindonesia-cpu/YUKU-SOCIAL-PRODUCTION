@@ -48,6 +48,18 @@ Deno.serve(async (req: Request) => {
 
     const body = await req.json().catch(() => null);
     const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const requestOrigin = req.headers.get('origin');
+    let redirectTo: string;
+    try {
+      const candidate = new URL(typeof body?.redirectTo === 'string' ? body.redirectTo : '');
+      if (!requestOrigin || candidate.origin !== new URL(requestOrigin).origin || candidate.pathname !== '/aktivasi-admin' || !['https:', 'http:'].includes(candidate.protocol)) {
+        return json({ error: 'Alamat aktivasi Admin tidak valid.' }, 400);
+      }
+      redirectTo = candidate.toString();
+    } catch {
+      return json({ error: 'Alamat aktivasi Admin tidak valid.' }, 400);
+    }
+
     const permissions = Array.isArray(body?.permissions)
       ? [...new Set(body.permissions.filter((item: unknown): item is string => typeof item === 'string'))]
       : [];
@@ -74,7 +86,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const { data: invitation, error: inviteError } =
-      await serviceClient.auth.admin.inviteUserByEmail(email);
+      await serviceClient.auth.admin.inviteUserByEmail(email, { redirectTo });
     const invitedUserId = invitation.user?.id;
     if (inviteError || !invitedUserId) {
       return json({ error: inviteError?.message || 'Undangan Admin gagal dibuat.' }, 400);
