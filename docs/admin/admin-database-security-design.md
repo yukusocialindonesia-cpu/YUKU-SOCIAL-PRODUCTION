@@ -116,7 +116,7 @@ Jangan memakai RPC lama `provision_admin_user(UUID)`: fungsi itu mengubah status
 
 ## Implementasi aktual Staging — 21 November 2026
 
-Migrasi 49–61 sekarang menerapkan izin per menu di database, bukan hanya di tampilan. Policy generik Admin yang sebelumnya memperbolehkan akses luas telah diganti dengan izin Talent, Booking, Finance, Support, atau Super Admin sesuai tabel.
+Migrasi 49–63 sekarang menerapkan izin per menu di database, bukan hanya di tampilan. Migrasi penguatan trigger memastikan Super Admin saja yang memakai override umum; Admin biasa harus memenuhi izin modul. Policy generik Admin yang sebelumnya memperbolehkan akses luas telah diganti dengan izin Talent, Booking, Finance, Support, atau Super Admin sesuai tabel.
 
 Perlindungan khusus:
 - Booking Admin membaca daftar operasional melalui RPC kolom-minimal; tidak menerima nilai transaksi, fee, atau pembagian Talent.
