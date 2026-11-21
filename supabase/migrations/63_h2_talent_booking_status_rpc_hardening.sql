@@ -11,14 +11,12 @@ AS $$
 DECLARE
   v_actor uuid := auth.uid();
   v_booking public.bookings%ROWTYPE;
-  v_payment_found boolean := false;
 BEGIN
   IF v_actor IS NULL THEN
     RAISE EXCEPTION 'Authentication required';
   END IF;
 
-  -- Pre-check ownership without locking, so a caller cannot lock another
-  -- user's payment row merely by guessing a booking UUID.
+  -- Check ownership before taking a row lock.
   PERFORM 1
   FROM public.bookings b
   WHERE b.id = p_booking_id
@@ -28,18 +26,9 @@ BEGIN
     RAISE EXCEPTION 'Booking tidak ditemukan atau bukan milik Anda.';
   END IF;
 
-  -- Lock order: payment, then booking. This matches admin_process_refund().
-  PERFORM 1
-  FROM public.payments p
-  WHERE p.booking_id = p_booking_id
-    AND p.payment_status = 'settled_held'::public.payment_status_type
-  FOR UPDATE;
-
-  v_payment_found := FOUND;
-  IF NOT v_payment_found THEN
-    RAISE EXCEPTION 'Pembayaran belum terkonfirmasi dalam escrow.';
-  END IF;
-
+  -- Booking is locked before validation. Payment is read without a row lock:
+  -- admin_process_refund() locks payment before booking, so taking a payment
+  -- lock here would create a lock-order inversion and possible deadlock.
   SELECT * INTO v_booking
   FROM public.bookings
   WHERE id = p_booking_id
@@ -51,6 +40,15 @@ BEGIN
 
   IF v_booking.status <> 'paid_held_in_escrow'::public.booking_status_type THEN
     RAISE EXCEPTION 'Status booking tidak dapat dikonfirmasi.';
+  END IF;
+
+  PERFORM 1
+  FROM public.payments p
+  WHERE p.booking_id = p_booking_id
+    AND p.payment_status = 'settled_held'::public.payment_status_type;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pembayaran belum terkonfirmasi dalam escrow.';
   END IF;
 
   UPDATE public.bookings
@@ -74,13 +72,12 @@ AS $$
 DECLARE
   v_actor uuid := auth.uid();
   v_booking public.bookings%ROWTYPE;
-  v_payment_found boolean := false;
 BEGIN
   IF v_actor IS NULL THEN
     RAISE EXCEPTION 'Authentication required';
   END IF;
 
-  -- Ownership pre-check before taking any row lock.
+  -- Check ownership before taking a row lock.
   PERFORM 1
   FROM public.bookings b
   WHERE b.id = p_booking_id
@@ -90,18 +87,9 @@ BEGIN
     RAISE EXCEPTION 'Booking tidak ditemukan atau bukan milik Anda.';
   END IF;
 
-  -- Keep the payment -> booking lock order consistent with refund processing.
-  PERFORM 1
-  FROM public.payments p
-  WHERE p.booking_id = p_booking_id
-    AND p.payment_status = 'settled_held'::public.payment_status_type
-  FOR UPDATE;
-
-  v_payment_found := FOUND;
-  IF NOT v_payment_found THEN
-    RAISE EXCEPTION 'Pembayaran tidak lagi berada dalam escrow.';
-  END IF;
-
+  -- Lock the booking first, matching the existing Talent/Customer booking
+  -- transition RPCs. Do not lock payments here: refund processing uses the
+  -- opposite payment -> booking lock order.
   SELECT * INTO v_booking
   FROM public.bookings
   WHERE id = p_booking_id
@@ -113,6 +101,15 @@ BEGIN
 
   IF v_booking.status <> 'confirmed_by_talent'::public.booking_status_type THEN
     RAISE EXCEPTION 'Booking belum dapat dimulai.';
+  END IF;
+
+  PERFORM 1
+  FROM public.payments p
+  WHERE p.booking_id = p_booking_id
+    AND p.payment_status = 'settled_held'::public.payment_status_type;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pembayaran tidak lagi berada dalam escrow.';
   END IF;
 
   IF EXISTS (
