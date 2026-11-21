@@ -149,7 +149,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       await refreshPosts();
     } catch (error) {
       console.error('YUKU Community: gagal membuat postingan', error);
-      setNotice('Postingan belum berhasil dikirim. Coba lagi.');
+      const code = (error as { code?: string })?.code;
+      setNotice(code === 'P0001'
+        ? 'Kamu terlalu sering mengirim aktivitas. Coba lagi nanti.'
+        : 'Postingan belum berhasil dikirim. Coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -163,7 +166,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       await refreshPosts();
     } catch (error) {
       console.error('YUKU Community: gagal mengubah suka', error);
-      setNotice('Belum berhasil memberi suka. Coba lagi.');
+      const code = (error as { code?: string })?.code;
+      setNotice(code === 'P0001'
+        ? 'Batas aktivitas suka tercapai. Coba lagi nanti.'
+        : 'Belum berhasil memberi suka. Coba lagi.');
     } finally {
       setBusyLikeIds((current) => current.filter((id) => id !== post.id));
     }
@@ -182,7 +188,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       setOpenComments(postId);
     } catch (error) {
       console.error('YUKU Community: gagal mengirim komentar', error);
-      setNotice('Komentar belum berhasil dikirim. Coba lagi.');
+      const code = (error as { code?: string })?.code;
+      setNotice(code === 'P0001'
+        ? 'Kamu terlalu sering berkomentar. Coba lagi nanti.'
+        : 'Komentar belum berhasil dikirim. Coba lagi.');
     } finally {
       setBusyCommentPostIds((current) => current.filter((id) => id !== postId));
     }
@@ -201,7 +210,9 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       const code = (error as { code?: string })?.code;
       setNotice(code === '23505'
         ? 'Kamu sudah melaporkan postingan ini. Tunggu Admin meninjaunya.'
-        : 'Laporan belum berhasil dikirim. Coba lagi.');
+        : code === 'P0001'
+          ? 'Batas laporan tercapai. Coba lagi nanti.'
+          : 'Laporan belum berhasil dikirim. Coba lagi.');
     } finally {
       setBusyReportPostIds((current) => current.filter((id) => id !== postId));
     }
@@ -220,7 +231,9 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       const code = (error as { code?: string })?.code;
       setNotice(code === '23505'
         ? 'Kamu sudah melaporkan komentar ini. Tunggu Admin meninjaunya.'
-        : 'Laporan komentar belum berhasil dikirim. Coba lagi.');
+        : code === 'P0001'
+          ? 'Batas laporan tercapai. Coba lagi nanti.'
+          : 'Laporan komentar belum berhasil dikirim. Coba lagi.');
     } finally {
       setBusyReportCommentIds((current) => current.filter((id) => id !== commentId));
     }
