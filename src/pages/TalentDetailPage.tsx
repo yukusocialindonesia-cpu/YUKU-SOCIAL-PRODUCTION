@@ -222,6 +222,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   };
 
   useEffect(() => {
+    if (!talentId) return;
     loadTalentDetail();
   }, [talentId]);
 
