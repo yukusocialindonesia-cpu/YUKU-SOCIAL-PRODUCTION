@@ -5,10 +5,10 @@ import { formatRupiah } from '../utils/formatters';
 
 export const TermsPage: React.FC = () => {
   return (
-    <div className="py-12 bg-[#FAF8FC]">
+    <div className="relative isolate min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8 pb-6 border-b border-slate-200">
+        <div className="mb-8 rounded-[2rem] border border-white/80 bg-white/70 p-6 shadow-[0_24px_70px_-35px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:p-8">
           <div className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider mb-2">
             <FileText className="w-4 h-4" />
             <span>Dokumen Ketentuan Layanan</span>
@@ -22,7 +22,7 @@ export const TermsPage: React.FC = () => {
         </div>
 
         {/* Highlight Alert */}
-        <div className="p-4 rounded-2xl bg-purple-950 text-white mb-8 border border-purple-900 space-y-2 text-xs leading-relaxed">
+        <div className="mb-8 space-y-2 rounded-3xl border border-violet-800/70 bg-gradient-to-br from-[#251044] via-purple-950 to-[#4c1d75] p-5 text-xs leading-relaxed text-white shadow-[0_24px_55px_-25px_rgba(46,16,101,0.55)] sm:p-6">
           <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
             <ShieldCheck className="w-5 h-5 shrink-0" />
             <span>Prinsip Fundamental Platform YUKU</span>
@@ -33,9 +33,9 @@ export const TermsPage: React.FC = () => {
         </div>
 
         {/* Terms Articles */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-10 shadow-xs space-y-8 text-xs sm:text-sm text-slate-700 leading-relaxed">
+        <div className="space-y-8 rounded-[2rem] border border-white/80 bg-white/80 p-6 text-xs leading-relaxed text-slate-700 shadow-[0_28px_75px_-38px_rgba(76,29,149,0.4)] backdrop-blur-xl sm:p-10 sm:text-sm">
           {/* Pasal 1 */}
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               1. Definisi dan Ruang Lingkup Layanan
             </h2>
@@ -48,7 +48,7 @@ export const TermsPage: React.FC = () => {
           </section>
 
           {/* Pasal 2 */}
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               2. Kriteria Pengguna & Verifikasi Usia 18+
             </h2>
@@ -61,7 +61,7 @@ export const TermsPage: React.FC = () => {
           </section>
 
           {/* Pasal 3 */}
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               3. Batasan Etika, Larangan Kencan & Layanan Seksual
             </h2>
@@ -77,7 +77,7 @@ export const TermsPage: React.FC = () => {
           </section>
 
           {/* Pasal 4 */}
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               4. Ketentuan Finansial & Pencairan Pendapatan
             </h2>
@@ -99,7 +99,7 @@ export const TermsPage: React.FC = () => {
           </section>
 
           {/* Pasal 5 */}
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               5. Pembatalan dan Pengembalian Dana
             </h2>
@@ -112,7 +112,7 @@ export const TermsPage: React.FC = () => {
           </section>
 
           {/* Pasal 6 */}
-          <section className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/50 p-4 transition hover:border-violet-200 sm:p-5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
               6. Ketersediaan Layanan & Pembaruan Sistem
             </h2>
