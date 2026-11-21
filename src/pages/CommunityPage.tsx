@@ -22,6 +22,11 @@ import {
   loadCommunityPosts,
   reportCommunityPost,
   toggleCommunityLike,
+  loadPendingCommunityReports,
+  moderateCommunityPost,
+  moderateCommunityComment,
+  reviewCommunityReport,
+  type CommunityReport,
 } from '../services/communityService';
 
 type CommunityPageProps = {
@@ -43,7 +48,8 @@ const formatTime = (value: string) => {
 };
 
 export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
-  const { user, isAuthLoading, isAuthenticated, adminAccess } = useAuth();\n  const canModerateCommunity = adminAccess?.isSuperAdmin === true || adminAccess?.permissions.includes('support') === true;
+  const { user, isAuthLoading, isAuthenticated, adminAccess } = useAuth();
+  const canModerateCommunity = adminAccess?.isSuperAdmin === true || adminAccess?.permissions.includes('support') === true;
   const [activeTopic, setActiveTopic] = useState('Semua');
   const [draft, setDraft] = useState('');
   const [draftTopic, setDraftTopic] = useState<CommunityTopic>('Pertemanan');
@@ -58,7 +64,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
   const [reportingPostId, setReportingPostId] = useState<string | null>(null);
   const [reportReasonsByPost, setReportReasonsByPost] = useState<Record<string, string>>({});
-  const [notice, setNotice] = useState('');\n  const [pendingReports, setPendingReports] = useState<CommunityReport[]>([]);\n  const [isLoadingReports, setIsLoadingReports] = useState(false);\n  const [busyModerationIds, setBusyModerationIds] = useState<string[]>([]);
+  const [notice, setNotice] = useState('');
+  const [pendingReports, setPendingReports] = useState<CommunityReport[]>([]);
+  const [isLoadingReports, setIsLoadingReports] = useState(false);
+  const [busyModerationIds, setBusyModerationIds] = useState<string[]>([]);
 
   const refreshPosts = useCallback(async () => {
     setIsLoading(true);
