@@ -229,7 +229,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   const currentAvatar = avatarPreview || profile.avatar_url;
 
   return (
-    <div className="min-h-[65vh] bg-[#FAF8FC] px-4 py-8 sm:py-12">
+    <div className="min-h-[65vh] bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.72),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)] px-4 py-8 sm:py-12">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-bold text-purple-800">
@@ -240,10 +240,10 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
           <p className="mt-1 text-sm text-slate-500">Kelola informasi profil yang tampil di YUKU.</p>
         </div>
 
-        <form onSubmit={handleSave} className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
-          <div className="p-5 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+        <form onSubmit={handleSave} className="bg-white/85 backdrop-blur-xl rounded-[30px] border border-white shadow-[0_24px_60px_-28px_rgba(76,29,149,0.3)] ring-1 ring-violet-100/80 overflow-hidden">
+          <div className="p-5 sm:p-8 border-b border-violet-100/80 bg-gradient-to-br from-white via-violet-50/70 to-indigo-50/60 flex flex-col sm:flex-row items-center sm:items-start gap-4">
             <div className="relative shrink-0">
-              <div className="w-24 h-24 rounded-full bg-purple-100 border-4 border-white shadow-md overflow-hidden flex items-center justify-center">
+              <div className="w-24 h-24 rounded-full bg-purple-100 border-[5px] border-white shadow-[0_12px_28px_rgba(76,29,149,0.24)] ring-1 ring-violet-200 overflow-hidden flex items-center justify-center">
                 {currentAvatar ? (
                   <img src={currentAvatar} alt="Foto profil Customer" className="w-full h-full object-cover" />
                 ) : (
@@ -278,21 +278,21 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
 
             <div>
               <label htmlFor="customer-display-name" className="block text-sm font-bold text-slate-700 mb-1.5">Nama Tampilan</label>
-              <input id="customer-display-name" type="text" maxLength={100} required value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full min-w-0 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-purple-600" placeholder="Nama yang ingin ditampilkan" />
+              <input id="customer-display-name" type="text" maxLength={100} required value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full min-w-0 px-4 py-3 rounded-2xl border border-slate-200/90 bg-white/80 shadow-inner text-sm transition-all focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100" placeholder="Nama yang ingin ditampilkan" />
             </div>
 
             <div>
               <label htmlFor="customer-city" className="block text-sm font-bold text-slate-700 mb-1.5">
                 <MapPin className="inline w-4 h-4 mr-1 text-slate-400" />Kota
               </label>
-              <input id="customer-city" type="text" maxLength={100} value={city} onChange={(e) => setCity(e.target.value)} className="w-full min-w-0 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-purple-600" placeholder="Contoh: Bogor" />
+              <input id="customer-city" type="text" maxLength={100} value={city} onChange={(e) => setCity(e.target.value)} className="w-full min-w-0 px-4 py-3 rounded-2xl border border-slate-200/90 bg-white/80 shadow-inner text-sm transition-all focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100" placeholder="Contoh: Bogor" />
             </div>
 
             <div>
               <label htmlFor="customer-gender" className="block text-sm font-bold text-slate-700 mb-1.5">
                 <VenusAndMars className="inline w-4 h-4 mr-1 text-slate-400" />Jenis Kelamin
               </label>
-              <select id="customer-gender" value={gender} onChange={(e) => setGender(e.target.value as GenderType | '')} className="w-full min-w-0 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-purple-600">
+              <select id="customer-gender" value={gender} onChange={(e) => setGender(e.target.value as GenderType | '')} className="w-full min-w-0 px-4 py-3 rounded-2xl border border-slate-200/90 bg-white/80 shadow-inner text-sm transition-all focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100">
                 <option value="">Belum dipilih</option>
                 {GENDER_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
               </select>
@@ -302,17 +302,17 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
               <label htmlFor="customer-bio" className="block text-sm font-bold text-slate-700 mb-1.5">
                 <FileText className="inline w-4 h-4 mr-1 text-slate-400" />Tentang Saya
               </label>
-              <textarea id="customer-bio" rows={4} maxLength={500} value={bio} onChange={(e) => setBio(e.target.value)} className="w-full min-w-0 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-purple-600 resize-y" placeholder="Ceritakan sedikit tentang diri Anda (opsional)." />
+              <textarea id="customer-bio" rows={4} maxLength={500} value={bio} onChange={(e) => setBio(e.target.value)} className="w-full min-w-0 px-4 py-3 rounded-2xl border border-slate-200/90 bg-white/80 shadow-inner text-sm transition-all focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 resize-y" placeholder="Ceritakan sedikit tentang diri Anda (opsional)." />
               <p className="text-right text-xs text-slate-400 mt-1">{bio.length}/500</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 min-w-0">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-white to-violet-50/70 border border-violet-100/80 shadow-[0_8px_22px_-18px_rgba(76,29,149,0.3)] min-w-0">
                 <p className="text-xs font-bold text-slate-500 mb-1"><Mail className="inline w-3.5 h-3.5 mr-1" />Email Akun</p>
                 <p className="text-sm text-slate-700 break-all">{user.email || 'Tidak tersedia'}</p>
                 <p className="text-[11px] text-slate-400 mt-1">Hubungi bantuan YUKU untuk mengubah email.</p>
               </div>
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 min-w-0">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-white to-violet-50/70 border border-violet-100/80 shadow-[0_8px_22px_-18px_rgba(76,29,149,0.3)] min-w-0">
                 <p className="text-xs font-bold text-slate-500 mb-1"><Phone className="inline w-3.5 h-3.5 mr-1" />Nomor WhatsApp</p>
                 <p className="text-sm text-slate-700 break-words">{phoneNumber || 'Belum tersedia'}</p>
                 <p className="text-[11px] text-slate-400 mt-1">Informasi kontak tidak diubah dari halaman ini.</p>
@@ -320,7 +320,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
             </div>
 
             <div className="pt-2">
-              <button type="submit" disabled={isSaving} className="w-full sm:w-auto sm:min-w-48 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white text-sm font-bold shadow-sm hover:from-purple-800 hover:to-fuchsia-800 disabled:opacity-60 flex items-center justify-center gap-2">
+              <button type="submit" disabled={isSaving} className="w-full sm:w-auto sm:min-w-48 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-indigo-700 text-white text-sm font-bold shadow-[0_12px_26px_-10px_rgba(126,34,206,0.6)] ring-1 ring-white/30 transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-10px_rgba(126,34,206,0.65)] hover:from-purple-800 disabled:opacity-60 disabled:translate-y-0 flex items-center justify-center gap-2">
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
               </button>
