@@ -231,7 +231,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (canAccess('booking')) tabs.push('bookings');
     if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
     if (canAccess('support')) tabs.push('customer_ktp', 'reports');
-    if (isSuperAdmin) tabs.push('overview', 'promos', 'hero', 'branding', 'admin_management');
+    if (isSuperAdmin) tabs.push('promos', 'hero', 'branding', 'admin_management');
     return tabs;
   }, [adminAccess]);
 
