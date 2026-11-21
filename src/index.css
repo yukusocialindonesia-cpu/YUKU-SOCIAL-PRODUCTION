@@ -52,7 +52,7 @@ body {
   background-repeat: no-repeat;
   background-position: right 8% center;
   background-size: clamp(220px, 34vw, 420px);
-  opacity: 0.08;
+  opacity: 0.045;
 }
 
 @media (max-width: 640px) {
