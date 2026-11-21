@@ -23,9 +23,6 @@ import {
   reportCommunityPost,
   reportCommunityComment,
   toggleCommunityLike,
-  loadPendingCommunityReports,
-  processCommunityReport,
-  type CommunityReport,
 } from '../services/communityService';
 
 type CommunityPageProps = {
@@ -47,8 +44,7 @@ const formatTime = (value: string) => {
 };
 
 export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
-  const { user, isAuthLoading, isAuthenticated, adminAccess } = useAuth();
-  const canModerateCommunity = adminAccess?.isSuperAdmin === true || adminAccess?.permissions.includes('support') === true;
+  const { user, isAuthLoading, isAuthenticated } = useAuth();
   const [activeTopic, setActiveTopic] = useState('Semua');
   const [draft, setDraft] = useState('');
   const [draftTopic, setDraftTopic] = useState<CommunityTopic>('Pertemanan');
@@ -67,9 +63,6 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const [reportingCommentId, setReportingCommentId] = useState<string | null>(null);
   const [reportReasonsByComment, setReportReasonsByComment] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState('');
-  const [pendingReports, setPendingReports] = useState<CommunityReport[]>([]);
-  const [isLoadingReports, setIsLoadingReports] = useState(false);
-  const [busyModerationIds, setBusyModerationIds] = useState<string[]>([]);
 
   const refreshPosts = useCallback(async () => {
     setIsLoading(true);
@@ -88,44 +81,6 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   useEffect(() => {
     void refreshPosts();
   }, [refreshPosts]);
-
-  const refreshModerationQueue = useCallback(async () => {
-    if (!canModerateCommunity) return;
-    setIsLoadingReports(true);
-    try {
-      const rows = await loadPendingCommunityReports();
-      setPendingReports(rows);
-    } catch (error) {
-      console.error('YUKU Community: gagal memuat antrean moderasi', error);
-      setNotice('Antrean moderasi belum dapat dimuat. Periksa kembali izin Admin.');
-    } finally {
-      setIsLoadingReports(false);
-    }
-  }, [canModerateCommunity]);
-
-  useEffect(() => {
-    if (canModerateCommunity) void refreshModerationQueue();
-  }, [canModerateCommunity, refreshModerationQueue]);
-
-  const handleModeration = async (report: CommunityReport, action: 'hide' | 'remove' | 'dismiss') => {
-    if (busyModerationIds.includes(report.id)) return;
-    if (action === 'remove' && !window.confirm('Hapus konten ini dari komunitas? Konten tidak akan tampil lagi untuk anggota.')) return;
-    setBusyModerationIds((current) => [...current, report.id]);
-    try {
-      await processCommunityReport(
-        report.id,
-        action,
-        action === 'dismiss' ? 'Laporan ditinjau tanpa tindakan.' : 'Ditangani melalui moderasi komunitas YUKU.',
-      );
-      setNotice(action === 'dismiss' ? 'Laporan ditandai selesai tanpa tindakan.' : 'Konten berhasil dimoderasi dan laporan ditutup.');
-      await Promise.all([refreshModerationQueue(), refreshPosts()]);
-    } catch (error) {
-      console.error('YUKU Community: gagal memproses laporan', error);
-      setNotice('Tindakan moderasi belum berhasil. Coba lagi atau periksa izin Admin.');
-    } finally {
-      setBusyModerationIds((current) => current.filter((id) => id !== report.id));
-    }
-  };
 
   const requireLogin = () => {
     if (!isAuthenticated) {
@@ -332,62 +287,6 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               )}
               {notice && <p className="mt-3 rounded-lg bg-purple-50 px-3 py-2 text-[11px] text-purple-800">{notice}</p>}
             </section>
-
-            {canModerateCommunity && (
-              <section className="mt-5 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm sm:p-5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-amber-800">Panel Admin</p>
-                    <h3 className="mt-1 text-sm font-black text-slate-900">Laporan komunitas</h3>
-                    <p className="mt-1 text-xs text-slate-600">Khusus Admin dengan izin dukungan dan Super Admin.</p>
-                  </div>
-                  <button type="button" onClick={() => void refreshModerationQueue()}
-                    className="rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-amber-900 hover:bg-amber-100">
-                    {isLoadingReports ? 'Memuat...' : 'Perbarui'}
-                  </button>
-                </div>
-                <div className="mt-3 space-y-3">
-                  {isLoadingReports && pendingReports.length === 0 ? (
-                    <p className="rounded-xl bg-white/80 p-3 text-xs text-slate-500">Memuat laporan...</p>
-                  ) : pendingReports.length === 0 ? (
-                    <p className="rounded-xl bg-white/80 p-3 text-xs text-slate-500">Tidak ada laporan yang menunggu pemeriksaan.</p>
-                  ) : pendingReports.map((report) => {
-                    const target = report.community_posts || report.community_comments;
-                    const isPost = Boolean(report.post_id);
-                    return (
-                      <article key={report.id} className="rounded-xl border border-amber-100 bg-white p-3">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-extrabold text-amber-900">{report.reason}</span>
-                          <span className="text-[10px] text-slate-400">{formatTime(report.created_at)}</span>
-                        </div>
-                        <p className="mt-2 text-xs font-bold text-slate-800">
-                          {isPost ? 'Postingan' : 'Komentar'} · {target?.author_display_name || 'Anggota YUKU'}
-                        </p>
-                        <p className="mt-1 whitespace-pre-wrap break-words text-xs leading-5 text-slate-600">{target?.body || 'Konten sudah tidak tersedia.'}</p>
-                        {report.details && <p className="mt-2 text-xs text-slate-500">Catatan pelapor: {report.details}</p>}
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <button type="button" disabled={busyModerationIds.includes(report.id) || !target}
-                            onClick={() => void handleModeration(report, 'hide')}
-                            className="rounded-lg bg-amber-600 px-3 py-2 text-[11px] font-bold text-white disabled:opacity-40">
-                            Sembunyikan
-                          </button>
-                          <button type="button" disabled={busyModerationIds.includes(report.id) || !target}
-                            onClick={() => void handleModeration(report, 'remove')}
-                            className="rounded-lg bg-rose-600 px-3 py-2 text-[11px] font-bold text-white disabled:opacity-40">
-                            Hapus dari komunitas
-                          </button>
-                          <button type="button" disabled={busyModerationIds.includes(report.id)}
-                            onClick={() => void handleModeration(report, 'dismiss')}
-                            className="rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 disabled:opacity-40">
-                            Abaikan laporan
-                          </button>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
 
             <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
               <div>
