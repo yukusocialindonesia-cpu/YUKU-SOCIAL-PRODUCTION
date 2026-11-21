@@ -14,16 +14,16 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
   };
 
   return (
-    <section className="py-12 md:py-20 bg-[#140624] border-t border-purple-900">
+    <section className="py-12 md:py-20 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 md:mb-12">
-          <span className="text-xs font-bold !text-amber-300 tracking-wider uppercase mb-2 block">
+          <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
             Pertanyaan Umum
           </span>
-          <h2 className="text-2xl md:text-3xl font-extrabold !text-white tracking-tight mb-3">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E0938] tracking-tight mb-3">
             Sering Ditanyakan Seputar YUKU
           </h2>
-          <p className="text-slate-200 text-sm">
+          <p className="text-slate-600 text-sm">
             Jawaban transparan mengenai konsep pertemanan berbayar, keamanan, dan aturan platform.
           </p>
         </div>
@@ -32,23 +32,23 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
           {FAQ_ITEMS.slice(0, 5).map((item, idx) => (
             <div
               key={item.q}
-              className={`border border-purple-300/20 rounded-[20px] overflow-hidden bg-[#241039] shadow-[0_10px_26px_rgba(0,0,0,0.2)] transition-all duration-300 ${idx >= 4 ? 'hidden md:block' : ''}`}
+              className={`border border-white/90 rounded-[20px] overflow-hidden bg-white/80 shadow-[0_10px_26px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 backdrop-blur-xl transition-all duration-300 ${idx >= 4 ? 'hidden md:block' : ''}`}
             >
               <button
                 type="button"
                 onClick={() => toggleItem(idx)}
-                className="w-full py-4 px-5 text-left flex items-center justify-between gap-4 font-semibold !text-white hover:!text-amber-200 transition-colors cursor-pointer bg-[#241039] hover:bg-[#32164b]"
+                className="w-full py-4 px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-white/70 hover:bg-white"
               >
-                <span className="text-sm sm:text-base !text-white">{item.q}</span>
+                <span className="text-sm sm:text-base">{item.q}</span>
                 <ChevronDown
-                  className={`w-5 h-5 !text-purple-200 shrink-0 transition-transform duration-200 ${
-                    openIndex === idx ? 'rotate-180 !text-amber-300' : ''
+                  className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
+                    openIndex === idx ? 'rotate-180 text-purple-600' : ''
                   }`}
                 />
               </button>
 
               {openIndex === idx && (
-                <div className="px-5 py-4 text-xs sm:text-sm !text-purple-100 leading-relaxed border-t border-purple-300/20 bg-[#1b0c2d]">
+                <div className="px-5 py-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-white">
                   {item.a}
                 </div>
               )}
@@ -59,10 +59,10 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
         <div className="mt-8 text-center">
           <button
             onClick={onViewAllFaqClick}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold !text-[#1e0938] shadow-lg shadow-black/20 hover:bg-amber-200 hover:!text-[#1e0938] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors cursor-pointer"
           >
-            <span className="!text-[#1e0938]">Buka Pusat Bantuan & FAQ Lengkap</span>
-            <ArrowRight className="w-4 h-4 !text-[#1e0938]" />
+            <span>Buka Pusat Bantuan & FAQ Lengkap</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>
