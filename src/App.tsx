@@ -177,7 +177,7 @@ export default function App() {
       case '/':
         return <HomePage onNavigate={handleNavigate} />;
       case '/komunitas':
-        return <CommunityPage />;
+        return <CommunityPage onNavigate={handleNavigate} />;
       case '/talent':
         return (
           <BrowseTalentPage
