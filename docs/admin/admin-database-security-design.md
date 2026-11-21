@@ -113,3 +113,20 @@ Jangan memakai RPC lama `provision_admin_user(UUID)`: fungsi itu mengubah status
 - Data Admin uji sementara di-rollback; Staging kembali hanya memiliki satu akun Admin dan nol baris izin Admin biasa.
 - `public.is_admin()`, kebijakan RLS lama, RPC lama, Storage, dan halaman Admin belum diubah. Karena itu, izin menu belum diberlakukan ke seluruh sistem.
 - Production tidak disentuh.
+
+## Implementasi aktual Staging — 21 November 2026
+
+Migrasi 49–61 sekarang menerapkan izin per menu di database, bukan hanya di tampilan. Policy generik Admin yang sebelumnya memperbolehkan akses luas telah diganti dengan izin Talent, Booking, Finance, Support, atau Super Admin sesuai tabel.
+
+Perlindungan khusus:
+- Booking Admin membaca daftar operasional melalui RPC kolom-minimal; tidak menerima nilai transaksi, fee, atau pembagian Talent.
+- Data `users` dibatasi untuk diri sendiri dan Super Admin; data minimum pengguna disediakan melalui RPC sesuai izin.
+- `user_identities` dan bucket KTP memisahkan Customer (Support) dari Talent (Talent).
+- Bukti QRIS hanya Finance; branding, hero, poster hanya Super Admin.
+- RPC payout, refund, QRIS, laporan, kurasi Talent, dan overview memeriksa izin di dalam fungsi.
+- Pengelolaan akun Admin memakai RPC Super Admin; provisioning akun baru hanya dapat dipanggil service role dari Edge Function yang memverifikasi JWT dan Super Admin.
+- Tabel private admin tidak memiliki policy akses langsung; data hanya dibaca/diubah melalui fungsi terotorisasi.
+
+Uji Staging mencakup batas izin Talent/Finance/Support/Booking, KTP Storage, RPC minimal booking, penonaktifan akun, dan fungsi pengelolaan Admin. Pengujian akun sementara selalu diakhiri rollback.
+
+Edge Function `admin-management` aktif di Staging; panel UI Pengaturan Admin ada di branch `feature/admin-simple-management`. Belum ada undangan nyata yang dikirim. Production belum diubah, belum ada merge atau deployment Production, dan Xendit tidak disentuh. Build frontend belum terkonfirmasi oleh CI.
