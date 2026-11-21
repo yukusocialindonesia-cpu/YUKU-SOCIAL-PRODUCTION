@@ -1194,8 +1194,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {isSuperAdmin && (
         {/* 4 Financial & Operational Platform Metrics */}
+        {isSuperAdmin && (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-1">
