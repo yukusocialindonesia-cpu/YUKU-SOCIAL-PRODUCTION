@@ -206,11 +206,13 @@ USING (reporter_id = (SELECT auth.uid()) OR (SELECT public.is_admin()));
 -- No direct browser updates to report status. Admin review workflow is a separate step.
 REVOKE ALL ON public.community_posts, public.community_comments, public.community_likes, public.community_reports FROM PUBLIC;
 GRANT SELECT ON public.community_posts, public.community_comments, public.community_likes TO anon, authenticated;
-GRANT SELECT, INSERT, DELETE ON public.community_reports TO authenticated;
-GRANT INSERT, DELETE ON public.community_posts, public.community_comments, public.community_likes TO authenticated;
+GRANT SELECT ON public.community_reports TO authenticated;
+GRANT INSERT (reporter_id, post_id, comment_id, reason, details) ON public.community_reports TO authenticated;
+GRANT INSERT (author_id, body, topic) ON public.community_posts TO authenticated;
+GRANT INSERT (post_id, author_id, body) ON public.community_comments TO authenticated;
+GRANT INSERT (post_id, user_id) ON public.community_likes TO authenticated;
+GRANT DELETE ON public.community_posts, public.community_comments, public.community_likes TO authenticated;
 GRANT UPDATE (body, topic) ON public.community_posts TO authenticated;
 GRANT UPDATE (body) ON public.community_comments TO authenticated;
 
--- Keep internal author snapshot columns read-only to browser clients.
-REVOKE INSERT (author_display_name), UPDATE (author_display_name) ON public.community_posts FROM anon, authenticated;
-REVOKE INSERT (author_display_name), UPDATE (author_display_name) ON public.community_comments FROM anon, authenticated;
+-- Author snapshot columns and report status remain writable only by trusted database code.
