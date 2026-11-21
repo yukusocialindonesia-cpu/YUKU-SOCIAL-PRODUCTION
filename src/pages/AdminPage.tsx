@@ -1266,11 +1266,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         )}
 
         {/* Tab Navigation */}
-        <div className="grid grid-cols-3 gap-2 rounded-2xl border border-slate-200/80 bg-white p-2.5 shadow-sm sm:grid-cols-4 sm:gap-2.5 sm:p-3">
+        <div className="grid grid-cols-4 justify-items-center gap-x-2 gap-y-3 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm sm:grid-cols-5 sm:gap-3 sm:p-4">
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('overview')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${activeTab === 'overview' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'overview' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
           >
             <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'overview' ? 'text-white' : 'text-emerald-600'}`} />
             <span>Overview</span>
@@ -1279,7 +1279,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('talents')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'talents' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1290,7 +1290,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('service_reviews')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${activeTab === 'service_reviews' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'service_reviews' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Review Talent ({pendingTalentServices.length + pendingIdentityChanges.length})</span>
@@ -1299,7 +1299,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('support') && (
           <button
             onClick={() => setActiveTab('customer_ktp')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'customer_ktp' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1312,7 +1312,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('payouts')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'payouts' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1323,7 +1323,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('refunds')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'refunds' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1334,7 +1334,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('booking') && (
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'bookings' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1345,7 +1345,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('support') && (
           <button
             onClick={() => setActiveTab('community_moderation')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${activeTab === 'community_moderation' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'community_moderation' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
           >
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Moderasi Komunitas</span>
@@ -1354,7 +1354,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('support') && (
           <button
             onClick={() => setActiveTab('reports')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'reports' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1365,7 +1365,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('qris')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'qris' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1376,7 +1376,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('promos')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'promos' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1387,7 +1387,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('hero')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'hero' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1398,7 +1398,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('affiliate')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'affiliate' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1409,7 +1409,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('admin_management')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'admin_management' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1420,7 +1420,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('branding')}
-            className={`aspect-square min-h-0 w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-1.5 py-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight shadow-sm hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md [&>svg]:h-5 [&>svg]:w-5 [&>span]:text-[10px] [&>span]:font-bold sm:rounded-2xl sm:px-2 sm:py-2.5 sm:[&>svg]:h-6 sm:[&>svg]:w-6 sm:[&>span]:text-xs ${
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[9px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'branding' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
