@@ -5,30 +5,84 @@
 
 import React, { lazy, Suspense, useState, useEffect, useCallback } from 'react';
 import { MainLayout } from './layouts/MainLayout';
-const HomePage = lazy(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })));
-const CommunityPage = lazy(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })));
-const BrowseTalentPage = lazy(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })));
-const TalentDetailPage = lazy(() => import('./pages/TalentDetailPage').then((module) => ({ default: module.TalentDetailPage })));
-const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage').then((module) => ({ default: module.HowItWorksPage })));
-const BecomeTalentPage = lazy(() => import('./pages/BecomeTalentPage').then((module) => ({ default: module.BecomeTalentPage })));
-const AboutPage = lazy(() => import('./pages/AboutPage').then((module) => ({ default: module.AboutPage })));
-const FaqPage = lazy(() => import('./pages/FaqPage').then((module) => ({ default: module.FaqPage })));
-const HelpCenterPage = lazy(() => import('./pages/HelpCenterPage').then((module) => ({ default: module.HelpCenterPage })));
-const LoginPage = lazy(() => import('./pages/LoginPage').then((module) => ({ default: module.LoginPage })));
-const RegisterPage = lazy(() => import('./pages/RegisterPage').then((module) => ({ default: module.RegisterPage })));
-const TermsPage = lazy(() => import('./pages/TermsPage').then((module) => ({ default: module.TermsPage })));
-const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((module) => ({ default: module.PrivacyPolicyPage })));
-const BookingHistoryPage = lazy(() => import('./pages/BookingHistoryPage').then((module) => ({ default: module.BookingHistoryPage })));
-const CustomerProfilePage = lazy(() => import('./pages/CustomerProfilePage').then((module) => ({ default: module.CustomerProfilePage })));
-const TalentDashboardPage = lazy(() => import('./pages/TalentDashboardPage').then((module) => ({ default: module.TalentDashboardPage })));
-const AdminPage = lazy(() => import('./pages/AdminPage').then((module) => ({ default: module.AdminPage })));
-const VerifyKtpPage = lazy(() => import('./pages/VerifyKtpPage').then((module) => ({ default: module.VerifyKtpPage })));
-const ChangePasswordPage = lazy(() => import('./pages/ChangePasswordPage').then((module) => ({ default: module.ChangePasswordPage })));
-const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage').then((module) => ({ default: module.ForgotPasswordPage })));
-const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage').then((module) => ({ default: module.ResetPasswordPage })));
-const AdminInviteSetupPage = lazy(() => import('./pages/AdminInviteSetupPage').then((module) => ({ default: module.AdminInviteSetupPage })));
+const HomePage = lazyPage(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })), 'Beranda');
+const CommunityPage = lazyPage(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })), 'Komunitas');
+const BrowseTalentPage = lazyPage(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })), 'Daftar Talent');
+const TalentDetailPage = lazyPage(() => import('./pages/TalentDetailPage').then((module) => ({ default: module.TalentDetailPage })), 'Detail Talent');
+const HowItWorksPage = lazyPage(() => import('./pages/HowItWorksPage').then((module) => ({ default: module.HowItWorksPage })), 'Cara Kerja');
+const BecomeTalentPage = lazyPage(() => import('./pages/BecomeTalentPage').then((module) => ({ default: module.BecomeTalentPage })), 'Pendaftaran Talent');
+const AboutPage = lazyPage(() => import('./pages/AboutPage').then((module) => ({ default: module.AboutPage })), 'Tentang YUKU');
+const FaqPage = lazyPage(() => import('./pages/FaqPage').then((module) => ({ default: module.FaqPage })), 'FAQ');
+const HelpCenterPage = lazyPage(() => import('./pages/HelpCenterPage').then((module) => ({ default: module.HelpCenterPage })), 'Pusat Bantuan');
+const LoginPage = lazyPage(() => import('./pages/LoginPage').then((module) => ({ default: module.LoginPage })), 'Login');
+const RegisterPage = lazyPage(() => import('./pages/RegisterPage').then((module) => ({ default: module.RegisterPage })), 'Registrasi');
+const TermsPage = lazyPage(() => import('./pages/TermsPage').then((module) => ({ default: module.TermsPage })), 'Syarat dan Ketentuan');
+const PrivacyPolicyPage = lazyPage(() => import('./pages/PrivacyPolicyPage').then((module) => ({ default: module.PrivacyPolicyPage })), 'Kebijakan Privasi');
+const BookingHistoryPage = lazyPage(() => import('./pages/BookingHistoryPage').then((module) => ({ default: module.BookingHistoryPage })), 'Riwayat Booking');
+const CustomerProfilePage = lazyPage(() => import('./pages/CustomerProfilePage').then((module) => ({ default: module.CustomerProfilePage })), 'Profil Saya');
+const TalentDashboardPage = lazyPage(() => import('./pages/TalentDashboardPage').then((module) => ({ default: module.TalentDashboardPage })), 'Dashboard Talent');
+const AdminPage = lazyPage(() => import('./pages/AdminPage').then((module) => ({ default: module.AdminPage })), 'Admin');
+const VerifyKtpPage = lazyPage(() => import('./pages/VerifyKtpPage').then((module) => ({ default: module.VerifyKtpPage })), 'Verifikasi KTP');
+const ChangePasswordPage = lazyPage(() => import('./pages/ChangePasswordPage').then((module) => ({ default: module.ChangePasswordPage })), 'Ganti Kata Sandi');
+const ForgotPasswordPage = lazyPage(() => import('./pages/ForgotPasswordPage').then((module) => ({ default: module.ForgotPasswordPage })), 'Lupa Kata Sandi');
+const ResetPasswordPage = lazyPage(() => import('./pages/ResetPasswordPage').then((module) => ({ default: module.ResetPasswordPage })), 'Reset Kata Sandi');
+const AdminInviteSetupPage = lazyPage(() => import('./pages/AdminInviteSetupPage').then((module) => ({ default: module.AdminInviteSetupPage })), 'Aktivasi Admin');
 import { AppRoute } from './types/navigation';
 import { supabase } from './lib/supabase';
+
+const PAGE_LOAD_TIMEOUT_MS = 20_000;
+
+function lazyPage<T extends React.ComponentType<any>>(
+  loader: () => Promise<{ default: T }>,
+  pageName: string,
+) {
+  return lazy(() => {
+    let timeoutId: number;
+    const timeout = new Promise<never>((_, reject) => {
+      timeoutId = window.setTimeout(
+        () => reject(new Error(`Halaman ${pageName} tidak selesai dimuat dalam 20 detik.`)),
+        PAGE_LOAD_TIMEOUT_MS,
+      );
+    });
+    return Promise.race([loader(), timeout]).finally(() => window.clearTimeout(timeoutId));
+  });
+}
+
+class PageLoadErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error('YUKU: halaman gagal dimuat', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4 py-12 text-center" role="alert">
+          <h2 className="text-lg font-bold text-slate-900">Halaman belum berhasil dibuka</h2>
+          <p className="max-w-md text-sm text-slate-600">
+            Koneksi mungkin terputus atau file halaman gagal dimuat. Silakan coba muat ulang halaman.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+          >
+            Coba lagi
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<AppRoute>(() => {
@@ -247,6 +301,7 @@ export default function App() {
 
   return (
     <MainLayout currentPath={currentPath} onNavigate={handleNavigate}>
+      <PageLoadErrorBoundary key={currentPath}>
       <Suspense
         fallback={
           <div className="flex min-h-[50vh] items-center justify-center px-4 py-12" role="status" aria-live="polite">
@@ -259,6 +314,7 @@ export default function App() {
       >
         {renderCurrentPage()}
       </Suspense>
+      </PageLoadErrorBoundary>
     </MainLayout>
   );
 }
