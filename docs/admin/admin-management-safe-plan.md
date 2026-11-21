@@ -1,44 +1,46 @@
-# YUKU Admin Management — Safe Implementation Plan
+# YUKU Admin Management — Rencana Implementasi Sederhana
 
 ## Tujuan
 - Pertahankan satu halaman login yang sudah ada.
-- Akun pemilik `yukusocial@gmail.com` menjadi Super Admin.
-- Super Admin dapat membuat, menonaktifkan, dan mengatur hak akses Admin lain.
-- Admin biasa hanya dapat membuka bagian yang ditugaskan.
+- Hanya ada dua tingkatan akun: **Super Admin** dan **Admin**.
+- Akun awal Super Admin: `yukusocial@gmail.com`.
+- Super Admin dapat menambah/menonaktifkan Admin dan memilih menu yang boleh diakses setiap Admin.
+- Satu akun Admin dapat diberi beberapa menu sekaligus. Tidak ada jenis akun Admin yang terpisah.
 - Tidak memakai MFA pada tahap ini.
 - Xendit tetap nonaktif dan tidak disentuh.
 
-## Kondisi yang ditemukan
-- Aplikasi saat ini hanya mengenali role `admin`, `talent`, dan `customer`.
-- Halaman Admin memeriksa `role === 'admin'`.
-- Halaman Admin mengambil data banyak modul sekaligus saat dibuka, bukan hanya data tab yang sedang dipilih.
-- Database memiliki banyak kebijakan akses yang memakai `is_admin()`. Mengubah tampilan menu saja tidak cukup untuk membatasi akses.
+## Pilihan menu Admin biasa
+- Talent — data Talent dan review layanan.
+- Booking — pengelolaan booking.
+- Keuangan — pencairan, refund, QRIS, dan affiliate.
+- Support — laporan insiden dan verifikasi KTP Customer.
 
-## Kelompok akses awal
-1. Keuangan — pencairan, refund, dan data keuangan.
-2. Booking — daftar booking dan penanganan pembatalan.
-3. Talent — verifikasi talent, layanan, dan identitas.
-4. Support — laporan, keluhan, dan bantuan pengguna.
-
-Super Admin mendapat seluruh akses serta menu Pengaturan Admin. Admin biasa tidak boleh mengubah, menonaktifkan, atau menurunkan hak Super Admin.
+## Menu khusus Super Admin
+- Pengaturan Admin dan pembagian akses.
+- Branding.
+- Poster Promo.
+- Slide Hero.
+- Overview.
 
 ## Aturan keselamatan
 - Semua perubahan dibuat di branch terpisah.
-- Tidak mengubah database Production atau Worker Production selama tahap pengembangan.
+- Tidak mengubah database Production atau Worker Production selama pengembangan dan pengujian.
+- Admin biasa tidak dapat membuat/mengelola Admin lain atau mengubah Super Admin.
 - Jangan mengubah status verifikasi umur atau status akun pengguna hanya untuk memberi hak Admin.
 - Jangan memakai fungsi provisioning lama tanpa perbaikan; fungsi lama mengubah status verifikasi umur dan status akun.
-- Jangan menyatakan pembatasan aman sebelum semua akses database dan fungsi sensitif sudah diperiksa serta diuji.
+- Pembatasan harus berlaku di database/RLS, fungsi server, dan Storage; bukan hanya menyembunyikan menu.
 - Xendit tidak disentuh.
+- Production hanya diubah setelah persetujuan khusus.
 
 ## Urutan pengerjaan
-1. Petakan menu, pemuatan data, fungsi database, dan kebijakan akses untuk setiap kelompok.
-2. Siapkan penyimpanan hak akses Admin dan fungsi pemeriksaan akses di database.
-3. Terapkan pemeriksaan akses pada backend/database, bukan hanya menyembunyikan menu.
-4. Perbarui halaman Admin agar hanya memuat data sesuai hak akses.
-5. Tambahkan halaman Pengaturan Admin khusus Super Admin.
-6. Uji akses Super Admin, Admin dengan izin terbatas, dan pengguna biasa.
-7. Jalankan pemeriksaan build dan tes. Ajukan perubahan melalui Pull Request untuk ditinjau.
+1. Petakan menu, pemuatan data, fungsi database, dan kebijakan akses.
+2. Siapkan penyimpanan akun Super Admin/Admin dan izin menu yang dapat dicentang.
+3. Terapkan pemeriksaan izin pada backend/database.
+4. Perbarui halaman Admin agar hanya memuat data yang diizinkan.
+5. Tambahkan pengaturan Admin khusus Super Admin.
+6. Uji akses Super Admin, Admin dengan kombinasi izin, Admin tanpa izin, dan pengguna biasa.
+7. Jalankan pemeriksaan build dan tes. Ajukan perubahan melalui Pull Request.
 8. Production hanya diubah setelah persetujuan khusus.
 
 ## Status
-Dokumen perencanaan saja. Belum ada perubahan kode aplikasi, database, atau Production.
+Rancangan dua tingkatan akun telah ditetapkan. Pemeriksaan Staging sejauh ini read-only. Belum ada perubahan database, kode aplikasi, atau Production.
