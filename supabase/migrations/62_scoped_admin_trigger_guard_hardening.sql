@@ -402,3 +402,40 @@ BEGIN
   RETURN NEW;
 END;
 $function$;
+
+
+-- User security columns: role assignment stays Super Admin/backend-only.
+-- KTP-derived verification/status changes require the matching KTP permission.
+CREATE OR REPLACE FUNCTION public.prevent_user_security_column_tampering()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO ''
+AS $function$
+BEGIN
+  IF session_user IN ('postgres', 'supabase_admin')
+     OR COALESCE(auth.jwt() ->> 'role', '') = 'service_role' THEN
+    RETURN NEW;
+  END IF;
+
+  IF (NEW.id IS DISTINCT FROM OLD.id
+      OR NEW.email IS DISTINCT FROM OLD.email
+      OR NEW.created_at IS DISTINCT FROM OLD.created_at)
+     AND NOT public.is_super_admin() THEN
+    RAISE EXCEPTION 'Kolom identitas sistem hanya dapat diubah oleh Super Admin.';
+  END IF;
+
+  IF NEW.role IS DISTINCT FROM OLD.role
+     AND NOT public.is_super_admin() THEN
+    RAISE EXCEPTION 'Perubahan role hanya dapat dilakukan oleh Super Admin atau backend undangan tepercaya.';
+  END IF;
+
+  IF (NEW.is_verified_18 IS DISTINCT FROM OLD.is_verified_18
+      OR NEW.account_status IS DISTINCT FROM OLD.account_status)
+     AND NOT public.can_admin_access_ktp(NEW.id) THEN
+    RAISE EXCEPTION 'Perubahan status verifikasi memerlukan izin KTP sesuai jenis akun.';
+  END IF;
+
+  RETURN NEW;
+END;
+$function$;
