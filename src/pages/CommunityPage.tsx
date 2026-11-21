@@ -109,6 +109,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
 
   const handleModeration = async (report: CommunityReport, action: 'hide' | 'remove' | 'dismiss') => {
     if (busyModerationIds.includes(report.id)) return;
+    if (action === 'remove' && !window.confirm('Hapus konten ini dari komunitas? Konten tidak akan tampil lagi untuk anggota.')) return;
     setBusyModerationIds((current) => [...current, report.id]);
     try {
       await processCommunityReport(
@@ -553,13 +554,6 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   )}
                 </article>
               ))}
-              {!isLoading && !errorMessage && visiblePosts.length === 0 && (
-                <div className="rounded-2xl border border-dashed border-purple-200 bg-white p-10 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-700"><Hash className="h-5 w-5" /></div>
-                  <p className="mt-3 text-sm font-bold text-slate-800">Belum ada cerita di topik ini</p>
-                  <p className="mt-1 text-xs text-slate-500">Jadilah orang pertama yang memulai obrolan.</p>
-                </div>
-              )}
             </div>
           </main>
 
