@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS public.community_posts (
 CREATE TABLE IF NOT EXISTS public.community_comments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   post_id uuid NOT NULL REFERENCES public.community_posts(id) ON DELETE CASCADE,
-  author_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  author_id uuid REFERENCES auth.users(id) ON DELETE SET NULL
   author_display_name text NOT NULL DEFAULT 'Anggota YUKU',
   body text NOT NULL CHECK (char_length(btrim(body)) BETWEEN 1 AND 600),
   status text NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'hidden')),
