@@ -47,7 +47,7 @@ export const AdminMfaGate: React.FC<AdminMfaGateProps> = ({ onVerified, onNaviga
       (factor) => factor.status === 'verified',
     ) as TotpFactor[];
     const unverifiedFactors = (factorsResult.data.totp || []).filter(
-      (factor) => factor.status === 'unverified',
+      (factor) => (factor.status as string) === 'unverified',
     ) as TotpFactor[];
 
     if (verifiedFactors.length > 0) {
