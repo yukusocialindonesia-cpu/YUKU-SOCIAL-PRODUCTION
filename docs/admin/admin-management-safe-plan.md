@@ -42,5 +42,10 @@
 7. Jalankan pemeriksaan build dan tes. Ajukan perubahan melalui Pull Request.
 8. Production hanya diubah setelah persetujuan khusus.
 
-## Status
-Rancangan dua tingkatan akun telah ditetapkan. Pemeriksaan Staging sejauh ini read-only. Belum ada perubahan database, kode aplikasi, atau Production.
+## Status per 21 November 2026
+- Model dua tingkatan akun telah ditetapkan.
+- Migration 48 sudah diterapkan di Supabase Staging untuk fondasi akun Super Admin/Admin dan izin menu.
+- Tes awal Staging lulus, termasuk uji Admin dengan satu izin dan rollback data uji.
+- Pembatasan semua tabel/RPC/Storage dan penyesuaian halaman Admin masih harus dikerjakan sebelum akses terbatas benar-benar aktif.
+- Belum ada perubahan kode aplikasi atau deployment.
+- Production tidak disentuh.
