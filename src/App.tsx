@@ -249,11 +249,9 @@ export default function App() {
     <MainLayout currentPath={currentPath} onNavigate={handleNavigate}>
       <Suspense
         fallback={
-          <div className="flex min-h-[50vh] items-center justify-center px-4 py-12" role="status" aria-live="polite">
-            <div className="flex items-center gap-3 rounded-2xl border border-purple-100 bg-white px-4 py-3 text-sm font-semibold text-purple-800 shadow-sm">
-              <span className="h-5 w-5 animate-spin rounded-full border-2 border-purple-200 border-t-purple-700" aria-hidden="true" />
-              Memuat halaman...
-            </div>
+          <div className="flex min-h-[20vh] items-center justify-center py-8" role="status" aria-live="polite">
+            <span className="h-6 w-6 animate-spin rounded-full border-2 border-purple-200 border-t-purple-700" aria-hidden="true" />
+            <span className="sr-only">Memuat halaman</span>
           </div>
         }
       >
