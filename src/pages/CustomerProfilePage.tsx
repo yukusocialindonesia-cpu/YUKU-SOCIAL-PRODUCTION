@@ -44,6 +44,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   const [city, setCity] = useState('');
   const [gender, setGender] = useState<GenderType | ''>('');
   const [bio, setBio] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -66,13 +67,21 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
     const loadProfile = async () => {
       setIsLoading(true);
       setErrorMessage('');
-      const { data, error } = await supabase
-        .from('customer_profiles')
-        .select('id, display_name, avatar_url, city, gender, bio')
-        .eq('id', user.id)
-        .maybeSingle();
+      const [{ data, error }, { data: accountData }] = await Promise.all([
+        supabase
+          .from('customer_profiles')
+          .select('id, display_name, avatar_url, city, gender, bio')
+          .eq('id', user.id)
+          .maybeSingle(),
+        supabase
+          .from('users')
+          .select('phone_number')
+          .eq('id', user.id)
+          .maybeSingle(),
+      ]);
 
       if (!active) return;
+      setPhoneNumber(accountData?.phone_number || user.user_metadata?.phone_number || '');
       if (error) {
         setErrorMessage('Profil belum bisa dimuat. Silakan coba lagi.');
       } else if (!data) {
@@ -303,7 +312,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
               </div>
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 min-w-0">
                 <p className="text-xs font-bold text-slate-500 mb-1"><Phone className="inline w-3.5 h-3.5 mr-1" />Nomor WhatsApp</p>
-                <p className="text-sm text-slate-700 break-words">{user.user_metadata?.phone_number || 'Belum tersedia'}</p>
+                <p className="text-sm text-slate-700 break-words">{phoneNumber || 'Belum tersedia'}</p>
                 <p className="text-[11px] text-slate-400 mt-1">Informasi kontak tidak diubah dari halaman ini.</p>
               </div>
             </div>
