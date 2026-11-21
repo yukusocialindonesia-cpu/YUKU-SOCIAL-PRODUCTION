@@ -223,7 +223,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [holdBookingOnDispute, setHoldBookingOnDispute] = useState(false);
   const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
-  // Data Admin tidak boleh dimuat sebelum sesi mencapai AAL2 (MFA berhasil).\n  const isAdminAuthorized = role === 'admin' && isMfaVerified;
+  // Data Admin tidak boleh dimuat sebelum sesi mencapai AAL2 (MFA berhasil).
+  const isAdminAuthorized = role === 'admin' && isMfaVerified;
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {
