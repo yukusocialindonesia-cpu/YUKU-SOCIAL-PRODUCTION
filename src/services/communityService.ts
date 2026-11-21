@@ -17,35 +17,44 @@ export interface CommunityPost {
   body: string;
   topic: CommunityTopic;
   created_at: string;
-  likes: number;
+  likes_count: number;
+  comments_count: number;
   likedByMe: boolean;
   comments: CommunityComment[];
 }
 
-type PostRow = Omit<CommunityPost, 'likes' | 'likedByMe' | 'comments'> & {
-  community_likes: { user_id: string }[];
-  community_comments: CommunityComment[];
-};
+type PostRow = Omit<CommunityPost, 'likedByMe'>;
 
 export async function loadCommunityPosts(currentUserId: string | null): Promise<CommunityPost[]> {
   const { data, error } = await supabase
     .from('community_posts')
-    .select('id, author_id, author_display_name, body, topic, created_at, community_likes(user_id), community_comments(id, author_id, author_display_name, body, created_at)')
+    .select('id, author_id, author_display_name, body, topic, created_at, likes_count, comments_count, community_comments(id, author_id, author_display_name, body, created_at)')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(30);
 
   if (error) throw error;
 
-  return ((data || []) as unknown as PostRow[]).map((post) => ({
-    id: post.id,
-    author_id: post.author_id,
-    author_display_name: post.author_display_name,
-    body: post.body,
-    topic: post.topic,
-    created_at: post.created_at,
-    likes: post.community_likes?.length || 0,
-    likedByMe: Boolean(currentUserId && post.community_likes?.some((like) => like.user_id === currentUserId)),
+  const rows = (data || []) as unknown as PostRow[];
+  const postIds = rows.map((post) => post.id);
+  let likedPostIds = new Set<string>();
+
+  if (currentUserId && postIds.length > 0) {
+    const { data: likes, error: likesError } = await supabase
+      .from('community_likes')
+      .select('post_id')
+      .eq('user_id', currentUserId)
+      .in('post_id', postIds);
+
+    if (likesError) throw likesError;
+    likedPostIds = new Set((likes || []).map((like) => like.post_id));
+  }
+
+  return rows.map((post) => ({
+    ...post,
+    likes_count: post.likes_count || 0,
+    comments_count: post.comments_count || 0,
+    likedByMe: likedPostIds.has(post.id),
     comments: post.community_comments || [],
   }));
 }
