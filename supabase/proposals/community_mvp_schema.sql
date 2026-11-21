@@ -6,7 +6,7 @@
 
 CREATE TABLE IF NOT EXISTS public.community_posts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  author_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  author_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   author_display_name text NOT NULL DEFAULT 'Anggota YUKU',
   body text NOT NULL CHECK (char_length(btrim(body)) BETWEEN 1 AND 1200),
   topic text NOT NULL CHECK (topic IN ('Pertemanan', 'Kuliner', 'Travel & Aktivitas', 'Hobi', 'Gaming')),
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS public.community_likes (
 
 CREATE TABLE IF NOT EXISTS public.community_reports (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  reporter_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  reporter_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   post_id uuid REFERENCES public.community_posts(id) ON DELETE CASCADE,
   comment_id uuid REFERENCES public.community_comments(id) ON DELETE CASCADE,
   reason text NOT NULL CHECK (reason IN ('Spam', 'Pelecehan', 'Konten tidak pantas', 'Penipuan', 'Lainnya')),
@@ -48,6 +48,34 @@ CREATE TABLE IF NOT EXISTS public.community_reports (
     (post_id IS NULL AND comment_id IS NOT NULL)
   )
 );
+
+-- Account deletion policy:
+-- Keep community content and moderation evidence, but anonymize authors/reporters.
+-- Likes are still removed by their existing ON DELETE CASCADE foreign key.
+CREATE OR REPLACE FUNCTION public.anonymize_community_content_before_user_delete()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+BEGIN
+  UPDATE public.community_posts
+  SET author_display_name = 'Anggota yang dihapus'
+  WHERE author_id = OLD.id;
+
+  UPDATE public.community_comments
+  SET author_display_name = 'Anggota yang dihapus'
+  WHERE author_id = OLD.id;
+
+  RETURN OLD;
+END;
+$function$;
+REVOKE ALL ON FUNCTION public.anonymize_community_content_before_user_delete() FROM PUBLIC, anon, authenticated;
+
+DROP TRIGGER IF EXISTS trg_anonymize_community_content_before_user_delete ON auth.users;
+CREATE TRIGGER trg_anonymize_community_content_before_user_delete
+BEFORE DELETE ON auth.users
+FOR EACH ROW EXECUTE FUNCTION public.anonymize_community_content_before_user_delete();
 
 CREATE INDEX IF NOT EXISTS community_posts_public_feed_idx
   ON public.community_posts (created_at DESC) WHERE status = 'published';
