@@ -267,3 +267,204 @@ GRANT UPDATE (body, topic) ON public.community_posts TO authenticated;
 GRANT UPDATE (body) ON public.community_comments TO authenticated;
 
 -- Author snapshot columns and report status remain writable only by trusted database code.
+
+
+-- ---------------------------------------------------------------------------
+-- ADMIN MODERATION (prototype review addendum)
+-- Uses the existing Admin permission model. Support Admins may moderate;
+-- this deliberately does not treat every Admin as a moderator.
+-- ---------------------------------------------------------------------------
+
+ALTER TABLE public.community_posts
+  DROP CONSTRAINT IF EXISTS community_posts_status_check;
+ALTER TABLE public.community_posts
+  ADD CONSTRAINT community_posts_status_check
+  CHECK (status IN ('published', 'hidden', 'removed'));
+
+ALTER TABLE public.community_comments
+  DROP CONSTRAINT IF EXISTS community_comments_status_check;
+ALTER TABLE public.community_comments
+  ADD CONSTRAINT community_comments_status_check
+  CHECK (status IN ('published', 'hidden', 'removed'));
+
+ALTER TABLE public.community_posts
+  ADD COLUMN IF NOT EXISTS moderated_at timestamptz,
+  ADD COLUMN IF NOT EXISTS moderated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS moderation_note text;
+
+ALTER TABLE public.community_comments
+  ADD COLUMN IF NOT EXISTS moderated_at timestamptz,
+  ADD COLUMN IF NOT EXISTS moderated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS moderation_note text;
+
+ALTER TABLE public.community_reports
+  ADD COLUMN IF NOT EXISTS reviewed_at timestamptz,
+  ADD COLUMN IF NOT EXISTS reviewed_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS admin_notes text;
+
+-- Existing get_admin_access() confirms that permissions are stored in
+-- private.admin_permissions(permission_key, admin_user_id), and that active
+-- Admin accounts are checked by private.is_active_admin(uuid).
+CREATE OR REPLACE FUNCTION public.community_can_moderate()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+  SELECT COALESCE(
+    private.is_active_admin(auth.uid())
+    AND (
+      private.is_super_admin(auth.uid())
+      OR EXISTS (
+        SELECT 1
+        FROM private.admin_permissions ap
+        WHERE ap.admin_user_id = auth.uid()
+          AND ap.permission_key = 'support'
+      )
+    ),
+    false
+  );
+$function$;
+
+REVOKE ALL ON FUNCTION public.community_can_moderate() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.community_can_moderate() TO authenticated;
+
+-- RLS: Support Admins and Super Admins can see hidden/removed content and reports.
+DROP POLICY IF EXISTS community_posts_moderator_read ON public.community_posts;
+CREATE POLICY community_posts_moderator_read ON public.community_posts
+FOR SELECT TO authenticated
+USING ((SELECT public.community_can_moderate()));
+
+DROP POLICY IF EXISTS community_comments_moderator_read ON public.community_comments;
+CREATE POLICY community_comments_moderator_read ON public.community_comments
+FOR SELECT TO authenticated
+USING ((SELECT public.community_can_moderate()));
+
+DROP POLICY IF EXISTS community_reports_moderator_read ON public.community_reports;
+CREATE POLICY community_reports_moderator_read ON public.community_reports
+FOR SELECT TO authenticated
+USING ((SELECT public.community_can_moderate()));
+
+-- Only trusted RPCs may change moderation state or report decisions.
+REVOKE UPDATE, DELETE ON public.community_reports FROM authenticated;
+REVOKE UPDATE ON public.community_posts, public.community_comments FROM authenticated;
+GRANT UPDATE (body, topic) ON public.community_posts TO authenticated;
+GRANT UPDATE (body) ON public.community_comments TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.moderate_community_post(
+  p_post_id uuid,
+  p_action text,
+  p_note text DEFAULT NULL
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.community_can_moderate() THEN
+    RAISE EXCEPTION 'Tidak memiliki izin moderasi komunitas'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF p_action NOT IN ('hide', 'remove', 'restore') THEN
+    RAISE EXCEPTION 'Aksi moderasi tidak valid' USING ERRCODE = '22023';
+  END IF;
+
+  UPDATE public.community_posts
+  SET status = CASE p_action
+        WHEN 'hide' THEN 'hidden'
+        WHEN 'remove' THEN 'removed'
+        ELSE 'published'
+      END,
+      moderated_at = now(),
+      moderated_by = auth.uid(),
+      moderation_note = NULLIF(left(btrim(COALESCE(p_note, '')), 500), '')
+  WHERE id = p_post_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Postingan tidak ditemukan' USING ERRCODE = 'P0002';
+  END IF;
+END;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.moderate_community_comment(
+  p_comment_id uuid,
+  p_action text,
+  p_note text DEFAULT NULL
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.community_can_moderate() THEN
+    RAISE EXCEPTION 'Tidak memiliki izin moderasi komunitas'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF p_action NOT IN ('hide', 'remove', 'restore') THEN
+    RAISE EXCEPTION 'Aksi moderasi tidak valid' USING ERRCODE = '22023';
+  END IF;
+
+  UPDATE public.community_comments
+  SET status = CASE p_action
+        WHEN 'hide' THEN 'hidden'
+        WHEN 'remove' THEN 'removed'
+        ELSE 'published'
+      END,
+      moderated_at = now(),
+      moderated_by = auth.uid(),
+      moderation_note = NULLIF(left(btrim(COALESCE(p_note, '')), 500), '')
+  WHERE id = p_comment_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Komentar tidak ditemukan' USING ERRCODE = 'P0002';
+  END IF;
+END;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.review_community_report(
+  p_report_id uuid,
+  p_decision text,
+  p_admin_notes text DEFAULT NULL
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.community_can_moderate() THEN
+    RAISE EXCEPTION 'Tidak memiliki izin moderasi komunitas'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF p_decision NOT IN ('reviewed', 'dismissed') THEN
+    RAISE EXCEPTION 'Keputusan laporan tidak valid' USING ERRCODE = '22023';
+  END IF;
+
+  UPDATE public.community_reports
+  SET status = p_decision,
+      reviewed_at = now(),
+      reviewed_by = auth.uid(),
+      admin_notes = NULLIF(left(btrim(COALESCE(p_admin_notes, '')), 500), '')
+  WHERE id = p_report_id AND status = 'pending';
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Laporan tidak ditemukan atau sudah diproses'
+      USING ERRCODE = 'P0002';
+  END IF;
+END;
+$function$;
+
+REVOKE ALL ON FUNCTION public.moderate_community_post(uuid, text, text) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.moderate_community_comment(uuid, text, text) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.review_community_report(uuid, text, text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.moderate_community_post(uuid, text, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.moderate_community_comment(uuid, text, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.review_community_report(uuid, text, text) TO authenticated;
+
+-- IMPORTANT: this file remains a proposal. It has NOT been applied to Supabase.
