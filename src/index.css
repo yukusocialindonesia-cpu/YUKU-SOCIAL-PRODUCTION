@@ -57,9 +57,9 @@ body {
 
 @media (max-width: 640px) {
   #root::before {
-    background-position: right -42px center;
-    background-size: 250px;
-    opacity: 0.08;
+    background-position: right 8px center;
+    background-size: 230px;
+    opacity: 0.10;
   }
 }
 
