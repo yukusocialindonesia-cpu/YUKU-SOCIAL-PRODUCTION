@@ -14,7 +14,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
   };
 
   return (
-    <section className="py-10 md:py-20 bg-white border-t border-slate-100">
+    <section className="py-12 md:py-20 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 md:mb-12">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
@@ -32,12 +32,12 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
           {FAQ_ITEMS.slice(0, 5).map((item, idx) => (
             <div
               key={item.q}
-              className={`border border-slate-200/90 rounded-xl overflow-hidden transition-colors ${idx >= 4 ? 'hidden md:block' : ''}`}
+              className={`border border-white/90 rounded-[20px] overflow-hidden bg-white/80 shadow-[0_10px_26px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 backdrop-blur-xl transition-all duration-300 ${idx >= 4 ? 'hidden md:block' : ''}`}
             >
               <button
                 type="button"
                 onClick={() => toggleItem(idx)}
-                className="w-full py-4 px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-slate-50/50 hover:bg-slate-50"
+                className="w-full py-4 px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-white/70 hover:bg-white"
               >
                 <span className="text-sm sm:text-base">{item.q}</span>
                 <ChevronDown
