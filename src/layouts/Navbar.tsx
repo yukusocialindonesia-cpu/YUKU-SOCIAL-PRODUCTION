@@ -154,15 +154,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 {userRole === 'customer' && (
                   <>
                     <button
-                      onClick={() => handleLinkClick('/profil-saya')}
-                      className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
-                        currentPath === '/profil-saya' ? 'bg-purple-100 text-purple-900' : 'hover:bg-slate-50 text-slate-700'
-                      }`}
-                    >
-                      <User className="w-4 h-4 text-purple-700" />
-                      <span>Profil Saya</span>
-                    </button>
-                    <button
                       onClick={() => handleLinkClick('/riwayat-booking')}
                       className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                         currentPath === '/riwayat-booking'
@@ -361,6 +352,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
                 {userRole === 'customer' && (
                   <>
+                    <button
+                      onClick={() => handleLinkClick('/profil-saya')}
+                      className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                        currentPath === '/profil-saya' ? 'bg-purple-100 text-purple-900' : 'hover:bg-slate-50 text-slate-700'
+                      }`}
+                    >
+                      <User className="w-4 h-4 text-purple-700" />
+                      <span>Profil Saya</span>
+                    </button>
                     <button
                       onClick={() => handleLinkClick('/riwayat-booking')}
                       className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
