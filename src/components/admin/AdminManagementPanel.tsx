@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Check, Loader2, MailPlus, RefreshCw, Save, ShieldCheck, UserX, UserCheck } from 'lucide-react';
+import { Loader2, MailPlus, RefreshCw, Save, ShieldCheck, UserX, UserCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 type AdminPermission = 'talent' | 'booking' | 'finance' | 'support';
