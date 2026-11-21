@@ -1,51 +1,94 @@
-# YUKU 2.0 — Real Friends. Real Moments.
+# YUKU — Real Friends. Real Moments.
 
-Marketplace jasa pertemanan untuk pengalaman sosial online dan offline.
+YUKU adalah platform sosial yang menggabungkan **marketplace layanan pertemanan**, **komunitas**, dan **aktivitas sosial**. Layanan dirancang untuk pengalaman online maupun offline.
 
-## Stack saat ini
+> Dokumen ini menjelaskan kondisi proyek berdasarkan kode dan perubahan yang telah diverifikasi. Status setiap fitur dapat berbeda; jangan menganggap seluruh alur bisnis otomatis aktif hanya karena UI atau fondasi database tersedia.
+
+## Gambaran produk
+
+- **Marketplace:** penemuan profil Talent, kategori aktivitas, dan layanan.
+- **Booking:** fondasi pemesanan, status booking, serta pencatatan transaksi.
+- **Komunitas:** posting, komentar, suka, laporan, dan moderasi Admin.
+- **Affiliate:** pengaturan persentase komisi dan status program melalui panel Admin.
+- **Administrasi:** pengelolaan akses Admin berbasis izin dan moderasi konten.
+
+## Teknologi
 
 - React 19 + TypeScript
 - Vite 8
-- Supabase (Auth, Postgres, Storage, Realtime)
+- Supabase: Auth, PostgreSQL, Storage, Realtime, dan fungsi database
+- Cloudflare Workers untuk layanan Production
 
-> Proyek ini masih berupa aplikasi React + Vite. Migrasi ke Next.js belum dilakukan.
-> Jangan menganggap proyek siap produksi sebelum seluruh migrasi database dan pengujian staging lulus.
+## Menjalankan proyek secara lokal
 
-## Menjalankan lokal
+Persyaratan: Node.js versi yang kompatibel dengan Vite 8.
 
-1. Gunakan Node.js 22 atau versi yang kompatibel dengan Vite 8.
-2. Jalankan `npm install`.
-3. Salin `.env.example` menjadi `.env.local`.
-4. Isi `VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY` (atau `VITE_SUPABASE_PUBLISHABLE_KEY`) dari proyek Supabase milik YUKU.
-5. Jalankan `npm run dev`.
+1. Install dependensi:
+   `npm install`
+2. Salin `.env.example` menjadi `.env.local`.
+3. Isi variabel Supabase sesuai proyek pengembangan yang memang diizinkan.
+4. Jalankan server lokal:
+   `npm run dev`
+5. Buat build:
+   `npm run build`
+6. Periksa TypeScript:
+   `npm run lint`
 
-Tanpa konfigurasi Supabase, aplikasi sengaja tidak akan tersambung ke proyek default apa pun.
+Jangan menaruh `service_role key`, secret, atau kredensial privat di variabel frontend. Gunakan hanya URL dan publishable/anon key yang memang ditujukan untuk browser.
 
-## Database
+## Konfigurasi environment
 
-Baca `supabase/migrations/README.md`. Migrasi harus diterapkan berurutan pada proyek staging terlebih dahulu. `supabase/FULL_MIGRATION_V20.sql` adalah file pensiun berisi peringatan saja; jangan dieksekusi.
+Lihat `.env.example`. Variabel utama:
 
-## Status kesiapan
+| Variabel | Keterangan |
+|---|---|
+| `VITE_SUPABASE_URL` | URL proyek Supabase |
+| `VITE_SUPABASE_ANON_KEY` | Publishable/anon key untuk aplikasi browser |
+| `VITE_PAYMENT_CHECKOUT_ENABLED` | Sakelar checkout sisi frontend; default `false` |
+| `VITE_WEB_PUSH_PUBLIC_KEY` | Public VAPID key untuk Web Push; private key harus disimpan sebagai secret server |
 
-Belum production-ready. Payment gateway, webhook, dan payout provider otomatis belum terintegrasi atau diuji pada lingkungan staging.
+Jangan mengaktifkan checkout hanya dengan mengganti flag frontend. Alur pembayaran harus memiliki konfigurasi server, verifikasi webhook, dan pengujian end-to-end yang sesuai.
 
-## Batas integrasi keuangan saat ini
+## Database dan migrasi Supabase
 
-- Payout dan refund masih menggunakan proses manual dengan pencatatan referensi transfer; API provider belum dihubungkan.
-- Payment gateway, pembuatan invoice/checkout, dan verifikasi webhook belum tersedia.
-- Booking publik dinonaktifkan secara default (`VITE_PAYMENT_CHECKOUT_ENABLED=false`) sampai checkout dan webhook payment gateway dipasang serta diuji. Booking baru berstatus `pending_payment` sampai pembayaran terverifikasi.
-- Refund pembatalan oleh Talent membuat permintaan refund penuh; proses pengembalian aktual tetap harus dilakukan Finance di provider/bank.
-- Fondasi kebijakan pembatalan Customer tersedia pada migration 23: >24 jam refund 100%; 6–24 jam refund 50% dan sisa ditahan untuk Admin; <6 jam tanpa refund otomatis dan seluruh dana ditahan untuk peninjauan Admin. Migration ini belum memiliki layar Admin untuk keputusan/alokasi sisa dana dan belum diuji di staging. Refund provider tetap manual.
+- Berkas migrasi berada di `supabase/migrations/`.
+- Catatan migrasi historis berada di `supabase/migrations/README.md`; sebagian keterangannya berasal dari tahap pengembangan sebelumnya dan perlu dibaca bersama riwayat migrasi aktual.
+- Riwayat Production mencakup migrasi fitur marketplace, pengamanan Admin, affiliate, notifikasi, dan komunitas, termasuk perbaikan akses baca publik pada 21 November 2026.
+- Jangan menjalankan ulang SQL secara manual atau menerapkan migrasi lama ke Production tanpa memeriksa riwayat migrasi dan kondisi skema terlebih dahulu.
+- Untuk perubahan database: periksa skema dan kebijakan RLS, buat migrasi yang terukur, uji pada lingkungan aman bila tersedia, lalu verifikasi hasilnya.
 
+File `supabase/FULL_MIGRATION_V20.sql` adalah file pensiun/peringatan, **bukan** skrip instalasi database. Jangan dieksekusi.
 
-## Migration 24 safety note
+## Status fitur dan batasan penting
 
-Migration 24 prevents automatic full Talent earning reversal while Customer cancellation funds remain pending Admin review. It marks the related earning `disputed_hold`, which the existing payout validator excludes, and blocks cancellation if that earning has already been allocated or paid. Apply only in staging after review; this SQL has not been executed or integration-tested. The Admin decision ledger and actual provider refund/payout workflow remain unfinished.
+### Komunitas
+Fondasi komunitas telah diterapkan di Production: posting, komentar, likes, laporan, dan moderasi Admin. Perubahan lanjutan tetap perlu diuji sebelum dirilis.
 
-## Pemeriksaan staging (17 Nov 2026)
+### Affiliate
+Pengaturan affiliate tersedia di panel Admin. Nilai awal yang terakhir diverifikasi di database Production adalah komisi **10%** dan program **aktif**. Perubahan tarif harus dilakukan melalui alur Admin yang tersedia; jangan mengubah tabel atau ledger secara langsung.
 
-Perbandingan repo dengan proyek `yuku-staging` menemukan: riwayat migrasi staging tidak identik dengan repo (migrasi 28–30 dan 35 tidak tercatat dengan nama yang sama, ada migrasi staging yang tidak ada di repo); flag `payment_checkout` menyala di staging padahal Edge Function belum ter-deploy; skema `yuku_private` (`payment_simulation_config`, snapshot) hanya ada di staging. Ekspor skema staging sebagai baseline migrasi masih perlu dikerjakan sebelum produksi. Leaked password protection di Supabase Auth juga perlu diaktifkan.
+### Pembayaran, refund, dan payout
+- Checkout frontend secara default nonaktif (`VITE_PAYMENT_CHECKOUT_ENABLED=false`).
+- Ketersediaan fondasi booking atau ledger tidak berarti pembayaran otomatis sudah terhubung dan tervalidasi.
+- Refund dan payout yang memerlukan transfer dana tetap membutuhkan proses dan verifikasi provider/bank sesuai prosedur operasional.
+- Jangan mengaktifkan integrasi pembayaran atau mengubah konfigurasi provider tanpa persetujuan dan pengujian khusus.
 
-Setelah mengubah `package.json`, jalankan `npm install` untuk memperbarui `package-lock.json`. Proyek memiliki dua lockfile (`bun.lock` dan `package-lock.json`); pilih satu.
+## Keamanan dan data Production
 
+- Kebijakan Row Level Security (RLS) Supabase adalah lapisan utama pembatasan akses data.
+- Jangan menghapus atau memperlonggar RLS, grant, atau fungsi pemeriksaan Admin untuk mengatasi error tanpa audit dampak akses.
+- Perubahan pada booking, saldo, komisi, refund, payout, identitas/KTP, dan konfigurasi provider termasuk perubahan sensitif.
+- Jangan pernah memasukkan secret, token, data pribadi pengguna, atau kredensial ke Git.
 
+## Kontribusi dan alur perubahan
+
+1. Periksa implementasi yang sudah ada sebelum mengubah kode.
+2. Buat branch khusus untuk satu ruang lingkup perubahan.
+3. Jalankan pemeriksaan yang relevan (`npm run lint`, `npm run build`, dan pengujian terkait).
+4. Tinjau perubahan dan dampaknya terhadap RLS, data, serta alur keuangan.
+5. Gabungkan perubahan setelah pemeriksaan dan persetujuan.
+6. Verifikasi deployment Production secara terpisah; build sukses tidak otomatis membuktikan deployment atau tampilan sudah benar.
+
+## Prinsip pengembangan
+
+**Utamakan keamanan data, kestabilan Production, biaya operasional yang efisien, dan pengalaman pengguna.** Hindari perubahan besar sekaligus. Jangan menganggap fitur selesai sebelum diuji pada alur pengguna yang sebenarnya.
