@@ -4,7 +4,6 @@ export type CommunityTopic = 'Pertemanan' | 'Kuliner' | 'Travel & Aktivitas' | '
 
 export interface CommunityComment {
   id: string;
-  author_id: string | null;
   author_display_name: string;
   body: string;
   created_at: string;
@@ -30,7 +29,7 @@ type PostRow = Omit<CommunityPost, 'likedByMe' | 'comments'> & {
 export async function loadCommunityPosts(currentUserId: string | null): Promise<CommunityPost[]> {
   const { data, error } = await supabase
     .from('community_posts')
-    .select('id, author_id, author_display_name, body, topic, created_at, likes_count, comments_count, community_comments(id, author_id, author_display_name, body, created_at)')
+    .select('id, author_display_name, body, topic, created_at, likes_count, comments_count, community_comments(id, author_display_name, body, created_at)')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(30);
