@@ -56,14 +56,10 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
       if (mounted) {
         setError('Undangan belum dapat diverifikasi. Pastikan tautan masih berlaku. Jika masalah berlanjut, minta Super Admin memeriksa status undangan.');
       }
+      if (mounted) setChecking(false);
     };
 
-    try {
-      await verifyInviteSession();
-    } finally {
-      if (mounted) setChecking(false);
-    }
-
+    void verifyInviteSession();
     return () => { mounted = false; };
   }, []);
 
