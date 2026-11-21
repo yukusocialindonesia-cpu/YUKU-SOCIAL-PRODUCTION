@@ -368,7 +368,7 @@ BEGIN
       USING ERRCODE = '42501';
   END IF;
 
-  IF p_action NOT IN ('hide', 'remove', 'restore') THEN
+  IF p_action IS NULL OR p_action NOT IN ('hide', 'remove', 'restore') THEN
     RAISE EXCEPTION 'Aksi moderasi tidak valid' USING ERRCODE = '22023';
   END IF;
 
@@ -442,7 +442,7 @@ BEGIN
       USING ERRCODE = '42501';
   END IF;
 
-  IF p_decision NOT IN ('reviewed', 'dismissed') THEN
+  IF p_decision IS NULL OR p_decision NOT IN ('reviewed', 'dismissed') THEN
     RAISE EXCEPTION 'Keputusan laporan tidak valid' USING ERRCODE = '22023';
   END IF;
 
