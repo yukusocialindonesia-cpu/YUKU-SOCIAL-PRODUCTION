@@ -29,7 +29,8 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
       const maxAttempts = 8;
       const retryDelayMs = 750;
 
-      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      try {
+        for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         if (!mounted) return;
         try {
           const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -53,10 +54,12 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
         }
       }
 
-      if (mounted) {
-        setError('Undangan belum dapat diverifikasi. Pastikan tautan masih berlaku. Jika masalah berlanjut, minta Super Admin memeriksa status undangan.');
+        if (mounted) {
+          setError('Undangan belum dapat diverifikasi. Pastikan tautan masih berlaku. Jika masalah berlanjut, minta Super Admin memeriksa status undangan.');
+        }
+      } finally {
+        if (mounted) setChecking(false);
       }
-      if (mounted) setChecking(false);
     };
 
     void verifyInviteSession();
