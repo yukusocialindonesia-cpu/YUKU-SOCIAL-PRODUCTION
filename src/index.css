@@ -75,7 +75,7 @@ body {
     pointer-events: none;
     background-image: url('/yuku-app-icon-transparent.png');
     background-repeat: no-repeat;
-    background-position: right 8px 220px;
+    background-position: right 8px top 220px;
     background-size: 230px;
     opacity: 0.12;
   }
