@@ -52,7 +52,7 @@
 
 ## Status terbaru — 21 November 2026
 
-Fondasi akses dan pembatasan backend telah diterapkan di Supabase Staging melalui migrasi 48–61. Hak akses per menu sudah diuji dengan akun sementara dan seluruh perubahan pengujian dibatalkan.
+Fondasi akses dan pembatasan backend telah diterapkan di Supabase Staging melalui migrasi 48–63, termasuk hardening trigger, pemeliharaan KTP tepercaya, dan indeks audit. Hak akses per menu sudah diuji dengan akun sementara dan seluruh perubahan pengujian dibatalkan.
 
 Frontend branch sekarang memuat izin dari database, menyembunyikan menu yang tidak diberikan, memuat data per modul, serta menyembunyikan metrik keuangan dan kolom nominal booking dari Admin biasa.
 
@@ -60,6 +60,26 @@ Panel **Pengaturan Admin** sudah ditambahkan untuk Super Admin: undang Admin mel
 
 Booking Admin memakai RPC kolom-minimal; Finance tidak mendapat akses langsung ke tabel booking; KTP Customer dan Talent dipisahkan. Semua perubahan tetap di Staging. Production belum disentuh, belum ada merge ke main, dan Xendit tetap nonaktif/tidak diubah.
 
-Pemeriksaan build frontend sudah lulus di GitHub Actions: TypeScript check, build website, dan TypeScript check Edge Function.
+Pemeriksaan workflow pada commit paling baru belum dapat dikonfirmasi. Status Vercel Preview menunjukkan kegagalan karena batas penggunaan/build (`build-rate-limit`), sehingga jangan menyatakan build terbaru lulus sebelum CI yang sesuai terverifikasi.
 
 Pemeriksaan tambahan Staging memastikan KTP Talent dan Customer tidak saling terbuka, Admin nonaktif kehilangan akses, serta pengaturan izin dan provisioning Admin berjalan hanya melalui jalur Super Admin/service role. Dua indeks foreign key baru juga ditambahkan untuk menjaga performa tabel izin Admin. Tidak ada perubahan pada Production.
+
+
+## Catatan kesiapan Production — pemeriksaan 21 November 2026
+
+**Belum siap diterapkan ke Production.** Pemeriksaan database read-only menemukan:
+- Production belum memiliki `private.admin_accounts` dan `private.admin_permissions`; fondasi izin per menu belum ada di Production.
+- Fungsi lama `public.is_admin()` masih dapat dipanggil oleh role `anon` dan `authenticated`. Staging sudah membatasi pemanggilan anonim melalui migration 61; Production belum.
+- Satu akun Admin lama masih tercatat di `public.users`. Akun ini harus dipetakan ke Super Admin dengan hati-hati saat rencana migrasi disusun; jangan mengubah status umur atau status akun.
+- Advisor Production masih menandai 2 fungsi SECURITY DEFINER yang dapat dipanggil anon, 33 fungsi SECURITY DEFINER yang dapat dipanggil pengguna login, 2 tabel RLS tanpa policy (INFO), dan perlindungan kata sandi bocor yang nonaktif. Setiap temuan harus ditinjau berdasarkan tujuan dan guard di dalam fungsi; jangan menutup semua EXECUTE secara membabi buta karena beberapa RPC memang dipakai aplikasi.
+- Riwayat migrasi Staging/Production menggunakan versi timestamp untuk banyak perubahan, sedangkan beberapa file lokal branch menggunakan nomor urut pendek. Selain itu ada dua file dengan prefix `62_`. Sebelum deployment, perlu rekonsiliasi ledger migrasi agar CLI tidak menganggap perubahan yang sudah diterapkan sebagai migrasi baru atau menjalankannya dua kali.
+- Edge Function `admin-management` di Staging sudah versi 2 ACTIVE dengan JWT wajib; Production belum diverifikasi/diubah.
+
+**Gerbang sebelum Production:**
+1. Rekonsiliasi nama/versi seluruh migration lokal dengan ledger Staging dan Production; selesaikan duplikasi prefix.
+2. Susun satu paket migrasi Production yang idempotent/berurutan, dengan backup dan pemeriksaan pre/post-deploy.
+3. Tinjau semua temuan advisor Production dan samakan kontrol yang sudah teruji di Staging, terutama penutupan akses anon ke `is_admin()`.
+4. Jalankan build dan tes terbaru pada commit final serta verifikasi UI login, menu per izin, penonaktifan Admin, dan undangan memakai email uji yang disetujui.
+5. Baru ajukan persetujuan terpisah sebelum perubahan Production.
+
+Tidak ada perubahan Production yang dilakukan selama pemeriksaan ini. Xendit tetap tidak disentuh.
