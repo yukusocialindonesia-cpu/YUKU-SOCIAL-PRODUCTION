@@ -23,7 +23,9 @@ export interface CommunityPost {
   comments: CommunityComment[];
 }
 
-type PostRow = Omit<CommunityPost, 'likedByMe'>;
+type PostRow = Omit<CommunityPost, 'likedByMe' | 'comments'> & {
+  community_comments: CommunityComment[] | null;
+};
 
 export async function loadCommunityPosts(currentUserId: string | null): Promise<CommunityPost[]> {
   const { data, error } = await supabase
