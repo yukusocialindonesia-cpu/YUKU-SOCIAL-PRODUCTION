@@ -1,0 +1,97 @@
+import { createClient } from 'npm:@supabase/supabase-js@2.119.0';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+
+const allowedPermissions = new Set(['talent', 'booking', 'finance', 'support']);
+
+Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (req.method !== 'POST') return json({ error: 'Method tidak diizinkan.' }, 405);
+
+  const authorization = req.headers.get('Authorization');
+  if (!authorization?.startsWith('Bearer ')) return json({ error: 'Sesi login diperlukan.' }, 401);
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!supabaseUrl || !anonKey || !serviceRoleKey) {
+    return json({ error: 'Konfigurasi layanan undangan belum lengkap.' }, 500);
+  }
+
+  const userClient = createClient(supabaseUrl, anonKey, {
+    global: { headers: { Authorization: authorization } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const serviceClient = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  try {
+    const token = authorization.slice('Bearer '.length);
+    const { data: authData, error: authError } = await userClient.auth.getUser(token);
+    if (authError || !authData.user) return json({ error: 'Sesi login tidak valid.' }, 401);
+
+    const { data: access, error: accessError } = await userClient.rpc('get_admin_access');
+    if (accessError || access?.is_super_admin !== true) {
+      return json({ error: 'Hanya Super Admin yang dapat mengundang Admin baru.' }, 403);
+    }
+
+    const body = await req.json().catch(() => null);
+    const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const permissions = Array.isArray(body?.permissions)
+      ? [...new Set(body.permissions.filter((item: unknown): item is string => typeof item === 'string'))]
+      : [];
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return json({ error: 'Alamat email tidak valid.' }, 400);
+    }
+    if (permissions.length === 0 || permissions.some((permission) => !allowedPermissions.has(permission))) {
+      return json({ error: 'Pilih minimal satu izin menu yang valid.' }, 400);
+    }
+
+    const { data: invitation, error: inviteError } =
+      await serviceClient.auth.admin.inviteUserByEmail(email);
+    const invitedUserId = invitation.user?.id;
+    if (inviteError || !invitedUserId) {
+      return json({ error: inviteError?.message || 'Undangan Admin gagal dibuat.' }, 400);
+    }
+
+    const { error: provisionError } = await serviceClient.rpc('provision_scoped_admin_account', {
+      p_user_id: invitedUserId,
+      p_created_by: authData.user.id,
+    });
+    if (provisionError) {
+      await serviceClient.auth.admin.deleteUser(invitedUserId);
+      return json({ error: 'Akun undangan tidak dapat disiapkan dengan aman.' }, 500);
+    }
+
+    const { error: permissionError } = await userClient.rpc('set_admin_permissions', {
+      p_admin_user_id: invitedUserId,
+      p_permissions: permissions,
+    });
+    if (permissionError) {
+      await serviceClient.auth.admin.deleteUser(invitedUserId);
+      return json({ error: 'Izin Admin gagal disimpan; undangan dibatalkan.' }, 500);
+    }
+
+    return json({
+      success: true,
+      user_id: invitedUserId,
+      email,
+      permissions,
+      message: 'Undangan Admin berhasil dikirim.',
+    }, 201);
+  } catch (_error) {
+    return json({ error: 'Terjadi kesalahan saat membuat undangan Admin.' }, 500);
+  }
+});
