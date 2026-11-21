@@ -173,7 +173,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const { user: currentUser, role, adminAccess, isAuthLoading: isCheckingAuth } = useAuth();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<AdminTab>('talents');
+  const [activeTab, setActiveTab] = useState<AdminTab>('overview');
 
   // Data States
   const [talents, setTalents] = useState<TalentCurationItem[]>([]);
@@ -231,7 +231,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (canAccess('booking')) tabs.push('bookings');
     if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
     if (canAccess('support')) tabs.push('customer_ktp', 'reports');
-    if (isSuperAdmin) tabs.push('promos', 'hero', 'branding', 'admin_management');
+    if (isSuperAdmin) tabs.push('overview', 'promos', 'hero', 'branding', 'admin_management');
     return tabs;
   }, [adminAccess]);
 
@@ -1205,8 +1205,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* 4 Financial & Operational Platform Metrics */}
-        {isSuperAdmin && (
+        {/* Overview: ringkasan hanya untuk Super Admin */}
+        {isSuperAdmin && activeTab === 'overview' && (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-1">
@@ -1265,6 +1265,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
         {/* Tab Navigation */}
         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-slate-200 pb-3 text-xs font-bold text-slate-600 sm:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>button]:min-w-0 [&>button]:w-full [&>button]:justify-start [&>button]:text-left sm:[&>button]:w-auto sm:[&>button]:whitespace-nowrap">
+          {isSuperAdmin && (
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'overview' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'}`}
+          >
+            <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'overview' ? 'text-white' : 'text-emerald-600'}`} />
+            <span>Overview</span>
+          </button>
+          )}
           {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('talents')}
