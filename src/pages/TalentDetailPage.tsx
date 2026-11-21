@@ -774,7 +774,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   {voiceMedia.map((voice, idx) => (
                     <div
                       key={voice.id}
-                      className="bg-white/10 backdrop-blur-xs border border-white/15 rounded-xl p-3 space-y-1.5"
+                      className="bg-white/[0.12] backdrop-blur-xl border border-white/20 shadow-[0_10px_26px_rgba(0,0,0,0.12)] rounded-2xl p-3 space-y-1.5"
                     >
                       <div className="text-xs font-semibold text-amber-200">
                         {voice.caption || `Rekaman Suara #${idx + 1}`}
@@ -859,7 +859,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       {videoMedia.map((vid) => (
                         <div
                           key={vid.id}
-                          className="rounded-2xl sm:rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex flex-col"
+                          className="rounded-2xl overflow-hidden border border-white bg-white shadow-[0_12px_28px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70 flex flex-col"
                         >
                           <video
                             controls
@@ -1028,7 +1028,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
             {/* Customer Reviews: belum ada ulasan = satu baris ringkas, sudah ada = kartu penuh */}
             {reviews.length === 0 ? (
-              <div className="flex items-center gap-2 rounded-2xl bg-white border border-slate-200/80 px-3 py-2.5 text-xs text-slate-600">
+              <div className="flex items-center gap-2 rounded-2xl bg-white/85 border border-white shadow-sm ring-1 ring-purple-100/70 backdrop-blur-xl px-3 py-2.5 text-xs text-slate-600">
                 <MessageSquare className="w-4 h-4 text-purple-700 shrink-0" />
                 <span>
                   <strong className="font-semibold text-slate-800">Belum ada ulasan.</strong>{' '}
@@ -1112,7 +1112,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             )}
 
             {/* Safety Notice */}
-            <div className="bg-purple-950 text-white rounded-3xl lg:rounded-2xl p-5 lg:p-6 border border-purple-900 space-y-3">
+            <div className="bg-gradient-to-br from-purple-950 via-purple-900 to-[#2D1052] text-white rounded-[26px] p-5 lg:p-6 border border-purple-800/80 shadow-[0_18px_42px_rgba(46,16,82,0.18)] ring-1 ring-white/10 space-y-3">
               <div className="flex items-center gap-2 text-pink-400 text-xs font-bold">
                 <Ban className="w-4 h-4 shrink-0" />
                 <span>KEBIJAKAN KESELAMATAN & KEPATUHAN ETIKA</span>
@@ -1131,7 +1131,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
           {/* Right Column: Booking Widget Card */}
           <div className="lg:col-span-4 lg:sticky lg:top-24">
-            <div className="bg-white rounded-2xl border border-purple-200 shadow-lg p-6 space-y-5">
+            <div className="relative overflow-hidden bg-white/90 rounded-[28px] border border-white/90 shadow-[0_22px_54px_rgba(76,29,149,0.13),0_4px_14px_rgba(76,29,149,0.05)] ring-1 ring-purple-100/80 backdrop-blur-2xl p-6 space-y-5">
               <div className="border-b border-slate-100 pb-4">
                 <span className="text-xs text-slate-500 block font-medium">Tarif Layanan</span>
                 <div className="text-2xl font-black text-[#1E0938] tabular-nums mt-0.5">
