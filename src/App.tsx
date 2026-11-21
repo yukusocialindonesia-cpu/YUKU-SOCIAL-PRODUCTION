@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from './layouts/MainLayout';
+import { MobileHomePrototypePage } from './pages/MobileHomePrototypePage';
 import { HomePage } from './pages/HomePage';
 import { BrowseTalentPage } from './pages/BrowseTalentPage';
 import { TalentDetailPage } from './pages/TalentDetailPage';
@@ -166,6 +167,11 @@ export default function App() {
     setCurrentPath(path);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Prototype terpisah: hanya aktif pada URL khusus di branch prototype.
+  if (window.location.pathname === '/prototype-beranda') {
+    return <MobileHomePrototypePage />;
+  }
 
   // Render appropriate page view
   const renderCurrentPage = () => {
