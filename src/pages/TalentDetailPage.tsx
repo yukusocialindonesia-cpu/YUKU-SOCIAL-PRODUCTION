@@ -1429,19 +1429,19 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   />
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <div className="pt-3 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2">
                   <button
                     type="button"
                     onClick={handleCloseModal}
                     disabled={isSubmittingBooking}
-                    className="px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg cursor-pointer"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingBooking}
-                    className="px-5 py-2.5 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                    className="w-full sm:w-auto px-5 py-2.5 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {isSubmittingBooking ? (
                       <>
