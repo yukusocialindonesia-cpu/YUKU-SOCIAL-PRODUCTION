@@ -102,3 +102,55 @@ export async function reportCommunityPost(postId: string, userId: string, reason
   });
   if (error) throw error;
 }
+
+
+export interface CommunityReport {
+  id: string;
+  reason: string;
+  details: string | null;
+  status: 'pending' | 'reviewed' | 'dismissed';
+  created_at: string;
+  post_id: string | null;
+  comment_id: string | null;
+  community_posts: { body: string; author_display_name: string; status: string } | null;
+  community_comments: { body: string; author_display_name: string; status: string } | null;
+}
+
+export async function loadPendingCommunityReports(): Promise<CommunityReport[]> {
+  const { data, error } = await supabase
+    .from('community_reports')
+    .select('id, reason, details, status, created_at, post_id, comment_id, community_posts(body, author_display_name, status), community_comments(body, author_display_name, status)')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: true })
+    .limit(30);
+
+  if (error) throw error;
+  return (data || []) as unknown as CommunityReport[];
+}
+
+export async function moderateCommunityPost(postId: string, action: 'hide' | 'remove' | 'restore', note?: string) {
+  const { error } = await supabase.rpc('moderate_community_post', {
+    p_post_id: postId,
+    p_action: action,
+    p_note: note || null,
+  });
+  if (error) throw error;
+}
+
+export async function moderateCommunityComment(commentId: string, action: 'hide' | 'remove' | 'restore', note?: string) {
+  const { error } = await supabase.rpc('moderate_community_comment', {
+    p_comment_id: commentId,
+    p_action: action,
+    p_note: note || null,
+  });
+  if (error) throw error;
+}
+
+export async function reviewCommunityReport(reportId: string, decision: 'reviewed' | 'dismissed', adminNotes?: string) {
+  const { error } = await supabase.rpc('review_community_report', {
+    p_report_id: reportId,
+    p_decision: decision,
+    p_admin_notes: adminNotes || null,
+  });
+  if (error) throw error;
+}
