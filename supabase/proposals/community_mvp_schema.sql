@@ -102,7 +102,12 @@ ALTER TABLE public.community_reports ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS community_posts_public_read ON public.community_posts;
 CREATE POLICY community_posts_public_read ON public.community_posts
 FOR SELECT TO anon, authenticated
-USING (status = 'published' OR author_id = (SELECT auth.uid()) OR (SELECT public.is_admin()));
+USING (status = 'published' OR author_id = (SELECT auth.uid()));
+
+DROP POLICY IF EXISTS community_posts_admin_read ON public.community_posts;
+CREATE POLICY community_posts_admin_read ON public.community_posts
+FOR SELECT TO authenticated
+USING ((SELECT public.is_admin()));
 
 DROP POLICY IF EXISTS community_posts_member_insert ON public.community_posts;
 CREATE POLICY community_posts_member_insert ON public.community_posts
@@ -124,14 +129,17 @@ DROP POLICY IF EXISTS community_comments_public_read ON public.community_comment
 CREATE POLICY community_comments_public_read ON public.community_comments
 FOR SELECT TO anon, authenticated
 USING (
-  status = 'published'
-  AND EXISTS (
+  (status = 'published' AND EXISTS (
     SELECT 1 FROM public.community_posts p
     WHERE p.id = post_id AND p.status = 'published'
-  )
+  ))
   OR author_id = (SELECT auth.uid())
-  OR (SELECT public.is_admin())
 );
+
+DROP POLICY IF EXISTS community_comments_admin_read ON public.community_comments;
+CREATE POLICY community_comments_admin_read ON public.community_comments
+FOR SELECT TO authenticated
+USING ((SELECT public.is_admin()));
 
 DROP POLICY IF EXISTS community_comments_member_insert ON public.community_comments;
 CREATE POLICY community_comments_member_insert ON public.community_comments
