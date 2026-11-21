@@ -224,48 +224,52 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {
+    if (!adminAccess) {
+      setIsLoading(false);
+      return;
+    }
+
+    const isSuperAdmin = adminAccess.isSuperAdmin;
+    const canTalent = isSuperAdmin || adminAccess.permissions.includes('talent');
+    const canBooking = isSuperAdmin || adminAccess.permissions.includes('booking');
+    const canFinance = isSuperAdmin || adminAccess.permissions.includes('finance');
+    const canSupport = isSuperAdmin || adminAccess.permissions.includes('support');
+
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      // 1. Fetch all Talents and Identities
-      const { data: talentRows, error: talentErr } = await supabase
-        .from('talent_profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+      let enrichedBookings: AdminBookingItem[] = [];
 
-      if (talentErr) console.warn('Error loading talents:', talentErr.message);
-
-      // Fetch corresponding identities and users
-      let combinedTalents: TalentCurationItem[] = [];
-      if (talentRows && talentRows.length > 0) {
-        const talentIds = talentRows.map((t) => t.id);
-
-        const { data: identityRows } = await supabase
-          .from('user_identities')
+      // TALENT: profile curation, KTP Talent, service and display-name reviews.
+      if (canTalent) {
+        const { data: talentRows, error: talentErr } = await supabase
+          .from('talent_profiles')
           .select('*')
-          .in('id', talentIds);
+          .order('created_at', { ascending: false });
+        if (talentErr) throw talentErr;
 
-        const { data: userRows } = await supabase
-          .from('users')
-          .select('id, email, account_status, is_verified_18')
-          .in('id', talentIds);
+        const talentIds = (talentRows || []).map((t) => t.id);
+        const [{ data: identityRows }, { data: userRows }] = talentIds.length
+          ? await Promise.all([
+              supabase.from('user_identities')
+                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+                .in('id', talentIds),
+              supabase.rpc('get_admin_user_summaries', { p_user_ids: talentIds }),
+            ])
+          : [{ data: [] as any[] }, { data: [] as any[] }];
 
         const idMap = new Map((identityRows || []).map((id) => [id.id, id]));
-        const userMap = new Map((userRows || []).map((u) => [u.id, u]));
-
-        combinedTalents = talentRows.map((t) => {
+        const userMap = new Map((userRows || []).map((u: any) => [u.id, u]));
+        const combinedTalents: TalentCurationItem[] = (talentRows || []).map((t) => {
           const idRecord = idMap.get(t.id);
           const uRecord = userMap.get(t.id);
           const ktpStatus = idRecord?.ktp_verification_status || 'unsubmitted';
           const accountStatus = uRecord?.account_status;
           const isVerified18 = uRecord?.is_verified_18 === true;
-          const isApproved =
-            ktpStatus === 'verified' && accountStatus === 'active' && isVerified18;
-
           return {
             ...t,
-            is_approved: isApproved,
+            is_approved: ktpStatus === 'verified' && accountStatus === 'active' && isVerified18,
             full_legal_name: idRecord?.full_legal_name,
             date_of_birth: idRecord?.date_of_birth,
             ktp_number: idRecord?.ktp_number,
@@ -278,258 +282,230 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             is_verified_18: uRecord?.is_verified_18,
           };
         });
+        setTalents(combinedTalents);
+
+        const [
+          { data: serviceRequests, error: serviceRequestError },
+          { data: identityRequests, error: identityRequestError },
+          { data: approvedServices },
+          { data: serviceHistory },
+        ] = await Promise.all([
+          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,created_at').eq('approval_status', 'pending').order('created_at', { ascending: true }),
+          supabase.from('talent_identity_change_requests').select('id,talent_id,field_name,old_value,requested_value,created_at').eq('status', 'pending').order('created_at', { ascending: true }),
+          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,is_active,updated_at').eq('approval_status', 'approved').order('updated_at', { ascending: false }).limit(100),
+          supabase.from('talent_service_change_log').select('id,talent_id,change_type,old_value,new_value,created_at').order('created_at', { ascending: false }).limit(30),
+        ]);
+        if (serviceRequestError) console.warn('Gagal membaca antrean layanan Talent:', serviceRequestError.message);
+        if (identityRequestError) console.warn('Gagal membaca antrean perubahan identitas:', identityRequestError.message);
+        setApprovedTalentServices(approvedServices || []);
+        setTalentServiceHistory(serviceHistory || []);
+
+        const serviceTalentIds = Array.from(new Set((serviceRequests || []).map((r) => r.talent_id)));
+        const serviceCategoryIds = Array.from(new Set((serviceRequests || []).map((r) => r.activity_category_id)));
+        const [{ data: serviceTalentProfiles }, { data: serviceCategoryRows }] = await Promise.all([
+          serviceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name,city').in('id', serviceTalentIds) : Promise.resolve({ data: [] as any[] }),
+          serviceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', serviceCategoryIds) : Promise.resolve({ data: [] as any[] }),
+        ]);
+        const serviceTalentMap = new Map((serviceTalentProfiles || []).map((t) => [t.id, t]));
+        const serviceCategoryMap = new Map((serviceCategoryRows || []).map((c) => [c.id, c.title]));
+        setPendingTalentServices((serviceRequests || []).map((r) => ({
+          ...r,
+          talent_name: serviceTalentMap.get(r.talent_id)?.display_name || 'Talent',
+          talent_city: serviceTalentMap.get(r.talent_id)?.city || '-',
+          category_title: serviceCategoryMap.get(r.activity_category_id) || r.activity_category_id,
+        })));
+
+        const allServiceTalentIds = Array.from(new Set([
+          ...(approvedServices || []).map((r) => r.talent_id),
+          ...(serviceHistory || []).map((r) => r.talent_id),
+        ]));
+        const allServiceCategoryIds = Array.from(new Set((approvedServices || []).map((r) => r.activity_category_id)));
+        const [{ data: allTalentProfiles }, { data: allCategories }] = await Promise.all([
+          allServiceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name').in('id', allServiceTalentIds) : Promise.resolve({ data: [] as any[] }),
+          allServiceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', allServiceCategoryIds) : Promise.resolve({ data: [] as any[] }),
+        ]);
+        const allTalentMap = new Map((allTalentProfiles || []).map((t) => [t.id, t.display_name]));
+        const allCategoryMap = new Map((allCategories || []).map((c) => [c.id, c.title]));
+        setApprovedTalentServices((approvedServices || []).map((r) => ({
+          ...r,
+          talent_name: allTalentMap.get(r.talent_id) || 'Talent',
+          category_title: allCategoryMap.get(r.activity_category_id) || r.activity_category_id,
+        })));
+        setTalentServiceHistory((serviceHistory || []).map((r) => ({
+          ...r,
+          talent_name: allTalentMap.get(r.talent_id) || 'Talent',
+        })));
+
+        const identityTalentIds = Array.from(new Set((identityRequests || []).map((r) => r.talent_id)));
+        const { data: identityTalentProfiles } = identityTalentIds.length
+          ? await supabase.from('talent_profiles').select('id,display_name,city').in('id', identityTalentIds)
+          : { data: [] as any[] };
+        const identityTalentMap = new Map((identityTalentProfiles || []).map((t) => [t.id, t]));
+        setPendingIdentityChanges((identityRequests || []).map((r) => ({
+          ...r,
+          talent_name: identityTalentMap.get(r.talent_id)?.display_name || 'Talent',
+        })));
+      } else {
+        setTalents([]);
+        setPendingTalentServices([]);
+        setApprovedTalentServices([]);
+        setTalentServiceHistory([]);
+        setPendingIdentityChanges([]);
       }
-      setTalents(combinedTalents);
 
-      // 1b. Talent service and display-name review queues
-      const [{ data: serviceRequests, error: serviceRequestError }, { data: identityRequests, error: identityRequestError }, { data: approvedServices }, { data: serviceHistory }] = await Promise.all([
-        supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,created_at').eq('approval_status', 'pending').order('created_at', { ascending: true }),
-        supabase.from('talent_identity_change_requests').select('id,talent_id,field_name,old_value,requested_value,created_at').eq('status', 'pending').order('created_at', { ascending: true }),
-        supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,is_active,updated_at').eq('approval_status', 'approved').order('updated_at', { ascending: false }).limit(100),
-        supabase.from('talent_service_change_log').select('id,talent_id,change_type,old_value,new_value,created_at').order('created_at', { ascending: false }).limit(30),
-      ]);
-      setApprovedTalentServices(approvedServices || []);
-      setTalentServiceHistory(serviceHistory || []);
-      if (serviceRequestError) console.warn('Gagal membaca antrean layanan Talent:', serviceRequestError.message);
-      if (identityRequestError) console.warn('Gagal membaca antrean perubahan identitas:', identityRequestError.message);
-      const serviceTalentIds = Array.from(new Set((serviceRequests || []).map((r) => r.talent_id)));
-      const serviceCategoryIds = Array.from(new Set((serviceRequests || []).map((r) => r.activity_category_id)));
-      const [{ data: serviceTalentProfiles }, { data: serviceCategoryRows }] = await Promise.all([
-        serviceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name,city').in('id', serviceTalentIds) : Promise.resolve({ data: [] as any[] }),
-        serviceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', serviceCategoryIds) : Promise.resolve({ data: [] as any[] }),
-      ]);
-      const serviceTalentMap = new Map((serviceTalentProfiles || []).map((t) => [t.id, t]));
-      const serviceCategoryMap = new Map((serviceCategoryRows || []).map((c) => [c.id, c.title]));
-      setPendingTalentServices((serviceRequests || []).map((r) => ({ ...r, talent_name: serviceTalentMap.get(r.talent_id)?.display_name || 'Talent', talent_city: serviceTalentMap.get(r.talent_id)?.city || '-', category_title: serviceCategoryMap.get(r.activity_category_id) || r.activity_category_id })));
-      const allServiceTalentIds = Array.from(new Set([...(approvedServices || []).map((r) => r.talent_id), ...(serviceHistory || []).map((r) => r.talent_id)]));
-      const allServiceCategoryIds = Array.from(new Set((approvedServices || []).map((r) => r.activity_category_id)));
-      const [{ data: allTalentProfiles }, { data: allCategories }] = await Promise.all([
-        allServiceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name').in('id', allServiceTalentIds) : Promise.resolve({ data: [] as any[] }),
-        allServiceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', allServiceCategoryIds) : Promise.resolve({ data: [] as any[] }),
-      ]);
-      const allTalentMap = new Map((allTalentProfiles || []).map((t) => [t.id, t.display_name]));
-      const allCategoryMap = new Map((allCategories || []).map((c) => [c.id, c.title]));
-      setApprovedTalentServices((approvedServices || []).map((r) => ({ ...r, talent_name: allTalentMap.get(r.talent_id) || 'Talent', category_title: allCategoryMap.get(r.activity_category_id) || r.activity_category_id })));
-      setTalentServiceHistory((serviceHistory || []).map((r) => ({ ...r, talent_name: allTalentMap.get(r.talent_id) || 'Talent' })));
-      const identityTalentIds = Array.from(new Set((identityRequests || []).map((r) => r.talent_id)));
-      const { data: identityTalentProfiles } = identityTalentIds.length ? await supabase.from('talent_profiles').select('id,display_name,city').in('id', identityTalentIds) : { data: [] as any[] };
-      const identityTalentMap = new Map((identityTalentProfiles || []).map((t) => [t.id, t]));
-      setPendingIdentityChanges((identityRequests || []).map((r) => ({ ...r, talent_name: identityTalentMap.get(r.talent_id)?.display_name || 'Talent' })));
-
-      // 2. Fetch Payout Requests
-      const { data: payoutRows, error: payoutErr } = await supabase
-        .from('payout_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (payoutErr) console.warn('Error loading payouts:', payoutErr.message);
-
-      let enrichedPayouts: AdminPayoutItem[] = [];
-      if (payoutRows && payoutRows.length > 0) {
-        const talentIds = Array.from(new Set(payoutRows.map((p) => p.talent_id)));
-        const { data: tProfiles } = await supabase
-          .from('talent_profiles')
-          .select('id, display_name, city')
-          .in('id', talentIds);
-
-        const tMap = new Map((tProfiles || []).map((t) => [t.id, t]));
-
-        enrichedPayouts = payoutRows.map((p) => ({
+      // FINANCE: payout, refunds, customer cancellation cases and affiliate data.
+      if (canFinance) {
+        const { data: payoutRows, error: payoutErr } = await supabase
+          .from('payout_requests').select('*').order('created_at', { ascending: false });
+        if (payoutErr) throw payoutErr;
+        const payoutTalentIds = Array.from(new Set((payoutRows || []).map((p) => p.talent_id)));
+        const { data: payoutTalentLabels } = payoutTalentIds.length
+          ? await supabase.rpc('get_admin_talent_labels', { p_talent_ids: payoutTalentIds })
+          : { data: [] as any[] };
+        const payoutTalentMap = new Map((payoutTalentLabels || []).map((t: any) => [t.id, t]));
+        setPayouts((payoutRows || []).map((p) => ({
           ...p,
-          talent_name: tMap.get(p.talent_id)?.display_name || 'Talent YUKU',
-          talent_city: tMap.get(p.talent_id)?.city || 'Jakarta',
-        }));
-      }
-      setPayouts(enrichedPayouts);
+          talent_name: payoutTalentMap.get(p.talent_id)?.display_name || 'Talent YUKU',
+          talent_city: payoutTalentMap.get(p.talent_id)?.city || '-',
+        })));
 
-      // 3. Fetch Bookings
-      const { data: bookingRows, error: bookingErr } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (bookingErr) console.warn('Error loading bookings:', bookingErr.message);
-
-      let enrichedBookings: AdminBookingItem[] = [];
-      if (bookingRows && bookingRows.length > 0) {
-        const custIds = Array.from(new Set(bookingRows.map((b) => b.customer_id)));
-        const talIds = Array.from(new Set(bookingRows.map((b) => b.talent_id)));
-
-        const { data: customers } = await supabase
-          .from('customer_profiles')
-          .select('id, display_name')
-          .in('id', custIds);
-
-        const { data: talProfiles } = await supabase
-          .from('talent_profiles')
-          .select('id, display_name')
-          .in('id', talIds);
-
-        const custMap = new Map((customers || []).map((c) => [c.id, c.display_name]));
-        const talMap = new Map((talProfiles || []).map((t) => [t.id, t.display_name]));
-
-        enrichedBookings = bookingRows.map((b) => ({
-          ...b,
-          customer_name: custMap.get(b.customer_id) || 'Customer',
-          talent_name: talMap.get(b.talent_id) || 'Talent',
-        }));
-      }
-      setBookings(enrichedBookings);
-
-      // 4. Fetch Customer KTP Verifications (non-talent users who submitted user_identities)
-      const { data: allIdentityRows, error: identityFetchError } = await supabase
-        .from('user_identities')
-        .select(
-          'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
-        )
-        .order('created_at', { ascending: false });
-
-      if (identityFetchError) {
-        throw new Error(`Gagal memuat data KTP Customer: ${identityFetchError.message}`);
-      }
-
-      if (allIdentityRows && allIdentityRows.length > 0) {
-        const talentIdSet = new Set((talentRows || []).map((t) => t.id));
-        const nonTalentIdentities = allIdentityRows.filter((row) => !talentIdSet.has(row.id));
-
-        if (nonTalentIdentities.length > 0) {
-          const custIdentityIds = nonTalentIdentities.map((row) => row.id);
-          const { data: custUserRows } = await supabase
-            .from('users')
-            .select('id, email, account_status, is_verified_18')
-            .in('id', custIdentityIds);
-
-          const custUserMap = new Map((custUserRows || []).map((u) => [u.id, u]));
-          setCustomerKtps(
-            nonTalentIdentities.map((row) => {
-              const uRec = custUserMap.get(row.id);
-              return {
-                ...row,
-                email: uRec?.email,
-                account_status: uRec?.account_status,
-                is_verified_18: uRec?.is_verified_18,
-              } as CustomerKtpItem;
-            })
-          );
-        } else {
-          setCustomerKtps([]);
-        }
-      } else {
-        setCustomerKtps([]);
-      }
-
-      // 5. Fetch Reports & Complaints
-      const { data: reportRows, error: reportErr } = await supabase
-        .from('reports_complaints')
-        .select('id, reporter_id, reported_user_id, booking_id, category, description, status, admin_notes, created_at')
-        .order('created_at', { ascending: false });
-
-      if (reportErr) console.warn('Error loading reports:', reportErr.message);
-
-      if (reportRows && reportRows.length > 0) {
-        const partyIds = Array.from(
-          new Set(reportRows.flatMap((r) => [r.reporter_id, r.reported_user_id]))
-        );
-        const { data: partyUsers } = await supabase
-          .from('users')
-          .select('id, full_name, email')
-          .in('id', partyIds);
-
-        const userLabelMap = new Map<string, string>();
-        partyUsers?.forEach((u) => {
-          userLabelMap.set(u.id, u.full_name || u.email || 'Pengguna YUKU');
-        });
-
-        const bookingInfoMap = new Map<string, { code: string; status: string }>();
-        enrichedBookings.forEach((b) => {
-          bookingInfoMap.set(b.id, { code: b.booking_code, status: b.status });
-        });
-
-        setReports(
-          reportRows.map((r) => {
-            const bInfo = r.booking_id ? bookingInfoMap.get(r.booking_id) : undefined;
-            return {
-              ...r,
-              reporter_name: userLabelMap.get(r.reporter_id) || 'Pengguna YUKU',
-              reported_user_name: userLabelMap.get(r.reported_user_id) || 'Pengguna YUKU',
-              booking_code: bInfo?.code || null,
-              booking_status: bInfo?.status || null,
-            } as AdminReportItem;
-          })
-        );
-      } else {
-        setReports([]);
-      }
-
-      // 6. Fetch Refund Requests
-      const { data: refundRows, error: refundErr } = await supabase
-        .from('refunds')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (refundErr) console.warn('Error loading refunds:', refundErr.message);
-      if (refundRows && refundRows.length > 0) {
-        const refundCustomerIds = Array.from(new Set(refundRows.map((r) => r.customer_id)));
-        const { data: refundCustomers } = await supabase
-          .from('customer_profiles')
-          .select('id, display_name')
-          .in('id', refundCustomerIds);
-        const refundCustomerMap = new Map((refundCustomers || []).map((c) => [c.id, c.display_name]));
+        const { data: refundRows, error: refundErr } = await supabase
+          .from('refunds').select('*').order('created_at', { ascending: false });
+        if (refundErr) throw refundErr;
+        const refundCustomerIds = Array.from(new Set((refundRows || []).map((r) => r.customer_id)));
+        const { data: refundCustomers } = refundCustomerIds.length
+          ? await supabase.rpc('get_admin_customer_labels', { p_customer_ids: refundCustomerIds })
+          : { data: [] as any[] };
+        const refundCustomerMap = new Map((refundCustomers || []).map((c: any) => [c.id, c.display_name]));
         const bookingCodeMap = new Map(enrichedBookings.map((b) => [b.id, b.booking_code]));
-        setRefunds(refundRows.map((r) => ({
+        setRefunds((refundRows || []).map((r) => ({
           ...r,
           customer_name: refundCustomerMap.get(r.customer_id) || 'Customer YUKU',
           booking_code: bookingCodeMap.get(r.booking_id) || r.booking_id,
         })) as AdminRefundItem[]);
-      } else {
-        setRefunds([]);
-      }
 
-      // 6b. Fetch Customer cancellation cases and retained funds awaiting Admin review
-      const { data: cancellationCaseRows, error: cancellationCaseErr } = await supabase
-        .from('customer_cancellation_cases')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (cancellationCaseErr) console.warn('Error loading customer cancellation cases:', cancellationCaseErr.message);
-      if (cancellationCaseRows && cancellationCaseRows.length > 0) {
-        const caseCustomerIds = Array.from(new Set(cancellationCaseRows.map((c) => c.customer_id)));
-        const { data: caseCustomers } = await supabase
-          .from('customer_profiles')
-          .select('id, display_name')
-          .in('id', caseCustomerIds);
-        const caseCustomerMap = new Map((caseCustomers || []).map((c) => [c.id, c.display_name]));
+        const { data: cancellationCaseRows, error: cancellationCaseErr } = await supabase
+          .from('customer_cancellation_cases').select('*').order('created_at', { ascending: false });
+        if (cancellationCaseErr) throw cancellationCaseErr;
+        const caseCustomerIds = Array.from(new Set((cancellationCaseRows || []).map((c) => c.customer_id)));
+        const { data: caseCustomers } = caseCustomerIds.length
+          ? await supabase.rpc('get_admin_customer_labels', { p_customer_ids: caseCustomerIds })
+          : { data: [] as any[] };
+        const caseCustomerMap = new Map((caseCustomers || []).map((c: any) => [c.id, c.display_name]));
         const caseBookingMap = new Map(enrichedBookings.map((b) => [b.id, b.booking_code]));
-        setCustomerCancellationCases(cancellationCaseRows.map((c) => ({
+        setCustomerCancellationCases((cancellationCaseRows || []).map((c) => ({
           ...c,
           customer_name: caseCustomerMap.get(c.customer_id) || 'Customer YUKU',
           booking_code: caseBookingMap.get(c.booking_id) || c.booking_id,
         })) as CustomerCancellationCaseItem[]);
       } else {
+        setPayouts([]);
+        setRefunds([]);
         setCustomerCancellationCases([]);
       }
 
-      // 7. Fetch Promotional Posters for Homepage Carousel
-      const { data: promoRows, error: promoErr } = await supabase
-        .from('promotions')
-        .select('*')
-        .order('sort_order', { ascending: true })
-        .order('created_at', { ascending: false });
-
-      if (promoErr) {
-        if (promoErr.code === '42P01' || promoErr.message.includes('promotions')) {
-          setPromoMigrationMissing(true);
+      // BOOKING: Admin receives operational fields only; Super Admin keeps full audit data.
+      if (canBooking) {
+        if (isSuperAdmin) {
+          const { data: bookingRows, error: bookingErr } = await supabase
+            .from('bookings').select('*').order('created_at', { ascending: false });
+          if (bookingErr) throw bookingErr;
+          const custIds = Array.from(new Set((bookingRows || []).map((b) => b.customer_id)));
+          const talIds = Array.from(new Set((bookingRows || []).map((b) => b.talent_id)));
+          const [{ data: customers }, { data: talProfiles }] = await Promise.all([
+            custIds.length ? supabase.from('customer_profiles').select('id,display_name').in('id', custIds) : Promise.resolve({ data: [] as any[] }),
+            talIds.length ? supabase.from('talent_profiles').select('id,display_name').in('id', talIds) : Promise.resolve({ data: [] as any[] }),
+          ]);
+          const custMap = new Map((customers || []).map((c) => [c.id, c.display_name]));
+          const talMap = new Map((talProfiles || []).map((t) => [t.id, t.display_name]));
+          enrichedBookings = (bookingRows || []).map((b) => ({
+            ...b,
+            customer_name: custMap.get(b.customer_id) || 'Customer',
+            talent_name: talMap.get(b.talent_id) || 'Talent',
+          }));
+        } else {
+          const { data: bookingRows, error: bookingErr } = await supabase.rpc('get_admin_bookings');
+          if (bookingErr) throw bookingErr;
+          enrichedBookings = (bookingRows || []) as AdminBookingItem[];
         }
-        setPromoPosters([]);
+        setBookings(enrichedBookings);
       } else {
-        setPromoMigrationMissing(false);
-        setPromoPosters((promoRows as PromotionRow[]) || []);
+        setBookings([]);
+      }
+
+      // SUPPORT: KTP Customer and incident reports. KTP query is already role-scoped by RLS.
+      if (canSupport) {
+        const { data: allIdentityRows, error: identityFetchError } = await supabase
+          .from('user_identities')
+          .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+          .order('created_at', { ascending: false });
+        if (identityFetchError) throw identityFetchError;
+        const customerIdentityIds = (allIdentityRows || []).map((row) => row.id);
+        const { data: customerUsers } = customerIdentityIds.length
+          ? await supabase.rpc('get_admin_user_summaries', { p_user_ids: customerIdentityIds })
+          : { data: [] as any[] };
+        const customerUserMap = new Map((customerUsers || []).map((u: any) => [u.id, u]));
+        setCustomerKtps((allIdentityRows || []).map((row) => {
+          const uRec = customerUserMap.get(row.id);
+          return {
+            ...row,
+            email: uRec?.email,
+            account_status: uRec?.account_status,
+            is_verified_18: uRec?.is_verified_18,
+          } as CustomerKtpItem;
+        }));
+
+        const { data: reportRows, error: reportErr } = await supabase
+          .from('reports_complaints')
+          .select('id,reporter_id,reported_user_id,booking_id,category,description,status,admin_notes,created_at')
+          .order('created_at', { ascending: false });
+        if (reportErr) throw reportErr;
+        const partyIds = Array.from(new Set((reportRows || []).flatMap((r) => [r.reporter_id, r.reported_user_id])));
+        const { data: partyUsers } = partyIds.length
+          ? await supabase.rpc('get_admin_user_summaries', { p_user_ids: partyIds })
+          : { data: [] as any[] };
+        const userLabelMap = new Map<string, string>();
+        partyUsers?.forEach((u: any) => userLabelMap.set(u.id, u.full_name || u.email || 'Pengguna YUKU'));
+        const reportBookingIds = Array.from(new Set((reportRows || []).map((r) => r.booking_id).filter(Boolean))) as string[];
+        const { data: reportBookings } = reportBookingIds.length
+          ? await supabase.rpc('get_admin_report_booking_summaries', { p_booking_ids: reportBookingIds })
+          : { data: [] as any[] };
+        const bookingInfoMap = new Map((reportBookings || []).map((b: any) => [b.id, { code: b.booking_code, status: b.status }]));
+        setReports((reportRows || []).map((r) => {
+          const bInfo = r.booking_id ? bookingInfoMap.get(r.booking_id) : undefined;
+          return {
+            ...r,
+            reporter_name: userLabelMap.get(r.reporter_id) || 'Pengguna YUKU',
+            reported_user_name: userLabelMap.get(r.reported_user_id) || 'Pengguna YUKU',
+            booking_code: bInfo?.code || null,
+            booking_status: bInfo?.status || null,
+          } as AdminReportItem;
+        }));
+      } else {
+        setCustomerKtps([]);
+        setReports([]);
+      }
+
+      // Super Admin-only content and global overview data.
+      if (isSuperAdmin) {
+        const { data: promoRows, error: promoErr } = await supabase
+          .from('promotions').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+        if (promoErr) {
+          if (promoErr.code === '42P01' || promoErr.message.includes('promotions')) setPromoMigrationMissing(true);
+          setPromoPosters([]);
+        } else {
+          setPromoMigrationMissing(false);
+          setPromoPosters((promoRows as PromotionRow[]) || []);
+        }
+      } else {
+        setPromoPosters([]);
       }
     } catch (err: any) {
       setErrorMessage(err?.message || 'Gagal memuat data panel admin.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [adminAccess]);
 
   useEffect(() => {
     if (isAdminAuthorized) {
