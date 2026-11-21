@@ -202,3 +202,11 @@ Migrasi 49–63 telah diterapkan di Staging. Ini termasuk penguatan trigger scop
 - Simulasi akses RLS melalui SQL Editor harus menjalankan `SET LOCAL ROLE authenticated` setelah mengatur klaim JWT. Jika query dijalankan sebagai postgres tanpa pergantian role, RLS dapat dilewati sehingga hasil hitungan bukan bukti pembatasan akses pengguna.
 - Pengujian tambahan pada 21 November 2026 dilakukan dengan role `authenticated` dan akun Admin sementara Support-only. Hasil: izin Support aktif, Finance/Talent tidak aktif, `public.is_admin()` false, tabel payout dan booking tidak menampilkan baris untuk Admin Support, serta satu dokumen KTP yang sesuai cakupan izin terlihat. Seluruh perubahan akun uji di-rollback.
 - RPC daftar booking dan proses refund diuji dari role `authenticated` untuk memastikan Admin Support-only ditolak. Tidak ada transaksi bisnis atau data produksi yang diubah.
+
+
+### Pemeriksaan undangan Admin — pembaruan Staging
+- Pemeriksaan perbandingan kode menemukan Edge Function Staging sebelumnya tertinggal dari branch: versi lama belum menolak email yang sudah terdaftar pada tabel `public.users`.
+- Edge Function `admin-management` di Staging diperbarui ke **version 2** pada 21 November 2026. Status ACTIVE dan `verify_jwt=true`.
+- Versi terbaru memeriksa email terlebih dahulu; jika email sudah digunakan Customer/Talent, undangan ditolak dengan HTTP 409. Jika pemeriksaan email gagal, proses berhenti tanpa mengirim undangan.
+- Setelah deploy, daftar fungsi Staging mengonfirmasi version 2 ACTIVE. Database diperiksa ulang: satu akun Admin (Super Admin awal), nol baris izin Admin biasa, dan nol akun uji tertinggal.
+- Tidak ada email undangan nyata yang dikirim. Alur undangan penuh belum dites end-to-end karena akan membuat/mengirim undangan kepada alamat email sungguhan; pengujian itu menunggu alamat email uji yang memang disediakan untuk tujuan tersebut.
