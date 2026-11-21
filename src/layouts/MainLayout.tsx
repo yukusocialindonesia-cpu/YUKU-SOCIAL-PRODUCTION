@@ -11,6 +11,14 @@ interface MainLayoutProps {
   children: React.ReactNode;
 }
 
+const PRIVATE_WORKSPACE_ROUTES: string[] = [
+  '/admin',
+  '/dashboard-talent',
+  '/riwayat-booking',
+  '/profil-saya',
+  '/verifikasi-ktp',
+];
+
 const HIDE_BOTTOM_NAV: string[] = [
   '/talent/:id',
   '/login',
@@ -27,6 +35,7 @@ const HIDE_BOTTOM_NAV: string[] = [
  */
 export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate, children }) => {
   const showBottomNav = !HIDE_BOTTOM_NAV.includes(currentPath);
+  const isPrivateWorkspace = PRIVATE_WORKSPACE_ROUTES.includes(currentPath);
 
   return (
     <div
@@ -39,9 +48,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
 
       <main className="flex-1">{children}</main>
 
-      {currentPath !== '/' && <SafetyPledgeBanner />}
+      {!isPrivateWorkspace && currentPath !== '/' && <SafetyPledgeBanner />}
 
-      <Footer onNavigate={onNavigate} />
+      {!isPrivateWorkspace && <Footer onNavigate={onNavigate} />}
 
       {showBottomNav && <MobileBottomNav currentPath={currentPath} onNavigate={onNavigate} />}
     </div>
