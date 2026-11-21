@@ -1169,105 +1169,104 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         )}
 
-        {/* Admin Header */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-700 to-amber-600 text-white flex items-center justify-center font-black shadow-xs">
-              <ShieldCheck className="w-7 h-7" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg sm:text-2xl font-black text-slate-900 leading-tight">
-                  Panel Kurasi & Admin YUKU
-                </h1>
-                <span className="px-2.5 py-0.5 bg-purple-100 text-purple-900 text-[10px] font-black rounded-full uppercase tracking-wider">
-                  {isSuperAdmin ? 'Super Admin' : 'Admin'}
-                </span>
+        {/* Admin Header — mobile-first admin command center */}
+        <section className="relative overflow-hidden rounded-[1.75rem] border border-purple-900/10 bg-gradient-to-br from-[#200650] via-[#351078] to-[#6d28d9] p-4 text-white shadow-lg shadow-purple-950/10 sm:p-6">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full bg-fuchsia-400/20 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 left-1/3 h-40 w-40 rounded-full bg-orange-400/10 blur-3xl" />
+          <div className="relative flex flex-col gap-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 shadow-inner backdrop-blur">
+                <ShieldCheck className="h-6 w-6 text-white" />
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Terhubung sebagai <strong>{currentUser.email}</strong> • {isSuperAdmin ? 'Akses penuh dan pengelolaan akun Admin.' : 'Akses dibatasi sesuai izin menu yang diberikan Super Admin.'}
-              </p>
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-purple-100">
+                    {isSuperAdmin ? 'Super Admin' : 'Admin'}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-200">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> Sesi aktif
+                  </span>
+                </div>
+                <h1 className="text-xl font-black leading-tight tracking-tight sm:text-2xl">
+                  {isSuperAdmin ? 'Pusat Kendali YUKU' : 'Panel Operasional YUKU'}
+                </h1>
+                <p className="mt-1 break-all text-[11px] leading-relaxed text-purple-100/85">
+                  {currentUser.email}
+                </p>
+              </div>
+            </div>
+            <p className="max-w-2xl text-xs leading-relaxed text-white/80">
+              {isSuperAdmin ? 'Pantau operasional, keuangan, keamanan, dan pengaturan seluruh platform dalam satu tempat.' : 'Kelola tugas operasional sesuai izin yang diberikan Super Admin.'}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={loadAdminData}
+                disabled={isLoading}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-[11px] font-bold text-white transition hover:bg-white/20 disabled:opacity-60"
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                Segarkan Data
+              </button>
+              <button
+                onClick={() => onNavigate('/talent')}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-3 py-2.5 text-[11px] font-bold text-purple-900 transition hover:bg-purple-50"
+              >
+                Lihat Katalog <ChevronRight className="h-4 w-4" />
+              </button>
             </div>
           </div>
-
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <button
-              onClick={loadAdminData}
-              disabled={isLoading}
-              className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-purple-700' : ''}`} />
-              <span>Segarkan Data</span>
-            </button>
-            <button
-              onClick={() => onNavigate('/talent')}
-              className="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-            >
-              Lihat Katalog Live
-            </button>
-          </div>
-        </div>
+        </section>
 
         {/* Overview: ringkasan hanya untuk Super Admin */}
         {isSuperAdmin && activeTab === 'overview' && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Talent Menunggu Review</span>
-              <Clock className="w-4 h-4 text-amber-600" />
+          <section className="space-y-3">
+            <div className="flex items-end justify-between gap-3 px-0.5">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-purple-700">Business overview</p>
+                <h2 className="mt-0.5 text-base font-black tracking-tight text-slate-900 sm:text-lg">Ringkasan Platform</h2>
+                <p className="mt-0.5 text-[11px] text-slate-500">Kondisi operasional dan transaksi YUKU.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold text-emerald-700">Data terkini</span>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-amber-600 tabular-nums">
-              {talents.filter((t) => !t.is_approved).length}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
+              <div className="min-w-0 rounded-2xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/70 p-3.5 shadow-sm sm:p-5">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Talent menunggu review</span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700"><Clock className="h-4 w-4" /></span>
+                </div>
+                <div className="text-2xl font-black tracking-tight text-amber-700 tabular-nums sm:text-3xl">{talents.filter((t) => !t.is_approved).length}</div>
+                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Belum disetujui atau belum terverifikasi e-KTP.</p>
+              </div>
+              <div className="min-w-0 rounded-2xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/70 p-3.5 shadow-sm sm:p-5">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Antrean pencairan</span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700"><CreditCard className="h-4 w-4" /></span>
+                </div>
+                <div className="text-2xl font-black tracking-tight text-violet-800 tabular-nums sm:text-3xl">{payouts.filter((p) => p.payout_status === 'requested').length}</div>
+                <p className="mt-1.5 break-words text-[10px] font-semibold leading-relaxed text-violet-700">Total {formatRupiah(talentPayoutsPending)}</p>
+              </div>
+              <div className="min-w-0 rounded-2xl border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/70 p-3.5 shadow-sm sm:p-5">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Pendapatan platform · 20%</span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"><TrendingUp className="h-4 w-4" /></span>
+                </div>
+                <div className="break-words text-xl font-black tracking-tight text-emerald-800 tabular-nums sm:text-2xl">{formatRupiah(platformRevenueFee)}</div>
+                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Dari {completedBookings.length} order selesai.</p>
+              </div>
+              <div className="min-w-0 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-100/80 p-3.5 shadow-sm sm:p-5">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Nilai transaksi · GMV</span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-200 text-slate-700"><DollarSign className="h-4 w-4" /></span>
+                </div>
+                <div className="break-words text-xl font-black tracking-tight text-slate-900 tabular-nums sm:text-2xl">{formatRupiah(grossMarketplaceVolume)}</div>
+                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Akumulasi transaksi di sistem escrow.</p>
+              </div>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Pendaftar baru belum disetujui / belum terverifikasi e-KTP.
-            </p>
-          </div>
-
-          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Permohonan Tarik Dana</span>
-              <CreditCard className="w-4 h-4 text-purple-700" />
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-purple-900 tabular-nums">
-              {payouts.filter((p) => p.payout_status === 'requested').length}
-            </div>
-            <p className="text-[11px] text-purple-700 font-semibold mt-1">
-              Total Antrian: {formatRupiah(talentPayoutsPending)}
-            </p>
-          </div>
-
-          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Pendapatan Platform (20%)</span>
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-emerald-700 tabular-nums">
-              {formatRupiah(platformRevenueFee)}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Dari {completedBookings.length} order yang telah selesai.
-            </p>
-          </div>
-
-          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase leading-tight">Total Nilai Transaksi (GMV)</span>
-              <DollarSign className="w-4 h-4 text-slate-700" />
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tabular-nums">
-              {formatRupiah(grossMarketplaceVolume)}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Akumulasi perputaran dana di sistem Escrow.
-            </p>
-          </div>
-        </div>
-
+          </section>
         )}
 
         {/* Tab Navigation */}
-        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-slate-200 pb-3 text-xs font-bold text-slate-600 sm:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>button]:min-w-0 [&>button]:w-full [&>button]:justify-start [&>button]:text-left sm:[&>button]:w-auto sm:[&>button]:whitespace-nowrap">
+        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-200/80 bg-white p-2.5 shadow-sm sm:flex sm:flex-wrap sm:items-center sm:gap-2.5 sm:p-3 text-xs font-bold text-slate-600">
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('overview')}
