@@ -43,6 +43,7 @@ import { QrisAdminPanel } from '../components/booking/QrisAdminPanel';
 import { BrandingAdminPanel } from '../components/admin/BrandingAdminPanel';
 import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
 import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
+import { AdminMfaGate } from '../components/admin/AdminMfaGate';
 
 interface AdminPageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
@@ -168,6 +169,8 @@ interface AdminReportItem {
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const { user: currentUser, role, isAuthLoading: isCheckingAuth } = useAuth();
+  const [isMfaVerified, setIsMfaVerified] = useState(false);
+  const handleMfaVerified = useCallback(() => setIsMfaVerified(true), []);
 
   // Active Tab
   const [activeTab, setActiveTab] = useState<
@@ -220,7 +223,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [holdBookingOnDispute, setHoldBookingOnDispute] = useState(false);
   const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
-  const isAdminAuthorized = role === 'admin';
+  // Data Admin tidak boleh dimuat sebelum sesi mencapai AAL2 (MFA berhasil).\n  const isAdminAuthorized = role === 'admin' && isMfaVerified;
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {
@@ -1099,8 +1102,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     );
   }
 
+  // Admin wajib menyelesaikan MFA sebelum komponen memuat atau menampilkan data sensitif.
+  if (currentUser && role === 'admin' && !isMfaVerified) {
+    return <AdminMfaGate onVerified={handleMfaVerified} onNavigate={onNavigate} />;
+  }
+
   // Not Authorized View
-  if (!currentUser || !isAdminAuthorized) {
+  if (!currentUser || role !== 'admin') {
     return (
       <div className="py-20 bg-[#FAF8FC]">
         <div className="max-w-md mx-auto px-4 text-center space-y-6 bg-white p-8 rounded-2xl border border-slate-200/80 shadow-xs">
