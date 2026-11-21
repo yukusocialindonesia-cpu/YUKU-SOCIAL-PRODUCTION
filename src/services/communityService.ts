@@ -11,7 +11,6 @@ export interface CommunityComment {
 
 export interface CommunityPost {
   id: string;
-  author_id: string | null;
   author_display_name: string;
   body: string;
   topic: CommunityTopic;
