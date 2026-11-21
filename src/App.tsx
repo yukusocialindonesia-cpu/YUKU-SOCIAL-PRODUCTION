@@ -18,6 +18,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { TermsPage } from './pages/TermsPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { BookingHistoryPage } from './pages/BookingHistoryPage';
+import { CustomerProfilePage } from './pages/CustomerProfilePage';
 import { TalentDashboardPage } from './pages/TalentDashboardPage';
 import { AdminPage } from './pages/AdminPage';
 import { VerifyKtpPage } from './pages/VerifyKtpPage';
@@ -36,6 +37,7 @@ export default function App() {
     if (pathname === '/daftar-talent') return '/daftar-talent';
     if (pathname === '/dashboard-talent') return '/dashboard-talent';
     if (pathname === '/riwayat-booking') return '/riwayat-booking';
+    if (pathname === '/profil-saya') return '/profil-saya';
     if (pathname === '/admin') return '/admin';
     if (pathname === '/tentang') return '/tentang';
     if (pathname === '/faq') return '/faq';
@@ -81,6 +83,8 @@ export default function App() {
       setCurrentPath('/dashboard-talent');
     } else if (pathname === '/riwayat-booking') {
       setCurrentPath('/riwayat-booking');
+    } else if (pathname === '/profil-saya') {
+      setCurrentPath('/profil-saya');
     } else if (pathname === '/admin') {
       setCurrentPath('/admin');
     } else if (pathname === '/tentang') {
@@ -191,6 +195,8 @@ export default function App() {
         return <TalentDashboardPage onNavigate={handleNavigate} />;
       case '/riwayat-booking':
         return <BookingHistoryPage onNavigate={handleNavigate} />;
+      case '/profil-saya':
+        return <CustomerProfilePage onNavigate={handleNavigate} />;
       case '/admin':
         return <AdminPage onNavigate={handleNavigate} />;
       case '/tentang':
