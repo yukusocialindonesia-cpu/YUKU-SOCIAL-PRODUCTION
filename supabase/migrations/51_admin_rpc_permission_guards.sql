@@ -1,7 +1,7 @@
 -- Replace generic Admin guards in user-facing SECURITY DEFINER RPCs.
 -- Keep trigger functions using is_admin() unchanged; they are internal integrity guards.
 do $migration$
-declare v_name text; v_old text; v_new text; v_def text; v_oid oid;
+declare v_name text; v_old text; v_new text; v_alt text; v_def text; v_oid oid;
 begin
   for v_name,v_old,v_new in
     select * from (values
@@ -21,7 +21,24 @@ begin
     where n.nspname='public' and p.proname=v_name and p.prokind='f';
     if v_oid is null then raise exception 'RPC % tidak ditemukan',v_name; end if;
     v_def:=pg_get_functiondef(v_oid);
-    if position(v_old in v_def)=0 then raise exception 'Pola guard % tidak ditemukan pada %',v_old,v_name; end if;
+    if position(v_old in v_def)=0 then
+      v_alt := case v_name
+        when 'admin_process_payout' then 'IF auth.uid() IS NULL OR NOT public.is_admin() THEN'
+        when 'admin_process_refund' then 'IF auth.uid() IS NULL OR NOT public.is_admin() THEN'
+        when 'admin_review_talent' then 'IF auth.uid() IS NULL OR NOT public.is_admin() THEN'
+        else null
+      end;
+      if v_alt is null or position(v_alt in v_def)=0 then
+        raise exception 'Pola guard % maupun pola kompatibilitas tidak ditemukan pada %',v_old,v_name;
+      end if;
+      v_old := v_alt;
+      v_new := case v_name
+        when 'admin_process_payout' then 'IF auth.uid() IS NULL OR NOT public.has_admin_permission(''finance'') THEN'
+        when 'admin_process_refund' then 'IF auth.uid() IS NULL OR NOT public.has_admin_permission(''finance'') THEN'
+        when 'admin_review_talent' then 'IF auth.uid() IS NULL OR NOT public.has_admin_permission(''talent'') THEN'
+        else v_new
+      end;
+    end if;
     execute replace(v_def,v_old,v_new);
   end loop;
 end
