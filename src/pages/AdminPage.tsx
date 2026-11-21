@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -43,6 +43,7 @@ import { QrisAdminPanel } from '../components/booking/QrisAdminPanel';
 import { BrandingAdminPanel } from '../components/admin/BrandingAdminPanel';
 import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
 import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
+import { AdminManagementPanel } from '../components/admin/AdminManagementPanel';
 
 interface AdminPageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
@@ -118,7 +119,7 @@ interface CustomerCancellationCaseItem {
   customer_name?: string;
 }
 
-type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview';
+type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management';
 
 interface AdminBookingItem {
   id: string;
@@ -230,7 +231,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (canAccess('booking')) tabs.push('bookings');
     if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
     if (canAccess('support')) tabs.push('customer_ktp', 'reports');
-    if (isSuperAdmin) tabs.push('promos', 'hero', 'branding');
+    if (isSuperAdmin) tabs.push('promos', 'hero', 'branding', 'admin_management');
     return tabs;
   }, [adminAccess]);
 
@@ -1387,6 +1388,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           )}
           {isSuperAdmin && (
           <button
+            onClick={() => setActiveTab('admin_management')}
+            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'admin_management' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'
+            }`}
+          >
+            <ShieldCheck className={`w-3.5 h-3.5 ${activeTab === 'admin_management' ? 'text-white' : 'text-purple-600'}`} />
+            <span>Pengaturan Admin</span>
+          </button>
+          )}
+          {isSuperAdmin && (
+          <button
             onClick={() => setActiveTab('branding')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'branding' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'
@@ -1426,6 +1438,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         {activeTab === 'branding' && <BrandingAdminPanel />}
         {activeTab === 'hero' && <HeroSlidesAdminPanel />}
         {activeTab === 'affiliate' && <AffiliateAdminPanel />}
+        {activeTab === 'admin_management' && isSuperAdmin && <AdminManagementPanel />}
 
         {/* TAB 1: TALENT CURATION & KTP APPROVAL */}
         {activeTab === 'talents' && (
