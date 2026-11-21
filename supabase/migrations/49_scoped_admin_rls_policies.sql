@@ -9,7 +9,7 @@ using ((auth.uid() = id) or public.has_admin_permission('talent'))
 with check ((auth.uid() = id) or public.has_admin_permission('talent'));
 alter policy talent_services_select_scoped on public.talent_services
 using ((auth.uid() = talent_id) or public.has_admin_permission('talent') or
- (approval_status='approved'::text and is_active=true and public.is_talent_publicly_visible(talent_id)));
+ (approval_status='approved' and is_active=true and public.is_talent_publicly_visible(talent_id)));
 alter policy talent_identity_requests_owner_read on public.talent_identity_change_requests
 using ((auth.uid() = talent_id) or public.has_admin_permission('talent'));
 alter policy talent_service_change_log_owner_read on public.talent_service_change_log
