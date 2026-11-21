@@ -3,30 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { lazy, Suspense, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from './layouts/MainLayout';
-const HomePage = lazy(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })));
-const CommunityPage = lazy(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })));
-const BrowseTalentPage = lazy(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })));
-const TalentDetailPage = lazy(() => import('./pages/TalentDetailPage').then((module) => ({ default: module.TalentDetailPage })));
-const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage').then((module) => ({ default: module.HowItWorksPage })));
-const BecomeTalentPage = lazy(() => import('./pages/BecomeTalentPage').then((module) => ({ default: module.BecomeTalentPage })));
-const AboutPage = lazy(() => import('./pages/AboutPage').then((module) => ({ default: module.AboutPage })));
-const FaqPage = lazy(() => import('./pages/FaqPage').then((module) => ({ default: module.FaqPage })));
-const HelpCenterPage = lazy(() => import('./pages/HelpCenterPage').then((module) => ({ default: module.HelpCenterPage })));
-const LoginPage = lazy(() => import('./pages/LoginPage').then((module) => ({ default: module.LoginPage })));
-const RegisterPage = lazy(() => import('./pages/RegisterPage').then((module) => ({ default: module.RegisterPage })));
-const TermsPage = lazy(() => import('./pages/TermsPage').then((module) => ({ default: module.TermsPage })));
-const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((module) => ({ default: module.PrivacyPolicyPage })));
-const BookingHistoryPage = lazy(() => import('./pages/BookingHistoryPage').then((module) => ({ default: module.BookingHistoryPage })));
-const CustomerProfilePage = lazy(() => import('./pages/CustomerProfilePage').then((module) => ({ default: module.CustomerProfilePage })));
-const TalentDashboardPage = lazy(() => import('./pages/TalentDashboardPage').then((module) => ({ default: module.TalentDashboardPage })));
-const AdminPage = lazy(() => import('./pages/AdminPage').then((module) => ({ default: module.AdminPage })));
-const VerifyKtpPage = lazy(() => import('./pages/VerifyKtpPage').then((module) => ({ default: module.VerifyKtpPage })));
-const ChangePasswordPage = lazy(() => import('./pages/ChangePasswordPage').then((module) => ({ default: module.ChangePasswordPage })));
-const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage').then((module) => ({ default: module.ForgotPasswordPage })));
-const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage').then((module) => ({ default: module.ResetPasswordPage })));
-const AdminInviteSetupPage = lazy(() => import('./pages/AdminInviteSetupPage').then((module) => ({ default: module.AdminInviteSetupPage })));
+import { HomePage } from './pages/HomePage';
+import { CommunityPage } from './pages/CommunityPage';
+import { BrowseTalentPage } from './pages/BrowseTalentPage';
+import { TalentDetailPage } from './pages/TalentDetailPage';
+import { HowItWorksPage } from './pages/HowItWorksPage';
+import { BecomeTalentPage } from './pages/BecomeTalentPage';
+import { AboutPage } from './pages/AboutPage';
+import { FaqPage } from './pages/FaqPage';
+import { HelpCenterPage } from './pages/HelpCenterPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { TermsPage } from './pages/TermsPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { BookingHistoryPage } from './pages/BookingHistoryPage';
+import { CustomerProfilePage } from './pages/CustomerProfilePage';
+import { TalentDashboardPage } from './pages/TalentDashboardPage';
+import { AdminPage } from './pages/AdminPage';
+import { VerifyKtpPage } from './pages/VerifyKtpPage';
+import { ChangePasswordPage } from './pages/ChangePasswordPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { AdminInviteSetupPage } from './pages/AdminInviteSetupPage';
 import { AppRoute } from './types/navigation';
 import { supabase } from './lib/supabase';
 
@@ -247,18 +247,7 @@ export default function App() {
 
   return (
     <MainLayout currentPath={currentPath} onNavigate={handleNavigate}>
-      <Suspense
-        fallback={
-          <div className="flex min-h-[50vh] items-center justify-center px-4 py-12" role="status" aria-live="polite">
-            <div className="flex items-center gap-3 rounded-2xl border border-purple-100 bg-white px-4 py-3 text-sm font-semibold text-purple-800 shadow-sm">
-              <span className="h-5 w-5 animate-spin rounded-full border-2 border-purple-200 border-t-purple-700" aria-hidden="true" />
-              Memuat halaman...
-            </div>
-          </div>
-        }
-      >
-        {renderCurrentPage()}
-      </Suspense>
+      {renderCurrentPage()}
     </MainLayout>
   );
 }
