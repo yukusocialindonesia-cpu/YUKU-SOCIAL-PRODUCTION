@@ -518,20 +518,18 @@ REVOKE SELECT ON public.community_posts, public.community_comments,
 
 GRANT SELECT (
   id, author_display_name, body, topic, likes_count, comments_count,
-  status, created_at, updated_at, moderated_at, moderated_by, moderation_note
+  status, created_at, updated_at
 ) ON public.community_posts TO anon, authenticated;
 
 GRANT SELECT (
-  id, post_id, author_display_name, body, status, created_at,
-  moderated_at, moderated_by, moderation_note
+  id, post_id, author_display_name, body, status, created_at
 ) ON public.community_comments TO anon, authenticated;
 
 GRANT SELECT (post_id, user_id, created_at)
   ON public.community_likes TO authenticated;
 
 GRANT SELECT (
-  id, reason, details, status, created_at, post_id, comment_id,
-  reviewed_at, reviewed_by, admin_notes
+  id, reason, details, status, created_at, post_id, comment_id
 ) ON public.community_reports TO authenticated;
 
 -- IMPORTANT: this file remains a proposal. It has NOT been applied to Supabase.
