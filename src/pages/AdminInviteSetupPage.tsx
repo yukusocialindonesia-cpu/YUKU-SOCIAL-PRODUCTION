@@ -124,8 +124,8 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
   };
 
   return (
-    <div className="min-h-[65vh] py-12 px-4 flex items-center justify-center bg-[#FAF8FC]">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-8 space-y-6">
+    <div className="relative isolate min-h-[65vh] overflow-hidden py-12 px-4 flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.85),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)]">
+      <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/90 bg-white/80 p-6 shadow-[0_28px_80px_-30px_rgba(76,29,149,0.34)] ring-1 ring-violet-100/80 backdrop-blur-2xl sm:p-8 space-y-6">
         <div className="text-center space-y-3">
           <BrandLogo size="md" showTagline={false} />
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-100 text-[11px] font-bold text-purple-800">
@@ -143,7 +143,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
             <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-sm flex gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /><p>{error}</p>
             </div>
-            <button type="button" onClick={() => onNavigate('/login')} className="w-full py-3 rounded-xl bg-purple-700 text-white font-bold text-sm">Ke Halaman Login</button>
+            <button type="button" onClick={() => onNavigate('/login')} className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-indigo-700 text-white font-bold text-sm shadow-[0_12px_26px_-10px_rgba(126,34,206,0.55)] transition-all hover:-translate-y-0.5">Ke Halaman Login</button>
           </div>
         ) : success ? (
           <div className="space-y-4">
@@ -151,7 +151,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
               <p>Kata sandi berhasil dibuat. Aktivasi selesai dan akses Admin sudah diverifikasi.</p>
             </div>
-            <button type="button" onClick={() => onNavigate('/admin')} className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white font-bold text-sm inline-flex items-center justify-center gap-2">
+            <button type="button" onClick={() => onNavigate('/admin')} className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-indigo-700 text-white font-bold text-sm shadow-[0_12px_26px_-10px_rgba(126,34,206,0.55)] transition-all hover:-translate-y-0.5 inline-flex items-center justify-center gap-2">
               Buka Dashboard Admin <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -162,7 +162,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
               <span className="text-xs font-bold text-slate-700">Kata Sandi Baru</span>
               <span className="relative block">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input required minLength={8} type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Minimal 8 karakter" className="w-full pl-9 pr-11 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm" />
+                <input required minLength={8} type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Minimal 8 karakter" className="w-full pl-9 pr-11 py-3.5 rounded-2xl border border-violet-100 bg-white/85 shadow-inner text-sm transition-all focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100" />
                 <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Lihat kata sandi'}>{showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
               </span>
             </label>
@@ -174,7 +174,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
                 <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-label={showConfirm ? 'Sembunyikan konfirmasi' : 'Lihat konfirmasi'}>{showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
               </span>
             </label>
-            <button type="submit" disabled={saving} className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white font-bold text-sm disabled:opacity-50">{saving ? 'Menyimpan...' : 'Simpan Kata Sandi & Aktifkan Akun'}</button>
+            <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-indigo-700 text-white font-bold text-sm shadow-[0_12px_26px_-10px_rgba(126,34,206,0.55)] transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0">{saving ? 'Menyimpan...' : 'Simpan Kata Sandi & Aktifkan Akun'}</button>
           </form>
         ) : null}
       </div>
