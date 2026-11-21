@@ -151,7 +151,7 @@ Konsekuensi: setelah pembatasan database, halaman ini harus diubah agar:
 ## Implementasi lanjutan Staging — 21 November 2026
 
 ### Database dan RPC
-Migrasi 49 sampai 61 telah diterapkan di Staging:
+Migrasi 49–63 telah diterapkan di Staging. Ini termasuk penguatan trigger scoped Admin (`62_scoped_admin_trigger_guard_hardening`), pemeliharaan trigger KTP tepercaya (`63_trusted_ktp_trigger_maintenance`), dan indeks foreign key akun Admin (`62_index_admin_audit_actor_foreign_keys`):
 - Policy Talent, Finance, Support, Booking operasional, dan Super Admin dipisahkan.
 - RPC bisnis sensitif kini memeriksa izin menu di dalam fungsi, bukan hanya role Admin.
 - KTP Customer dan Talent dibedakan berdasarkan role pemilik.
