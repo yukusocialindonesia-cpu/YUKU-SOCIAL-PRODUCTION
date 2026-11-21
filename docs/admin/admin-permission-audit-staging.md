@@ -188,3 +188,11 @@ Migrasi 49 sampai 61 telah diterapkan di Staging:
 - Belum ada email undangan yang dikirim.
 - Build frontend belum mendapat hasil CI; workflow pemeriksaan branch sudah ditambahkan, tetapi belum ada run yang tercatat.
 - Advisor masih menampilkan peringatan umum untuk SECURITY DEFINER yang memang dipakai endpoint terotorisasi, serta peringatan Auth leaked-password protection yang merupakan pengaturan lama. Empat tabel tanpa policy RLS sengaja tertutup dari akses langsung.
+
+### Pemeriksaan akhir tambahan
+- Migrasi 62 menambahkan indeks untuk dua foreign key baru pada tabel Admin; jumlah temuan foreign key tanpa indeks turun dari 19 menjadi 17. Sisa 17 berasal dari tabel aplikasi yang sudah ada sebelumnya.
+- Definisi `public.is_admin()` yang aktif di Staging hanya mengenali Super Admin; akses Admin biasa menggunakan pemeriksaan izin per menu. Hak EXECUTE `is_admin()` untuk anon juga sudah dicabut.
+- Pemeriksaan trigger memastikan proses KTP menggunakan izin sesuai jenis akun; proses booking dan payout memakai izin Booking/Finance/Support sesuai tindakan.
+- Security advisor masih memberi peringatan umum pada fungsi SECURITY DEFINER yang memang dapat dipanggil authenticated, tetapi endpoint Admin baru memeriksa identitas dan izin di dalam fungsi. Peringatan anon yang tersisa adalah `is_talent_publicly_visible` untuk katalog publik. Peringatan perlindungan password bocor adalah pengaturan Auth yang sudah ada sebelumnya dan belum diubah.
+- Tes RPC KTP menegaskan Talent tidak dapat memproses KTP Customer dan Support tidak dapat memproses KTP Talent. Untuk jenis yang benar, fungsi lolos pemeriksaan izin lalu menolak karena dokumen uji sudah berstatus verified, sehingga tidak ada data yang berubah.
+- Tes pengelolaan Admin mengonfirmasi daftar akun, kombinasi izin, penonaktifan, dan provisioning service-role. Semua perubahan akun uji di-rollback.
