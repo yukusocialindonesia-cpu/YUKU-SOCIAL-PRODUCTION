@@ -277,7 +277,7 @@ GRANT INSERT (reporter_id, post_id, comment_id, reason, details) ON public.commu
 GRANT INSERT (author_id, body, topic) ON public.community_posts TO authenticated;
 GRANT INSERT (post_id, author_id, body) ON public.community_comments TO authenticated;
 GRANT INSERT (post_id, user_id) ON public.community_likes TO authenticated;
-GRANT DELETE ON public.community_posts, public.community_comments, public.community_likes TO authenticated;
+GRANT DELETE ON public.community_likes TO authenticated;
 GRANT UPDATE (body, topic) ON public.community_posts TO authenticated;
 GRANT UPDATE (body) ON public.community_comments TO authenticated;
 
@@ -514,12 +514,90 @@ WITH CHECK (
 DROP POLICY IF EXISTS community_posts_admin_read ON public.community_posts;
 DROP POLICY IF EXISTS community_comments_admin_read ON public.community_comments;
 
+-- Community content is retained for moderation evidence. Members cannot hard-delete it.
 DROP POLICY IF EXISTS community_posts_owner_delete ON public.community_posts;
-CREATE POLICY community_posts_owner_delete ON public.community_posts
-FOR DELETE TO authenticated
-USING (author_id = (SELECT auth.uid()));
-
 DROP POLICY IF EXISTS community_comments_owner_delete ON public.community_comments;
-CREATE POLICY community_comments_owner_delete ON public.community_comments
-FOR DELETE TO authenticated
-USING (author_id = (SELECT auth.uid()));
+REVOKE DELETE ON public.community_posts, public.community_comments FROM authenticated;
+
+
+-- Atomic moderation: content action and report closure commit together or not at all.
+CREATE OR REPLACE FUNCTION public.process_community_report(
+  p_report_id uuid,
+  p_action text,
+  p_admin_notes text DEFAULT NULL
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+DECLARE
+  v_report public.community_reports%ROWTYPE;
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.community_can_moderate() THEN
+    RAISE EXCEPTION 'Tidak memiliki izin moderasi komunitas'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF p_action IS NULL OR p_action NOT IN ('hide', 'remove', 'dismiss') THEN
+    RAISE EXCEPTION 'Aksi moderasi tidak valid' USING ERRCODE = '22023';
+  END IF;
+
+  SELECT *
+  INTO v_report
+  FROM public.community_reports
+  WHERE id = p_report_id AND status = 'pending'
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Laporan tidak ditemukan atau sudah diproses'
+      USING ERRCODE = 'P0002';
+  END IF;
+
+  IF p_action <> 'dismiss' THEN
+    IF v_report.post_id IS NOT NULL THEN
+      UPDATE public.community_posts
+      SET status = CASE p_action WHEN 'hide' THEN 'hidden' ELSE 'removed' END,
+          moderated_at = now(),
+          moderated_by = auth.uid(),
+          moderation_note = NULLIF(left(btrim(COALESCE(p_admin_notes, '')), 500), '')
+      WHERE id = v_report.post_id;
+      IF NOT FOUND THEN
+        RAISE EXCEPTION 'Postingan laporan tidak ditemukan' USING ERRCODE = 'P0002';
+      END IF;
+    ELSIF v_report.comment_id IS NOT NULL THEN
+      UPDATE public.community_comments
+      SET status = CASE p_action WHEN 'hide' THEN 'hidden' ELSE 'removed' END,
+          moderated_at = now(),
+          moderated_by = auth.uid(),
+          moderation_note = NULLIF(left(btrim(COALESCE(p_admin_notes, '')), 500), '')
+      WHERE id = v_report.comment_id;
+      IF NOT FOUND THEN
+        RAISE EXCEPTION 'Komentar laporan tidak ditemukan' USING ERRCODE = 'P0002';
+      END IF;
+    ELSE
+      RAISE EXCEPTION 'Laporan tidak memiliki target yang valid' USING ERRCODE = '22023';
+    END IF;
+  END IF;
+
+  UPDATE public.community_reports
+  SET status = CASE WHEN p_action = 'dismiss' THEN 'dismissed' ELSE 'reviewed' END,
+      reviewed_at = now(),
+      reviewed_by = auth.uid(),
+      admin_notes = NULLIF(left(btrim(COALESCE(p_admin_notes, '')), 500), '')
+  WHERE id = p_report_id;
+END;
+$function$;
+
+REVOKE ALL ON FUNCTION public.process_community_report(uuid, text, text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.process_community_report(uuid, text, text) TO authenticated;
+
+-- Keep report evidence if a privileged maintenance process ever attempts a hard delete.
+ALTER TABLE public.community_reports
+  DROP CONSTRAINT IF EXISTS community_reports_post_id_fkey,
+  DROP CONSTRAINT IF EXISTS community_reports_comment_id_fkey;
+ALTER TABLE public.community_reports
+  ADD CONSTRAINT community_reports_post_id_fkey
+    FOREIGN KEY (post_id) REFERENCES public.community_posts(id) ON DELETE RESTRICT,
+  ADD CONSTRAINT community_reports_comment_id_fkey
+    FOREIGN KEY (comment_id) REFERENCES public.community_comments(id) ON DELETE RESTRICT;
