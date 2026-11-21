@@ -526,7 +526,7 @@ GRANT SELECT (
   moderated_at, moderated_by, moderation_note
 ) ON public.community_comments TO anon, authenticated;
 
-GRANT SELECT (post_id, created_at)
+GRANT SELECT (post_id, user_id, created_at)
   ON public.community_likes TO authenticated;
 
 GRANT SELECT (
