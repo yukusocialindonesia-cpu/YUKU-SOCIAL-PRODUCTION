@@ -61,7 +61,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     >
       <ul className="grid grid-cols-5">
         {items.map((item) => {
-          const active = item.route !== null && currentPath === item.route && (loggedIn || item.route === '/' || item.route === '/talent');
+          const active = item.route !== null && currentPath === item.route;
           return (
             <li key={item.label}>
               <button
