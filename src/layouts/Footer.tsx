@@ -140,7 +140,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         </div>
 
         {/* Bottom Bar with Mandatory Legal Disclaimers */}
-        <div className="pt-6 md:pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+        <div className="pt-6 md:pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-300">
           <p>
             © {new Date().getFullYear()} YUKU (PT Inovasi Sosial Teman Indonesia). Seluruh hak cipta dilindungi undang-undang.
           </p>
