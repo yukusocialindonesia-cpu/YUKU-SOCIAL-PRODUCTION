@@ -395,7 +395,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           ? await supabase.rpc('get_admin_customer_labels', { p_customer_ids: refundCustomerIds })
           : { data: [] as any[] };
         const refundCustomerMap = new Map((refundCustomers || []).map((c: any) => [c.id, c.display_name]));
-        const bookingCodeMap = new Map(enrichedBookings.map((b) => [b.id, b.booking_code]));
+        const refundBookingIds = Array.from(new Set((refundRows || []).map((r) => r.booking_id)));
+        const { data: refundBookingLabels } = refundBookingIds.length
+          ? await supabase.rpc('get_admin_finance_booking_labels', { p_booking_ids: refundBookingIds })
+          : { data: [] as any[] };
+        const bookingCodeMap = new Map((refundBookingLabels || []).map((b: any) => [b.id, b.booking_code]));
         setRefunds((refundRows || []).map((r) => ({
           ...r,
           customer_name: refundCustomerMap.get(r.customer_id) || 'Customer YUKU',
@@ -410,7 +414,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           ? await supabase.rpc('get_admin_customer_labels', { p_customer_ids: caseCustomerIds })
           : { data: [] as any[] };
         const caseCustomerMap = new Map((caseCustomers || []).map((c: any) => [c.id, c.display_name]));
-        const caseBookingMap = new Map(enrichedBookings.map((b) => [b.id, b.booking_code]));
+        const caseBookingIds = Array.from(new Set((cancellationCaseRows || []).map((c) => c.booking_id)));
+        const { data: caseBookingLabels } = caseBookingIds.length
+          ? await supabase.rpc('get_admin_finance_booking_labels', { p_booking_ids: caseBookingIds })
+          : { data: [] as any[] };
+        const caseBookingMap = new Map((caseBookingLabels || []).map((b: any) => [b.id, b.booking_code]));
         setCustomerCancellationCases((cancellationCaseRows || []).map((c) => ({
           ...c,
           customer_name: caseCustomerMap.get(c.customer_id) || 'Customer YUKU',
