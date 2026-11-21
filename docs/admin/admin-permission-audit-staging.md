@@ -186,7 +186,7 @@ Migrasi 49–63 telah diterapkan di Staging. Ini termasuk penguatan trigger scop
 - Branch belum digabung ke main.
 - Xendit tetap tidak disentuh.
 - Belum ada email undangan yang dikirim.
-- Build frontend belum mendapat hasil CI; workflow pemeriksaan branch sudah ditambahkan, tetapi belum ada run yang tercatat.
+- GitHub Actions sudah lulus pada commit terbaru: TypeScript check, build website, dan TypeScript check Edge Function.
 - Advisor masih menampilkan peringatan umum untuk SECURITY DEFINER yang memang dipakai endpoint terotorisasi, serta peringatan Auth leaked-password protection yang merupakan pengaturan lama. Empat tabel tanpa policy RLS sengaja tertutup dari akses langsung.
 
 ### Pemeriksaan akhir tambahan
