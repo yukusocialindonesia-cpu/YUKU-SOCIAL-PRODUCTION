@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Flag, RefreshCw, ShieldCheck } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   loadPendingCommunityReports,
   processCommunityReport,
   type CommunityReport,
-} from '../services/communityService';
+} from '../../services/communityService';
 
 const formatReportTime = (value: string) => new Intl.DateTimeFormat('id-ID', {
   day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
