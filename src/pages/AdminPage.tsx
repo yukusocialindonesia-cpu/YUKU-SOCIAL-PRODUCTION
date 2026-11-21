@@ -1142,7 +1142,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   }
 
   return (
-    <div className="py-4 sm:py-8 bg-[#FAF8FC] min-h-screen">
+    <div className="relative isolate py-4 sm:py-8 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.34),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F6F3FA_100%)] min-h-screen overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Top Notification Alerts */}
         {errorMessage && (
@@ -1229,7 +1229,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold text-emerald-700">Data terkini</span>
             </div>
             <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
-              <div className="min-w-0 rounded-2xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/70 p-3.5 shadow-sm sm:p-5">
+              <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-amber-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Talent menunggu review</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700"><Clock className="h-4 w-4" /></span>
@@ -1237,7 +1237,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="text-2xl font-black tracking-tight text-amber-700 tabular-nums sm:text-3xl">{talents.filter((t) => !t.is_approved).length}</div>
                 <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Belum disetujui atau belum terverifikasi e-KTP.</p>
               </div>
-              <div className="min-w-0 rounded-2xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/70 p-3.5 shadow-sm sm:p-5">
+              <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-violet-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Antrean pencairan</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700"><CreditCard className="h-4 w-4" /></span>
@@ -1245,7 +1245,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="text-2xl font-black tracking-tight text-violet-800 tabular-nums sm:text-3xl">{payouts.filter((p) => p.payout_status === 'requested').length}</div>
                 <p className="mt-1.5 break-words text-[10px] font-semibold leading-relaxed text-violet-700">Total {formatRupiah(talentPayoutsPending)}</p>
               </div>
-              <div className="min-w-0 rounded-2xl border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/70 p-3.5 shadow-sm sm:p-5">
+              <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-emerald-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Pendapatan platform · 20%</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"><TrendingUp className="h-4 w-4" /></span>
@@ -1253,7 +1253,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="break-words text-xl font-black tracking-tight text-emerald-800 tabular-nums sm:text-2xl">{formatRupiah(platformRevenueFee)}</div>
                 <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Dari {completedBookings.length} order selesai.</p>
               </div>
-              <div className="min-w-0 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-100/80 p-3.5 shadow-sm sm:p-5">
+              <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-slate-200/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Nilai transaksi · GMV</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-200 text-slate-700"><DollarSign className="h-4 w-4" /></span>
@@ -1266,7 +1266,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         )}
 
         {/* Tab Navigation */}
-        <div className="grid grid-cols-4 justify-items-center gap-x-2 gap-y-3 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm sm:grid-cols-5 sm:gap-3 sm:p-4">
+        <div className="grid grid-cols-4 justify-items-center gap-x-2 gap-y-3 rounded-[28px] border border-white/90 bg-white/70 p-3 shadow-[0_18px_42px_-24px_rgba(76,29,149,0.24)] ring-1 ring-violet-100/80 backdrop-blur-2xl sm:grid-cols-5 sm:gap-3 sm:p-4">
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('overview')}
