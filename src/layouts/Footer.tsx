@@ -30,14 +30,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
           {/* Quick Nav Col */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
               Navigasi
             </h4>
-            <ul className="space-y-3 text-sm text-slate-200">
+            <ul className="space-y-3 text-sm text-white">
               <li>
                 <button
                   onClick={() => onNavigate('/')}
-                  className="inline-flex min-h-8 items-center rounded-lg px-2 -ml-2 hover:bg-white/[0.06] hover:text-white transition-all cursor-pointer"
+                  className="inline-flex min-h-8 items-center rounded-lg px-2 -ml-2 !text-white font-medium hover:bg-white/[0.06] hover:!text-amber-200 transition-all cursor-pointer"
                 >
                   Beranda
                 </button>
@@ -45,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/talent')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Jelajahi Talent
                 </button>
@@ -53,7 +53,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/cara-kerja')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Cara Kerja
                 </button>
@@ -61,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/daftar-talent')}
-                  className="inline-flex min-h-8 items-center rounded-lg px-2 -ml-2 bg-amber-400/10 text-amber-300 font-semibold hover:bg-amber-400/15 hover:text-amber-200 transition-all cursor-pointer"
+                  className="inline-flex min-h-8 items-center rounded-lg px-2 -ml-2 bg-amber-400/10 !text-amber-200 font-semibold hover:bg-amber-400/15 hover:!text-amber-100 transition-all cursor-pointer"
                 >
                   Daftar Jadi Talent
                 </button>
@@ -71,14 +71,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
           {/* Company & Support Col */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
               Informasi
             </h4>
-            <ul className="space-y-3 text-sm text-slate-200">
+            <ul className="space-y-3 text-sm text-white">
               <li>
                 <button
                   onClick={() => onNavigate('/tentang')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Tentang YUKU
                 </button>
@@ -86,7 +86,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/faq')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   FAQ & Tanya Jawab
                 </button>
@@ -94,7 +94,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/bantuan')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Pusat Bantuan
                 </button>
@@ -102,7 +102,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/login')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Masuk Akun
                 </button>
@@ -112,14 +112,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
           {/* Legal & Compliance Col */}
           <div className="col-span-2 lg:col-span-1">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
               Ketentuan Hukum
             </h4>
-            <ul className="space-y-3 text-sm text-slate-200">
+            <ul className="space-y-3 text-sm text-white">
               <li>
                 <button
                   onClick={() => onNavigate('/syarat-ketentuan')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Syarat & Ketentuan
                 </button>
@@ -127,7 +127,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/kebijakan-privasi')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Kebijakan Privasi
                 </button>
