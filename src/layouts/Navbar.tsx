@@ -21,6 +21,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     return () => window.removeEventListener('yuku:open-menu', openMenu);
   }, []);
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isMobileMenuOpen]);
+
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -277,9 +288,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               />
             ) : null}
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              type="button"
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
               className="p-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="yuku-mobile-navigation"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -289,7 +303,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 shadow-xl max-h-[calc(100dvh-4.5rem-4rem)] md:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
+        <div
+          id="yuku-mobile-navigation"
+          className="xl:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 shadow-xl max-h-[calc(100dvh-4.5rem-4rem)] md:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
+        >
           {currentUser && (
             <div className="mb-3 p-3 bg-purple-50 rounded-xl flex items-center justify-between border border-purple-100">
               <div className="flex items-center gap-2.5">
