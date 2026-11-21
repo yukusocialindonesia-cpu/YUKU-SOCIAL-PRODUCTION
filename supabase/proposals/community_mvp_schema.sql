@@ -492,3 +492,19 @@ WITH CHECK (
     ))
   )
 );
+
+
+-- Remove the earlier broad is_admin() read/delete rules. Only Support Admins
+-- and Super Admins may inspect hidden items; all moderation changes go via RPC.
+DROP POLICY IF EXISTS community_posts_admin_read ON public.community_posts;
+DROP POLICY IF EXISTS community_comments_admin_read ON public.community_comments;
+
+DROP POLICY IF EXISTS community_posts_owner_delete ON public.community_posts;
+CREATE POLICY community_posts_owner_delete ON public.community_posts
+FOR DELETE TO authenticated
+USING (author_id = (SELECT auth.uid()));
+
+DROP POLICY IF EXISTS community_comments_owner_delete ON public.community_comments;
+CREATE POLICY community_comments_owner_delete ON public.community_comments
+FOR DELETE TO authenticated
+USING (author_id = (SELECT auth.uid()));
