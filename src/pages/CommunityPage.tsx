@@ -50,6 +50,9 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [busyLikeIds, setBusyLikeIds] = useState<string[]>([]);
+  const [busyCommentPostIds, setBusyCommentPostIds] = useState<string[]>([]);
+  const [busyReportPostIds, setBusyReportPostIds] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
@@ -105,21 +108,25 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   };
 
   const handleLike = async (post: CommunityPost) => {
-    if (!requireLogin() || !user) return;
+    if (!requireLogin() || !user || busyLikeIds.includes(post.id)) return;
+    setBusyLikeIds((current) => [...current, post.id]);
     try {
       await toggleCommunityLike(post.id, user.id, post.likedByMe);
       await refreshPosts();
     } catch (error) {
       console.error('YUKU Community: gagal mengubah suka', error);
       setNotice('Belum berhasil memberi suka. Coba lagi.');
+    } finally {
+      setBusyLikeIds((current) => current.filter((id) => id !== post.id));
     }
   };
 
   const publishComment = async (postId: string) => {
-    if (!requireLogin() || !user) return;
+    if (!requireLogin() || !user || busyCommentPostIds.includes(postId)) return;
     const body = (commentDrafts[postId] || '').trim();
     if (!body || body.length > 600) return;
 
+    setBusyCommentPostIds((current) => [...current, postId]);
     try {
       await createCommunityComment(postId, user.id, body);
       setCommentDrafts((current) => ({ ...current, [postId]: '' }));
@@ -128,12 +135,15 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
     } catch (error) {
       console.error('YUKU Community: gagal mengirim komentar', error);
       setNotice('Komentar belum berhasil dikirim. Coba lagi.');
+    } finally {
+      setBusyCommentPostIds((current) => current.filter((id) => id !== postId));
     }
   };
 
   const submitReport = async (postId: string) => {
-    if (!requireLogin() || !user) return;
+    if (!requireLogin() || !user || busyReportPostIds.includes(postId)) return;
     const reason = reportReasonsByPost[postId] || 'Konten tidak pantas';
+    setBusyReportPostIds((current) => [...current, postId]);
     try {
       await reportCommunityPost(postId, user.id, reason);
       setReportingPostId(null);
@@ -141,6 +151,8 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
     } catch (error) {
       console.error('YUKU Community: gagal mengirim laporan', error);
       setNotice('Laporan belum berhasil dikirim. Coba lagi.');
+    } finally {
+      setBusyReportPostIds((current) => current.filter((id) => id !== postId));
     }
   };
 
@@ -287,7 +299,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   </div>
                   <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{post.body}</p>
                   <div className="mt-4 flex items-center gap-4 border-t border-purple-50 pt-3 sm:gap-5">
-                    <button type="button" onClick={() => void handleLike(post)} aria-pressed={post.likedByMe}
+                    <button type="button" onClick={() => void handleLike(post)} disabled={busyLikeIds.includes(post.id)} aria-pressed={post.likedByMe}
                       className={`inline-flex items-center gap-1.5 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
                       <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes_count} Suka
                     </button>
@@ -310,7 +322,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                         className="min-w-0 flex-1 rounded-lg border border-rose-100 bg-white px-3 py-2 text-xs">
                         {reportReasons.map((reason) => <option key={reason} value={reason}>{reason}</option>)}
                       </select>
-                      <button type="button" onClick={() => void submitReport(post.id)}
+                      <button type="button" onClick={() => void submitReport(post.id)} disabled={busyReportPostIds.includes(post.id)}
                         className="rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white">Kirim laporan</button>
                     </div>
                   )}
@@ -332,7 +344,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                             maxLength={600} placeholder="Tulis komentar..."
                             className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100" />
                           <button type="button" onClick={() => void publishComment(post.id)}
-                            disabled={!(commentDrafts[post.id] || '').trim()}
+                            disabled={!(commentDrafts[post.id] || '').trim() || busyCommentPostIds.includes(post.id)}
                             className="rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800 disabled:opacity-40">Kirim</button>
                         </div>
                       ) : (
