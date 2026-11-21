@@ -31,7 +31,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
   return (
     <div
       className={`min-h-screen flex flex-col bg-transparent text-slate-800 ${
-        showBottomNav ? 'pb-[calc(56px+env(safe-area-inset-bottom))] md:pb-0' : ''
+        showBottomNav ? 'pb-[calc(92px+env(safe-area-inset-bottom))] md:pb-0' : ''
       }`}
     >
       {/* Satu-satunya <header> aplikasi */}
