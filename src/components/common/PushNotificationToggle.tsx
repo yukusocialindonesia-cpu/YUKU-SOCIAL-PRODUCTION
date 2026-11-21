@@ -49,7 +49,7 @@ export const PushNotificationToggle: React.FC = () => {
   if (isAuthLoading || !isAuthenticated) return null;
 
   return (
-    <div className="mx-3 my-3 rounded-xl border border-purple-100 bg-purple-50/60 p-3">
+    <div className="mx-3 my-3 rounded-2xl border border-white/90 bg-[linear-gradient(135deg,rgba(250,245,255,0.96),rgba(255,255,255,0.92))] p-3.5 shadow-[0_12px_30px_-22px_rgba(76,29,149,0.4)] ring-1 ring-purple-100/80 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-bold text-slate-900">Notifikasi di HP</p>
@@ -65,7 +65,7 @@ export const PushNotificationToggle: React.FC = () => {
           type="button"
           onClick={() => void handleToggle()}
           disabled={isBusy || status === 'checking' || unavailable}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-purple-700 px-3 py-2 text-[11px] font-bold text-white hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 px-3.5 py-2.5 text-[11px] font-bold text-white shadow-[0_8px_18px_-10px_rgba(126,34,206,0.8)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_22px_-10px_rgba(126,34,206,0.75)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isBusy || status === 'checking'
             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
