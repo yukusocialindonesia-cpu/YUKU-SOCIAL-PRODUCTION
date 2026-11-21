@@ -269,9 +269,13 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       return;
     }
 
-    // 4. Meeting Location Guard
+    // 4. Meeting Location / Online Platform Guard
     if (!meetingLocation.trim()) {
-      setBookingError('Tentukan lokasi ruang publik untuk pertemuan.');
+      setBookingError(
+        bookingMode === 'online'
+          ? 'Masukkan platform atau kanal yang akan digunakan untuk sesi online.'
+          : 'Tentukan lokasi ruang publik untuk pertemuan.'
+      );
       return;
     }
 
@@ -320,8 +324,17 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
         if (rpcError.code === '23P01') {
           throw new Error('jadwal talent bentrok');
         }
+        if (rawMessage.includes('Payment gateway YUKU belum aktif')) {
+          throw new Error('Pemesanan berbayar YUKU sementara belum tersedia. Silakan coba kembali nanti.');
+        }
+        if (rawMessage.includes('menunggu pembayaran')) {
+          throw new Error('Anda masih memiliki booking yang menunggu pembayaran. Selesaikan atau tunggu sampai batas waktunya berakhir.');
+        }
+        if (rawMessage.includes('Booking start time must be at least two hours')) {
+          throw new Error('Pilih jadwal minimal 2 jam dari sekarang.');
+        }
         if (rawMessage.includes('Customer KTP verification required')) {
-          throw new Error('KTP Anda belum terverifikasi');
+          throw new Error('KTP Anda belum terverifikasi.');
         }
         if (rawMessage.includes('Customer account is not eligible')) {
           throw new Error('akun belum memenuhi syarat');
@@ -329,10 +342,22 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
         if (rawMessage.includes('Talent is not available')) {
           throw new Error('talent sedang tidak tersedia');
         }
-        if (rawMessage.includes('Talent does not offer this category')) {
-          throw new Error('talent tidak menawarkan aktivitas ini');
+        if (rawMessage.includes('Talent does not offer online sessions')) {
+          throw new Error('Talent ini belum menyediakan sesi online.');
         }
-        throw new Error(rawMessage || 'Terjadi kesalahan saat memproses booking ke Supabase.');
+        if (rawMessage.includes('Talent does not offer this booking mode')) {
+          throw new Error('Mode layanan yang dipilih tidak tersedia pada profil Talent ini.');
+        }
+        if (rawMessage.includes('Talent does not offer this category')) {
+          throw new Error('Aktivitas ini tidak tersedia pada profil Talent.');
+        }
+        if (rawMessage.includes('Invalid booking schedule or duration')) {
+          throw new Error('Periksa kembali tanggal, jam, dan durasi booking Anda.');
+        }
+        if (rawMessage.includes('Talent is not available')) {
+          throw new Error('Jadwal tersebut baru saja tidak tersedia. Silakan pilih waktu lain.');
+        }
+        throw new Error('Booking belum dapat diproses. Silakan periksa data dan coba kembali.');
       }
 
       const createdRow = Array.isArray(rpcData) ? rpcData[0] : rpcData;
@@ -1251,8 +1276,16 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 )}
 
                 <div className="p-3 rounded-lg bg-purple-50 text-purple-900 border border-purple-200 leading-relaxed">
-                  <strong>Ketentuan Layanan YUKU:</strong> Seluruh pertemuan wajib dilakukan di area publik terbuka. Sistem escrow menjamin kebebasan dan keamanan transaksi Anda.
+                  <strong>Ketentuan Layanan YUKU:</strong>{' '}
+                  {bookingMode === 'offline'
+                    ? 'Pertemuan tatap muka wajib dilakukan di area publik terbuka seperti kafe, mal, atau restoran.'
+                    : 'Untuk sesi online, tentukan platform atau kanal komunikasi yang akan digunakan. Jangan membagikan data pribadi atau informasi sensitif.'}
                 </div>
+                {!isPaymentCheckoutEnabled && (
+                  <div className="p-3 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 leading-relaxed">
+                    Pemesanan berbayar sedang dipersiapkan dan belum dapat digunakan. Anda masih dapat melihat detail layanan, tetapi belum bisa mengirim booking.
+                  </div>
+                )}
 
                 {/* Activity & Booking Mode */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1401,33 +1434,41 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   </div>
                 </div>
 
-                {/* Location */}
+                {/* Meeting location or online platform */}
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
-                    Nama Lokasi Ruang Publik (Kafe / Mall / Restoran) *
+                    {bookingMode === 'offline'
+                      ? 'Nama Lokasi Ruang Publik (Kafe / Mall / Restoran) *'
+                      : 'Platform / Kanal Sesi Online *'}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="Contoh: Kafe Titik Temu, Senopati / Grand Indonesia Mall"
+                    maxLength={200}
+                    placeholder={bookingMode === 'offline'
+                      ? 'Contoh: Kafe, mal, atau restoran yang mudah dijangkau'
+                      : 'Contoh: WhatsApp Video, Zoom, atau Google Meet'}
                     value={meetingLocation}
                     onChange={(e) => setMeetingLocation(e.target.value)}
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
                   />
                 </div>
 
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    Detail Alamat / Titik Temu Spesifik (Opsional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: Lobby Utama East Mall Lantai Dasar dekat Starbucks"
-                    value={meetingAddress}
-                    onChange={(e) => setMeetingAddress(e.target.value)}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
-                  />
-                </div>
+                {bookingMode === 'offline' && (
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Detail Alamat / Titik Temu Spesifik (Opsional)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={1000}
+                      placeholder="Contoh: Lobby utama, lantai dasar dekat pintu masuk"
+                      value={meetingAddress}
+                      onChange={(e) => setMeetingAddress(e.target.value)}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                    />
+                  </div>
+                )}
 
                 <div className="pt-3 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2">
                   <button
@@ -1440,8 +1481,8 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   </button>
                   <button
                     type="submit"
-                    disabled={isSubmittingBooking}
-                    className="w-full sm:w-auto px-5 py-2.5 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                    disabled={isSubmittingBooking || !isPaymentCheckoutEnabled}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmittingBooking ? (
                       <>
@@ -1449,7 +1490,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         <span>Menyimpan ke Supabase...</span>
                       </>
                     ) : (
-                      <span>Kirim Permintaan Booking Nyata</span>
+                      <span>{isPaymentCheckoutEnabled ? 'Lanjutkan Booking' : 'Booking Belum Tersedia'}</span>
                     )}
                   </button>
                 </div>
