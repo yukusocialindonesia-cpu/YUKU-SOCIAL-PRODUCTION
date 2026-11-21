@@ -468,3 +468,27 @@ GRANT EXECUTE ON FUNCTION public.moderate_community_comment(uuid, text, text) TO
 GRANT EXECUTE ON FUNCTION public.review_community_report(uuid, text, text) TO authenticated;
 
 -- IMPORTANT: this file remains a proposal. It has NOT been applied to Supabase.
+
+
+-- Tighten comment reports: the parent post must still be publicly visible.
+DROP POLICY IF EXISTS community_reports_member_insert ON public.community_reports;
+CREATE POLICY community_reports_member_insert ON public.community_reports
+FOR INSERT TO authenticated
+WITH CHECK (
+  reporter_id = (SELECT auth.uid())
+  AND (
+    (post_id IS NOT NULL AND EXISTS (
+      SELECT 1 FROM public.community_posts p
+      WHERE p.id = post_id AND p.status = 'published'
+    ))
+    OR
+    (comment_id IS NOT NULL AND EXISTS (
+      SELECT 1
+      FROM public.community_comments c
+      JOIN public.community_posts p ON p.id = c.post_id
+      WHERE c.id = comment_id
+        AND c.status = 'published'
+        AND p.status = 'published'
+    ))
+  )
+);
