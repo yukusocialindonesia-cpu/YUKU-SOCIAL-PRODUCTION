@@ -93,11 +93,11 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
-          className={`w-full min-h-[42px] pl-9 pr-14 py-2 text-sm bg-slate-50 border rounded-xl text-left transition-colors cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
+          className={`w-full min-h-[46px] pl-9 pr-14 py-2.5 text-sm bg-white/75 border rounded-2xl text-left shadow-[0_10px_24px_-18px_rgba(30,41,59,0.45)] backdrop-blur-xl transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
             isOpen
-              ? 'border-purple-500 bg-white'
+              ? 'border-purple-400 bg-white shadow-[0_12px_28px_-16px_rgba(124,58,237,0.55)]'
               : selectedCity !== 'Semua Kota'
-              ? 'border-purple-300 bg-purple-50/40 text-purple-950 font-semibold'
+              ? 'border-purple-300/80 bg-gradient-to-r from-violet-50/90 to-fuchsia-50/70 text-purple-950 font-semibold'
               : 'border-slate-200 hover:bg-slate-100/70 text-slate-700'
           }`}
         >
@@ -130,10 +130,10 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         <div
           role="listbox"
           aria-label="Daftar kota di Indonesia"
-          className="absolute z-40 left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden w-full max-w-[calc(100vw-2rem)]"
+          className="absolute z-40 left-0 right-0 mt-2 bg-white/95 rounded-3xl border border-white/80 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)] ring-1 ring-slate-200/70 backdrop-blur-2xl overflow-hidden w-full max-w-[calc(100vw-2rem)]"
         >
           {/* City Search Bar */}
-          <div className="p-2.5 border-b border-slate-100 bg-slate-50/70">
+          <div className="p-3 border-b border-slate-100/80 bg-gradient-to-r from-violet-50/80 to-fuchsia-50/50">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -142,7 +142,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                 value={citySearch}
                 onChange={(e) => setCitySearch(e.target.value)}
                 placeholder="Cari kota (misal: Jaksel, Bandung, Bali)..."
-                className="w-full pl-8 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600"
+                className="w-full pl-8 pr-7 py-2.5 text-xs bg-white/90 border border-slate-200/80 rounded-xl shadow-inner focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
               />
               {citySearch && (
                 <button
@@ -157,7 +157,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
             </div>
           </div>
 
-          <div className="max-h-72 overflow-y-auto p-1.5 space-y-2 text-xs">
+          <div className="max-h-72 overflow-y-auto p-2 space-y-2 text-xs">
             {/* All Cities Option */}
             <button
               type="button"
