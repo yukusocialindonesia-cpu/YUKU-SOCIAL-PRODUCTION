@@ -4,7 +4,7 @@ export type CommunityTopic = 'Pertemanan' | 'Kuliner' | 'Travel & Aktivitas' | '
 
 export interface CommunityComment {
   id: string;
-  author_id: string;
+  author_id: string | null;
   author_display_name: string;
   body: string;
   created_at: string;
