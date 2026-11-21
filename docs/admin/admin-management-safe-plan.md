@@ -64,7 +64,6 @@ Pemeriksaan workflow pada commit paling baru belum dapat dikonfirmasi. Status Ve
 
 Pemeriksaan tambahan Staging memastikan KTP Talent dan Customer tidak saling terbuka, Admin nonaktif kehilangan akses, serta pengaturan izin dan provisioning Admin berjalan hanya melalui jalur Super Admin/service role. Dua indeks foreign key baru juga ditambahkan untuk menjaga performa tabel izin Admin. Tidak ada perubahan pada Production.
 
-
 ## Catatan kesiapan Production — pemeriksaan 21 November 2026
 
 **Belum siap diterapkan ke Production.** Pemeriksaan database read-only menemukan:
@@ -75,8 +74,17 @@ Pemeriksaan tambahan Staging memastikan KTP Talent dan Customer tidak saling ter
 - Riwayat migrasi Staging/Production menggunakan versi timestamp untuk banyak perubahan, sedangkan beberapa file lokal branch menggunakan nomor urut pendek. Selain itu ada dua file dengan prefix `62_`. Sebelum deployment, perlu rekonsiliasi ledger migrasi agar CLI tidak menganggap perubahan yang sudah diterapkan sebagai migrasi baru atau menjalankannya dua kali.
 - Edge Function `admin-management` di Staging sudah versi 2 ACTIVE dengan JWT wajib; Production belum diverifikasi/diubah.
 
+### Hasil rekonsiliasi read-only lanjutan — 21 November 2026
+- Ledger Staging memuat migrasi Admin bernama `admin_access_foundation`, `49_scoped_admin_rls_policies` sampai `61_restrict_is_admin_rpc_to_signed_in`, `62_scoped_admin_trigger_guard_hardening`, `63_trusted_ktp_trigger_maintenance`, lalu `62_index_admin_audit_actor_foreign_keys`. Artinya dua file berawalan `62_` memang sudah tercatat terpisah di Staging dengan urutan waktu berbeda; jangan mengganti nama atau mengaplikasikannya ulang tanpa strategi rekonsiliasi.
+- File `62_index_admin_audit_actor_foreign_keys.sql` hanya menambahkan dua indeks pada tabel privat Admin. File `62_scoped_admin_trigger_guard_hardening.sql` mengubah fungsi guard, trigger, dan perilaku `public.is_admin()`; keduanya berbeda dan harus diperlakukan sebagai dua perubahan terpisah.
+- Pemeriksaan struktur database mengonfirmasi Staging memiliki schema `private`, tabel `private.admin_accounts` dan `private.admin_permissions`, serta RPC `get_admin_access()`, `has_admin_permission(text)`, dan `is_super_admin()`. Production belum memiliki semuanya.
+- Jumlah profil Admin di `public.users` masih satu di masing-masing database. Pemeriksaan tidak menemukan alasan untuk mengubah profil pengguna, status umur, atau status akun saat ini.
+- Edge Function Staging: `admin-management` versi 2, ACTIVE, `verify_jwt=true`. Edge Function Production yang terdaftar saat pemeriksaan hanya `yuku-push`; fungsi undangan Admin belum dideploy ke Production.
+- Hitungan kebijakan saat pemeriksaan: Staging 73 kebijakan pada schema public dan 31 pada Storage; Production 75 pada schema public dan 35 pada Storage. Angka berbeda ini menegaskan bahwa kebijakan tidak boleh disalin atau diganti secara massal; perlu perbandingan nama, definisi, dan tabel sasaran satu per satu.
+- Branch pengembangan masih 68 commit di depan `main`, tanpa commit di belakang. Tidak ada merge atau deployment.
+
 **Gerbang sebelum Production:**
-1. Rekonsiliasi nama/versi seluruh migration lokal dengan ledger Staging dan Production; selesaikan duplikasi prefix.
+1. Rekonsiliasi nama/versi seluruh migration lokal dengan ledger Staging dan Production; selesaikan duplikasi prefix tanpa mengubah histori yang sudah tercatat.
 2. Susun satu paket migrasi Production yang idempotent/berurutan, dengan backup dan pemeriksaan pre/post-deploy.
 3. Tinjau semua temuan advisor Production dan samakan kontrol yang sudah teruji di Staging, terutama penutupan akses anon ke `is_admin()`.
 4. Jalankan build dan tes terbaru pada commit final serta verifikasi UI login, menu per izin, penonaktifan Admin, dan undangan memakai email uji yang disetujui.
