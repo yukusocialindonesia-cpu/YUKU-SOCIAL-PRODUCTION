@@ -25,3 +25,46 @@
 .bg-yuku-accent {
   background: linear-gradient(135deg, #9333ea 0%, #db2777 50%, #f97316 100%);
 }
+
+/* Subtle YUKU brand watermark, kept behind all page content. */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background-color: #FAF8FC;
+}
+
+#root {
+  position: relative;
+  isolation: isolate;
+}
+
+#root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url('/yuku-app-icon-transparent.png');
+  background-repeat: no-repeat;
+  background-position: right 8% center;
+  background-size: clamp(220px, 34vw, 420px);
+  opacity: 0.045;
+}
+
+@media (max-width: 640px) {
+  #root::before {
+    background-position: right -42px center;
+    background-size: 250px;
+    opacity: 0.035;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
