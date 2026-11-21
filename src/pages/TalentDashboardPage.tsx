@@ -707,19 +707,13 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     setSuccessMessage(null);
 
     try {
-      const { data: updatedRows, error } = await supabase
-        .from('bookings')
-        .update({
-          status: 'confirmed_by_talent',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', bookingId)
-        .eq('talent_id', currentUser.id)
-        .eq('status', 'paid_held_in_escrow')
-        .select('id');
+      const { data: confirmationResult, error } = await supabase.rpc(
+        'request_talent_confirmation',
+        { p_booking_id: bookingId }
+      );
 
       if (error) throw error;
-      if (!updatedRows || updatedRows.length === 0) {
+      if (!confirmationResult || confirmationResult.status !== 'confirmed_by_talent') {
         throw new Error('Status booking tidak dapat dikonfirmasi atau data tidak ditemukan.');
       }
 
@@ -740,19 +734,13 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     setSuccessMessage(null);
 
     try {
-      const { data: updatedRows, error } = await supabase
-        .from('bookings')
-        .update({
-          status: 'in_progress',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', bookingId)
-        .eq('talent_id', currentUser.id)
-        .eq('status', 'confirmed_by_talent')
-        .select('id');
+      const { data: startResult, error } = await supabase.rpc(
+        'request_talent_start_session',
+        { p_booking_id: bookingId }
+      );
 
       if (error) throw error;
-      if (!updatedRows || updatedRows.length === 0) {
+      if (!startResult || startResult.status !== 'in_progress') {
         throw new Error('Sesi booking tidak dapat dimulai atau data tidak ditemukan.');
       }
 
