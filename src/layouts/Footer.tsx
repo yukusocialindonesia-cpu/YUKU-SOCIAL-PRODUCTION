@@ -22,7 +22,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>Beroperasi di Seluruh Indonesia</span>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-purple-300/15 bg-purple-300/[0.07] px-3 py-2 text-xs text-purple-200/90">
+            <div className="inline-flex items-center gap-2 rounded-full border border-purple-300/15 bg-purple-300/[0.07] px-3 py-2 text-sm text-purple-100">
               <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>yukufriends@gmail.com</span>
             </div>
@@ -74,7 +74,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
               Informasi
             </h4>
-            <ul className="space-y-2.5 text-xs">
+            <ul className="space-y-3 text-sm text-slate-200">
               <li>
                 <button
                   onClick={() => onNavigate('/tentang')}
@@ -115,7 +115,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
               Ketentuan Hukum
             </h4>
-            <ul className="space-y-2.5 text-xs">
+            <ul className="space-y-3 text-sm text-slate-200">
               <li>
                 <button
                   onClick={() => onNavigate('/syarat-ketentuan')}
