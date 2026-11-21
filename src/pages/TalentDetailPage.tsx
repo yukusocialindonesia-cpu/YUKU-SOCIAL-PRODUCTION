@@ -76,6 +76,10 @@ function avatarGradient(seed: string): string {
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   return AVATAR_GRADIENTS[h % AVATAR_GRADIENTS.length];
 }
+function isValidUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 function avatarInitials(name: string): string {
   const parts = (name || '?').trim().split(/\s+/).slice(0, 2);
   return parts.map((w) => w.charAt(0).toUpperCase()).join('') || '?';
@@ -222,6 +226,14 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   };
 
   useEffect(() => {
+    // URL /talent/:id can render once before App finishes parsing the ID.
+    // Never send an empty or malformed ID to UUID columns in Supabase.
+    if (!talentId) return;
+    if (!isValidUuid(talentId)) {
+      setLoading(false);
+      setErrorMsg('Tautan Talent tidak valid. Silakan kembali ke daftar Talent dan pilih profil yang tersedia.');
+      return;
+    }
     loadTalentDetail();
   }, [talentId]);
 
