@@ -344,7 +344,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-950/65 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/65 backdrop-blur-md sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
@@ -352,12 +352,12 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
         aria-modal="true"
         aria-label={`Chat booking ${booking.booking_code}`}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white w-full sm:max-w-xl h-[100dvh] sm:h-[640px] sm:max-h-[88dvh] sm:rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
+        className="flex h-[100dvh] w-full flex-col overflow-hidden border border-white/80 bg-[linear-gradient(180deg,#FFFFFF_0%,#FCFAFF_100%)] shadow-[0_28px_90px_rgba(30,9,56,0.28)] sm:h-[680px] sm:max-h-[90dvh] sm:max-w-xl sm:rounded-[1.8rem] sm:ring-1 sm:ring-white/50"
       >
         {/* Top Chat Header */}
-        <div className="px-4 py-3.5 bg-gradient-to-r from-purple-950 via-purple-900 to-[#2D1052] text-white flex items-center justify-between gap-3 shrink-0">
+        <div className="relative flex shrink-0 items-center justify-between gap-3 border-b border-white/10 bg-gradient-to-r from-[#210B3C] via-purple-900 to-[#42105F] px-4 py-4 text-white shadow-[0_10px_28px_rgba(30,9,56,0.22)]">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="relative w-10 h-10 rounded-full bg-white/15 border border-white/20 flex items-center justify-center overflow-hidden shrink-0">
+            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white/15 shadow-[0_0_0_4px_rgba(255,255,255,0.08)]">
               {partnerAvatar ? (
                 <img
                   src={partnerAvatar}
@@ -407,7 +407,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
         </div>
 
         {/* Booking Context Bar */}
-        <div className="px-4 py-2.5 bg-purple-50/80 border-b border-purple-100 text-[11px] text-slate-700 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-100/70 bg-white/80 px-4 py-3 text-[11px] text-slate-700 backdrop-blur-xl">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <span className="font-mono font-extrabold text-purple-900 bg-white border border-purple-200 px-2 py-0.5 rounded">
               {booking.booking_code}
@@ -424,7 +424,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
         </div>
 
         {/* Safety Strip */}
-        <div className="px-4 py-2 bg-amber-50/70 border-b border-amber-100 text-[11px] text-amber-900 flex items-start gap-1.5 shrink-0">
+        <div className="flex shrink-0 items-start gap-1.5 border-b border-amber-100/80 bg-amber-50/80 px-4 py-2.5 text-[11px] text-amber-900">
           <ShieldCheck className="w-3.5 h-3.5 text-amber-700 shrink-0" />
           <span className="truncate">
             Bahas detail sesi &amp; titik temu di ruang publik. Hindari transaksi di luar platform YUKU.
@@ -432,9 +432,9 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
         </div>
 
         {/* Message List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FAF8FC]">
+        <div className="flex-1 space-y-3 overflow-y-auto bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.18),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F3FB_100%)] p-4">
           {migrationMissing ? (
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1.5">
+            <div className="space-y-1.5 rounded-2xl border border-amber-200/90 bg-amber-50/95 p-4 text-xs text-amber-900 shadow-sm">
               <div className="font-bold flex items-center gap-1.5">
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                 <span>Tabel Chat Belum Diaktifkan di Supabase</span>
@@ -454,7 +454,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
             </div>
           ) : messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center px-4 py-8 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-white text-purple-700 shadow-[0_12px_28px_rgba(76,29,149,0.12)] ring-1 ring-purple-100">
                 <MessageSquare className="w-6 h-6" />
               </div>
               <div className="space-y-1 max-w-xs">
@@ -494,8 +494,8 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
                   <div
                     className={`max-w-[82%] sm:max-w-[75%] rounded-2xl px-3.5 py-2.5 text-xs shadow-2xs space-y-1 ${
                       isMine
-                        ? 'bg-purple-700 text-white rounded-br-sm'
-                        : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-sm'
+                        ? 'bg-gradient-to-br from-purple-700 via-purple-700 to-fuchsia-700 text-white rounded-br-sm shadow-[0_8px_22px_rgba(109,40,217,0.18)]'
+                        : 'bg-white/95 text-slate-800 border border-purple-100/90 rounded-bl-sm shadow-[0_8px_22px_rgba(76,29,149,0.06)]'
                     }`}
                   >
                     <p className="whitespace-pre-wrap break-words leading-relaxed">
@@ -540,7 +540,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
         {/* Message Input Bar */}
         <form
           onSubmit={handleSendMessage}
-          className="p-3 bg-white border-t border-slate-200 flex items-end gap-2 shrink-0"
+          className="flex shrink-0 items-end gap-2 border-t border-purple-100/80 bg-white/95 p-3 shadow-[0_-10px_30px_rgba(76,29,149,0.06)] backdrop-blur-xl"
         >
           <textarea
             rows={1}
@@ -558,13 +558,13 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
               }
             }}
             placeholder={`Tulis pesan ke ${partnerName}...`}
-            className="flex-1 px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white resize-none max-h-28 disabled:opacity-50"
+            className="max-h-28 flex-1 resize-none rounded-2xl border border-purple-100 bg-[#FAF8FC] px-3.5 py-3 text-xs shadow-inner shadow-purple-950/[0.025] focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 sm:text-sm disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={isSending || !draft.trim() || migrationMissing}
             aria-label="Kirim pesan"
-            className="h-10 px-4 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-40"
+            className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 text-xs font-bold text-white shadow-[0_8px_20px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isSending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
