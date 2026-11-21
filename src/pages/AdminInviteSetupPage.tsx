@@ -36,6 +36,12 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
         return;
       }
 
+      if (adminAccess) {
+        setError('');
+        setChecking(false);
+        return;
+      }
+
       // The invitation email may arrive before Admin provisioning finishes.
       // Refresh through AuthContext and retry briefly; access is granted only
       // when AuthContext confirms the Admin permission from the database.
