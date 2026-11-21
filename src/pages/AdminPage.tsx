@@ -281,7 +281,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           : [{ data: [] as any[] }, { data: [] as any[] }];
 
         const idMap = new Map((identityRows || []).map((id) => [id.id, id]));
-        const userMap = new Map((userRows || []).map((u: any) => [u.id, u]));
+        const userMap = new Map<string, any>((userRows || []).map((u: any) => [u.id, u] as [string, any]));
         const combinedTalents: TalentCurationItem[] = (talentRows || []).map((t) => {
           const idRecord = idMap.get(t.id);
           const uRecord = userMap.get(t.id);
@@ -383,7 +383,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         const { data: payoutTalentLabels } = payoutTalentIds.length
           ? await supabase.rpc('get_admin_talent_labels', { p_talent_ids: payoutTalentIds })
           : { data: [] as any[] };
-        const payoutTalentMap = new Map((payoutTalentLabels || []).map((t: any) => [t.id, t]));
+        const payoutTalentMap = new Map<string, any>((payoutTalentLabels || []).map((t: any) => [t.id, t] as [string, any]));
         setPayouts((payoutRows || []).map((p) => ({
           ...p,
           talent_name: payoutTalentMap.get(p.talent_id)?.display_name || 'Talent YUKU',
@@ -474,7 +474,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           ? await supabase.rpc('get_admin_user_summaries', { p_user_ids: customerIdentityIds })
           : { data: [] as any[] };
         const customerUserRows = (customerUsers || []).filter((u: any) => u.role === 'customer');
-        const customerUserMap = new Map(customerUserRows.map((u: any) => [u.id, u]));
+        const customerUserMap = new Map<string, any>(customerUserRows.map((u: any) => [u.id, u] as [string, any]));
         const customerUserIds = new Set(customerUserRows.map((u: any) => u.id));
         setCustomerKtps((allIdentityRows || []).filter((row) => customerUserIds.has(row.id)).map((row) => {
           const uRec = customerUserMap.get(row.id);
@@ -501,7 +501,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         const { data: reportBookings } = reportBookingIds.length
           ? await supabase.rpc('get_admin_report_booking_summaries', { p_booking_ids: reportBookingIds })
           : { data: [] as any[] };
-        const bookingInfoMap = new Map((reportBookings || []).map((b: any) => [b.id, { code: b.booking_code, status: b.status }]));
+        const bookingInfoMap = new Map<string, { code: string; status: string }>((reportBookings || []).map((b: any) => [b.id, { code: b.booking_code, status: b.status }] as [string, { code: string; status: string }]));
         setReports((reportRows || []).map((r) => {
           const bInfo = r.booking_id ? bookingInfoMap.get(r.booking_id) : undefined;
           return {
