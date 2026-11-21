@@ -34,6 +34,7 @@ export interface TalentProfile {
   interests?: string[];
   serviceMode?: 'Offline & Online' | 'Offline Only' | 'Online Only' | string;
   isDemo?: boolean;
+  mediaTypes?: string[];
 }
 
 export interface Testimonial {
