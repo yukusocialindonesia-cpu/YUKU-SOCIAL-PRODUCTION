@@ -520,6 +520,15 @@ DROP POLICY IF EXISTS community_comments_owner_delete ON public.community_commen
 REVOKE DELETE ON public.community_posts, public.community_comments FROM authenticated;
 
 
+-- Disable the older split-step RPCs so the atomic workflow is the only
+-- supported moderation path.
+REVOKE ALL ON FUNCTION public.moderate_community_post(uuid, text, text) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.moderate_community_comment(uuid, text, text) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.review_community_report(uuid, text, text) FROM PUBLIC, anon, authenticated;
+DROP FUNCTION IF EXISTS public.moderate_community_post(uuid, text, text);
+DROP FUNCTION IF EXISTS public.moderate_community_comment(uuid, text, text);
+DROP FUNCTION IF EXISTS public.review_community_report(uuid, text, text);
+
 -- Atomic moderation: content action and report closure commit together or not at all.
 CREATE OR REPLACE FUNCTION public.process_community_report(
   p_report_id uuid,
