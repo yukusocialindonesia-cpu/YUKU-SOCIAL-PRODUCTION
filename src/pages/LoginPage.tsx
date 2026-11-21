@@ -72,7 +72,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="py-12 px-4 flex items-center justify-center bg-[#FAF8FC]">
+    <div className="py-12 px-4 flex items-center justify-center bg-transparent">
       <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-8 space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
