@@ -44,6 +44,7 @@ import { BrandingAdminPanel } from '../components/admin/BrandingAdminPanel';
 import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
 import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
 import { AdminManagementPanel } from '../components/admin/AdminManagementPanel';
+import { CommunityModerationPanel } from '../components/admin/CommunityModerationPanel';
 
 interface AdminPageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
@@ -119,7 +120,7 @@ interface CustomerCancellationCaseItem {
   customer_name?: string;
 }
 
-type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management';
+type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management' | 'community_moderation';
 
 interface AdminBookingItem {
   id: string;
@@ -230,7 +231,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (canAccess('talent')) tabs.push('talents', 'service_reviews');
     if (canAccess('booking')) tabs.push('bookings');
     if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
-    if (canAccess('support')) tabs.push('customer_ktp', 'reports');
+    if (canAccess('support')) tabs.push('customer_ktp', 'reports', 'community_moderation');
     if (isSuperAdmin) tabs.push('overview', 'promos', 'hero', 'branding', 'admin_management');
     return tabs;
   }, [adminAccess]);
@@ -1344,6 +1345,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           )}
           {canAccess('support') && (
           <button
+            onClick={() => setActiveTab('community_moderation')}
+            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'community_moderation' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'}`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Moderasi Komunitas</span>
+          </button>
+          )}
+          {canAccess('support') && (
+          <button
             onClick={() => setActiveTab('reports')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'reports' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'
@@ -2234,6 +2244,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             )}
           </div>
         )}
+
+        {activeTab === 'community_moderation' && <CommunityModerationPanel />}
 
         {/* TAB 6: HOMEPAGE PROMO POSTERS */}
         {activeTab === 'promos' && (
