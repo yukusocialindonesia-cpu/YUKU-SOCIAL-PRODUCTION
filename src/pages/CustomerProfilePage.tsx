@@ -229,9 +229,9 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   const currentAvatar = avatarPreview || profile.avatar_url;
 
   return (
-    <div className="min-h-[65vh] bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.72),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)] px-4 py-8 sm:py-12">
+    <div className="relative isolate min-h-[65vh] overflow-hidden bg-[radial-gradient(ellipse_at_top,_rgba(221,214,254,0.82),_transparent_48%),radial-gradient(ellipse_at_bottom_right,_rgba(250,232,255,0.7),_transparent_42%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)] px-4 py-8 sm:py-12">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-6 rounded-[1.75rem] border border-white/85 bg-white/65 p-5 shadow-[0_22px_55px_-34px_rgba(76,29,149,0.32)] backdrop-blur-xl sm:p-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-bold text-purple-800">
             <UserRound className="w-3.5 h-3.5" />
             Akun Customer
@@ -240,10 +240,10 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
           <p className="mt-1 text-sm text-slate-500">Kelola informasi profil yang tampil di YUKU.</p>
         </div>
 
-        <form onSubmit={handleSave} className="bg-white/85 backdrop-blur-xl rounded-[30px] border border-white shadow-[0_24px_60px_-28px_rgba(76,29,149,0.3)] ring-1 ring-violet-100/80 overflow-hidden">
-          <div className="p-5 sm:p-8 border-b border-violet-100/80 bg-gradient-to-br from-white via-violet-50/70 to-indigo-50/60 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+        <form onSubmit={handleSave} className="overflow-hidden rounded-[2rem] border border-white/90 bg-white/80 shadow-[0_32px_80px_-38px_rgba(76,29,149,0.42)] ring-1 ring-violet-100/80 backdrop-blur-2xl">
+          <div className="relative flex flex-col items-center gap-4 border-b border-violet-100/80 bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.98),_rgba(237,233,254,0.72)_65%,_rgba(224,231,255,0.62))] p-5 shadow-inner shadow-white/80 sm:flex-row sm:items-start sm:p-8">
             <div className="relative shrink-0">
-              <div className="w-24 h-24 rounded-full bg-purple-100 border-[5px] border-white shadow-[0_12px_28px_rgba(76,29,149,0.24)] ring-1 ring-violet-200 overflow-hidden flex items-center justify-center">
+              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-[6px] border-white bg-purple-100 shadow-[0_18px_38px_rgba(76,29,149,0.3)] ring-2 ring-violet-200/80">
                 {currentAvatar ? (
                   <img src={currentAvatar} alt="Foto profil Customer" className="w-full h-full object-cover" />
                 ) : (
@@ -262,7 +262,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
             </div>
           </div>
 
-          <div className="p-5 sm:p-8 space-y-5">
+          <div className="space-y-5 bg-gradient-to-b from-white/90 to-violet-50/25 p-5 sm:p-8">
             {errorMessage && (
               <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
