@@ -13,7 +13,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
     <div className="relative isolate overflow-hidden py-12 sm:py-16 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-100/80 via-[#FAF8FC] to-fuchsia-50/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 rounded-[2rem] border border-white/80 bg-white/55 px-5 py-9 shadow-[0_24px_70px_-38px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:px-10 sm:py-12">
+        <div className="text-center max-w-3xl mx-auto mb-16 rounded-[2rem] border border-white/80 bg-white px-5 py-9 shadow-[0_24px_70px_-38px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:px-10 sm:py-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 text-purple-800 text-xs font-bold rounded-full mb-5 shadow-sm ring-1 ring-purple-100">
             <Sparkles className="w-3.5 h-3.5 text-purple-700" />
             <span>Kisah & Visi Kami</span>
@@ -24,14 +24,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <p className="text-base sm:text-lg text-purple-900/80 font-bold mb-4">
             Real Friends. Real Moments.
           </p>
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-800 leading-relaxed">
             YUKU adalah platform Social Experience & Paid Companionship Marketplace pertama di Indonesia yang menghubungkan individu dengan pendamping aktivitas sosial (Talent) secara bermartabat, aman, dan menyenangkan.
           </p>
         </div>
 
         {/* Brand Story & Philosophy */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch mb-16">
-          <div className="lg:col-span-6 space-y-4 rounded-[1.75rem] border border-white/90 bg-white/75 p-6 shadow-[0_20px_55px_-38px_rgba(76,29,149,0.3)] backdrop-blur-xl sm:p-8 text-sm sm:text-base text-slate-700 leading-relaxed">
+          <div className="lg:col-span-6 space-y-4 rounded-[1.75rem] border border-white/90 bg-white p-6 shadow-[0_20px_55px_-38px_rgba(76,29,149,0.3)] backdrop-blur-xl sm:p-8 text-sm sm:text-base text-slate-700 leading-relaxed">
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               Menghadirkan Solusi Kesepian Modern di Tengah Hiruk-Pikuk Kota
             </h2>
@@ -79,14 +79,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             {CORE_VALUES.map((val) => (
               <div
                 key={val.title}
-                className="bg-white/85 p-6 rounded-[1.5rem] border border-white shadow-[0_18px_45px_-32px_rgba(76,29,149,0.35)] ring-1 ring-purple-100/70 backdrop-blur-xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(76,29,149,0.38)]"
+                className="bg-white p-6 rounded-[1.5rem] border border-white shadow-[0_18px_45px_-32px_rgba(76,29,149,0.35)] ring-1 ring-purple-100/70 backdrop-blur-xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(76,29,149,0.38)]"
               >
                 <div>
                   <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-3">
                     <CheckCircle className="w-5 h-5" />
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-2">{val.title}</h3>
-                  <p className="text-sm text-slate-700 leading-relaxed">{val.desc}</p>
+                  <p className="text-sm text-slate-800 leading-relaxed">{val.desc}</p>
                 </div>
               </div>
             ))}
@@ -94,11 +94,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* Call to action */}
-        <div className="bg-white/85 rounded-[2rem] border border-white p-8 sm:p-12 text-center max-w-4xl mx-auto shadow-[0_28px_70px_-38px_rgba(76,29,149,0.38)] ring-1 ring-purple-100 backdrop-blur-2xl">
+        <div className="bg-white rounded-[2rem] border border-white p-8 sm:p-12 text-center max-w-4xl mx-auto shadow-[0_28px_70px_-38px_rgba(76,29,149,0.38)] ring-1 ring-purple-100 backdrop-blur-2xl">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">
             Ingin Mengalami Momen Nyata Bersama Teman Baru?
           </h2>
-          <p className="text-sm sm:text-base text-slate-700 max-w-md mx-auto mb-6 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-800 max-w-md mx-auto mb-6 leading-relaxed">
             Jelajahi berbagai profil Talent terkurasi atau buat akun Customer untuk mulai memesan pendamping aktivitas.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
