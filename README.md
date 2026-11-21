@@ -1,51 +1,86 @@
-# YUKU 2.0 — Real Friends. Real Moments.
+# YUKU — Real Friends. Real Moments.
 
-Marketplace jasa pertemanan untuk pengalaman sosial online dan offline.
+YUKU adalah platform sosial yang menggabungkan **marketplace layanan pertemanan**, **komunitas**, dan **aktivitas sosial**. Layanan dirancang untuk pengalaman online maupun offline.
 
-## Stack saat ini
+Dokumentasi ini membedakan implementasi kode, keadaan database yang pernah diverifikasi, dan fitur yang belum diuji end-to-end. Jangan menganggap UI atau migration file sebagai bukti bahwa seluruh proses bisnis sudah aktif.
+
+## Mulai memahami proyek
+
+**Untuk AI (Claude, ChatGPT, Copilot, Codex) dan developer, baca berurutan:**
+
+1. [AGENTS.md](./AGENTS.md) — aturan kerja wajib untuk AI/developer.
+2. [CLAUDE.md](./CLAUDE.md) — instruksi singkat untuk Claude.
+3. [Panduan proyek](./docs/AI_PROJECT_GUIDE.md) — arsitektur, route, lokasi kode, dan alur fitur.
+4. [Status fitur](./docs/FEATURE_STATUS.md) — hal yang sudah diverifikasi dan batas yang belum diuji.
+5. [Keamanan Production](./docs/PRODUCTION_SAFETY.md) — tindakan yang memerlukan persetujuan dan prosedur aman.
+6. [Panduan migration Supabase](./supabase/migrations/README.md) — cara memeriksa dan menerapkan perubahan database.
+
+## Gambaran produk
+
+- **Marketplace:** penemuan profil Talent, kategori aktivitas, dan layanan.
+- **Booking:** fondasi pemesanan, status booking, serta pencatatan transaksi.
+- **Komunitas:** posting, komentar, suka, laporan, dan moderasi Admin.
+- **Affiliate:** pengaturan persentase komisi dan status program melalui panel Admin.
+- **Administrasi:** pengelolaan akses Admin berbasis izin dan moderasi konten.
+
+## Teknologi
 
 - React 19 + TypeScript
 - Vite 8
-- Supabase (Auth, Postgres, Storage, Realtime)
+- Supabase: Auth, PostgreSQL, Storage, Realtime, dan fungsi database
+- Tailwind CSS 4
+- Cloudflare Workers untuk layanan Production (verifikasi deployment dilakukan terpisah)
 
-> Proyek ini masih berupa aplikasi React + Vite. Migrasi ke Next.js belum dilakukan.
-> Jangan menganggap proyek siap produksi sebelum seluruh migrasi database dan pengujian staging lulus.
+Repository saat ini adalah aplikasi React + Vite. Migrasi ke Next.js belum dilakukan.
 
-## Menjalankan lokal
+## Menjalankan proyek secara lokal
 
-1. Gunakan Node.js 22 atau versi yang kompatibel dengan Vite 8.
-2. Jalankan `npm install`.
-3. Salin `.env.example` menjadi `.env.local`.
-4. Isi `VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY` (atau `VITE_SUPABASE_PUBLISHABLE_KEY`) dari proyek Supabase milik YUKU.
-5. Jalankan `npm run dev`.
+Persyaratan: Node.js versi yang kompatibel dengan Vite 8.
 
-Tanpa konfigurasi Supabase, aplikasi sengaja tidak akan tersambung ke proyek default apa pun.
+1. Install dependensi: `npm install`
+2. Salin `.env.example` menjadi `.env.local`.
+3. Isi variabel Supabase dengan project pengembangan yang memang diizinkan.
+4. Jalankan server lokal: `npm run dev`
+5. Periksa TypeScript: `npm run lint`
+6. Buat build: `npm run build`
 
-## Database
+Script `lint` saat ini menjalankan TypeScript compiler dengan `--noEmit`, bukan ESLint.
 
-Baca `supabase/migrations/README.md`. Migrasi harus diterapkan berurutan pada proyek staging terlebih dahulu. `supabase/FULL_MIGRATION_V20.sql` adalah file pensiun berisi peringatan saja; jangan dieksekusi.
+Jangan menaruh `service_role key`, secret provider, atau kredensial privat di variabel frontend. Gunakan hanya URL dan publishable/anon key yang memang ditujukan untuk browser.
 
-## Status kesiapan
+## Environment
 
-Belum production-ready. Payment gateway, webhook, dan payout provider otomatis belum terintegrasi atau diuji pada lingkungan staging.
+Lihat `.env.example`.
 
-## Batas integrasi keuangan saat ini
+| Variabel | Keterangan |
+|---|---|
+| `VITE_SUPABASE_URL` | URL proyek Supabase |
+| `VITE_SUPABASE_ANON_KEY` | Publishable/anon key untuk aplikasi browser (client juga mendukung nama publishable key) |
+| `VITE_PAYMENT_CHECKOUT_ENABLED` | Sakelar checkout sisi frontend; default `false` |
+| `VITE_WEB_PUSH_PUBLIC_KEY` | Public VAPID key; private key harus disimpan sebagai secret server |
 
-- Payout dan refund masih menggunakan proses manual dengan pencatatan referensi transfer; API provider belum dihubungkan.
-- Payment gateway, pembuatan invoice/checkout, dan verifikasi webhook belum tersedia.
-- Booking publik dinonaktifkan secara default (`VITE_PAYMENT_CHECKOUT_ENABLED=false`) sampai checkout dan webhook payment gateway dipasang serta diuji. Booking baru berstatus `pending_payment` sampai pembayaran terverifikasi.
-- Refund pembatalan oleh Talent membuat permintaan refund penuh; proses pengembalian aktual tetap harus dilakukan Finance di provider/bank.
-- Fondasi kebijakan pembatalan Customer tersedia pada migration 23: >24 jam refund 100%; 6–24 jam refund 50% dan sisa ditahan untuk Admin; <6 jam tanpa refund otomatis dan seluruh dana ditahan untuk peninjauan Admin. Migration ini belum memiliki layar Admin untuk keputusan/alokasi sisa dana dan belum diuji di staging. Refund provider tetap manual.
+Jangan mengaktifkan checkout hanya dengan mengganti flag frontend. Alur pembayaran harus memiliki konfigurasi server, verifikasi webhook, dan pengujian end-to-end yang sesuai.
 
+## Database dan migration Supabase
 
-## Migration 24 safety note
+- Migration berada di `supabase/migrations/`.
+- Migration history database aktual adalah sumber kebenaran untuk mengetahui migration yang sudah diterapkan.
+- File SQL di repository tidak otomatis berarti sudah dijalankan pada database.
+- Jangan menjalankan ulang SQL secara manual atau menerapkan migration lama ke Production tanpa memeriksa riwayat migration, skema, dan kondisi objek database.
+- File `supabase/FULL_MIGRATION_V20.sql` adalah file pensiun/peringatan, **bukan** skrip instalasi database. Jangan dieksekusi.
 
-Migration 24 prevents automatic full Talent earning reversal while Customer cancellation funds remain pending Admin review. It marks the related earning `disputed_hold`, which the existing payout validator excludes, and blocks cancellation if that earning has already been allocated or paid. Apply only in staging after review; this SQL has not been executed or integration-tested. The Admin decision ledger and actual provider refund/payout workflow remain unfinished.
+Lihat [panduan migration](./supabase/migrations/README.md) sebelum menyentuh database.
 
-## Pemeriksaan staging (17 Nov 2026)
+## Status dan batasan penting
 
-Perbandingan repo dengan proyek `yuku-staging` menemukan: riwayat migrasi staging tidak identik dengan repo (migrasi 28–30 dan 35 tidak tercatat dengan nama yang sama, ada migrasi staging yang tidak ada di repo); flag `payment_checkout` menyala di staging padahal Edge Function belum ter-deploy; skema `yuku_private` (`payment_simulation_config`, snapshot) hanya ada di staging. Ekspor skema staging sebagai baseline migrasi masih perlu dikerjakan sebelum produksi. Leaked password protection di Supabase Auth juga perlu diaktifkan.
+- **Komunitas:** tabel komunitas dan migration MVP telah diterapkan ke Production pada 21 November 2026. Lihat [status fitur](./docs/FEATURE_STATUS.md).
+- **Affiliate:** panel Admin tersedia. Nilai Production terakhir diverifikasi pada 20 November 2026 adalah komisi 10% dan program aktif.
+- **Booking dan keuangan:** fondasi booking, ledger, pembatalan, dan payout tersedia pada kode/database. Checkout frontend default nonaktif. Jangan menganggap pembayaran otomatis, refund provider, atau payout otomatis sudah terhubung dan diuji.
+- **Payment provider:** keberadaan komponen Xendit/QRIS di kode bukan bukti konfigurasi live, webhook, dan proses transfer telah terverifikasi. Jangan mengubah provider tanpa persetujuan eksplisit.
+- **Production:** build CI sukses bukan bukti deployment, tampilan, atau semua alur bisnis sudah benar.
 
-Setelah mengubah `package.json`, jalankan `npm install` untuk memperbarui `package-lock.json`. Proyek memiliki dua lockfile (`bun.lock` dan `package-lock.json`); pilih satu.
+## Prinsip pengembangan
 
+**Utamakan keamanan data, kestabilan Production, biaya operasional efisien, dan pengalaman pengguna.** Periksa implementasi sebelum mengubah, kerjakan satu ruang lingkup kecil per branch, jalankan test yang relevan, tinjau diff, dan laporkan hal yang belum diverifikasi.
 
+Jangan mengubah database, RLS, secrets, deployment, data keuangan, atau payment provider tanpa persetujuan eksplisit. Baca [Keamanan Production](./docs/PRODUCTION_SAFETY.md).
