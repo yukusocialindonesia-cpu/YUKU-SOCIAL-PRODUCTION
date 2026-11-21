@@ -53,7 +53,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   const gridClass = 'flex gap-3 overflow-x-auto snap-x pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
 
   return (
-    <section className="py-4 sm:py-10 bg-white">
+    <section className="py-5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 sm:mb-6 gap-1 md:gap-4">
           <div>
@@ -110,9 +110,9 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group snap-start shrink-0 w-[78px] sm:w-[104px] lg:w-auto flex flex-col items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-2.5 sm:py-3.5 rounded-2xl border border-purple-100 bg-white hover:border-purple-300 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="group snap-start shrink-0 w-[78px] sm:w-[104px] lg:w-auto flex flex-col items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-2.5 sm:py-3.5 rounded-2xl border border-white bg-white/90 shadow-[0_8px_22px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 hover:border-purple-200 hover:shadow-[0_16px_30px_rgba(76,29,149,0.14)] hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
                 >
-                  <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center ${tones[idx % tones.length]} group-hover:scale-105 transition-transform`}>
+                  <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-inner ${tones[idx % tones.length]} group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-300`}>
                     {getIcon(cat.iconName)}
                   </span>
                   <h3 className="font-bold text-[10.5px] sm:text-[12px] leading-tight text-center text-slate-800 group-hover:text-purple-700 transition-colors">
