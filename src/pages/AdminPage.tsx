@@ -462,8 +462,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         const { data: customerUsers } = customerIdentityIds.length
           ? await supabase.rpc('get_admin_user_summaries', { p_user_ids: customerIdentityIds })
           : { data: [] as any[] };
-        const customerUserMap = new Map((customerUsers || []).map((u: any) => [u.id, u]));
-        setCustomerKtps((allIdentityRows || []).map((row) => {
+        const customerUserRows = (customerUsers || []).filter((u: any) => u.role === 'customer');
+        const customerUserMap = new Map(customerUserRows.map((u: any) => [u.id, u]));
+        const customerUserIds = new Set(customerUserRows.map((u: any) => u.id));
+        setCustomerKtps((allIdentityRows || []).filter((row) => customerUserIds.has(row.id)).map((row) => {
           const uRec = customerUserMap.get(row.id);
           return {
             ...row,
