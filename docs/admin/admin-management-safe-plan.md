@@ -61,3 +61,5 @@ Panel **Pengaturan Admin** sudah ditambahkan untuk Super Admin: undang Admin mel
 Booking Admin memakai RPC kolom-minimal; Finance tidak mendapat akses langsung ke tabel booking; KTP Customer dan Talent dipisahkan. Semua perubahan tetap di Staging. Production belum disentuh, belum ada merge ke main, dan Xendit tetap nonaktif/tidak diubah.
 
 Pemeriksaan build frontend masih menunggu run CI; workflow build/type-check sudah ditambahkan ke branch, tetapi belum ada run yang tercatat.
+
+Pemeriksaan tambahan Staging memastikan KTP Talent dan Customer tidak saling terbuka, Admin nonaktif kehilangan akses, serta pengaturan izin dan provisioning Admin berjalan hanya melalui jalur Super Admin/service role. Dua indeks foreign key baru juga ditambahkan untuk menjaga performa tabel izin Admin. Tidak ada perubahan pada Production.
