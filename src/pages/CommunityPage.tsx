@@ -24,9 +24,7 @@ import {
   reportCommunityComment,
   toggleCommunityLike,
   loadPendingCommunityReports,
-  moderateCommunityPost,
-  moderateCommunityComment,
-  reviewCommunityReport,
+  processCommunityReport,
   type CommunityReport,
 } from '../services/communityService';
 
@@ -113,13 +111,11 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
     if (busyModerationIds.includes(report.id)) return;
     setBusyModerationIds((current) => [...current, report.id]);
     try {
-      if (action === 'dismiss') {
-        await reviewCommunityReport(report.id, 'dismissed');
-      } else {
-        if (report.post_id) await moderateCommunityPost(report.post_id, action, 'Ditangani melalui moderasi komunitas YUKU.');
-        if (report.comment_id) await moderateCommunityComment(report.comment_id, action, 'Ditangani melalui moderasi komunitas YUKU.');
-        await reviewCommunityReport(report.id, 'reviewed');
-      }
+      await processCommunityReport(
+        report.id,
+        action,
+        action === 'dismiss' ? 'Laporan ditinjau tanpa tindakan.' : 'Ditangani melalui moderasi komunitas YUKU.',
+      );
       setNotice(action === 'dismiss' ? 'Laporan ditandai selesai tanpa tindakan.' : 'Konten berhasil dimoderasi dan laporan ditutup.');
       await Promise.all([refreshModerationQueue(), refreshPosts()]);
     } catch (error) {
