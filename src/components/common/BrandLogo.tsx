@@ -62,7 +62,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           onClick ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''
         } ${className}`}
       >
-        <div className="bg-white rounded-xl px-3 py-1.5 shadow-sm inline-flex items-center border border-white/20">
+        <div className="bg-white/95 rounded-2xl px-3.5 py-2 shadow-[0_12px_30px_-16px_rgba(15,23,42,0.38)] ring-1 ring-white/70 inline-flex items-center border border-white/80 backdrop-blur-xl">
           <img
             src={logoUrl}
             alt="YUKU — Real Friends. Real Moments."
