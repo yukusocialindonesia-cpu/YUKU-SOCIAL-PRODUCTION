@@ -135,7 +135,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 placeholder="Cari nama, hobi (kopi, lari, seni), minat..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-500 focus:bg-white transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
               />
             </div>
 
@@ -153,7 +153,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="w-full md:w-auto px-4 py-2 text-xs font-semibold text-slate-600 hover:text-purple-700 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full md:w-auto px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-purple-800 bg-white/80 hover:bg-white border border-purple-100 shadow-sm hover:shadow rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset Filter</span>
@@ -170,10 +170,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedActivity('all')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                className={`px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   selectedActivity === 'all'
-                    ? 'bg-purple-700 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
+                    : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
                 }`}
               >
                 Semua Aktivitas
@@ -183,10 +183,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedActivity(cat.id)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                     selectedActivity === cat.id
-                      ? 'bg-purple-700 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
+                      : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
                   }`}
                 >
                   {cat.title}
@@ -200,15 +200,15 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             {/* Gender Segmented */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Gender:</span>
-              <div className="inline-flex p-1 bg-slate-100 rounded-lg">
+              <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
                 {(['Semua', 'Wanita', 'Pria'] as GenderType[]).map((gender) => (
                   <button
                     key={gender}
                     type="button"
                     onClick={() => setSelectedGender(gender)}
-                    className={`px-3 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                       selectedGender === gender
-                        ? 'bg-white text-purple-900 shadow-xs font-bold'
+                        ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -221,7 +221,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             {/* Service Mode */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Metode:</span>
-              <div className="inline-flex p-1 bg-slate-100 rounded-lg">
+              <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
                 {[
                   { id: 'all', label: 'Semua' },
                   { id: 'offline', label: 'Tatap Muka' },
@@ -231,9 +231,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     key={mode.id}
                     type="button"
                     onClick={() => setSelectedMode(mode.id)}
-                    className={`px-3 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                       selectedMode === mode.id
-                        ? 'bg-white text-purple-900 shadow-xs font-bold'
+                        ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
