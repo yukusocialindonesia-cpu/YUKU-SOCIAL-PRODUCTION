@@ -129,7 +129,7 @@ Perlindungan khusus:
 
 Uji Staging mencakup batas izin Talent/Finance/Support/Booking, KTP Storage, RPC minimal booking, penonaktifan akun, dan fungsi pengelolaan Admin. Pengujian akun sementara selalu diakhiri rollback.
 
-Edge Function `admin-management` aktif di Staging; panel UI Pengaturan Admin ada di branch `feature/admin-simple-management`. Belum ada undangan nyata yang dikirim. Production belum diubah, belum ada merge atau deployment Production, dan Xendit tidak disentuh. Build frontend belum terkonfirmasi oleh CI.
+Edge Function `admin-management` aktif di Staging; panel UI Pengaturan Admin ada di branch `feature/admin-simple-management`. Belum ada undangan nyata yang dikirim. Production belum diubah, belum ada merge atau deployment Production, dan Xendit tidak disentuh. Build frontend sudah terkonfirmasi lulus melalui GitHub Actions: TypeScript check, build website, dan TypeScript check Edge Function.
 
 Migrasi 62 menambahkan indeks untuk foreign key `created_by` dan `granted_by` pada tabel Admin. Pemeriksaan performa setelahnya tidak lagi menandai dua foreign key baru tersebut; masih ada 17 temuan indeks pada tabel lama yang tidak diubah dalam pekerjaan ini.
 
