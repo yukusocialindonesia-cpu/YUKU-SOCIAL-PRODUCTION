@@ -31,7 +31,7 @@ import { supabase } from './lib/supabase';
 export default function App() {
   const [currentPath, setCurrentPath] = useState<AppRoute>(() => {
     const pathname = window.location.pathname;
-    if (pathname === '/talent') return '/talent';
+    if (pathname === '/talent' || pathname === '/talent/') return '/talent';
     if (pathname.startsWith('/talent/')) return '/talent/:id';
     if (pathname === '/cara-kerja') return '/cara-kerja';
     if (pathname === '/daftar-talent') return '/daftar-talent';
@@ -52,7 +52,10 @@ export default function App() {
     if (pathname === '/kebijakan-privasi') return '/kebijakan-privasi';
     return '/';
   });
-  const [activeTalentId, setActiveTalentId] = useState<string>('');
+  const [activeTalentId, setActiveTalentId] = useState<string>(() => {
+    const pathname = window.location.pathname;
+    return pathname.startsWith('/talent/') ? pathname.replace('/talent/', '') : '';
+  });
   const [initialActivityFilter, setInitialActivityFilter] = useState<string>('all');
   const [initialCityFilter, setInitialCityFilter] = useState<string>('Semua Kota');
   const [isPasswordRecovery, setIsPasswordRecovery] = useState<boolean>(false);
@@ -69,7 +72,7 @@ export default function App() {
 
     if (pathname === '/' || pathname === '') {
       setCurrentPath('/');
-    } else if (pathname === '/talent') {
+    } else if (pathname === '/talent' || pathname === '/talent/') {
       setCurrentPath('/talent');
     } else if (pathname.startsWith('/talent/')) {
       const id = pathname.replace('/talent/', '');
