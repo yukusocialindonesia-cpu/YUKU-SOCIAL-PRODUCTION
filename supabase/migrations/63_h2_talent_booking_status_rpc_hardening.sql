@@ -137,6 +137,10 @@ REVOKE ALL ON FUNCTION public.request_talent_start_session(uuid) FROM PUBLIC, an
 GRANT EXECUTE ON FUNCTION public.request_talent_confirmation(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.request_talent_start_session(uuid) TO authenticated;
 
--- Remove direct status transitions from the client role.
+-- Remove direct mutation of booking workflow/system columns from the client role.
+-- Customer, Talent, Admin and Super Admin must use their guarded RPCs.
 -- SECURITY DEFINER RPCs owned by the database owner retain their internal UPDATE ability.
-REVOKE UPDATE (status) ON public.bookings FROM authenticated;
+-- This prevents clients from changing status, injecting cancellation reasons, or
+-- tampering with updated_at outside the approved business workflows.
+REVOKE UPDATE (status, cancellation_reason, updated_at)
+ON public.bookings FROM PUBLIC, anon, authenticated;
