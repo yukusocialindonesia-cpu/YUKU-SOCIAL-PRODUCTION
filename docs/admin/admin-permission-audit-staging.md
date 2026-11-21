@@ -81,3 +81,69 @@ Policy Storage yang perlu dipisah:
 - Tes fondasi dasar lulus.
 - Policy lama, RPC bisnis, Storage, halaman Admin, dan Production belum diubah.
 - Jangan menerapkan pembatasan frontend saja sebagai pengganti keamanan database.
+
+## Hasil pemeriksaan lanjutan: RPC, trigger, dan hak pemanggilan
+
+Ditemukan 20 fungsi database yang definisinya memanggil `public.is_admin()`. Tidak semuanya merupakan endpoint Admin; beberapa adalah trigger/validasi internal aplikasi. Karena itu, jangan mengganti isi `public.is_admin()` secara global menjadi Super Admin atau membatasi semua pemanggilannya ke satu izin.
+
+### RPC yang dipanggil langsung oleh frontend dan harus diberi izin spesifik
+
+| Fungsi | Izin yang dituju | Catatan |
+|---|---|---|
+| `admin_process_payout` | Keuangan | Memproses pencairan dana |
+| `admin_process_refund` | Keuangan | Memproses refund |
+| `admin_resolve_customer_cancellation_case` | Keuangan | Mengambil keputusan kasus pembatalan yang berdampak pada dana |
+| `admin_review_qris_payment` | Keuangan | Menyetujui/menolak bukti pembayaran QRIS |
+| `admin_update_qris_settings` | Keuangan | Mengubah pengaturan QRIS |
+| `admin_resolve_report` | Support | Menangani laporan; dapat menahan/melepas booking terkait sesuai prosedur |
+| `admin_review_talent` | Talent | Menyetujui/menolak profil Talent |
+| `review_talent_identity_change` | Talent | Meninjau perubahan identitas Talent |
+| `review_talent_service` | Talent | Meninjau layanan Talent |
+| `admin_review_ktp` | Talent atau Support sesuai jenis pemilik KTP | Fungsi lama dipakai oleh alur Talent dan juga dapat meninjau KTP Customer. Harus membedakan role target di database, bukan mengandalkan UI. |
+| `get_admin_dashboard_overview` | Super Admin | Mengembalikan ringkasan lintas modul. |
+
+Fungsi-fungsi di atas saat ini memberikan hak EXECUTE kepada `authenticated` dan beberapa menggunakan `SECURITY DEFINER`; maka pemeriksaan izin wajib berada di dalam fungsi. RLS tabel tidak melindungi dari RPC yang berjalan sebagai definer bila fungsi hanya memeriksa `is_admin()` generik.
+
+### Fungsi internal yang tidak boleh dibatasi secara sembarang
+
+Fungsi berikut juga memakai `is_admin()`, tetapi berperan sebagai trigger/validasi atau proses internal:
+- `guard_booking_status_actor`
+- `handle_payout_status_update`
+- `log_booking_status_change`
+- `prevent_user_security_column_tampering`
+- `process_escrow_release`
+- `protect_and_verify_user_identities`
+- `restrict_notification_update`
+- `validate_booking_update`
+- `validate_referral_relationship`
+
+Pemeriksaan trigger harus dibedakan dari otorisasi endpoint Admin. Perubahan trigger dapat memutus pembaruan booking, escrow, payout, referral, atau perlindungan akun biasa. Fungsi internal tersebut perlu diuji melalui alur normal, bukan sekadar diberi izin menu.
+
+### Halaman Admin saat ini
+
+Audit kode `AdminPage.tsx` menemukan satu fungsi pemuatan data yang mengambil semua modul sekaligus, termasuk:
+- data profil dan KTP Talent;
+- antrean review layanan dan perubahan identitas;
+- pencairan, booking, refund, dan kasus pembatalan;
+- KTP Customer;
+- laporan insiden;
+- poster promosi.
+
+Dashboard bagian atas juga menggabungkan angka Talent, payout, pendapatan, dan GMV. Menu Branding, Hero, QRIS, dan Affiliate menggunakan panel terpisah.
+
+Konsekuensi: setelah pembatasan database, halaman ini harus diubah agar:
+1. Memuat daftar izin melalui `get_admin_access()`.
+2. Menampilkan hanya menu yang diizinkan.
+3. Memuat data hanya untuk modul yang diizinkan.
+4. Tidak menampilkan metrik lintas modul kepada Admin biasa.
+5. Menampilkan pengaturan Admin, branding, poster, hero, dan overview hanya untuk Super Admin.
+
+### Keputusan implementasi
+
+- Jangan mengubah `public.is_admin()` secara global karena dipakai trigger/validasi.
+- Ubah policy RLS endpoint per tabel dengan mempertahankan aturan pemilik/peserta.
+- Pisahkan KTP Customer dan Talent berdasarkan role target.
+- Batasi RPC sensitif di dalam fungsi.
+- Berikan Booking akses operasional minimal; jangan menganggap izin Booking sebagai izin Finance untuk detail payout/refund/bukti pembayaran.
+- Buat tampilan data booking yang kolomnya minimal karena RLS tidak menyaring kolom.
+- Terapkan policy Storage berdasarkan jenis file dan role pemilik.
