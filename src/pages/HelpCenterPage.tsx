@@ -21,9 +21,9 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
   };
 
   return (
-    <div className="py-12 bg-[#FAF8FC]">
+    <div className="relative isolate min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="mx-auto mb-12 max-w-2xl rounded-[2rem] border border-white/80 bg-white/65 px-6 py-8 text-center shadow-[0_24px_70px_-35px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:px-10">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
             Dukungan Pengguna
           </span>
@@ -37,7 +37,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
 
         {/* 3 Channels */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+          <div className="flex flex-col justify-between rounded-3xl border border-white/80 bg-white/75 p-6 shadow-[0_18px_45px_-28px_rgba(76,29,149,0.4)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_55px_-28px_rgba(76,29,149,0.45)]">
             <div>
               <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-3">
                 <Mail className="w-5 h-5" />
@@ -57,7 +57,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
             </a>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+          <div className="flex flex-col justify-between rounded-3xl border border-white/80 bg-white/75 p-6 shadow-[0_18px_45px_-28px_rgba(76,29,149,0.4)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_55px_-28px_rgba(76,29,149,0.45)]">
             <div>
               <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
                 <MessageSquare className="w-5 h-5" />
@@ -72,7 +72,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
             </span>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-rose-200 shadow-xs flex flex-col justify-between bg-rose-50/30">
+          <div className="flex flex-col justify-between rounded-3xl border border-rose-200/70 bg-rose-50/70 p-6 shadow-[0_18px_45px_-28px_rgba(190,24,93,0.35)] backdrop-blur-xl transition duration-300 hover:-translate-y-1">
             <div>
               <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center mb-3">
                 <ShieldAlert className="w-5 h-5" />
@@ -92,35 +92,35 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Quick Guidance Box */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
+            <div className="rounded-3xl border border-white/80 bg-white/75 p-6 shadow-[0_18px_45px_-28px_rgba(76,29,149,0.4)] backdrop-blur-xl">
               <h3 className="font-bold text-sm text-slate-900 mb-3">
                 Topik Bantuan Populer
               </h3>
               <ul className="space-y-3 text-xs text-slate-600">
                 <li
                   onClick={() => onNavigate('/faq')}
-                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 cursor-pointer border border-transparent hover:border-slate-200 transition-colors"
+                  className="flex cursor-pointer items-center justify-between rounded-xl border border-transparent bg-white/55 p-3 transition-all hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md"
                 >
                   <span>Cara membatalkan booking & refund</span>
                   <span className="text-purple-600 font-bold">Lihat &rarr;</span>
                 </li>
                 <li
                   onClick={() => onNavigate('/cara-kerja')}
-                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 cursor-pointer border border-transparent hover:border-slate-200 transition-colors"
+                  className="flex cursor-pointer items-center justify-between rounded-xl border border-transparent bg-white/55 p-3 transition-all hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md"
                 >
                   <span>Pedoman pertemuan di tempat umum</span>
                   <span className="text-purple-600 font-bold">Lihat &rarr;</span>
                 </li>
                 <li
                   onClick={() => onNavigate('/daftar-talent')}
-                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 cursor-pointer border border-transparent hover:border-slate-200 transition-colors"
+                  className="flex cursor-pointer items-center justify-between rounded-xl border border-transparent bg-white/55 p-3 transition-all hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md"
                 >
                   <span>Penghasilan talent & pencairan saldo</span>
                   <span className="text-purple-600 font-bold">Lihat &rarr;</span>
                 </li>
                 <li
                   onClick={() => onNavigate('/syarat-ketentuan')}
-                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 cursor-pointer border border-transparent hover:border-slate-200 transition-colors"
+                  className="flex cursor-pointer items-center justify-between rounded-xl border border-transparent bg-white/55 p-3 transition-all hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md"
                 >
                   <span>Syarat verifikasi KTP 18+ tahun</span>
                   <span className="text-purple-600 font-bold">Lihat &rarr;</span>
@@ -131,7 +131,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
 
           {/* Contact Form */}
           <div className="lg:col-span-7">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
+            <div className="rounded-3xl border border-white/80 bg-white/80 p-6 shadow-[0_24px_65px_-32px_rgba(76,29,149,0.45)] backdrop-blur-xl sm:p-8">
               <h2 className="text-lg font-bold text-slate-900 mb-1">
                 Kirim Pesan ke Tim Bantuan
               </h2>
@@ -151,7 +151,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
                       placeholder="Nama Anda"
                       value={ticketData.name}
                       onChange={(e) => setTicketData({ ...ticketData, name: e.target.value })}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full rounded-xl border border-slate-200/80 bg-white/75 p-3 text-xs shadow-inner outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                     />
                   </div>
 
@@ -165,7 +165,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
                       placeholder="email@anda.com"
                       value={ticketData.email}
                       onChange={(e) => setTicketData({ ...ticketData, email: e.target.value })}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full rounded-xl border border-slate-200/80 bg-white/75 p-3 text-xs shadow-inner outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                     />
                   </div>
 
@@ -176,7 +176,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
                     <select
                       value={ticketData.category}
                       onChange={(e) => setTicketData({ ...ticketData, category: e.target.value })}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full rounded-xl border border-slate-200/80 bg-white/75 p-3 text-xs shadow-inner outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                     >
                       <option>Pertanyaan Umum</option>
                       <option>Kendala Pemesanan / Jadwal</option>
@@ -196,13 +196,13 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
                       placeholder="Jelaskan kendala Anda secara rinci..."
                       value={ticketData.message}
                       onChange={(e) => setTicketData({ ...ticketData, message: e.target.value })}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full rounded-xl border border-slate-200/80 bg-white/75 p-3 text-xs shadow-inner outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-fuchsia-600 py-3 text-xs font-bold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-xl"
                   >
                     <Send className="w-4 h-4" />
                     <span>Kirim Pesan Bantuan</span>
@@ -221,7 +221,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
-                    className="px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800"
+                    className="rounded-xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5"
                   >
                     Kirim Pesan Lain
                   </button>
