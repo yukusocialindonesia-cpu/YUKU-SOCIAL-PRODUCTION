@@ -3,10 +3,10 @@ import { ShieldCheck, HeartHandshake, Ban, Users } from 'lucide-react';
 
 export const SafetyPledgeBanner: React.FC = () => {
   return (
-    <div className="bg-[#1E0938] text-white py-4 px-4 border-y border-purple-900/40">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+    <div className="relative isolate overflow-hidden bg-[radial-gradient(ellipse_at_left,_rgba(168,85,247,0.22),_transparent_48%),linear-gradient(110deg,#1E0938_0%,#2E1250_55%,#24103D_100%)] text-white py-5 px-4 border-y border-purple-900/40 shadow-[0_16px_40px_-28px_rgba(30,9,56,0.7)]">
+      <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-300 shrink-0">
+          <div className="w-9 h-9 rounded-2xl bg-white/10 ring-1 ring-white/15 shadow-inner shadow-white/10 flex items-center justify-center text-purple-300 shrink-0">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
