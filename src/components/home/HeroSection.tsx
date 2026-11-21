@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-white md:bg-gradient-to-br md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
+      className="relative overflow-hidden bg-gradient-to-br from-[#F8F4FF] via-white to-[#FFF8F1] md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-4 mt-3 h-[200px] sm:h-[260px] rounded-3xl overflow-hidden md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible">
+      <div className="relative mx-4 mt-3 h-[200px] sm:h-[260px] rounded-3xl overflow-hidden border border-white/90 shadow-[0_18px_42px_rgba(76,29,149,0.18),0_4px_12px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
