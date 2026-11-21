@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -43,6 +43,7 @@ import { QrisAdminPanel } from '../components/booking/QrisAdminPanel';
 import { BrandingAdminPanel } from '../components/admin/BrandingAdminPanel';
 import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
 import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
+import { AdminManagementPanel } from '../components/admin/AdminManagementPanel';
 
 interface AdminPageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
@@ -118,6 +119,8 @@ interface CustomerCancellationCaseItem {
   customer_name?: string;
 }
 
+type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management';
+
 interface AdminBookingItem {
   id: string;
   booking_code: string;
@@ -127,9 +130,9 @@ interface AdminBookingItem {
   start_time: string;
   duration_hours: number;
   meeting_location_name: string;
-  gross_amount: number;
-  platform_fee_amount: number;
-  talent_gross_share: number;
+  gross_amount?: number;
+  platform_fee_amount?: number;
+  talent_gross_share?: number;
   status: string;
   created_at: string;
   customer_name?: string;
@@ -167,12 +170,10 @@ interface AdminReportItem {
 }
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
-  const { user: currentUser, role, isAuthLoading: isCheckingAuth } = useAuth();
+  const { user: currentUser, role, adminAccess, isAuthLoading: isCheckingAuth } = useAuth();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<
-    'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview'
-  >('talents');
+  const [activeTab, setActiveTab] = useState<AdminTab>('overview');
 
   // Data States
   const [talents, setTalents] = useState<TalentCurationItem[]>([]);
@@ -220,52 +221,76 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [holdBookingOnDispute, setHoldBookingOnDispute] = useState(false);
   const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
-  const isAdminAuthorized = role === 'admin';
+  const isAdminAuthorized = role === 'admin' && adminAccess !== null;
+  const isSuperAdmin = adminAccess?.isSuperAdmin === true;
+  const canAccess = (permission: 'talent' | 'booking' | 'finance' | 'support') =>
+    isSuperAdmin || adminAccess?.permissions.includes(permission) === true;
+  const availableTabs = useMemo<AdminTab[]>(() => {
+    const tabs: AdminTab[] = [];
+    if (canAccess('talent')) tabs.push('talents', 'service_reviews');
+    if (canAccess('booking')) tabs.push('bookings');
+    if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
+    if (canAccess('support')) tabs.push('customer_ktp', 'reports');
+    if (isSuperAdmin) tabs.push('overview', 'promos', 'hero', 'branding', 'admin_management');
+    return tabs;
+  }, [adminAccess]);
+
+  useEffect(() => {
+    if (availableTabs.length === 0) {
+      if (activeTab !== 'overview') setActiveTab('overview');
+      return;
+    }
+    if (!availableTabs.includes(activeTab)) setActiveTab(availableTabs[0]);
+  }, [availableTabs, activeTab]);
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {
+    if (!adminAccess) {
+      setIsLoading(false);
+      return;
+    }
+
+    const isSuperAdmin = adminAccess.isSuperAdmin;
+    const canTalent = isSuperAdmin || adminAccess.permissions.includes('talent');
+    const canBooking = isSuperAdmin || adminAccess.permissions.includes('booking');
+    const canFinance = isSuperAdmin || adminAccess.permissions.includes('finance');
+    const canSupport = isSuperAdmin || adminAccess.permissions.includes('support');
+
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      // 1. Fetch all Talents and Identities
-      const { data: talentRows, error: talentErr } = await supabase
-        .from('talent_profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+      let enrichedBookings: AdminBookingItem[] = [];
 
-      if (talentErr) console.warn('Error loading talents:', talentErr.message);
-
-      // Fetch corresponding identities and users
-      let combinedTalents: TalentCurationItem[] = [];
-      if (talentRows && talentRows.length > 0) {
-        const talentIds = talentRows.map((t) => t.id);
-
-        const { data: identityRows } = await supabase
-          .from('user_identities')
+      // TALENT: profile curation, KTP Talent, service and display-name reviews.
+      if (canTalent) {
+        const { data: talentRows, error: talentErr } = await supabase
+          .from('talent_profiles')
           .select('*')
-          .in('id', talentIds);
+          .order('created_at', { ascending: false });
+        if (talentErr) throw talentErr;
 
-        const { data: userRows } = await supabase
-          .from('users')
-          .select('id, email, account_status, is_verified_18')
-          .in('id', talentIds);
+        const talentIds = (talentRows || []).map((t) => t.id);
+        const [{ data: identityRows }, { data: userRows }] = talentIds.length
+          ? await Promise.all([
+              supabase.from('user_identities')
+                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+                .in('id', talentIds),
+              supabase.rpc('get_admin_user_summaries', { p_user_ids: talentIds }),
+            ])
+          : [{ data: [] as any[] }, { data: [] as any[] }];
 
         const idMap = new Map((identityRows || []).map((id) => [id.id, id]));
-        const userMap = new Map((userRows || []).map((u) => [u.id, u]));
-
-        combinedTalents = talentRows.map((t) => {
+        const userMap = new Map<string, any>((userRows || []).map((u: any) => [u.id, u] as [string, any]));
+        const combinedTalents: TalentCurationItem[] = (talentRows || []).map((t) => {
           const idRecord = idMap.get(t.id);
           const uRecord = userMap.get(t.id);
           const ktpStatus = idRecord?.ktp_verification_status || 'unsubmitted';
           const accountStatus = uRecord?.account_status;
           const isVerified18 = uRecord?.is_verified_18 === true;
-          const isApproved =
-            ktpStatus === 'verified' && accountStatus === 'active' && isVerified18;
-
           return {
             ...t,
-            is_approved: isApproved,
+            is_approved: ktpStatus === 'verified' && accountStatus === 'active' && isVerified18,
             full_legal_name: idRecord?.full_legal_name,
             date_of_birth: idRecord?.date_of_birth,
             ktp_number: idRecord?.ktp_number,
@@ -278,264 +303,246 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             is_verified_18: uRecord?.is_verified_18,
           };
         });
+        setTalents(combinedTalents);
+
+        const [
+          { data: serviceRequests, error: serviceRequestError },
+          { data: identityRequests, error: identityRequestError },
+          { data: approvedServices },
+          { data: serviceHistory },
+        ] = await Promise.all([
+          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,created_at').eq('approval_status', 'pending').order('created_at', { ascending: true }),
+          supabase.from('talent_identity_change_requests').select('id,talent_id,field_name,old_value,requested_value,created_at').eq('status', 'pending').order('created_at', { ascending: true }),
+          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,is_active,updated_at').eq('approval_status', 'approved').order('updated_at', { ascending: false }).limit(100),
+          supabase.from('talent_service_change_log').select('id,talent_id,change_type,old_value,new_value,created_at').order('created_at', { ascending: false }).limit(30),
+        ]);
+        if (serviceRequestError) console.warn('Gagal membaca antrean layanan Talent:', serviceRequestError.message);
+        if (identityRequestError) console.warn('Gagal membaca antrean perubahan identitas:', identityRequestError.message);
+        setApprovedTalentServices(approvedServices || []);
+        setTalentServiceHistory(serviceHistory || []);
+
+        const serviceTalentIds = Array.from(new Set((serviceRequests || []).map((r) => r.talent_id)));
+        const serviceCategoryIds = Array.from(new Set((serviceRequests || []).map((r) => r.activity_category_id)));
+        const [{ data: serviceTalentProfiles }, { data: serviceCategoryRows }] = await Promise.all([
+          serviceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name,city').in('id', serviceTalentIds) : Promise.resolve({ data: [] as any[] }),
+          serviceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', serviceCategoryIds) : Promise.resolve({ data: [] as any[] }),
+        ]);
+        const serviceTalentMap = new Map((serviceTalentProfiles || []).map((t) => [t.id, t]));
+        const serviceCategoryMap = new Map((serviceCategoryRows || []).map((c) => [c.id, c.title]));
+        setPendingTalentServices((serviceRequests || []).map((r) => ({
+          ...r,
+          talent_name: serviceTalentMap.get(r.talent_id)?.display_name || 'Talent',
+          talent_city: serviceTalentMap.get(r.talent_id)?.city || '-',
+          category_title: serviceCategoryMap.get(r.activity_category_id) || r.activity_category_id,
+        })));
+
+        const allServiceTalentIds = Array.from(new Set([
+          ...(approvedServices || []).map((r) => r.talent_id),
+          ...(serviceHistory || []).map((r) => r.talent_id),
+        ]));
+        const allServiceCategoryIds = Array.from(new Set((approvedServices || []).map((r) => r.activity_category_id)));
+        const [{ data: allTalentProfiles }, { data: allCategories }] = await Promise.all([
+          allServiceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name').in('id', allServiceTalentIds) : Promise.resolve({ data: [] as any[] }),
+          allServiceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', allServiceCategoryIds) : Promise.resolve({ data: [] as any[] }),
+        ]);
+        const allTalentMap = new Map((allTalentProfiles || []).map((t) => [t.id, t.display_name]));
+        const allCategoryMap = new Map((allCategories || []).map((c) => [c.id, c.title]));
+        setApprovedTalentServices((approvedServices || []).map((r) => ({
+          ...r,
+          talent_name: allTalentMap.get(r.talent_id) || 'Talent',
+          category_title: allCategoryMap.get(r.activity_category_id) || r.activity_category_id,
+        })));
+        setTalentServiceHistory((serviceHistory || []).map((r) => ({
+          ...r,
+          talent_name: allTalentMap.get(r.talent_id) || 'Talent',
+        })));
+
+        const identityTalentIds = Array.from(new Set((identityRequests || []).map((r) => r.talent_id)));
+        const { data: identityTalentProfiles } = identityTalentIds.length
+          ? await supabase.from('talent_profiles').select('id,display_name,city').in('id', identityTalentIds)
+          : { data: [] as any[] };
+        const identityTalentMap = new Map((identityTalentProfiles || []).map((t) => [t.id, t]));
+        setPendingIdentityChanges((identityRequests || []).map((r) => ({
+          ...r,
+          talent_name: identityTalentMap.get(r.talent_id)?.display_name || 'Talent',
+        })));
+      } else {
+        setTalents([]);
+        setPendingTalentServices([]);
+        setApprovedTalentServices([]);
+        setTalentServiceHistory([]);
+        setPendingIdentityChanges([]);
       }
-      setTalents(combinedTalents);
 
-      // 1b. Talent service and display-name review queues
-      const [{ data: serviceRequests, error: serviceRequestError }, { data: identityRequests, error: identityRequestError }, { data: approvedServices }, { data: serviceHistory }] = await Promise.all([
-        supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,created_at').eq('approval_status', 'pending').order('created_at', { ascending: true }),
-        supabase.from('talent_identity_change_requests').select('id,talent_id,field_name,old_value,requested_value,created_at').eq('status', 'pending').order('created_at', { ascending: true }),
-        supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,is_active,updated_at').eq('approval_status', 'approved').order('updated_at', { ascending: false }).limit(100),
-        supabase.from('talent_service_change_log').select('id,talent_id,change_type,old_value,new_value,created_at').order('created_at', { ascending: false }).limit(30),
-      ]);
-      setApprovedTalentServices(approvedServices || []);
-      setTalentServiceHistory(serviceHistory || []);
-      if (serviceRequestError) console.warn('Gagal membaca antrean layanan Talent:', serviceRequestError.message);
-      if (identityRequestError) console.warn('Gagal membaca antrean perubahan identitas:', identityRequestError.message);
-      const serviceTalentIds = Array.from(new Set((serviceRequests || []).map((r) => r.talent_id)));
-      const serviceCategoryIds = Array.from(new Set((serviceRequests || []).map((r) => r.activity_category_id)));
-      const [{ data: serviceTalentProfiles }, { data: serviceCategoryRows }] = await Promise.all([
-        serviceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name,city').in('id', serviceTalentIds) : Promise.resolve({ data: [] as any[] }),
-        serviceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', serviceCategoryIds) : Promise.resolve({ data: [] as any[] }),
-      ]);
-      const serviceTalentMap = new Map((serviceTalentProfiles || []).map((t) => [t.id, t]));
-      const serviceCategoryMap = new Map((serviceCategoryRows || []).map((c) => [c.id, c.title]));
-      setPendingTalentServices((serviceRequests || []).map((r) => ({ ...r, talent_name: serviceTalentMap.get(r.talent_id)?.display_name || 'Talent', talent_city: serviceTalentMap.get(r.talent_id)?.city || '-', category_title: serviceCategoryMap.get(r.activity_category_id) || r.activity_category_id })));
-      const allServiceTalentIds = Array.from(new Set([...(approvedServices || []).map((r) => r.talent_id), ...(serviceHistory || []).map((r) => r.talent_id)]));
-      const allServiceCategoryIds = Array.from(new Set((approvedServices || []).map((r) => r.activity_category_id)));
-      const [{ data: allTalentProfiles }, { data: allCategories }] = await Promise.all([
-        allServiceTalentIds.length ? supabase.from('talent_profiles').select('id,display_name').in('id', allServiceTalentIds) : Promise.resolve({ data: [] as any[] }),
-        allServiceCategoryIds.length ? supabase.from('activity_categories').select('id,title').in('id', allServiceCategoryIds) : Promise.resolve({ data: [] as any[] }),
-      ]);
-      const allTalentMap = new Map((allTalentProfiles || []).map((t) => [t.id, t.display_name]));
-      const allCategoryMap = new Map((allCategories || []).map((c) => [c.id, c.title]));
-      setApprovedTalentServices((approvedServices || []).map((r) => ({ ...r, talent_name: allTalentMap.get(r.talent_id) || 'Talent', category_title: allCategoryMap.get(r.activity_category_id) || r.activity_category_id })));
-      setTalentServiceHistory((serviceHistory || []).map((r) => ({ ...r, talent_name: allTalentMap.get(r.talent_id) || 'Talent' })));
-      const identityTalentIds = Array.from(new Set((identityRequests || []).map((r) => r.talent_id)));
-      const { data: identityTalentProfiles } = identityTalentIds.length ? await supabase.from('talent_profiles').select('id,display_name,city').in('id', identityTalentIds) : { data: [] as any[] };
-      const identityTalentMap = new Map((identityTalentProfiles || []).map((t) => [t.id, t]));
-      setPendingIdentityChanges((identityRequests || []).map((r) => ({ ...r, talent_name: identityTalentMap.get(r.talent_id)?.display_name || 'Talent' })));
-
-      // 2. Fetch Payout Requests
-      const { data: payoutRows, error: payoutErr } = await supabase
-        .from('payout_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (payoutErr) console.warn('Error loading payouts:', payoutErr.message);
-
-      let enrichedPayouts: AdminPayoutItem[] = [];
-      if (payoutRows && payoutRows.length > 0) {
-        const talentIds = Array.from(new Set(payoutRows.map((p) => p.talent_id)));
-        const { data: tProfiles } = await supabase
-          .from('talent_profiles')
-          .select('id, display_name, city')
-          .in('id', talentIds);
-
-        const tMap = new Map((tProfiles || []).map((t) => [t.id, t]));
-
-        enrichedPayouts = payoutRows.map((p) => ({
+      // FINANCE: payout, refunds, customer cancellation cases and affiliate data.
+      if (canFinance) {
+        const { data: payoutRows, error: payoutErr } = await supabase
+          .from('payout_requests').select('*').order('created_at', { ascending: false });
+        if (payoutErr) throw payoutErr;
+        const payoutTalentIds = Array.from(new Set((payoutRows || []).map((p) => p.talent_id)));
+        const { data: payoutTalentLabels } = payoutTalentIds.length
+          ? await supabase.rpc('get_admin_talent_labels', { p_talent_ids: payoutTalentIds })
+          : { data: [] as any[] };
+        const payoutTalentMap = new Map<string, any>((payoutTalentLabels || []).map((t: any) => [t.id, t] as [string, any]));
+        setPayouts((payoutRows || []).map((p) => ({
           ...p,
-          talent_name: tMap.get(p.talent_id)?.display_name || 'Talent YUKU',
-          talent_city: tMap.get(p.talent_id)?.city || 'Jakarta',
-        }));
-      }
-      setPayouts(enrichedPayouts);
+          talent_name: payoutTalentMap.get(p.talent_id)?.display_name || 'Talent YUKU',
+          talent_city: payoutTalentMap.get(p.talent_id)?.city || '-',
+        })));
 
-      // 3. Fetch Bookings
-      const { data: bookingRows, error: bookingErr } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (bookingErr) console.warn('Error loading bookings:', bookingErr.message);
-
-      let enrichedBookings: AdminBookingItem[] = [];
-      if (bookingRows && bookingRows.length > 0) {
-        const custIds = Array.from(new Set(bookingRows.map((b) => b.customer_id)));
-        const talIds = Array.from(new Set(bookingRows.map((b) => b.talent_id)));
-
-        const { data: customers } = await supabase
-          .from('customer_profiles')
-          .select('id, display_name')
-          .in('id', custIds);
-
-        const { data: talProfiles } = await supabase
-          .from('talent_profiles')
-          .select('id, display_name')
-          .in('id', talIds);
-
-        const custMap = new Map((customers || []).map((c) => [c.id, c.display_name]));
-        const talMap = new Map((talProfiles || []).map((t) => [t.id, t.display_name]));
-
-        enrichedBookings = bookingRows.map((b) => ({
-          ...b,
-          customer_name: custMap.get(b.customer_id) || 'Customer',
-          talent_name: talMap.get(b.talent_id) || 'Talent',
-        }));
-      }
-      setBookings(enrichedBookings);
-
-      // 4. Fetch Customer KTP Verifications (non-talent users who submitted user_identities)
-      const { data: allIdentityRows, error: identityFetchError } = await supabase
-        .from('user_identities')
-        .select(
-          'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
-        )
-        .order('created_at', { ascending: false });
-
-      if (identityFetchError) {
-        throw new Error(`Gagal memuat data KTP Customer: ${identityFetchError.message}`);
-      }
-
-      if (allIdentityRows && allIdentityRows.length > 0) {
-        const talentIdSet = new Set((talentRows || []).map((t) => t.id));
-        const nonTalentIdentities = allIdentityRows.filter((row) => !talentIdSet.has(row.id));
-
-        if (nonTalentIdentities.length > 0) {
-          const custIdentityIds = nonTalentIdentities.map((row) => row.id);
-          const { data: custUserRows } = await supabase
-            .from('users')
-            .select('id, email, account_status, is_verified_18')
-            .in('id', custIdentityIds);
-
-          const custUserMap = new Map((custUserRows || []).map((u) => [u.id, u]));
-          setCustomerKtps(
-            nonTalentIdentities.map((row) => {
-              const uRec = custUserMap.get(row.id);
-              return {
-                ...row,
-                email: uRec?.email,
-                account_status: uRec?.account_status,
-                is_verified_18: uRec?.is_verified_18,
-              } as CustomerKtpItem;
-            })
-          );
-        } else {
-          setCustomerKtps([]);
-        }
-      } else {
-        setCustomerKtps([]);
-      }
-
-      // 5. Fetch Reports & Complaints
-      const { data: reportRows, error: reportErr } = await supabase
-        .from('reports_complaints')
-        .select('id, reporter_id, reported_user_id, booking_id, category, description, status, admin_notes, created_at')
-        .order('created_at', { ascending: false });
-
-      if (reportErr) console.warn('Error loading reports:', reportErr.message);
-
-      if (reportRows && reportRows.length > 0) {
-        const partyIds = Array.from(
-          new Set(reportRows.flatMap((r) => [r.reporter_id, r.reported_user_id]))
-        );
-        const { data: partyUsers } = await supabase
-          .from('users')
-          .select('id, full_name, email')
-          .in('id', partyIds);
-
-        const userLabelMap = new Map<string, string>();
-        partyUsers?.forEach((u) => {
-          userLabelMap.set(u.id, u.full_name || u.email || 'Pengguna YUKU');
-        });
-
-        const bookingInfoMap = new Map<string, { code: string; status: string }>();
-        enrichedBookings.forEach((b) => {
-          bookingInfoMap.set(b.id, { code: b.booking_code, status: b.status });
-        });
-
-        setReports(
-          reportRows.map((r) => {
-            const bInfo = r.booking_id ? bookingInfoMap.get(r.booking_id) : undefined;
-            return {
-              ...r,
-              reporter_name: userLabelMap.get(r.reporter_id) || 'Pengguna YUKU',
-              reported_user_name: userLabelMap.get(r.reported_user_id) || 'Pengguna YUKU',
-              booking_code: bInfo?.code || null,
-              booking_status: bInfo?.status || null,
-            } as AdminReportItem;
-          })
-        );
-      } else {
-        setReports([]);
-      }
-
-      // 6. Fetch Refund Requests
-      const { data: refundRows, error: refundErr } = await supabase
-        .from('refunds')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (refundErr) console.warn('Error loading refunds:', refundErr.message);
-      if (refundRows && refundRows.length > 0) {
-        const refundCustomerIds = Array.from(new Set(refundRows.map((r) => r.customer_id)));
-        const { data: refundCustomers } = await supabase
-          .from('customer_profiles')
-          .select('id, display_name')
-          .in('id', refundCustomerIds);
-        const refundCustomerMap = new Map((refundCustomers || []).map((c) => [c.id, c.display_name]));
-        const bookingCodeMap = new Map(enrichedBookings.map((b) => [b.id, b.booking_code]));
-        setRefunds(refundRows.map((r) => ({
+        const { data: refundRows, error: refundErr } = await supabase
+          .from('refunds').select('*').order('created_at', { ascending: false });
+        if (refundErr) throw refundErr;
+        const refundCustomerIds = Array.from(new Set((refundRows || []).map((r) => r.customer_id)));
+        const { data: refundCustomers } = refundCustomerIds.length
+          ? await supabase.rpc('get_admin_customer_labels', { p_customer_ids: refundCustomerIds })
+          : { data: [] as any[] };
+        const refundCustomerMap = new Map((refundCustomers || []).map((c: any) => [c.id, c.display_name]));
+        const refundBookingIds = Array.from(new Set((refundRows || []).map((r) => r.booking_id)));
+        const { data: refundBookingLabels } = refundBookingIds.length
+          ? await supabase.rpc('get_admin_finance_booking_labels', { p_booking_ids: refundBookingIds })
+          : { data: [] as any[] };
+        const bookingCodeMap = new Map((refundBookingLabels || []).map((b: any) => [b.id, b.booking_code]));
+        setRefunds((refundRows || []).map((r) => ({
           ...r,
           customer_name: refundCustomerMap.get(r.customer_id) || 'Customer YUKU',
           booking_code: bookingCodeMap.get(r.booking_id) || r.booking_id,
         })) as AdminRefundItem[]);
-      } else {
-        setRefunds([]);
-      }
 
-      // 6b. Fetch Customer cancellation cases and retained funds awaiting Admin review
-      const { data: cancellationCaseRows, error: cancellationCaseErr } = await supabase
-        .from('customer_cancellation_cases')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (cancellationCaseErr) console.warn('Error loading customer cancellation cases:', cancellationCaseErr.message);
-      if (cancellationCaseRows && cancellationCaseRows.length > 0) {
-        const caseCustomerIds = Array.from(new Set(cancellationCaseRows.map((c) => c.customer_id)));
-        const { data: caseCustomers } = await supabase
-          .from('customer_profiles')
-          .select('id, display_name')
-          .in('id', caseCustomerIds);
-        const caseCustomerMap = new Map((caseCustomers || []).map((c) => [c.id, c.display_name]));
-        const caseBookingMap = new Map(enrichedBookings.map((b) => [b.id, b.booking_code]));
-        setCustomerCancellationCases(cancellationCaseRows.map((c) => ({
+        const { data: cancellationCaseRows, error: cancellationCaseErr } = await supabase
+          .from('customer_cancellation_cases').select('*').order('created_at', { ascending: false });
+        if (cancellationCaseErr) throw cancellationCaseErr;
+        const caseCustomerIds = Array.from(new Set((cancellationCaseRows || []).map((c) => c.customer_id)));
+        const { data: caseCustomers } = caseCustomerIds.length
+          ? await supabase.rpc('get_admin_customer_labels', { p_customer_ids: caseCustomerIds })
+          : { data: [] as any[] };
+        const caseCustomerMap = new Map((caseCustomers || []).map((c: any) => [c.id, c.display_name]));
+        const caseBookingIds = Array.from(new Set((cancellationCaseRows || []).map((c) => c.booking_id)));
+        const { data: caseBookingLabels } = caseBookingIds.length
+          ? await supabase.rpc('get_admin_finance_booking_labels', { p_booking_ids: caseBookingIds })
+          : { data: [] as any[] };
+        const caseBookingMap = new Map((caseBookingLabels || []).map((b: any) => [b.id, b.booking_code]));
+        setCustomerCancellationCases((cancellationCaseRows || []).map((c) => ({
           ...c,
           customer_name: caseCustomerMap.get(c.customer_id) || 'Customer YUKU',
           booking_code: caseBookingMap.get(c.booking_id) || c.booking_id,
         })) as CustomerCancellationCaseItem[]);
       } else {
+        setPayouts([]);
+        setRefunds([]);
         setCustomerCancellationCases([]);
       }
 
-      // 7. Fetch Promotional Posters for Homepage Carousel
-      const { data: promoRows, error: promoErr } = await supabase
-        .from('promotions')
-        .select('*')
-        .order('sort_order', { ascending: true })
-        .order('created_at', { ascending: false });
-
-      if (promoErr) {
-        if (promoErr.code === '42P01' || promoErr.message.includes('promotions')) {
-          setPromoMigrationMissing(true);
+      // BOOKING: Admin receives operational fields only; Super Admin keeps full audit data.
+      if (canBooking) {
+        if (isSuperAdmin) {
+          const { data: bookingRows, error: bookingErr } = await supabase
+            .from('bookings').select('*').order('created_at', { ascending: false });
+          if (bookingErr) throw bookingErr;
+          const custIds = Array.from(new Set((bookingRows || []).map((b) => b.customer_id)));
+          const talIds = Array.from(new Set((bookingRows || []).map((b) => b.talent_id)));
+          const [{ data: customers }, { data: talProfiles }] = await Promise.all([
+            custIds.length ? supabase.from('customer_profiles').select('id,display_name').in('id', custIds) : Promise.resolve({ data: [] as any[] }),
+            talIds.length ? supabase.from('talent_profiles').select('id,display_name').in('id', talIds) : Promise.resolve({ data: [] as any[] }),
+          ]);
+          const custMap = new Map((customers || []).map((c) => [c.id, c.display_name]));
+          const talMap = new Map((talProfiles || []).map((t) => [t.id, t.display_name]));
+          enrichedBookings = (bookingRows || []).map((b) => ({
+            ...b,
+            customer_name: custMap.get(b.customer_id) || 'Customer',
+            talent_name: talMap.get(b.talent_id) || 'Talent',
+          }));
+        } else {
+          const { data: bookingRows, error: bookingErr } = await supabase.rpc('get_admin_bookings');
+          if (bookingErr) throw bookingErr;
+          enrichedBookings = (bookingRows || []) as AdminBookingItem[];
         }
-        setPromoPosters([]);
+        setBookings(enrichedBookings);
       } else {
-        setPromoMigrationMissing(false);
-        setPromoPosters((promoRows as PromotionRow[]) || []);
+        setBookings([]);
+      }
+
+      // SUPPORT: KTP Customer and incident reports. KTP query is already role-scoped by RLS.
+      if (canSupport) {
+        const { data: allIdentityRows, error: identityFetchError } = await supabase
+          .from('user_identities')
+          .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+          .order('created_at', { ascending: false });
+        if (identityFetchError) throw identityFetchError;
+        const customerIdentityIds = (allIdentityRows || []).map((row) => row.id);
+        const { data: customerUsers } = customerIdentityIds.length
+          ? await supabase.rpc('get_admin_user_summaries', { p_user_ids: customerIdentityIds })
+          : { data: [] as any[] };
+        const customerUserRows = (customerUsers || []).filter((u: any) => u.role === 'customer');
+        const customerUserMap = new Map<string, any>(customerUserRows.map((u: any) => [u.id, u] as [string, any]));
+        const customerUserIds = new Set(customerUserRows.map((u: any) => u.id));
+        setCustomerKtps((allIdentityRows || []).filter((row) => customerUserIds.has(row.id)).map((row) => {
+          const uRec = customerUserMap.get(row.id);
+          return {
+            ...row,
+            email: uRec?.email,
+            account_status: uRec?.account_status,
+            is_verified_18: uRec?.is_verified_18,
+          } as CustomerKtpItem;
+        }));
+
+        const { data: reportRows, error: reportErr } = await supabase
+          .from('reports_complaints')
+          .select('id,reporter_id,reported_user_id,booking_id,category,description,status,admin_notes,created_at')
+          .order('created_at', { ascending: false });
+        if (reportErr) throw reportErr;
+        const partyIds = Array.from(new Set((reportRows || []).flatMap((r) => [r.reporter_id, r.reported_user_id])));
+        const { data: partyUsers } = partyIds.length
+          ? await supabase.rpc('get_admin_user_summaries', { p_user_ids: partyIds })
+          : { data: [] as any[] };
+        const userLabelMap = new Map<string, string>();
+        partyUsers?.forEach((u: any) => userLabelMap.set(u.id, u.full_name || u.email || 'Pengguna YUKU'));
+        const reportBookingIds = Array.from(new Set((reportRows || []).map((r) => r.booking_id).filter(Boolean))) as string[];
+        const { data: reportBookings } = reportBookingIds.length
+          ? await supabase.rpc('get_admin_report_booking_summaries', { p_booking_ids: reportBookingIds })
+          : { data: [] as any[] };
+        const bookingInfoMap = new Map<string, { code: string; status: string }>((reportBookings || []).map((b: any) => [b.id, { code: b.booking_code, status: b.status }] as [string, { code: string; status: string }]));
+        setReports((reportRows || []).map((r) => {
+          const bInfo = r.booking_id ? bookingInfoMap.get(r.booking_id) : undefined;
+          return {
+            ...r,
+            reporter_name: userLabelMap.get(r.reporter_id) || 'Pengguna YUKU',
+            reported_user_name: userLabelMap.get(r.reported_user_id) || 'Pengguna YUKU',
+            booking_code: bInfo?.code || null,
+            booking_status: bInfo?.status || null,
+          } as AdminReportItem;
+        }));
+      } else {
+        setCustomerKtps([]);
+        setReports([]);
+      }
+
+      // Super Admin-only content and global overview data.
+      if (isSuperAdmin) {
+        const { data: promoRows, error: promoErr } = await supabase
+          .from('promotions').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+        if (promoErr) {
+          if (promoErr.code === '42P01' || promoErr.message.includes('promotions')) setPromoMigrationMissing(true);
+          setPromoPosters([]);
+        } else {
+          setPromoMigrationMissing(false);
+          setPromoPosters((promoRows as PromotionRow[]) || []);
+        }
+      } else {
+        setPromoPosters([]);
       }
     } catch (err: any) {
       setErrorMessage(err?.message || 'Gagal memuat data panel admin.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [adminAccess]);
 
   useEffect(() => {
-    if (isAdminAuthorized) {
+    if (isAdminAuthorized && adminAccess) {
       loadAdminData();
     }
-  }, [isAdminAuthorized, loadAdminData]);
+  }, [isAdminAuthorized, adminAccess, loadAdminData]);
 
   const handleTalentServiceReview = async (serviceId: string, decision: 'approved' | 'rejected' | 'disabled_by_admin') => {
     const note = window.prompt(decision === 'approved' ? 'Catatan Admin (opsional):' : 'Alasan keputusan:') || '';
@@ -1173,11 +1180,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   Panel Kurasi & Admin YUKU
                 </h1>
                 <span className="px-2.5 py-0.5 bg-purple-100 text-purple-900 text-[10px] font-black rounded-full uppercase tracking-wider">
-                  Super Admin
+                  {isSuperAdmin ? 'Super Admin' : 'Admin'}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Terhubung sebagai <strong>{currentUser.email}</strong> • Mengelola persetujuan Talent, verifikasi e-KTP 18+, dan pencairan dana platform.
+                Terhubung sebagai <strong>{currentUser.email}</strong> • {isSuperAdmin ? 'Akses penuh dan pengelolaan akun Admin.' : 'Akses dibatasi sesuai izin menu yang diberikan Super Admin.'}
               </p>
             </div>
           </div>
@@ -1200,7 +1207,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* 4 Financial & Operational Platform Metrics */}
+        {/* Overview: ringkasan hanya untuk Super Admin */}
+        {isSuperAdmin && activeTab === 'overview' && (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-1">
@@ -1255,8 +1263,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         </div>
 
+        )}
+
         {/* Tab Navigation */}
         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-slate-200 pb-3 text-xs font-bold text-slate-600 sm:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>button]:min-w-0 [&>button]:w-full [&>button]:justify-start [&>button]:text-left sm:[&>button]:w-auto sm:[&>button]:whitespace-nowrap">
+          {isSuperAdmin && (
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'overview' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'}`}
+          >
+            <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'overview' ? 'text-white' : 'text-emerald-600'}`} />
+            <span>Overview</span>
+          </button>
+          )}
+          {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('talents')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1266,6 +1286,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <Users className="w-3.5 h-3.5" />
             <span>Kurasi Talent ({talents.length})</span>
           </button>
+          )}
+          {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('service_reviews')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'service_reviews' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'}`}
@@ -1273,6 +1295,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Review Talent ({pendingTalentServices.length + pendingIdentityChanges.length})</span>
           </button>
+          )}
+          {canAccess('support') && (
           <button
             onClick={() => setActiveTab('customer_ktp')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1284,6 +1308,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               KTP Customer ({customerKtps.filter((c) => c.ktp_verification_status === 'pending_review').length})
             </span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('payouts')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1293,6 +1319,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <CreditCard className="w-3.5 h-3.5" />
             <span>Pencairan Dana ({payouts.length})</span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('refunds')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1302,6 +1330,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <RefreshCw className={`w-3.5 h-3.5 ${activeTab === 'refunds' ? 'text-white' : 'text-rose-600'}`} />
             <span>Refund ({refunds.filter((r) => r.status === 'requested' || r.status === 'approved').length})</span>
           </button>
+          )}
+          {canAccess('booking') && (
           <button
             onClick={() => setActiveTab('bookings')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1311,6 +1341,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <Calendar className="w-3.5 h-3.5" />
             <span>Audit Booking & Escrow ({bookings.length})</span>
           </button>
+          )}
+          {canAccess('support') && (
           <button
             onClick={() => setActiveTab('reports')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1320,6 +1352,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <ShieldAlert className={`w-3.5 h-3.5 ${activeTab === 'reports' ? 'text-white' : 'text-rose-600'}`} />
             <span>Laporan Insiden ({activeReportsCount})</span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('qris')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1329,6 +1363,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <CreditCard className={`w-3.5 h-3.5 ${activeTab === 'qris' ? 'text-white' : 'text-emerald-600'}`} />
             <span>QRIS & Verifikasi</span>
           </button>
+          )}
+          {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('promos')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1338,6 +1374,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <Megaphone className={`w-3.5 h-3.5 ${activeTab === 'promos' ? 'text-white' : 'text-amber-600'}`} />
             <span>Poster Promo ({promoPosters.filter((p) => p.is_active).length})</span>
           </button>
+          )}
+          {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('hero')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1347,6 +1385,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'hero' ? 'text-white' : 'text-fuchsia-600'}`} />
             <span>Slide Hero</span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('affiliate')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1356,6 +1396,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'affiliate' ? 'text-white' : 'text-emerald-600'}`} />
             <span>Affiliate</span>
           </button>
+          )}
+          {isSuperAdmin && (
+          <button
+            onClick={() => setActiveTab('admin_management')}
+            className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'admin_management' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'
+            }`}
+          >
+            <ShieldCheck className={`w-3.5 h-3.5 ${activeTab === 'admin_management' ? 'text-white' : 'text-purple-600'}`} />
+            <span>Pengaturan Admin</span>
+          </button>
+          )}
+          {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('branding')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1365,7 +1418,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'branding' ? 'text-white' : 'text-purple-600'}`} />
             <span>Logo & Branding</span>
           </button>
+          )}
         </div>
+
+        {availableTabs.length === 0 && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center text-sm text-amber-900">
+            Akun Admin ini belum memiliki izin menu. Hubungi Super Admin untuk mengatur akses.
+          </div>
+        )}
 
         {activeTab === 'service_reviews' && (
           <div className="space-y-6">
@@ -1389,6 +1449,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         {activeTab === 'branding' && <BrandingAdminPanel />}
         {activeTab === 'hero' && <HeroSlidesAdminPanel />}
         {activeTab === 'affiliate' && <AffiliateAdminPanel />}
+        {activeTab === 'admin_management' && isSuperAdmin && <AdminManagementPanel />}
 
         {/* TAB 1: TALENT CURATION & KTP APPROVAL */}
         {activeTab === 'talents' && (
@@ -1898,17 +1959,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <div className="text-[11px] text-slate-600">
                       <span className="text-slate-500">Lokasi:</span> {b.meeting_location_name || '-'}
                     </div>
-                    <div className="rounded-lg border border-slate-100 p-2.5 grid grid-cols-1 gap-2">
-                      <div className="flex items-center justify-between gap-2 text-xs">
-                        <span className="text-slate-500">Total Bayar</span><strong className="text-slate-900 tabular-nums">{formatRupiah(b.gross_amount)}</strong>
+                    {isSuperAdmin && (
+                      <div className="rounded-lg border border-slate-100 p-2.5 grid grid-cols-1 gap-2">
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-slate-500">Total Bayar</span><strong className="text-slate-900 tabular-nums">{formatRupiah(b.gross_amount || 0)}</strong>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-slate-500">Fee YUKU (20%)</span><strong className="text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount || 0)}</strong>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-slate-500">Bagian Talent (80%)</span><strong className="text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share || 0)}</strong>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between gap-2 text-xs">
-                        <span className="text-slate-500">Fee YUKU (20%)</span><strong className="text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount)}</strong>
-                      </div>
-                      <div className="flex items-center justify-between gap-2 text-xs">
-                        <span className="text-slate-500">Bagian Talent (80%)</span><strong className="text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share)}</strong>
-                      </div>
-                    </div>
+                    )}
                   </article>
                 ))}
               </div>
@@ -1920,9 +1983,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <th className="p-3.5">Customer</th>
                       <th className="p-3.5">Talent</th>
                       <th className="p-3.5">Lokasi Publik</th>
-                      <th className="p-3.5">Total Bayar</th>
-                      <th className="p-3.5">Fee YUKU (20%)</th>
-                      <th className="p-3.5">Share Talent (80%)</th>
+{isSuperAdmin && (
+                        <>
+                          <th className="p-3.5">Total Bayar</th>
+                          <th className="p-3.5">Fee YUKU (20%)</th>
+                          <th className="p-3.5">Share Talent (80%)</th>
+                        </>
+                      )}
                       <th className="p-3.5">Status Escrow</th>
                     </tr>
                   </thead>
@@ -1933,9 +2000,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         <td className="p-3.5 font-semibold text-slate-900">{b.customer_name}</td>
                         <td className="p-3.5 font-semibold text-purple-950">{b.talent_name}</td>
                         <td className="p-3.5 text-slate-600 max-w-[180px] truncate">{b.meeting_location_name}</td>
-                        <td className="p-3.5 font-bold text-slate-900 tabular-nums">{formatRupiah(b.gross_amount)}</td>
-                        <td className="p-3.5 font-bold text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount)}</td>
-                        <td className="p-3.5 font-bold text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share)}</td>
+{isSuperAdmin && (
+                          <>
+                            <td className="p-3.5 font-bold text-slate-900 tabular-nums">{formatRupiah(b.gross_amount || 0)}</td>
+                            <td className="p-3.5 font-bold text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount || 0)}</td>
+                            <td className="p-3.5 font-bold text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share || 0)}</td>
+                          </>
+                        )}
                         <td className="p-3.5">
                           {b.status === 'completed' ? (
                             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">

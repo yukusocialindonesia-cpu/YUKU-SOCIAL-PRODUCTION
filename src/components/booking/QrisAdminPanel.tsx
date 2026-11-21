@@ -19,7 +19,7 @@ export const QrisAdminPanel: React.FC = () => {
     setConfig(cfg); setRows(submissions || []);
     const ids = Array.from(new Set((submissions || []).map((r: any) => r.booking_id)));
     if (ids.length > 0) {
-      const { data: bks } = await db.from('bookings').select('id,status').in('id', ids);
+      const { data: bks } = await db.rpc('get_admin_finance_booking_statuses', { p_booking_ids: ids });
       const map: Record<string, string> = {};
       (bks || []).forEach((b: any) => { map[b.id] = b.status; });
       setBookingStatus(map);

@@ -11,12 +11,21 @@ import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 export type UserRole = 'admin' | 'talent' | 'customer';
+export type AdminPermission = 'talent' | 'booking' | 'finance' | 'support';
+
+export interface AdminAccess {
+  adminLevel: 'super_admin' | 'admin';
+  isSuperAdmin: boolean;
+  permissions: AdminPermission[];
+}
 
 interface AuthContextValue {
   /** Pengguna Supabase saat ini, atau null jika Guest. Hanya valid jika isAuthLoading === false. */
   user: User | null;
   /** Role dari tabel public.users. null untuk Guest atau jika role tidak ditemukan. */
   role: UserRole | null;
+  /** Hak menu Admin yang dikonfirmasi database; null berarti tidak punya akses Admin. */
+  adminAccess: AdminAccess | null;
   /** true selama sesi DAN role belum selesai dipulihkan. Selama true, jangan render menu apa pun. */
   isAuthLoading: boolean;
   isAuthenticated: boolean;
@@ -29,6 +38,32 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const normalizeRole = (value: unknown): UserRole | null =>
   value === 'admin' || value === 'talent' || value === 'customer' ? value : null;
+
+const normalizeAdminAccess = (value: unknown): AdminAccess | null => {
+  if (!value || typeof value !== 'object') return null;
+  const access = value as { is_admin?: boolean; is_super_admin?: boolean; permissions?: unknown };
+  if (access.is_admin !== true) return null;
+  const allowed = new Set<AdminPermission>(['talent', 'booking', 'finance', 'support']);
+  const permissions = Array.isArray(access.permissions)
+    ? access.permissions.filter((item): item is AdminPermission => typeof item === 'string' && allowed.has(item as AdminPermission))
+    : [];
+  const isSuperAdmin = access.is_super_admin === true;
+  if (isSuperAdmin) {
+    return { adminLevel: 'super_admin', isSuperAdmin: true, permissions: ['talent', 'booking', 'finance', 'support'] };
+  }
+  return { adminLevel: 'admin', isSuperAdmin: false, permissions };
+};
+
+async function fetchAdminAccess(): Promise<AdminAccess | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_admin_access');
+    if (error) throw error;
+    return normalizeAdminAccess(data);
+  } catch (error) {
+    console.error('YUKU: gagal memuat izin Admin', error);
+    return null;
+  }
+}
 
 async function fetchRole(userId: string): Promise<UserRole | null> {
   try {
@@ -51,6 +86,7 @@ async function fetchRole(userId: string): Promise<UserRole | null> {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
+  const [adminAccess, setAdminAccess] = useState<AdminAccess | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Menghindari state usang saat dua pemuatan role bertumpuk.
@@ -64,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       currentUserIdRef.current = null;
       setUser(null);
       setRole(null);
+      setAdminAccess(null);
       setIsAuthLoading(false);
       return;
     }
@@ -81,10 +118,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!sameUser) setIsAuthLoading(true);
 
     const nextRole = await fetchRole(nextUser.id);
+    const nextAdminAccess = nextRole === 'admin' ? await fetchAdminAccess() : null;
     if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
 
     setUser(nextUser);
     setRole(nextRole);
+    setAdminAccess(nextAdminAccess);
     setIsAuthLoading(false);
   }, []);
 
@@ -115,8 +154,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }, 0);
     });
 
+    // Muat ulang izin saat pengguna kembali ke tab aplikasi.
+    // Ini membuat perubahan izin/nonaktif Admin segera tercermin tanpa harus logout.
+    const handleWindowFocus = () => {
+      if (!isMounted) return;
+      void supabase.auth.getSession().then(({ data: { session } }) => {
+        if (isMounted) void applySession(session?.user ?? null, true);
+      }).catch((error) => {
+        console.error('YUKU: gagal memperbarui izin Admin saat aplikasi aktif', error);
+      });
+    };
+    window.addEventListener('focus', handleWindowFocus);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('focus', handleWindowFocus);
       subscription.unsubscribe();
     };
   }, [applySession]);
@@ -135,12 +187,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     () => ({
       user,
       role,
+      adminAccess,
       isAuthLoading,
       isAuthenticated: Boolean(user),
       signOut,
       refreshRole,
     }),
-    [user, role, isAuthLoading, signOut, refreshRole],
+    [user, role, adminAccess, isAuthLoading, signOut, refreshRole],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
