@@ -1,6 +1,6 @@
 # Rancangan Pengamanan Database Admin YUKU
 
-Status: rancangan teknis untuk ditinjau. Belum diterapkan ke Staging maupun Production.
+Status: fondasi awal sudah diterapkan dan diuji di Staging. Pembatasan seluruh RLS/RPC/Storage dan UI masih dalam pengerjaan. Production belum disentuh.
 
 ## Tujuan
 
@@ -107,4 +107,9 @@ Jangan memakai RPC lama `provision_admin_user(UUID)`: fungsi itu mengubah status
 - Ada risiko perubahan hak akses menyebabkan fungsi otomatis/trigger berhenti jika semua pemanggilan `is_admin()` diganti tanpa pemetaan.
 - RLS bisa memiliki beberapa policy yang digabung dengan OR; penambahan policy izin baru tidak otomatis memperketat policy Admin lama. Policy lama yang memberi akses luas harus diperbarui atau dihapus dengan hati-hati dalam migrasi yang sama.
 - Fungsi `SECURITY DEFINER` dan hak EXECUTE perlu diaudit agar tidak menjadi jalur bypass.
-- Belum ada perubahan database pada tahap ini.
+- Migration 48 `admin_access_foundation` sudah diterapkan di Staging: membuat `private.admin_accounts`, `private.admin_permissions`, dan fungsi pembaca izin saat ini.
+- Akun `yukusocial@gmail.com` pada Staging tercatat sebagai `super_admin`; role, status akun, dan verifikasi usia pada `public.users` tidak diubah.
+- Tes Staging lulus: Super Admin mendapat empat izin; Admin uji dengan satu izin hanya mendapat menu tersebut; pengguna biasa ditolak; tabel internal tidak dapat dibaca langsung oleh `authenticated`/`anon`.
+- Data Admin uji sementara di-rollback; Staging kembali hanya memiliki satu akun Admin dan nol baris izin Admin biasa.
+- `public.is_admin()`, kebijakan RLS lama, RPC lama, Storage, dan halaman Admin belum diubah. Karena itu, izin menu belum diberlakukan ke seluruh sistem.
+- Production tidak disentuh.
