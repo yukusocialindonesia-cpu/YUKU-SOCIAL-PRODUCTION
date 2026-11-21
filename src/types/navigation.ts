@@ -21,6 +21,7 @@ export type AppRoute =
   | '/ganti-sandi'
   | '/lupa-sandi'
   | '/reset-sandi'
+  | '/aktivasi-admin'
   | '/verifikasi-ktp'
   | '/syarat-ketentuan'
   | '/kebijakan-privasi';

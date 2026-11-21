@@ -48,6 +48,18 @@ Deno.serve(async (req: Request) => {
 
     const body = await req.json().catch(() => null);
     const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const requestOrigin = req.headers.get('origin');
+    let redirectTo: string;
+    try {
+      const candidate = new URL(typeof body?.redirectTo === 'string' ? body.redirectTo : '');
+      if (!requestOrigin || candidate.origin !== new URL(requestOrigin).origin || candidate.pathname !== '/aktivasi-admin' || !['https:', 'http:'].includes(candidate.protocol)) {
+        return json({ error: 'Alamat aktivasi Admin tidak valid.' }, 400);
+      }
+      redirectTo = candidate.toString();
+    } catch {
+      return json({ error: 'Alamat aktivasi Admin tidak valid.' }, 400);
+    }
+
     const permissions = Array.isArray(body?.permissions)
       ? [...new Set(body.permissions.filter((item: unknown): item is string => typeof item === 'string'))]
       : [];
@@ -74,28 +86,28 @@ Deno.serve(async (req: Request) => {
     }
 
     const { data: invitation, error: inviteError } =
-      await serviceClient.auth.admin.inviteUserByEmail(email);
+      await serviceClient.auth.admin.inviteUserByEmail(email, { redirectTo });
     const invitedUserId = invitation.user?.id;
     if (inviteError || !invitedUserId) {
       return json({ error: inviteError?.message || 'Undangan Admin gagal dibuat.' }, 400);
     }
 
-    const { error: provisionError } = await serviceClient.rpc('provision_scoped_admin_account', {
+    // Provisioning role, Admin account, and permissions in one database transaction.
+    // The invite email is sent by Supabase before this RPC; on failure, remove the
+    // newly invited Auth user so the emailed link cannot activate a partial account.
+    const { error: provisionError } = await serviceClient.rpc('provision_scoped_admin_account_with_permissions', {
       p_user_id: invitedUserId,
       p_created_by: authData.user.id,
-    });
-    if (provisionError) {
-      await serviceClient.auth.admin.deleteUser(invitedUserId);
-      return json({ error: 'Akun undangan tidak dapat disiapkan dengan aman.' }, 500);
-    }
-
-    const { error: permissionError } = await userClient.rpc('set_admin_permissions', {
-      p_admin_user_id: invitedUserId,
       p_permissions: permissions,
     });
-    if (permissionError) {
-      await serviceClient.auth.admin.deleteUser(invitedUserId);
-      return json({ error: 'Izin Admin gagal disimpan; undangan dibatalkan.' }, 500);
+    if (provisionError) {
+      const { error: cleanupError } = await serviceClient.auth.admin.deleteUser(invitedUserId);
+      if (cleanupError) {
+        return json({
+          error: 'Provisioning Admin gagal dan pembersihan akun undangan juga gagal. Jangan kirim ulang undangan ke email ini; minta Super Admin memeriksa akun tersebut.',
+        }, 500);
+      }
+      return json({ error: 'Akun Admin gagal disiapkan. Undangan dibatalkan; silakan periksa izin lalu coba kembali.' }, 500);
     }
 
     return json({

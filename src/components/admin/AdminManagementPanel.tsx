@@ -62,11 +62,12 @@ export const AdminManagementPanel: React.FC = () => {
     setMessage(null);
     try {
       const { data, error: inviteError } = await supabase.functions.invoke('admin-management', {
-        body: { email: email.trim(), permissions: invitePermissions },
+        body: { email: email.trim(), permissions: invitePermissions, redirectTo: window.location.origin + '/aktivasi-admin' },
       });
       if (inviteError) throw inviteError;
       if (data?.error) throw new Error(data.error);
       setEmail('');
+      setInvitePermissions([]);
       setMessage('Undangan Admin berhasil dikirim. Admin baru dapat masuk setelah menerima undangan melalui email.');
       await load();
     } catch (err: any) {
@@ -131,7 +132,7 @@ export const AdminManagementPanel: React.FC = () => {
           <MailPlus className="h-5 w-5 text-purple-700" />
           <div>
             <h3 className="font-extrabold text-slate-900">Undang Admin Baru</h3>
-            <p className="text-xs text-slate-500">Undangan dikirim melalui email. Akun memakai halaman login YUKU yang sama.</p>
+            <p className="text-xs text-slate-500">Undangan dikirim melalui email. Admin membuat kata sandi sendiri sebelum membuka dashboard.</p>
           </div>
         </div>
         <form onSubmit={handleInvite} className="space-y-4">
