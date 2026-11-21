@@ -510,6 +510,30 @@ GRANT EXECUTE ON FUNCTION public.moderate_community_post(uuid, text, text) TO au
 GRANT EXECUTE ON FUNCTION public.moderate_community_comment(uuid, text, text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.review_community_report(uuid, text, text) TO authenticated;
 
+-- Minimize personal identifiers exposed through browser SELECT queries.
+-- RLS continues to use author_id/reporter_id internally, but clients do not
+-- need to read those stable auth-user identifiers to render the community UI.
+REVOKE SELECT ON public.community_posts, public.community_comments,
+  public.community_likes, public.community_reports FROM anon, authenticated;
+
+GRANT SELECT (
+  id, author_display_name, body, topic, likes_count, comments_count,
+  status, created_at, updated_at, moderated_at, moderated_by, moderation_note
+) ON public.community_posts TO anon, authenticated;
+
+GRANT SELECT (
+  id, post_id, author_display_name, body, status, created_at,
+  moderated_at, moderated_by, moderation_note
+) ON public.community_comments TO anon, authenticated;
+
+GRANT SELECT (post_id, created_at)
+  ON public.community_likes TO authenticated;
+
+GRANT SELECT (
+  id, reason, details, status, created_at, post_id, comment_id,
+  reviewed_at, reviewed_by, admin_notes
+) ON public.community_reports TO authenticated;
+
 -- IMPORTANT: this file remains a proposal. It has NOT been applied to Supabase.
 
 
