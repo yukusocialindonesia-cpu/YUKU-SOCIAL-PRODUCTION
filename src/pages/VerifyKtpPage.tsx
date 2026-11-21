@@ -658,7 +658,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
                         onChange={(e) =>
                           validateAndSelectImage(e, 'Foto e-KTP', setKtpFile, setKtpPreviewUrl)
                         }
-                        className="w-full p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
+                        className="w-full min-w-0 p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
                       />
                     </div>
                     {ktpPreviewUrl && ktpFile && (
@@ -700,7 +700,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
                             setSelfiePreviewUrl
                           )
                         }
-                        className="w-full p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
+                        className="w-full min-w-0 p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
                       />
                     </div>
                     {selfiePreviewUrl && selfieFile && (
