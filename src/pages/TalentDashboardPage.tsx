@@ -291,6 +291,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     accountNumber: '',
     holderName: '',
   });
+  // Keep the same key when retrying after a network error to prevent duplicate requests.
+  const [payoutIdempotencyKey, setPayoutIdempotencyKey] = useState(() => crypto.randomUUID());
 
   // Edit Profile Form State
   const [profileForm, setProfileForm] = useState({
@@ -853,24 +855,19 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     setErrorMessage(null);
 
     try {
-      const payoutNumber = 'WD-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase();
-
-      const { error } = await supabase.from('payout_requests').insert({
-        payout_number: payoutNumber,
-        talent_id: currentUser.id,
-        amount: amountNum,
-        bank_name: payoutForm.bankName,
-        bank_account_number: payoutForm.accountNumber.trim(),
-        bank_account_holder_name: payoutForm.holderName.trim(),
-        payout_provider: 'manual',
-        payout_status: 'requested',
+      const { error } = await supabase.rpc('request_talent_payout', {
+        p_amount: amountNum,
+        p_bank_name: payoutForm.bankName.trim(),
+        p_bank_account_number: payoutForm.accountNumber.trim(),
+        p_bank_account_holder_name: payoutForm.holderName.trim(),
+        p_idempotency_key: payoutIdempotencyKey,
       });
 
       if (error) throw error;
 
       setIsPayoutModalOpen(false);
       setSuccessMessage(
-        `Permintaan pencairan dana sebesar ${formatRupiah(amountNum)} dengan nomor ${payoutNumber} berhasil diajukan! Tim Finance YUKU akan memverifikasi dan memproses transfer secara manual.`
+        `Permintaan pencairan dana sebesar ${formatRupiah(amountNum)} berhasil diajukan! Tim Finance YUKU akan memverifikasi dan memproses transfer secara manual.`
       );
       setPayoutForm({
         amount: '150000',
@@ -878,6 +875,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         accountNumber: '',
         holderName: '',
       });
+      setPayoutIdempotencyKey(crypto.randomUUID());
       await loadDashboardData(currentUser.id);
     } catch (err: any) {
       setErrorMessage(`Gagal mengajukan pencairan saldo: ${err?.message}`);
