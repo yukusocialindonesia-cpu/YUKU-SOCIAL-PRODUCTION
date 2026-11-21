@@ -441,10 +441,10 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
   };
 
   return (
-    <div className="py-12 bg-[#FAF8FC]">
+    <div className="relative isolate overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <div className="mx-auto mb-14 max-w-3xl rounded-[2rem] border border-white/80 bg-white/65 px-5 py-8 text-center shadow-[0_24px_70px_-38px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:px-9 sm:py-10">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
             Peluang Karir & Penghasilan Fleksibel
           </span>
@@ -458,7 +458,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
 
         {/* Business Rules Spec Box (Transparent earnings) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-14">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="rounded-[1.5rem] border border-white/90 bg-white/85 p-5 shadow-[0_18px_45px_-30px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/70 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgba(76,29,149,0.4)]">
             <span className="text-xs text-slate-500 font-semibold uppercase block mb-1">
               Sistem Penghasilan
             </span>
@@ -468,7 +468,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="rounded-[1.5rem] border border-white/90 bg-white/85 p-5 shadow-[0_18px_45px_-30px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/70 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgba(76,29,149,0.4)]">
             <span className="text-xs text-slate-500 font-semibold uppercase block mb-1">
               Program Komunitas
             </span>
@@ -478,7 +478,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="rounded-[1.5rem] border border-white/90 bg-white/85 p-5 shadow-[0_18px_45px_-30px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/70 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgba(76,29,149,0.4)]">
             <span className="text-xs text-slate-500 font-semibold uppercase block mb-1">
               Minimal Pencairan
             </span>
@@ -490,7 +490,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="rounded-[1.5rem] border border-white/90 bg-white/85 p-5 shadow-[0_18px_45px_-30px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/70 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgba(76,29,149,0.4)]">
             <span className="text-xs text-slate-500 font-semibold uppercase block mb-1">
               Kepatuhan Usia
             </span>
@@ -505,7 +505,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Left Column: Requirements & Safety */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
+            <div className="rounded-[1.75rem] border border-white/90 bg-white/85 p-6 shadow-[0_22px_55px_-34px_rgba(76,29,149,0.38)] ring-1 ring-violet-100/70 backdrop-blur-xl">
               <h2 className="text-lg font-bold text-slate-900 mb-4">
                 Syarat Menjadi Talent
               </h2>
@@ -529,7 +529,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
               </ul>
             </div>
 
-            <div className="bg-purple-950 text-white rounded-2xl p-6 border border-purple-900">
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-gradient-to-br from-[#1E0938] via-[#321052] to-[#6421A0] p-6 text-white shadow-[0_25px_60px_-28px_rgba(30,9,56,0.55)] ring-1 ring-white/15">
               <div className="flex items-center gap-2 text-amber-400 font-bold text-xs mb-2">
                 <ShieldCheck className="w-4 h-4" />
                 <span>KEAMANAN & PERLINDUNGAN TALENT</span>
@@ -548,7 +548,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
 
           {/* Right Column: Registration Form Mockup */}
           <div className="lg:col-span-7">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
+            <div className="rounded-[1.75rem] border border-white/90 bg-white/90 p-6 shadow-[0_26px_65px_-36px_rgba(76,29,149,0.42)] ring-1 ring-violet-100/80 backdrop-blur-2xl sm:p-8">
               <div className="mb-6">
                 <span className="text-xs font-semibold text-purple-700 block mb-0.5">
                   Formulir Pendaftaran Talent
