@@ -48,7 +48,7 @@ const normalizeAdminAccess = (value: unknown): AdminAccess | null => {
     ? access.permissions.filter((item): item is AdminPermission => typeof item === 'string' && allowed.has(item as AdminPermission))
     : [];
   const isSuperAdmin = access.is_super_admin === true;
-  if (isSuperAdmin && permissions.length !== 4) {
+  if (isSuperAdmin) {
     return { adminLevel: 'super_admin', isSuperAdmin: true, permissions: ['talent', 'booking', 'finance', 'support'] };
   }
   return { adminLevel: 'admin', isSuperAdmin: false, permissions };
