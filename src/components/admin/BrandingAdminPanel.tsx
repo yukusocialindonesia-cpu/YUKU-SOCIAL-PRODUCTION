@@ -38,7 +38,7 @@ const Slot: React.FC<SlotProps> = ({ title, hint, currentUrl, isCustom, busy, on
         <p className="text-xs text-slate-500">{hint}</p>
       </div>
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-center">
-        <img src={preview || currentUrl} alt={title} className="max-h-24 max-w-full object-contain" />
+        <img src={preview || currentUrl} alt={title} className="max-h-36 max-w-full object-contain" />
       </div>
       {preview && <p className="text-[11px] text-amber-700">Pratinjau file baru. Belum tersimpan.</p>}
       <input
