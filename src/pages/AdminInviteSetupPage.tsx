@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, Lock } from 'lucide-react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { AppRoute } from '../types/navigation';
+import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
 interface AdminInviteSetupPageProps {
@@ -9,9 +10,8 @@ interface AdminInviteSetupPageProps {
 }
 
 export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNavigate }) => {
+  const { user, adminAccess, isAuthLoading, refreshRole } = useAuth();
   const [checking, setChecking] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -20,33 +20,43 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  const authorized = Boolean(user && adminAccess);
+
   useEffect(() => {
     let mounted = true;
+
     const verifyInviteSession = async () => {
-      // Supabase sends the invite email before the Edge Function finishes
-      // provisioning the Admin row and menu permissions. Retry briefly so a
-      // fast email click does not incorrectly reject a valid invitation.
+      // AuthContext owns session restoration. Wait for it before checking Admin access.
+      if (isAuthLoading) return;
+
+      if (!user) {
+        setError('Sesi undangan tidak ditemukan. Pastikan tautan undangan masih berlaku.');
+        setChecking(false);
+        return;
+      }
+
+      // The invitation email may arrive before Admin provisioning finishes.
+      // Refresh through AuthContext and retry briefly; access is granted only
+      // when AuthContext confirms the Admin permission from the database.
       const maxAttempts = 8;
       const retryDelayMs = 750;
 
-      try {
-        for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         if (!mounted) return;
+
         try {
-          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-          if (!sessionError && session?.user) {
-            const { data: access, error: accessError } = await supabase.rpc('get_admin_access');
-            if (!accessError && access?.is_admin === true) {
-              if (mounted) {
-                setEmail(session.user.email || '');
-                setAuthorized(true);
-                setError('');
-              }
-              return;
-            }
-          }
+          await refreshRole();
         } catch {
           // Retry transient session/provisioning errors; never grant access here.
+        }
+
+        if (!mounted) return;
+
+        // AuthContext state updates trigger a render and this effect will run again.
+        if (user && adminAccess) {
+          setError('');
+          setChecking(false);
+          return;
         }
 
         if (attempt < maxAttempts - 1) {
@@ -54,21 +64,26 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
         }
       }
 
-        if (mounted) {
-          setError('Undangan belum dapat diverifikasi. Pastikan tautan masih berlaku. Jika masalah berlanjut, minta Super Admin memeriksa status undangan.');
-        }
-      } finally {
-        if (mounted) setChecking(false);
+      if (mounted) {
+        setError('Undangan belum dapat diverifikasi. Pastikan tautan masih berlaku. Jika masalah berlanjut, minta Super Admin memeriksa status undangan.');
+        setChecking(false);
       }
     };
 
     void verifyInviteSession();
-    return () => { mounted = false; };
-  }, []);
+    return () => {
+      mounted = false;
+    };
+  }, [isAuthLoading, user, adminAccess, refreshRole]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
+
+    if (!user || !adminAccess) {
+      setError('Akses Admin tidak ditemukan. Silakan buka kembali tautan undangan.');
+      return;
+    }
     if (password.length < 8) {
       setError('Kata sandi minimal 8 karakter.');
       return;
@@ -77,14 +92,20 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
       setError('Konfirmasi kata sandi tidak cocok.');
       return;
     }
+
     setSaving(true);
     try {
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
+
+      // Refresh the shared auth state, then independently confirm the Admin
+      // permission before showing the dashboard action.
+      await refreshRole();
       const { data: access, error: accessError } = await supabase.rpc('get_admin_access');
       if (accessError || access?.is_admin !== true) {
         throw new Error('Kata sandi tersimpan, tetapi akses Admin belum dapat diverifikasi. Hubungi Super Admin.');
       }
+
       setSuccess(true);
       setPassword('');
       setConfirmPassword('');
@@ -105,7 +126,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
           </div>
           <h1 className="text-2xl font-black text-[#1E0938] tracking-tight">Buat Kata Sandi</h1>
           <p className="text-sm text-slate-500">Buat kata sandi pribadi untuk menyelesaikan aktivasi akun Admin.</p>
-          {email && <p className="text-xs font-semibold text-slate-700">{email}</p>}
+          {user?.email && <p className="text-xs font-semibold text-slate-700">{user.email}</p>}
         </div>
 
         {checking ? (
