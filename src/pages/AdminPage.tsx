@@ -118,6 +118,8 @@ interface CustomerCancellationCaseItem {
   customer_name?: string;
 }
 
+type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview';
+
 interface AdminBookingItem {
   id: string;
   booking_code: string;
@@ -127,9 +129,9 @@ interface AdminBookingItem {
   start_time: string;
   duration_hours: number;
   meeting_location_name: string;
-  gross_amount: number;
-  platform_fee_amount: number;
-  talent_gross_share: number;
+  gross_amount?: number;
+  platform_fee_amount?: number;
+  talent_gross_share?: number;
   status: string;
   created_at: string;
   customer_name?: string;
@@ -167,12 +169,10 @@ interface AdminReportItem {
 }
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
-  const { user: currentUser, role, isAuthLoading: isCheckingAuth } = useAuth();
+  const { user: currentUser, role, adminAccess, isAuthLoading: isCheckingAuth } = useAuth();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<
-    'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview'
-  >('talents');
+  const [activeTab, setActiveTab] = useState<AdminTab>('talents');
 
   // Data States
   const [talents, setTalents] = useState<TalentCurationItem[]>([]);
@@ -220,7 +220,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [holdBookingOnDispute, setHoldBookingOnDispute] = useState(false);
   const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
-  const isAdminAuthorized = role === 'admin';
+  const isAdminAuthorized = role === 'admin' && adminAccess !== null;
+  const isSuperAdmin = adminAccess?.isSuperAdmin === true;
+  const canAccess = (permission: 'talent' | 'booking' | 'finance' | 'support') =>
+    isSuperAdmin || adminAccess?.permissions.includes(permission) === true;
+  const availableTabs = useMemo<AdminTab[]>(() => {
+    const tabs: AdminTab[] = [];
+    if (canAccess('talent')) tabs.push('talents', 'service_reviews');
+    if (canAccess('booking')) tabs.push('bookings');
+    if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
+    if (canAccess('support')) tabs.push('customer_ktp', 'reports');
+    if (isSuperAdmin) tabs.push('promos', 'hero', 'branding');
+    return tabs;
+  }, [adminAccess]);
+
+  useEffect(() => {
+    if (availableTabs.length > 0 && !availableTabs.includes(activeTab)) {
+      setActiveTab(availableTabs[0]);
+    }
+  }, [availableTabs, activeTab]);
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {
@@ -508,10 +526,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   }, [adminAccess]);
 
   useEffect(() => {
-    if (isAdminAuthorized) {
+    if (isAdminAuthorized && adminAccess) {
       loadAdminData();
     }
-  }, [isAdminAuthorized, loadAdminData]);
+  }, [isAdminAuthorized, adminAccess, loadAdminData]);
 
   const handleTalentServiceReview = async (serviceId: string, decision: 'approved' | 'rejected' | 'disabled_by_admin') => {
     const note = window.prompt(decision === 'approved' ? 'Catatan Admin (opsional):' : 'Alasan keputusan:') || '';
@@ -1149,11 +1167,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   Panel Kurasi & Admin YUKU
                 </h1>
                 <span className="px-2.5 py-0.5 bg-purple-100 text-purple-900 text-[10px] font-black rounded-full uppercase tracking-wider">
-                  Super Admin
+                  {isSuperAdmin ? 'Super Admin' : 'Admin'}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Terhubung sebagai <strong>{currentUser.email}</strong> • Mengelola persetujuan Talent, verifikasi e-KTP 18+, dan pencairan dana platform.
+                Terhubung sebagai <strong>{currentUser.email}</strong> • {isSuperAdmin ? 'Akses penuh dan pengelolaan akun Admin.' : 'Akses dibatasi sesuai izin menu yang diberikan Super Admin.'}
               </p>
             </div>
           </div>
@@ -1176,6 +1194,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         </div>
 
+        {isSuperAdmin && (
         {/* 4 Financial & Operational Platform Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs">
@@ -1231,8 +1250,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         </div>
 
+        )}
+
         {/* Tab Navigation */}
         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-slate-200 pb-3 text-xs font-bold text-slate-600 sm:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>button]:min-w-0 [&>button]:w-full [&>button]:justify-start [&>button]:text-left sm:[&>button]:w-auto sm:[&>button]:whitespace-nowrap">
+          {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('talents')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1242,6 +1264,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <Users className="w-3.5 h-3.5" />
             <span>Kurasi Talent ({talents.length})</span>
           </button>
+          )}
+          {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('service_reviews')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'service_reviews' ? 'bg-purple-700 text-white shadow-xs' : 'hover:bg-slate-100 text-slate-700'}`}
@@ -1249,6 +1273,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Review Talent ({pendingTalentServices.length + pendingIdentityChanges.length})</span>
           </button>
+          )}
+          {canAccess('support') && (
           <button
             onClick={() => setActiveTab('customer_ktp')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1260,6 +1286,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               KTP Customer ({customerKtps.filter((c) => c.ktp_verification_status === 'pending_review').length})
             </span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('payouts')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1269,6 +1297,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <CreditCard className="w-3.5 h-3.5" />
             <span>Pencairan Dana ({payouts.length})</span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('refunds')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1278,6 +1308,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <RefreshCw className={`w-3.5 h-3.5 ${activeTab === 'refunds' ? 'text-white' : 'text-rose-600'}`} />
             <span>Refund ({refunds.filter((r) => r.status === 'requested' || r.status === 'approved').length})</span>
           </button>
+          )}
+          {canAccess('booking') && (
           <button
             onClick={() => setActiveTab('bookings')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 ${
@@ -1287,6 +1319,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <Calendar className="w-3.5 h-3.5" />
             <span>Audit Booking & Escrow ({bookings.length})</span>
           </button>
+          )}
+          {canAccess('support') && (
           <button
             onClick={() => setActiveTab('reports')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1296,6 +1330,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <ShieldAlert className={`w-3.5 h-3.5 ${activeTab === 'reports' ? 'text-white' : 'text-rose-600'}`} />
             <span>Laporan Insiden ({activeReportsCount})</span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('qris')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1305,6 +1341,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <CreditCard className={`w-3.5 h-3.5 ${activeTab === 'qris' ? 'text-white' : 'text-emerald-600'}`} />
             <span>QRIS & Verifikasi</span>
           </button>
+          )}
+          {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('promos')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1314,6 +1352,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <Megaphone className={`w-3.5 h-3.5 ${activeTab === 'promos' ? 'text-white' : 'text-amber-600'}`} />
             <span>Poster Promo ({promoPosters.filter((p) => p.is_active).length})</span>
           </button>
+          )}
+          {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('hero')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1323,6 +1363,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'hero' ? 'text-white' : 'text-fuchsia-600'}`} />
             <span>Slide Hero</span>
           </button>
+          )}
+          {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('affiliate')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1332,6 +1374,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'affiliate' ? 'text-white' : 'text-emerald-600'}`} />
             <span>Affiliate</span>
           </button>
+          )}
+          {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('branding')}
             className={`px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
@@ -1341,7 +1385,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'branding' ? 'text-white' : 'text-purple-600'}`} />
             <span>Logo & Branding</span>
           </button>
+          )}
         </div>
+
+        {availableTabs.length === 0 && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center text-sm text-amber-900">
+            Akun Admin ini belum memiliki izin menu. Hubungi Super Admin untuk mengatur akses.
+          </div>
+        )}
 
         {activeTab === 'service_reviews' && (
           <div className="space-y-6">
@@ -1874,10 +1925,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <div className="text-[11px] text-slate-600">
                       <span className="text-slate-500">Lokasi:</span> {b.meeting_location_name || '-'}
                     </div>
+                    {isSuperAdmin && (
                     <div className="rounded-lg border border-slate-100 p-2.5 grid grid-cols-1 gap-2">
                       <div className="flex items-center justify-between gap-2 text-xs">
                         <span className="text-slate-500">Total Bayar</span><strong className="text-slate-900 tabular-nums">{formatRupiah(b.gross_amount)}</strong>
                       </div>
+                    )}
                       <div className="flex items-center justify-between gap-2 text-xs">
                         <span className="text-slate-500">Fee YUKU (20%)</span><strong className="text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount)}</strong>
                       </div>
@@ -1896,9 +1949,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <th className="p-3.5">Customer</th>
                       <th className="p-3.5">Talent</th>
                       <th className="p-3.5">Lokasi Publik</th>
+{isSuperAdmin && (
                       <th className="p-3.5">Total Bayar</th>
                       <th className="p-3.5">Fee YUKU (20%)</th>
                       <th className="p-3.5">Share Talent (80%)</th>
+                      )}
                       <th className="p-3.5">Status Escrow</th>
                     </tr>
                   </thead>
@@ -1909,9 +1964,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         <td className="p-3.5 font-semibold text-slate-900">{b.customer_name}</td>
                         <td className="p-3.5 font-semibold text-purple-950">{b.talent_name}</td>
                         <td className="p-3.5 text-slate-600 max-w-[180px] truncate">{b.meeting_location_name}</td>
+{isSuperAdmin && (
                         <td className="p-3.5 font-bold text-slate-900 tabular-nums">{formatRupiah(b.gross_amount)}</td>
                         <td className="p-3.5 font-bold text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount)}</td>
                         <td className="p-3.5 font-bold text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share)}</td>
+                      )}
                         <td className="p-3.5">
                           {b.status === 'completed' ? (
                             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
