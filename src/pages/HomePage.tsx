@@ -61,7 +61,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="yuku-home-page flex flex-col">
       {/* 2. Hero Section with Tagline ("Real Friends. Real Moments.") & 3. Tombol Jelajahi Talent */}
       {/* 4. Pencarian berdasarkan aktivitas dan lokasi */}
       <HeroSection
