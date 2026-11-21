@@ -287,7 +287,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
   }
 
   return (
-    <div className="mt-4 space-y-3 rounded-2xl border border-purple-200 bg-purple-50/60 p-4">
+    <div className="mt-4 space-y-4 rounded-[1.5rem] border border-white/80 bg-white/85 p-4 shadow-[0_18px_45px_-24px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/80 backdrop-blur-xl sm:p-5">
       {left !== null && (
         <div className={`rounded-xl px-3 py-2 text-center text-xs font-bold ${
           left < 180
@@ -309,11 +309,11 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
         </p>
       </div>
 
-      <div className="flex flex-col items-center gap-2 rounded-xl bg-white p-3">
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-violet-100/80 bg-gradient-to-b from-white to-violet-50/50 p-4 shadow-inner">
         <img
           src={imageUrl}
           alt="QRIS pembayaran YUKU"
-          className="w-full max-w-[260px] object-contain"
+          className="w-full max-w-[260px] rounded-xl object-contain drop-shadow-md"
         />
 
         {settings.merchant_name && (
@@ -322,7 +322,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
           </p>
         )}
 
-        <p className="text-xl font-black text-purple-950">
+        <p className="text-2xl font-black tracking-tight text-violet-950">
           {formatRupiah(amount)}
         </p>
 
@@ -348,7 +348,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
           type="button"
           disabled={busy}
           onClick={() => fileInputRef.current?.click()}
-          className="mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-purple-300 bg-white px-4 py-3 text-xs font-bold text-purple-800 disabled:opacity-50"
+          className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-violet-300 bg-white px-4 py-3 text-xs font-extrabold text-violet-800 shadow-sm transition hover:border-violet-500 hover:bg-violet-50 disabled:opacity-50"
         >
           <Upload className="h-4 w-4" />
           {file ? 'Ganti file' : 'Ketuk untuk memilih file bukti bayar'}
@@ -372,7 +372,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
           value={reference}
           onChange={e => setReference(e.target.value)}
           maxLength={100}
-          className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal"
+          className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 font-normal shadow-inner outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
           placeholder="Nomor referensi dari aplikasi pembayaran"
         />
       </label>
@@ -384,7 +384,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
         type="button"
         onClick={submit}
         disabled={busy || !file}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-indigo-700 px-4 py-3 text-xs font-extrabold text-white shadow-lg shadow-violet-900/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:translate-y-0 disabled:opacity-50"
       >
         {busy
           ? <Loader2 className="h-4 w-4 animate-spin" />
