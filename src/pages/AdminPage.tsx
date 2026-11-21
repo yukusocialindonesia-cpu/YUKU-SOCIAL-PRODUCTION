@@ -236,9 +236,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   }, [adminAccess]);
 
   useEffect(() => {
-    if (availableTabs.length > 0 && !availableTabs.includes(activeTab)) {
-      setActiveTab(availableTabs[0]);
+    if (availableTabs.length === 0) {
+      if (activeTab !== 'overview') setActiveTab('overview');
+      return;
     }
+    if (!availableTabs.includes(activeTab)) setActiveTab(availableTabs[0]);
   }, [availableTabs, activeTab]);
 
   // Load Admin Data
