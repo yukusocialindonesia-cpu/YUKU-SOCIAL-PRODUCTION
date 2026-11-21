@@ -1,126 +1,151 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
   Hash,
   Heart,
-  ImagePlus,
   MessageCircle,
   Search,
   Send,
   ShieldCheck,
   Sparkles,
   Users,
+  Flag,
+  RefreshCw,
 } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
-
-type DemoPost = {
-  id: number;
-  name: string;
-  handle: string;
-  time: string;
-  text: string;
-  topic: string;
-  likes: number;
-  comments: number;
-  initials: string;
-  tone: string;
-};
+import { useAuth } from '../contexts/AuthContext';
+import {
+  CommunityPost,
+  CommunityTopic,
+  createCommunityComment,
+  createCommunityPost,
+  loadCommunityPosts,
+  reportCommunityPost,
+  toggleCommunityLike,
+} from '../services/communityService';
 
 type CommunityPageProps = {
   onNavigate: (path: AppRoute) => void;
 };
 
-const topics = ['Pertemanan', 'Kuliner', 'Travel & Aktivitas', 'Hobi', 'Gaming'];
+const topics: CommunityTopic[] = ['Pertemanan', 'Kuliner', 'Travel & Aktivitas', 'Hobi', 'Gaming'];
+const reportReasons = ['Spam', 'Pelecehan', 'Konten tidak pantas', 'Penipuan', 'Lainnya'];
 
-const starterPosts: DemoPost[] = [
-  {
-    id: 1,
-    name: 'Nadia Putri',
-    handle: '@nadiaputri',
-    time: '12 menit lalu',
-    text: 'Lagi cari teman untuk eksplor coffee shop baru di Bogor akhir pekan ini. Ada rekomendasi tempat yang nyaman?',
-    topic: 'Kuliner',
-    likes: 24,
-    comments: 8,
-    initials: 'NP',
-    tone: 'from-fuchsia-500 to-purple-700',
-  },
-  {
-    id: 2,
-    name: 'Rizky A.',
-    handle: '@rizkyjalan',
-    time: '38 menit lalu',
-    text: 'Siapa yang suka jalan pagi dan menikmati suasana alam? Yuk saling berbagi tempat favorit!',
-    topic: 'Travel & Aktivitas',
-    likes: 17,
-    comments: 4,
-    initials: 'RA',
-    tone: 'from-amber-400 to-orange-600',
-  },
-  {
-    id: 3,
-    name: 'Maya Lestari',
-    handle: '@mayalestari',
-    time: '1 jam lalu',
-    text: 'Menurut kalian, aktivitas seru apa yang cocok dilakukan bareng teman baru saat akhir pekan?',
-    topic: 'Pertemanan',
-    likes: 31,
-    comments: 12,
-    initials: 'ML',
-    tone: 'from-sky-500 to-indigo-700',
-  },
-];
+const formatTime = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+};
 
 export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
+  const { user, isAuthLoading, isAuthenticated } = useAuth();
   const [activeTopic, setActiveTopic] = useState('Semua');
   const [draft, setDraft] = useState('');
-  const [draftTopic, setDraftTopic] = useState('Pertemanan');
-  const [posts, setPosts] = useState(starterPosts);
-  const [liked, setLiked] = useState<number[]>([]);
-  const [openComments, setOpenComments] = useState<number | null>(null);
-  const [commentDrafts, setCommentDrafts] = useState<Record<number, string>>({});
-  const [comments, setComments] = useState<Record<number, string[]>>({
-    1: ['Coba area Suryakencana, banyak pilihan menarik!', 'Aku juga tertarik ikut kalau jadi.'],
-    2: ['Kebun Raya pagi-pagi selalu menyenangkan.'],
-    3: ['Bisa coba kulineran atau board game bareng.'],
-  });
+  const [draftTopic, setDraftTopic] = useState<CommunityTopic>('Pertemanan');
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [openComments, setOpenComments] = useState<string | null>(null);
+  const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
+  const [reportingPostId, setReportingPostId] = useState<string | null>(null);
+  const [reportReasonsByPost, setReportReasonsByPost] = useState<Record<string, string>>({});
+  const [notice, setNotice] = useState('');
+
+  const refreshPosts = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMessage('');
+    try {
+      const rows = await loadCommunityPosts(user?.id || null);
+      setPosts(rows);
+    } catch (error) {
+      console.error('YUKU Community: gagal memuat postingan', error);
+      setErrorMessage('Komunitas belum dapat dimuat. Silakan coba lagi beberapa saat.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    void refreshPosts();
+  }, [refreshPosts]);
+
+  const requireLogin = () => {
+    if (!isAuthenticated) {
+      onNavigate('/login');
+      return false;
+    }
+    return true;
+  };
+
+  const publishPost = async () => {
+    if (!requireLogin() || !user) return;
+    const body = draft.trim();
+    if (!body || body.length > 1200) return;
+
+    setIsSubmitting(true);
+    setNotice('');
+    try {
+      await createCommunityPost(user.id, body, draftTopic);
+      setDraft('');
+      setActiveTopic('Semua');
+      setNotice('Postingan berhasil dibagikan.');
+      await refreshPosts();
+    } catch (error) {
+      console.error('YUKU Community: gagal membuat postingan', error);
+      setNotice('Postingan belum berhasil dikirim. Coba lagi.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLike = async (post: CommunityPost) => {
+    if (!requireLogin() || !user) return;
+    try {
+      await toggleCommunityLike(post.id, user.id, post.likedByMe);
+      await refreshPosts();
+    } catch (error) {
+      console.error('YUKU Community: gagal mengubah suka', error);
+      setNotice('Belum berhasil memberi suka. Coba lagi.');
+    }
+  };
+
+  const publishComment = async (postId: string) => {
+    if (!requireLogin() || !user) return;
+    const body = (commentDrafts[postId] || '').trim();
+    if (!body || body.length > 600) return;
+
+    try {
+      await createCommunityComment(postId, user.id, body);
+      setCommentDrafts((current) => ({ ...current, [postId]: '' }));
+      await refreshPosts();
+      setOpenComments(postId);
+    } catch (error) {
+      console.error('YUKU Community: gagal mengirim komentar', error);
+      setNotice('Komentar belum berhasil dikirim. Coba lagi.');
+    }
+  };
+
+  const submitReport = async (postId: string) => {
+    if (!requireLogin() || !user) return;
+    const reason = reportReasonsByPost[postId] || 'Konten tidak pantas';
+    try {
+      await reportCommunityPost(postId, user.id, reason);
+      setReportingPostId(null);
+      setNotice('Terima kasih. Laporanmu sudah kami terima.');
+    } catch (error) {
+      console.error('YUKU Community: gagal mengirim laporan', error);
+      setNotice('Laporan belum berhasil dikirim. Coba lagi.');
+    }
+  };
 
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
-
-  const publishDemoPost = () => {
-    const text = draft.trim();
-    if (!text) return;
-
-    setPosts((current) => [
-      {
-        id: Date.now(),
-        name: 'Kamu',
-        handle: '@akun-yuku',
-        time: 'Baru saja',
-        text,
-        topic: draftTopic,
-        likes: 0,
-        comments: 0,
-        initials: 'YK',
-        tone: 'from-purple-700 to-fuchsia-600',
-      },
-      ...current,
-    ]);
-    setDraft('');
-    setActiveTopic('Semua');
-  };
-
-  const publishDemoComment = (postId: number) => {
-    const text = (commentDrafts[postId] || '').trim();
-    if (!text) return;
-
-    setComments((current) => ({ ...current, [postId]: [...(current[postId] || []), text] }));
-    setPosts((current) =>
-      current.map((post) => (post.id === postId ? { ...post, comments: post.comments + 1 } : post)),
-    );
-    setCommentDrafts((current) => ({ ...current, [postId]: '' }));
-  };
 
   return (
     <div className="min-h-screen bg-[#FAF8FC] pb-8">
@@ -130,8 +155,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
         <div className="relative mx-auto flex max-w-7xl flex-col gap-7 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between md:py-12 lg:px-8">
           <div className="max-w-2xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold tracking-wide text-purple-50 backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              RUANG KOMUNITAS YUKU
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" /> RUANG KOMUNITAS YUKU
             </div>
             <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
               Temukan teman.
@@ -158,11 +182,8 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
             <p className="text-xs leading-5 text-purple-100">
               Temukan talent dan aktivitas yang cocok, lalu lakukan booking dengan aman melalui YUKU.
             </p>
-            <button
-              type="button"
-              onClick={() => onNavigate('/talent')}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-extrabold text-purple-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-50"
-            >
+            <button type="button" onClick={() => onNavigate('/talent')}
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-extrabold text-purple-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-50">
               Jelajahi talent <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>
@@ -175,60 +196,56 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
             <section className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white shadow-sm">
-                  YK
+                  {user?.email?.slice(0, 1).toUpperCase() || 'YK'}
                 </div>
                 <div className="min-w-0">
                   <h2 className="text-sm font-extrabold text-slate-900">Apa ceritamu hari ini?</h2>
-                  <p className="mt-0.5 text-[11px] text-slate-500">Bagikan ide, cerita, atau rencana aktivitas.</p>
+                  <p className="mt-0.5 text-[11px] text-slate-500">
+                    {isAuthenticated ? 'Bagikan ide, cerita, atau rencana aktivitas.' : 'Masuk untuk mulai berbagi cerita dengan komunitas.'}
+                  </p>
                 </div>
               </div>
-              <textarea
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                placeholder="Tulis sesuatu yang ingin kamu bagikan..."
-                rows={3}
-                className="mt-4 w-full resize-none rounded-xl border border-slate-200 bg-[#FAF8FC] p-3.5 text-sm leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
-              />
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <label className="text-[11px] font-bold text-slate-500" htmlFor="community-topic">Topik</label>
-                  <select
-                    id="community-topic"
-                    value={draftTopic}
-                    onChange={(event) => setDraftTopic(event.target.value)}
-                    className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
-                  >
-                    {topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
-                  </select>
-                  <span className="hidden items-center gap-1.5 text-[11px] text-slate-400 sm:inline-flex">
-                    <ImagePlus className="h-4 w-4" /> Foto menyusul
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={publishDemoPost}
-                  disabled={!draft.trim()}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <Send className="h-3.5 w-3.5" /> Bagikan
+              {isAuthLoading ? (
+                <div className="mt-4 rounded-xl bg-[#FAF8FC] p-4 text-xs text-slate-500">Memeriksa akun...</div>
+              ) : isAuthenticated ? (
+                <>
+                  <textarea value={draft} onChange={(event) => setDraft(event.target.value)}
+                    placeholder="Tulis sesuatu yang ingin kamu bagikan..." rows={3} maxLength={1200}
+                    className="mt-4 w-full resize-none rounded-xl border border-slate-200 bg-[#FAF8FC] p-3.5 text-sm leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-purple-300 focus:ring-2 focus:ring-purple-100" />
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <label className="text-[11px] font-bold text-slate-500" htmlFor="community-topic">Topik</label>
+                      <select id="community-topic" value={draftTopic}
+                        onChange={(event) => setDraftTopic(event.target.value as CommunityTopic)}
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100">
+                        {topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
+                      </select>
+                    </div>
+                    <button type="button" onClick={() => void publishPost()}
+                      disabled={!draft.trim() || isSubmitting}
+                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">
+                      <Send className="h-3.5 w-3.5" /> {isSubmitting ? 'Mengirim...' : 'Bagikan'}
+                    </button>
+                  </div>
+                  <p className="mt-2 text-right text-[10px] text-slate-400">{draft.length}/1200 karakter</p>
+                </>
+              ) : (
+                <button type="button" onClick={() => onNavigate('/login')}
+                  className="mt-4 flex w-full items-center justify-between rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 text-left text-xs font-bold text-purple-800 transition hover:bg-purple-100">
+                  Login untuk membuat postingan <ArrowRight className="h-4 w-4" />
                 </button>
-              </div>
-              <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-[10px] leading-4 text-amber-800">
-                Pratinjau: postingan dan komentar di halaman ini masih berupa contoh lokal, belum tersimpan ke akun atau server.
-              </p>
+              )}
+              {notice && <p className="mt-3 rounded-lg bg-purple-50 px-3 py-2 text-[11px] text-purple-800">{notice}</p>}
             </section>
 
             <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-purple-700">Temukan obrolan</p>
                 <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Cerita dari komunitas</h2>
-                <p className="mt-1 text-xs text-slate-500">Pilih topik yang paling dekat dengan minatmu.</p>
+                <p className="mt-1 text-xs text-slate-500">Postingan terbaru dari anggota YUKU.</p>
               </div>
-              <button
-                type="button"
-                onClick={() => onNavigate('/talent')}
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-purple-800 transition hover:text-fuchsia-700"
-              >
+              <button type="button" onClick={() => onNavigate('/talent')}
+                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-purple-800 transition hover:text-fuchsia-700">
                 Cari teman <Search className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -236,89 +253,98 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
             <div className="mt-4 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
-                return (
-                  <button
-                    key={topic}
-                    type="button"
-                    onClick={() => setActiveTopic(topic)}
-                    className={`shrink-0 rounded-full border px-4 py-2.5 text-[11px] font-bold transition ${active
-                      ? 'border-purple-700 bg-purple-700 text-white shadow-sm'
-                      : 'border-purple-100 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-800'}`}
-                  >
-                    {topic}
-                  </button>
-                );
+                return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
+                  className={`shrink-0 rounded-full border px-4 py-2.5 text-[11px] font-bold transition ${active
+                    ? 'border-purple-700 bg-purple-700 text-white shadow-sm'
+                    : 'border-purple-100 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-800'}`}>
+                  {topic}
+                </button>;
               })}
             </div>
 
+            {errorMessage && (
+              <div className="mt-4 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-xs leading-5 text-amber-900">
+                <p>{errorMessage}</p>
+                <button type="button" onClick={() => void refreshPosts()} className="mt-2 inline-flex items-center gap-1.5 font-bold">
+                  <RefreshCw className="h-3.5 w-3.5" /> Coba lagi
+                </button>
+              </div>
+            )}
+
             <div className="mt-3 space-y-4">
-              {visiblePosts.map((post) => {
-                const isLiked = liked.includes(post.id);
-                const postComments = comments[post.id] || [];
-                return (
-                  <article key={post.id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-purple-100 hover:shadow-md sm:rounded-3xl sm:p-5">
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${post.tone} text-xs font-black text-white ring-4 ring-purple-50`}>
-                        {post.initials}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-extrabold text-slate-900">{post.name}</p>
-                        <p className="mt-0.5 truncate text-[10px] text-slate-500">{post.handle} <span className="px-1 text-slate-300">·</span> {post.time}</p>
-                      </div>
-                      <span className="shrink-0 rounded-full bg-purple-50 px-3 py-1.5 text-[10px] font-bold text-purple-800">{post.topic}</span>
+              {isLoading ? (
+                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
+              ) : visiblePosts.map((post) => (
+                <article key={post.id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-purple-100 hover:shadow-md sm:rounded-3xl sm:p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white ring-4 ring-purple-50">
+                      {post.author_display_name.slice(0, 2).toUpperCase()}
                     </div>
-                    <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-slate-700">{post.text}</p>
-                    <div className="mt-4 flex items-center gap-5 border-t border-slate-100 pt-3">
-                      <button
-                        type="button"
-                        onClick={() => setLiked((current) => isLiked ? current.filter((id) => id !== post.id) : [...current, post.id])}
-                        aria-pressed={isLiked}
-                        className={`inline-flex items-center gap-1.5 text-xs font-bold transition ${isLiked ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}
-                      >
-                        <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} /> {post.likes + (isLiked ? 1 : 0)} Suka
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setOpenComments((current) => current === post.id ? null : post.id)}
-                        aria-expanded={openComments === post.id}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 transition hover:text-purple-700"
-                      >
-                        <MessageCircle className="h-4 w-4" /> {post.comments} Komentar
-                      </button>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-extrabold text-slate-900">{post.author_display_name}</p>
+                      <p className="mt-0.5 truncate text-[10px] text-slate-500">{formatTime(post.created_at)}</p>
                     </div>
-                    {openComments === post.id && (
-                      <div className="mt-3 border-t border-slate-100 pt-3">
-                        <div className="space-y-2">
-                          {postComments.map((comment, index) => (
-                            <p key={index} className="rounded-xl bg-[#FAF8FC] px-3 py-2.5 text-xs leading-5 text-slate-600">
-                              <span className="font-extrabold text-slate-800">{index < 2 ? 'Anggota YUKU' : 'Kamu'}: </span>{comment}
-                            </p>
-                          ))}
-                          {postComments.length === 0 && <p className="text-xs text-slate-400">Belum ada komentar. Jadilah yang pertama.</p>}
-                        </div>
+                    <span className="shrink-0 rounded-full bg-purple-50 px-3 py-1.5 text-[10px] font-bold text-purple-800">{post.topic}</span>
+                  </div>
+                  <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{post.body}</p>
+                  <div className="mt-4 flex items-center gap-5 border-t border-slate-100 pt-3">
+                    <button type="button" onClick={() => void handleLike(post)} aria-pressed={post.likedByMe}
+                      className={`inline-flex items-center gap-1.5 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
+                      <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes} Suka
+                    </button>
+                    <button type="button" onClick={() => setOpenComments((current) => current === post.id ? null : post.id)}
+                      aria-expanded={openComments === post.id}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 transition hover:text-purple-700">
+                      <MessageCircle className="h-4 w-4" /> {post.comments.length} Komentar
+                    </button>
+                    <button type="button" onClick={() => {
+                      if (!requireLogin()) return;
+                      setReportingPostId((current) => current === post.id ? null : post.id);
+                    }} className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-rose-600">
+                      <Flag className="h-3.5 w-3.5" /> Laporkan
+                    </button>
+                  </div>
+                  {reportingPostId === post.id && (
+                    <div className="mt-3 flex flex-wrap gap-2 rounded-xl bg-rose-50 p-3">
+                      <select value={reportReasonsByPost[post.id] || 'Konten tidak pantas'}
+                        onChange={(event) => setReportReasonsByPost((current) => ({ ...current, [post.id]: event.target.value }))}
+                        className="min-w-0 flex-1 rounded-lg border border-rose-100 bg-white px-3 py-2 text-xs">
+                        {reportReasons.map((reason) => <option key={reason} value={reason}>{reason}</option>)}
+                      </select>
+                      <button type="button" onClick={() => void submitReport(post.id)}
+                        className="rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white">Kirim laporan</button>
+                    </div>
+                  )}
+                  {openComments === post.id && (
+                    <div className="mt-3 border-t border-slate-100 pt-3">
+                      <div className="space-y-2">
+                        {post.comments.map((comment) => (
+                          <p key={comment.id} className="rounded-xl bg-[#FAF8FC] px-3 py-2.5 text-xs leading-5 text-slate-600">
+                            <span className="font-extrabold text-slate-800">{comment.author_display_name}: </span>{comment.body}
+                          </p>
+                        ))}
+                        {post.comments.length === 0 && <p className="text-xs text-slate-400">Belum ada komentar. Jadilah yang pertama.</p>}
+                      </div>
+                      {isAuthenticated ? (
                         <div className="mt-3 flex gap-2">
-                          <input
-                            value={commentDrafts[post.id] || ''}
+                          <input value={commentDrafts[post.id] || ''}
                             onChange={(event) => setCommentDrafts((current) => ({ ...current, [post.id]: event.target.value }))}
-                            onKeyDown={(event) => { if (event.key === 'Enter') publishDemoComment(post.id); }}
-                            placeholder="Tulis komentar..."
-                            className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => publishDemoComment(post.id)}
+                            onKeyDown={(event) => { if (event.key === 'Enter') void publishComment(post.id); }}
+                            maxLength={600} placeholder="Tulis komentar..."
+                            className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100" />
+                          <button type="button" onClick={() => void publishComment(post.id)}
                             disabled={!(commentDrafts[post.id] || '').trim()}
-                            className="rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800 disabled:opacity-40"
-                          >
-                            Kirim
-                          </button>
+                            className="rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800 disabled:opacity-40">Kirim</button>
                         </div>
-                      </div>
-                    )}
-                  </article>
-                );
-              })}
-              {visiblePosts.length === 0 && (
+                      ) : (
+                        <button type="button" onClick={() => onNavigate('/login')}
+                          className="mt-3 text-xs font-bold text-purple-700">Login untuk berkomentar</button>
+                      )}
+                    </div>
+                  )}
+                </article>
+              ))}
+              {!isLoading && !errorMessage && visiblePosts.length === 0 && (
                 <div className="rounded-2xl border border-dashed border-purple-200 bg-white p-10 text-center">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-700"><Hash className="h-5 w-5" /></div>
                   <p className="mt-3 text-sm font-bold text-slate-800">Belum ada cerita di topik ini</p>
@@ -337,12 +363,8 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               <p className="mt-1 text-xs leading-5 text-slate-500">Pilih ruang obrolan sesuai minatmu.</p>
               <div className="mt-3 space-y-1">
                 {topics.map((topic) => (
-                  <button
-                    key={topic}
-                    type="button"
-                    onClick={() => setActiveTopic(topic)}
-                    className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2.5 text-left text-xs font-semibold text-slate-600 transition hover:bg-purple-50 hover:text-purple-800"
-                  >
+                  <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
+                    className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2.5 text-left text-xs font-semibold text-slate-600 transition hover:bg-purple-50 hover:text-purple-800">
                     <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50 text-purple-600"><Hash className="h-3.5 w-3.5" /></span>
                     {topic}
                     <ArrowRight className="ml-auto h-3.5 w-3.5 text-slate-300" />
@@ -350,20 +372,15 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                 ))}
               </div>
             </section>
-
             <section className="overflow-hidden rounded-2xl border border-purple-100 bg-gradient-to-br from-purple-50 via-white to-fuchsia-50 p-5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-purple-700 shadow-sm"><Users className="h-5 w-5" /></div>
               <h3 className="mt-3 text-sm font-extrabold text-slate-900">Dari kenalan ke aktivitas</h3>
               <p className="mt-2 text-xs leading-5 text-slate-600">Temukan talent, pilih aktivitas yang kamu suka, lalu lakukan booking melalui sistem YUKU.</p>
-              <button
-                type="button"
-                onClick={() => onNavigate('/talent')}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110"
-              >
+              <button type="button" onClick={() => onNavigate('/talent')}
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110">
                 Lihat talent <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </section>
-
             <section className="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-amber-600 shadow-sm"><ShieldCheck className="h-5 w-5" /></div>
               <h3 className="mt-3 text-sm font-extrabold text-slate-900">Jaga ruang tetap positif</h3>
