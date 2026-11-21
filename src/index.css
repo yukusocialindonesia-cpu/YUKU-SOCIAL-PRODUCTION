@@ -55,11 +55,33 @@ body {
   opacity: 0.045;
 }
 
+/* On phones, show the watermark only on the homepage.
+   Keep it above the homepage section backgrounds but behind its content. */
 @media (max-width: 640px) {
   #root::before {
-    background-position: right 8px center;
+    opacity: 0;
+  }
+
+  .yuku-home-page {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .yuku-home-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url('/yuku-app-icon-transparent.png');
+    background-repeat: no-repeat;
+    background-position: right 8px 220px;
     background-size: 230px;
-    opacity: 0.10;
+    opacity: 0.12;
+  }
+
+  .yuku-home-page > section:is(.bg-white, [class~="bg-[#FAF8FC]"]) {
+    background-color: transparent !important;
   }
 }
 
