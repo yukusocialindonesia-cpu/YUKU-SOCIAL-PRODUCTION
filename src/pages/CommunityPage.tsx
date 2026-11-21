@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, ImagePlus, Users, Compass, Hash, Plus, ShieldCheck, Send, Search, ArrowRight } from 'lucide-react';
+import { Heart, MessageCircle, ImagePlus, Users, Hash, Plus, ShieldCheck, Send, Search, ArrowRight } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
 
 type DemoPost = { id: number; name: string; handle: string; time: string; text: string; topic: string; likes: number; comments: number; initials: string; tone: string };
