@@ -1,0 +1,10 @@
+# Dedicated staging Worker. This file does not change the Production Worker.
+name = "yuku-friends-staging"
+compatibility_date = "2025-01-01"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
+
+[build]
+command = "npm run build"
