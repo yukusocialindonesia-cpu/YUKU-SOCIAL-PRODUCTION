@@ -198,8 +198,8 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[#FAF8FC] pb-8">
-      <section className="relative isolate overflow-hidden border-b border-purple-100 bg-gradient-to-br from-white via-[#F7F0FF] to-[#FFF3F7] text-slate-900">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.20),_transparent_42%),linear-gradient(180deg,#FCFAFF_0%,#F8F5FC_48%,#FFFFFF_100%)] pb-8">
+      <section className="relative isolate overflow-hidden border-b border-white/80 bg-gradient-to-br from-white/95 via-[#F7F0FF] to-[#FFF3F7] text-slate-900 shadow-[0_16px_45px_rgba(76,29,149,0.07)]">
         <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
         <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-7 sm:px-6 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
@@ -240,10 +240,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 md:py-9 lg:px-8">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
-            <section className="relative overflow-hidden rounded-2xl border border-purple-100 bg-white p-4 shadow-[0_8px_28px_rgba(76,29,149,0.06)] sm:rounded-3xl sm:p-5">
+            <section className="relative overflow-hidden rounded-[1.6rem] border border-white/90 bg-white/85 p-4 shadow-[0_16px_42px_rgba(76,29,149,0.10)] ring-1 ring-purple-100/80 backdrop-blur-xl sm:rounded-[2rem] sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white shadow-sm">
                   {user?.email?.slice(0, 1).toUpperCase() || 'YK'}
@@ -261,7 +261,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                 <>
                   <textarea value={draft} onChange={(event) => setDraft(event.target.value)}
                     placeholder="Tulis sesuatu yang ingin kamu bagikan..." rows={3} maxLength={1200}
-                    className="mt-4 w-full resize-none rounded-xl border border-slate-200 bg-[#FAF8FC] p-3.5 text-sm leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-purple-300 focus:ring-2 focus:ring-purple-100" />
+                    className="mt-4 w-full resize-none rounded-2xl border border-purple-100/90 bg-white/75 p-3.5 text-sm leading-6 text-slate-800 shadow-inner shadow-purple-950/[0.025] outline-none transition placeholder:text-slate-400 focus:border-purple-300 focus:ring-4 focus:ring-purple-100/80" />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2">
                       <label className="text-[11px] font-bold text-slate-500" htmlFor="community-topic">Topik</label>
@@ -304,7 +304,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
                 return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
-                  className={`shrink-0 rounded-full border px-4 py-2.5 text-[11px] font-bold transition ${active
+                  className={`shrink-0 rounded-full border px-4 py-2.5 text-[11px] font-bold shadow-sm transition ${active
                     ? 'border-purple-700 bg-purple-700 text-white shadow-sm'
                     : 'border-purple-100 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-800'}`}>
                   {topic}
@@ -325,7 +325,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {isLoading ? (
                 <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
               ) : errorMessage ? null : visiblePosts.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-purple-200 bg-white px-5 py-9 text-center shadow-sm">
+                <div className="rounded-[1.7rem] border border-dashed border-purple-200/90 bg-white/85 px-5 py-9 text-center shadow-[0_14px_38px_rgba(76,29,149,0.08)] ring-1 ring-white backdrop-blur-lg">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-700">
                     <MessageCircle className="h-6 w-6" />
                   </div>
@@ -357,7 +357,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   )}
                 </div>
               ) : visiblePosts.map((post) => (
-                <article key={post.id} className="group rounded-2xl border border-purple-100/80 bg-white p-4 shadow-[0_5px_20px_rgba(76,29,149,0.045)] transition duration-200 hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-[0_12px_28px_rgba(76,29,149,0.09)] sm:rounded-3xl sm:p-5">
+                <article key={post.id} className="group rounded-[1.6rem] border border-white/90 bg-white/90 p-4 shadow-[0_14px_38px_rgba(76,29,149,0.075)] ring-1 ring-purple-100/80 backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-purple-200 hover:shadow-[0_20px_48px_rgba(76,29,149,0.13)] sm:rounded-[2rem] sm:p-5">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white ring-4 ring-purple-50">
                       {post.author_display_name.slice(0, 2).toUpperCase()}
@@ -401,7 +401,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                     <div className="mt-3 border-t border-slate-100 pt-3">
                       <div className="space-y-2">
                         {post.comments.map((comment) => (
-                          <div key={comment.id} className="rounded-xl bg-[#FAF8FC] px-3 py-2.5">
+                          <div key={comment.id} className="rounded-2xl border border-purple-100/70 bg-white/75 px-3 py-2.5 shadow-sm">
                             <div className="flex items-start justify-between gap-3">
                               <p className="min-w-0 text-xs leading-5 text-slate-600">
                                 <span className="font-extrabold text-slate-800">{comment.author_display_name}: </span>{comment.body}
@@ -457,7 +457,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
           </main>
 
           <aside className="hidden space-y-4 lg:block">
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <section className="rounded-[1.6rem] border border-white bg-white/85 p-5 shadow-[0_12px_34px_rgba(76,29,149,0.075)] ring-1 ring-purple-100/80 backdrop-blur-xl">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-extrabold text-slate-900">Jelajahi topik</h3>
                 <Hash className="h-4 w-4 text-purple-600" />
@@ -474,7 +474,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                 ))}
               </div>
             </section>
-            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-gradient-to-br from-purple-50 via-white to-fuchsia-50 p-5">
+            <section className="overflow-hidden rounded-[1.6rem] border border-white bg-gradient-to-br from-purple-50/95 via-white to-fuchsia-50/95 p-5 shadow-[0_14px_36px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/80">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-purple-700 shadow-sm"><Users className="h-5 w-5" /></div>
               <h3 className="mt-3 text-sm font-extrabold text-slate-900">Dari kenalan ke aktivitas</h3>
               <p className="mt-2 text-xs leading-5 text-slate-600">Temukan talent, pilih aktivitas yang kamu suka, lalu lakukan booking melalui sistem YUKU.</p>
@@ -483,7 +483,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                 Lihat talent <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </section>
-            <section className="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-5">
+            <section className="rounded-[1.6rem] border border-white bg-gradient-to-br from-amber-50 to-white p-5 shadow-[0_14px_36px_rgba(180,83,9,0.07)] ring-1 ring-amber-100/90">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-amber-600 shadow-sm"><ShieldCheck className="h-5 w-5" /></div>
               <h3 className="mt-3 text-sm font-extrabold text-slate-900">Jaga ruang tetap positif</h3>
               <p className="mt-2 text-xs leading-5 text-slate-600">Hormati anggota lain, hindari spam, dan bagikan konten yang aman serta relevan.</p>
