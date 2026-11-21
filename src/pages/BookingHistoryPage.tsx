@@ -646,7 +646,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
               <button
                 type="button"
                 onClick={() => setRoleFilter('customer')}
-                className={`min-w-0 flex-1 whitespace-normal text-center px-4 py-2 rounded-lg transition-all cursor-pointer ${
+                className={`min-w-0 flex-1 whitespace-normal text-center px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                   roleFilter === 'customer'
                     ? 'bg-white text-purple-900 shadow-[0_6px_18px_-8px_rgba(76,29,149,0.35)] ring-1 ring-purple-100'
                     : 'text-slate-600 hover:text-slate-900'
@@ -657,7 +657,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
               <button
                 type="button"
                 onClick={() => setRoleFilter('talent')}
-                className={`min-w-0 flex-1 whitespace-normal text-center px-4 py-2 rounded-lg transition-all cursor-pointer ${
+                className={`min-w-0 flex-1 whitespace-normal text-center px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                   roleFilter === 'talent'
                     ? 'bg-white text-purple-900 shadow-[0_6px_18px_-8px_rgba(76,29,149,0.35)] ring-1 ring-purple-100'
                     : 'text-slate-600 hover:text-slate-900'
@@ -678,7 +678,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="p-2.5 bg-white/90 border border-white rounded-xl text-xs font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200/80 focus:outline-none focus:ring-2 focus:ring-purple-200"
+              className="p-2.5 bg-white/90 border border-white rounded-2xl text-xs font-semibold text-slate-700 shadow-[0_8px_22px_-14px_rgba(76,29,149,0.25)] ring-1 ring-purple-100/80 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
             >
               <option value="all">Semua Status</option>
               <option value="pending_payment">Menunggu Pembayaran</option>
@@ -757,7 +757,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             {filteredBookings.map((item) => (
               <div
                 key={item.id}
-                className="bg-white/85 backdrop-blur-xl rounded-[1.75rem] border border-white shadow-[0_16px_42px_-26px_rgba(49,24,86,0.30)] ring-1 ring-purple-100/70 hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-26px_rgba(49,24,86,0.34)] transition-all p-4 sm:p-6 space-y-4"
+                className="relative bg-white/90 backdrop-blur-2xl rounded-[28px] border border-white shadow-[0_18px_46px_-26px_rgba(49,24,86,0.30)] ring-1 ring-purple-100/80 hover:-translate-y-0.5 hover:shadow-[0_24px_52px_-26px_rgba(49,24,86,0.34)] transition-all duration-300 p-4 sm:p-6 space-y-4"
               >
                 {/* Top Row: Code, Date created, Status */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
