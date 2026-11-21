@@ -23,28 +23,47 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
   useEffect(() => {
     let mounted = true;
     const verifyInviteSession = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError || !session?.user) {
-          if (mounted) setError('Tautan undangan tidak valid atau sudah kedaluwarsa. Minta Super Admin mengirim undangan baru.');
-          return;
+      // Supabase sends the invite email before the Edge Function finishes
+      // provisioning the Admin row and menu permissions. Retry briefly so a
+      // fast email click does not incorrectly reject a valid invitation.
+      const maxAttempts = 8;
+      const retryDelayMs = 750;
+
+      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        if (!mounted) return;
+        try {
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+          if (!sessionError && session?.user) {
+            const { data: access, error: accessError } = await supabase.rpc('get_admin_access');
+            if (!accessError && access?.is_admin === true) {
+              if (mounted) {
+                setEmail(session.user.email || '');
+                setAuthorized(true);
+                setError('');
+              }
+              return;
+            }
+          }
+        } catch {
+          // Retry transient session/provisioning errors; never grant access here.
         }
-        const { data: access, error: accessError } = await supabase.rpc('get_admin_access');
-        if (accessError || access?.is_admin !== true) {
-          if (mounted) setError('Akun ini belum memiliki akses Admin YUKU. Hubungi Super Admin.');
-          return;
+
+        if (attempt < maxAttempts - 1) {
+          await new Promise(resolve => window.setTimeout(resolve, retryDelayMs));
         }
-        if (mounted) {
-          setEmail(session.user.email || '');
-          setAuthorized(true);
-        }
-      } catch {
-        if (mounted) setError('Gagal memverifikasi undangan. Silakan buka kembali tautan dari email.');
-      } finally {
-        if (mounted) setChecking(false);
+      }
+
+      if (mounted) {
+        setError('Undangan belum dapat diverifikasi. Pastikan tautan masih berlaku. Jika masalah berlanjut, minta Super Admin memeriksa status undangan.');
       }
     };
-    void verifyInviteSession();
+
+    try {
+      await verifyInviteSession();
+    } finally {
+      if (mounted) setChecking(false);
+    }
+
     return () => { mounted = false; };
   }, []);
 
