@@ -28,11 +28,14 @@ BEGIN
     RAISE EXCEPTION 'Status booking tidak dapat dikonfirmasi.';
   END IF;
 
-  IF NOT EXISTS (
-    SELECT 1 FROM public.payments p
-    WHERE p.booking_id = p_booking_id
-      AND p.payment_status = 'settled_held'::public.payment_status_type
-  ) THEN
+  -- Lock the qualifying payment row to serialize this transition with payment changes.
+  PERFORM 1
+  FROM public.payments p
+  WHERE p.booking_id = p_booking_id
+    AND p.payment_status = 'settled_held'::public.payment_status_type
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
     RAISE EXCEPTION 'Pembayaran belum terkonfirmasi dalam escrow.';
   END IF;
 
@@ -75,11 +78,14 @@ BEGIN
     RAISE EXCEPTION 'Booking belum dapat dimulai.';
   END IF;
 
-  IF NOT EXISTS (
-    SELECT 1 FROM public.payments p
-    WHERE p.booking_id = p_booking_id
-      AND p.payment_status = 'settled_held'::public.payment_status_type
-  ) THEN
+  -- Lock the qualifying payment row to serialize this transition with payment changes.
+  PERFORM 1
+  FROM public.payments p
+  WHERE p.booking_id = p_booking_id
+    AND p.payment_status = 'settled_held'::public.payment_status_type
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
     RAISE EXCEPTION 'Pembayaran tidak lagi berada dalam escrow.';
   END IF;
 
