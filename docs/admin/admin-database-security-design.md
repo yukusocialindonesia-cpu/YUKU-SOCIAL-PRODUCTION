@@ -130,3 +130,7 @@ Perlindungan khusus:
 Uji Staging mencakup batas izin Talent/Finance/Support/Booking, KTP Storage, RPC minimal booking, penonaktifan akun, dan fungsi pengelolaan Admin. Pengujian akun sementara selalu diakhiri rollback.
 
 Edge Function `admin-management` aktif di Staging; panel UI Pengaturan Admin ada di branch `feature/admin-simple-management`. Belum ada undangan nyata yang dikirim. Production belum diubah, belum ada merge atau deployment Production, dan Xendit tidak disentuh. Build frontend belum terkonfirmasi oleh CI.
+
+Migrasi 62 menambahkan indeks untuk foreign key `created_by` dan `granted_by` pada tabel Admin. Pemeriksaan performa setelahnya tidak lagi menandai dua foreign key baru tersebut; masih ada 17 temuan indeks pada tabel lama yang tidak diubah dalam pekerjaan ini.
+
+Pemeriksaan keamanan akhir juga mengonfirmasi `public.is_admin()` hanya mengenali Super Admin. Admin biasa harus lolos pemeriksaan izin menu pada RPC dan policy masing-masing. Hak EXECUTE untuk anon dicabut. Peringatan SECURITY DEFINER authenticated yang tersisa perlu dibaca sebagai daftar fungsi yang harus memiliki pemeriksaan internal; RPC Admin yang baru sudah memiliki pemeriksaan tersebut.
