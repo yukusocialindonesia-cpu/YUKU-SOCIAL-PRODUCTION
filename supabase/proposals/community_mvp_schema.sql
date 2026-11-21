@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS public.community_posts (
   author_display_name text NOT NULL DEFAULT 'Anggota YUKU',
   body text NOT NULL CHECK (char_length(btrim(body)) BETWEEN 1 AND 1200),
   topic text NOT NULL CHECK (topic IN ('Pertemanan', 'Kuliner', 'Travel & Aktivitas', 'Hobi', 'Gaming')),
+  likes_count integer NOT NULL DEFAULT 0 CHECK (likes_count >= 0),
+  comments_count integer NOT NULL DEFAULT 0 CHECK (comments_count >= 0),
   status text NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'hidden')),
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
@@ -82,6 +84,51 @@ BEGIN
 END;
 $$;
 REVOKE ALL ON FUNCTION public.set_community_author_display_name() FROM PUBLIC, anon, authenticated;
+
+-- Keep public likes aggregate-only: never expose the list of member IDs.
+CREATE OR REPLACE FUNCTION public.update_community_post_counters()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $
+DECLARE
+  v_post_id uuid;
+  v_delta integer;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    v_post_id := OLD.post_id;
+    v_delta := -1;
+  ELSE
+    v_post_id := NEW.post_id;
+    v_delta := 1;
+  END IF;
+
+  IF TG_TABLE_NAME = 'community_likes' THEN
+    UPDATE public.community_posts
+    SET likes_count = GREATEST(0, likes_count + v_delta)
+    WHERE id = v_post_id;
+  ELSE
+    UPDATE public.community_posts
+    SET comments_count = GREATEST(0, comments_count + v_delta)
+    WHERE id = v_post_id;
+  END IF;
+
+  IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
+  RETURN NEW;
+END;
+$;
+REVOKE ALL ON FUNCTION public.update_community_post_counters() FROM PUBLIC, anon, authenticated;
+
+DROP TRIGGER IF EXISTS trg_community_like_counter ON public.community_likes;
+CREATE TRIGGER trg_community_like_counter
+AFTER INSERT OR DELETE ON public.community_likes
+FOR EACH ROW EXECUTE FUNCTION public.update_community_post_counters();
+
+DROP TRIGGER IF EXISTS trg_community_comment_counter ON public.community_comments;
+CREATE TRIGGER trg_community_comment_counter
+AFTER INSERT OR DELETE ON public.community_comments
+FOR EACH ROW EXECUTE FUNCTION public.update_community_post_counters();
 
 DROP TRIGGER IF EXISTS trg_community_post_author_name ON public.community_posts;
 CREATE TRIGGER trg_community_post_author_name
@@ -165,14 +212,9 @@ FOR DELETE TO authenticated
 USING (author_id = (SELECT auth.uid()) OR (SELECT public.is_admin()));
 
 DROP POLICY IF EXISTS community_likes_public_read ON public.community_likes;
-CREATE POLICY community_likes_public_read ON public.community_likes
-FOR SELECT TO anon, authenticated
-USING (
-  EXISTS (
-    SELECT 1 FROM public.community_posts p
-    WHERE p.id = post_id AND p.status = 'published'
-  )
-);
+CREATE POLICY community_likes_owner_read ON public.community_likes
+FOR SELECT TO authenticated
+USING (user_id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS community_likes_member_insert ON public.community_likes;
 CREATE POLICY community_likes_member_insert ON public.community_likes
@@ -213,8 +255,8 @@ USING (reporter_id = (SELECT auth.uid()) OR (SELECT public.is_admin()));
 
 -- No direct browser updates to report status. Admin review workflow is a separate step.
 REVOKE ALL ON public.community_posts, public.community_comments, public.community_likes, public.community_reports FROM PUBLIC;
-GRANT SELECT ON public.community_posts, public.community_comments, public.community_likes TO anon, authenticated;
-GRANT SELECT ON public.community_reports TO authenticated;
+GRANT SELECT ON public.community_posts, public.community_comments TO anon, authenticated;
+GRANT SELECT ON public.community_likes, public.community_reports TO authenticated;
 GRANT INSERT (reporter_id, post_id, comment_id, reason, details) ON public.community_reports TO authenticated;
 GRANT INSERT (author_id, body, topic) ON public.community_posts TO authenticated;
 GRANT INSERT (post_id, author_id, body) ON public.community_comments TO authenticated;
