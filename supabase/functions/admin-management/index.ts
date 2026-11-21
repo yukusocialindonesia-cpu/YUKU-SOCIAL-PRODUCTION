@@ -59,6 +59,20 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'Pilih minimal satu izin menu yang valid.' }, 400);
     }
 
+    // Do not turn an existing Customer/Talent account into Admin via an invite.
+    // The auth.users creation trigger keeps a matching public.users profile.
+    const { data: existingUser, error: existingUserError } = await serviceClient
+      .from('users')
+      .select('id')
+      .ilike('email', email)
+      .maybeSingle();
+    if (existingUserError) {
+      return json({ error: 'Status email belum dapat diverifikasi. Coba lagi nanti.' }, 500);
+    }
+    if (existingUser) {
+      return json({ error: 'Email sudah terdaftar. Gunakan email baru untuk undangan Admin.' }, 409);
+    }
+
     const { data: invitation, error: inviteError } =
       await serviceClient.auth.admin.inviteUserByEmail(email);
     const invitedUserId = invitation.user?.id;
