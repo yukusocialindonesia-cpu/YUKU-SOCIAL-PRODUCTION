@@ -91,3 +91,12 @@ Pemeriksaan tambahan Staging memastikan KTP Talent dan Customer tidak saling ter
 5. Baru ajukan persetujuan terpisah sebelum perubahan Production.
 
 Tidak ada perubahan Production yang dilakukan selama pemeriksaan ini. Xendit tetap tidak disentuh.
+
+
+### Temuan perbedaan kebijakan Production dan perbaikan Staging — 21 November 2026
+- Pemeriksaan 74 pernyataan `ALTER POLICY` dari migrasi 49, 50, 53, dan 54 menemukan satu nama policy yang tidak ada di Production: `talent_availability_select_visible`.
+- Production masih memiliki policy lama `talent_availability_select_public` dengan kondisi `true` untuk semua baris. Ini lebih terbuka daripada Staging dan akan membuat penerapan migrasi 49 gagal jika tidak diselaraskan terlebih dahulu.
+- Ditambahkan migrasi `64_align_production_talent_availability_policy.sql` yang mengganti policy lama dengan aturan SELECT untuk pengguna login: pemilik data, Admin berizin Talent, atau Talent yang memang boleh tampil publik.
+- Migrasi 64 telah diterapkan ke Staging dan policy hasilnya terverifikasi. Policy SELECT kini hanya berlaku untuk role authenticated dan tidak lagi memakai kondisi `true` untuk semua baris.
+- Production belum diubah. Migrasi 64 menjadi langkah penyelarasan yang perlu masuk paket Production setelah pemeriksaan penuh.
+- Temuan ini memperkuat keputusan untuk tidak menjalankan paket migrasi 48–64 secara langsung tanpa preflight per policy dan tes regresi.
