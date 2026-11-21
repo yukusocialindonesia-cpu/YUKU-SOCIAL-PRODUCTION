@@ -147,3 +147,44 @@ Konsekuensi: setelah pembatasan database, halaman ini harus diubah agar:
 - Berikan Booking akses operasional minimal; jangan menganggap izin Booking sebagai izin Finance untuk detail payout/refund/bukti pembayaran.
 - Buat tampilan data booking yang kolomnya minimal karena RLS tidak menyaring kolom.
 - Terapkan policy Storage berdasarkan jenis file dan role pemilik.
+
+## Implementasi lanjutan Staging — 21 November 2026
+
+### Database dan RPC
+Migrasi 49 sampai 61 telah diterapkan di Staging:
+- Policy Talent, Finance, Support, Booking operasional, dan Super Admin dipisahkan.
+- RPC bisnis sensitif kini memeriksa izin menu di dalam fungsi, bukan hanya role Admin.
+- KTP Customer dan Talent dibedakan berdasarkan role pemilik.
+- Storage KTP, bukti QRIS, gambar QRIS, branding, hero, poster, dan media Talent dibatasi sesuai menu.
+- Tabel `bookings` tidak lagi dapat dibaca langsung oleh Admin biasa. Menu Booking memakai `get_admin_bookings()` yang hanya mengembalikan kolom operasional, tanpa nominal transaksi atau fee.
+- Data email/status akun hanya disediakan lewat RPC ringkas yang membatasi target sesuai izin.
+- `is_admin()` tidak lagi dapat dipanggil oleh pengguna anonim; fungsi trigger internal tetap dipertahankan dan tidak dapat dipanggil langsung oleh authenticated.
+
+### Hasil pengujian
+- Admin Talent: izin Talent aktif; Finance/Booking/Support tidak aktif.
+- Admin Finance: dapat membaca data payout dan label transaksi melalui RPC, tetapi tidak dapat membaca tabel booking secara langsung.
+- Admin Support: dapat membaca antrean laporan dan KTP Customer; KTP Talent tidak terbuka.
+- Admin Booking: RPC daftar booking mengembalikan data operasional saja; akses langsung ke `bookings` menghasilkan nol baris.
+- Admin nonaktif: `get_admin_access()` mengembalikan `is_admin=false` dan daftar izin kosong.
+- Super Admin: tetap memiliki keempat izin dan dapat membuka daftar akun Admin.
+- Pengujian memakai perubahan akun sementara dalam transaksi dan seluruhnya di-rollback.
+
+### Pengelolaan Admin
+- RPC Super Admin untuk daftar akun, mengatur beberapa izin sekaligus, dan menonaktifkan/mengaktifkan Admin telah dibuat dan diuji.
+- Edge Function `admin-management` telah aktif di Supabase Staging dengan verifikasi JWT wajib.
+- Panel Pengaturan Admin telah ditambahkan ke frontend pada branch ini. Undangan nyata belum dikirim dan belum ada akun Admin baru dibuat.
+
+### Frontend
+- AuthContext memuat izin dari `get_admin_access()`; jika gagal, akses Admin ditutup.
+- AdminPage hanya memuat data dan menampilkan menu sesuai izin.
+- Metrik gabungan keuangan hanya terlihat oleh Super Admin.
+- Admin Booking tidak menerima kolom nominal, fee, atau bagian Talent.
+- QRIS Admin mengambil status booking melalui RPC Finance, bukan tabel booking langsung.
+
+### Batas yang masih berlaku
+- Production tidak diubah dan tidak dideploy.
+- Branch belum digabung ke main.
+- Xendit tetap tidak disentuh.
+- Belum ada email undangan yang dikirim.
+- Build frontend belum mendapat hasil CI; workflow pemeriksaan branch sudah ditambahkan, tetapi belum ada run yang tercatat.
+- Advisor masih menampilkan peringatan umum untuk SECURITY DEFINER yang memang dipakai endpoint terotorisasi, serta peringatan Auth leaked-password protection yang merupakan pengaturan lama. Empat tabel tanpa policy RLS sengaja tertutup dari akses langsung.
