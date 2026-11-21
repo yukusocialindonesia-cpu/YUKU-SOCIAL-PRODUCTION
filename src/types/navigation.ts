@@ -10,6 +10,7 @@ export type AppRoute =
   | '/daftar-talent'
   | '/dashboard-talent'
   | '/riwayat-booking'
+  | '/profil-saya'
   | '/admin'
   | '/tentang'
   | '/faq'
