@@ -45,8 +45,8 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
       // The invitation email may arrive before Admin provisioning finishes.
       // Refresh through AuthContext and retry briefly; access is granted only
       // when AuthContext confirms the Admin permission from the database.
-      const maxAttempts = 8;
-      const retryDelayMs = 750;
+      const maxAttempts = 20;
+      const retryDelayMs = 1000;
 
       for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         if (!mounted) return;
