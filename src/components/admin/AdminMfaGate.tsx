@@ -72,6 +72,15 @@ export const AdminMfaGate: React.FC<AdminMfaGateProps> = ({ onVerified, onNaviga
     };
   }, [loadMfaState]);
 
+  const retryMfaState = async () => {
+    try {
+      await loadMfaState();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Pemeriksaan keamanan gagal.');
+      setPhase('error');
+    }
+  };
+
   const startEnrollment = async () => {
     setBusy(true);
     setErrorMessage('');
@@ -256,7 +265,7 @@ export const AdminMfaGate: React.FC<AdminMfaGateProps> = ({ onVerified, onNaviga
         {phase === 'error' && (
           <div className="text-center space-y-3">
             <p className="text-xs text-slate-600">Pemeriksaan keamanan gagal. Silakan coba lagi atau keluar dari akun.</p>
-            <button onClick={() => void loadMfaState().catch((error: unknown) => setErrorMessage(error instanceof Error ? error.message : 'Pemeriksaan gagal.'))} className="w-full py-3 rounded-xl bg-purple-700 text-white text-xs font-bold">Coba Lagi</button>
+            <button onClick={() => void retryMfaState()} disabled={busy} className="w-full py-3 rounded-xl bg-purple-700 text-white text-xs font-bold disabled:opacity-50">Coba Lagi</button>
           </div>
         )}
 
