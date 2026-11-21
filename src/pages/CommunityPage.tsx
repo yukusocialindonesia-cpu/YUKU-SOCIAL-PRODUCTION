@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
 import { useAuth } from '../contexts/AuthContext';
-import type { CommunityTopic } from '../services/communityService';
+import type { CommunityPost, CommunityTopic } from '../services/communityService';
 import {
   createCommunityComment,
   createCommunityPost,
