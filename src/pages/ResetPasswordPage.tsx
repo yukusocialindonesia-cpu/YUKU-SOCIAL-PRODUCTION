@@ -142,7 +142,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
 
   if (isCheckingSession) {
     return (
-      <div className="py-16 px-4 flex items-center justify-center bg-[#FAF8FC]">
+      <div className="relative isolate min-h-[45vh] overflow-hidden py-16 px-4 flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.85),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)]">
         <div className="text-xs font-semibold text-slate-500">Memverifikasi tautan reset kata sandi...</div>
       </div>
     );
