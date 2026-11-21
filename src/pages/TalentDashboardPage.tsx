@@ -1608,7 +1608,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         {/* 4 Financial & Operational Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 min-w-0">
           {/* Card 1: Available Balance */}
-          <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-purple-900 via-purple-950 to-[#1E0938] text-white p-4 sm:p-5 rounded-[28px] shadow-[0_18px_42px_rgba(49,18,88,0.25)] ring-1 ring-purple-300/30 relative overflow-hidden min-w-0">
+          <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-[#281052] via-purple-950 to-[#16052e] text-white p-5 sm:p-6 rounded-[30px] shadow-[0_24px_55px_-18px_rgba(49,18,88,0.48)] ring-1 ring-white/20 relative overflow-hidden min-w-0">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-purple-200">Saldo Siap Dicairkan</span>
               <DollarSign className="w-4 h-4 text-amber-400" />
@@ -1622,7 +1622,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             <button
               onClick={() => setIsPayoutModalOpen(true)}
               disabled={availableBalance < 100000}
-              className="mt-4 w-full py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs rounded-lg shadow-xs cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+              className="mt-4 w-full py-3 bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-black text-xs rounded-2xl shadow-lg shadow-amber-950/20 ring-1 ring-white/30 cursor-pointer transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 flex items-center justify-center gap-1.5"
             >
               <CreditCard className="w-3.5 h-3.5" />
               <span>Tarik Saldo (Min. Rp100k)</span>
@@ -3174,7 +3174,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             </div>
 
             {payouts.length === 0 ? (
-              <div className="py-12 bg-white rounded-2xl border border-slate-200/80 text-center space-y-2 p-6">
+              <div className="py-14 bg-white/85 backdrop-blur-xl rounded-[28px] border border-white text-center space-y-3 p-6 shadow-[0_18px_45px_-26px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/80">
                 <CreditCard className="w-8 h-8 text-slate-300 mx-auto" />
                 <h4 className="text-sm font-bold text-slate-800">Belum Ada Riwayat Penarikan Dana</h4>
                 <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -3182,10 +3182,10 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                 </p>
               </div>
             ) : (
-              <div className="bg-white/95 rounded-[26px] border border-white overflow-hidden shadow-[0_14px_34px_rgba(76,29,149,0.09)] ring-1 ring-purple-100/70">
+              <div className="bg-white/90 backdrop-blur-xl rounded-[28px] border border-white overflow-hidden shadow-[0_20px_48px_-24px_rgba(76,29,149,0.32)] ring-1 ring-violet-100/80">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
+                    <thead className="bg-gradient-to-r from-violet-50 via-white to-indigo-50 border-b border-violet-100 text-slate-600 font-bold">
                       <tr>
                         <th className="p-3.5">Nomor Payout</th>
                         <th className="p-3.5">Tanggal Pengajuan</th>
@@ -3308,7 +3308,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         title="Ajukan Penarikan Saldo Penghasilan"
       >
         <form onSubmit={handlePayoutSubmit} className="space-y-4 text-xs">
-          <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-purple-900">
+          <div className="p-4 bg-gradient-to-br from-violet-50 via-white to-indigo-50 border border-violet-100 rounded-2xl shadow-inner text-purple-950">
             <span className="text-slate-500 block text-[11px]">Saldo Tersedia Anda:</span>
             <span className="text-xl font-black text-purple-900 tabular-nums">
               {formatRupiah(availableBalance)}
