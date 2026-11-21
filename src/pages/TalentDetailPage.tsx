@@ -414,12 +414,12 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     return (
       <div className="py-16 bg-[#FAF8FC]">
         <div className="max-w-xl mx-auto px-4 text-center">
-          <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs space-y-3">
+          <div className="p-6 rounded-3xl bg-white/85 border border-rose-200/80 text-rose-900 text-xs space-y-3 shadow-[0_20px_48px_-24px_rgba(159,18,57,0.28)] ring-1 ring-white/80 backdrop-blur-xl">
             <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
             <p>{errorMsg}</p>
             <button
               onClick={loadTalentDetail}
-              className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold inline-flex items-center gap-1.5 hover:bg-rose-700 cursor-pointer"
+              className="px-4 py-2.5 bg-gradient-to-r from-rose-600 to-fuchsia-600 text-white rounded-xl font-bold inline-flex items-center gap-1.5 shadow-md shadow-rose-300/30 hover:-translate-y-0.5 hover:shadow-lg transition-all cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Coba Lagi</span>
@@ -433,7 +433,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   if (!talent) {
     return (
       <div className="py-16 bg-[#FAF8FC]">
-        <div className="max-w-md mx-auto px-4 text-center bg-white p-8 rounded-2xl border border-slate-200 space-y-3">
+        <div className="max-w-md mx-auto px-4 text-center bg-white/85 p-8 rounded-3xl border border-white shadow-[0_24px_56px_-28px_rgba(76,29,149,0.30)] ring-1 ring-purple-100/80 backdrop-blur-xl space-y-3">
           <Users className="w-12 h-12 text-slate-300 mx-auto" />
           <h3 className="font-bold text-slate-800 text-base">Talent Tidak Ditemukan</h3>
           <p className="text-xs text-slate-500">
@@ -441,7 +441,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           </p>
           <button
             onClick={() => onNavigate('/talent')}
-            className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-lg hover:bg-purple-800"
+            className="px-5 py-2.5 bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white text-xs font-bold rounded-xl shadow-md shadow-purple-300/30 hover:-translate-y-0.5 hover:shadow-lg transition-all"
           >
             Kembali ke Katalog Talent
           </button>
