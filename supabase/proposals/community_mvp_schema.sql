@@ -244,10 +244,25 @@ WITH CHECK (
     ))
     OR
     (comment_id IS NOT NULL AND EXISTS (
-      SELECT 1 FROM public.community_comments c WHERE c.id = comment_id AND c.status = 'published'
+      SELECT 1
+      FROM public.community_comments c
+      JOIN public.community_posts p ON p.id = c.post_id
+      WHERE c.id = comment_id
+        AND c.status = 'published'
+        AND p.status = 'published'
     ))
   )
 );
+
+-- Prevent repeated pending reports by the same member for the same target.
+-- A member may report again after a moderator has reviewed or dismissed the earlier report.
+CREATE UNIQUE INDEX IF NOT EXISTS community_reports_one_pending_post_per_reporter
+  ON public.community_reports (reporter_id, post_id)
+  WHERE status = 'pending' AND post_id IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS community_reports_one_pending_comment_per_reporter
+  ON public.community_reports (reporter_id, comment_id)
+  WHERE status = 'pending' AND comment_id IS NOT NULL;
 
 DROP POLICY IF EXISTS community_reports_owner_or_admin_read ON public.community_reports;
 CREATE POLICY community_reports_owner_or_admin_read ON public.community_reports
