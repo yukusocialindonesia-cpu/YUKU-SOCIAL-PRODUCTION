@@ -186,7 +186,7 @@ Migrasi 49–63 telah diterapkan di Staging. Ini termasuk penguatan trigger scop
 - Branch belum digabung ke main.
 - Xendit tetap tidak disentuh.
 - Belum ada email undangan yang dikirim.
-- GitHub Actions sudah lulus pada commit terbaru: TypeScript check, build website, dan TypeScript check Edge Function.
+- Status GitHub Actions untuk commit terbaru belum dapat diverifikasi melalui hasil yang tersedia. Pemeriksaan status commit menunjukkan Vercel Preview tertahan karena batas penggunaan/build (`build-rate-limit`); ini bukan bukti bahwa build berhasil atau gagal pada kode. Jangan menyatakan build/lint lulus sebelum workflow CI benar-benar terkonfirmasi.
 - Advisor masih menampilkan peringatan umum untuk SECURITY DEFINER yang memang dipakai endpoint terotorisasi, serta peringatan Auth leaked-password protection yang merupakan pengaturan lama. Empat tabel tanpa policy RLS sengaja tertutup dari akses langsung.
 
 ### Pemeriksaan akhir tambahan
@@ -196,3 +196,9 @@ Migrasi 49–63 telah diterapkan di Staging. Ini termasuk penguatan trigger scop
 - Security advisor masih memberi peringatan umum pada fungsi SECURITY DEFINER yang memang dapat dipanggil authenticated, tetapi endpoint Admin baru memeriksa identitas dan izin di dalam fungsi. Peringatan anon yang tersisa adalah `is_talent_publicly_visible` untuk katalog publik. Peringatan perlindungan password bocor adalah pengaturan Auth yang sudah ada sebelumnya dan belum diubah.
 - Tes RPC KTP menegaskan Talent tidak dapat memproses KTP Customer dan Support tidak dapat memproses KTP Talent. Untuk jenis yang benar, fungsi lolos pemeriksaan izin lalu menolak karena dokumen uji sudah berstatus verified, sehingga tidak ada data yang berubah.
 - Tes pengelolaan Admin mengonfirmasi daftar akun, kombinasi izin, penonaktifan, dan provisioning service-role. Semua perubahan akun uji di-rollback.
+
+
+### Catatan validitas pengujian RLS
+- Simulasi akses RLS melalui SQL Editor harus menjalankan `SET LOCAL ROLE authenticated` setelah mengatur klaim JWT. Jika query dijalankan sebagai postgres tanpa pergantian role, RLS dapat dilewati sehingga hasil hitungan bukan bukti pembatasan akses pengguna.
+- Pengujian tambahan pada 21 November 2026 dilakukan dengan role `authenticated` dan akun Admin sementara Support-only. Hasil: izin Support aktif, Finance/Talent tidak aktif, `public.is_admin()` false, tabel payout dan booking tidak menampilkan baris untuk Admin Support, serta satu dokumen KTP yang sesuai cakupan izin terlihat. Seluruh perubahan akun uji di-rollback.
+- RPC daftar booking dan proses refund diuji dari role `authenticated` untuk memastikan Admin Support-only ditolak. Tidak ada transaksi bisnis atau data produksi yang diubah.
