@@ -57,8 +57,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="py-12 px-4 flex items-center justify-center bg-[#FAF8FC]">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-8 space-y-6">
+    <div className="relative isolate py-12 sm:py-16 px-4 flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-100/80 via-transparent to-fuchsia-50/70">
+      <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/90 bg-white/85 p-6 shadow-[0_28px_80px_-30px_rgba(76,29,149,0.32)] ring-1 ring-purple-100/80 backdrop-blur-2xl sm:p-8 space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <BrandLogo size="md" showTagline={false} />
@@ -71,13 +71,13 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* Role Segmented */}
-        <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl text-xs font-bold">
+        <div className="grid grid-cols-2 p-1.5 bg-slate-100/90 border border-white rounded-2xl shadow-inner shadow-purple-950/[0.04] text-xs font-bold">
           <button
             type="button"
             onClick={() => setRole('customer')}
             className={`py-2 rounded-lg transition-all cursor-pointer ${
               role === 'customer'
-                ? 'bg-white text-purple-900 shadow-xs'
+                ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -100,7 +100,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         </div>
 
         {errorMsg && (
-          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start gap-2.5">
+          <div className="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200/80 text-rose-900 text-xs flex items-start gap-2.5 shadow-sm">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">{errorMsg}</p>
           </div>
@@ -120,7 +120,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                   placeholder="Nama Lengkap"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 text-xs"
+                  className="w-full pl-9 pr-3 py-3 bg-white/80 border border-slate-200/80 rounded-2xl shadow-inner shadow-purple-950/[0.025] focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100/80 text-xs transition-all"
                 />
               </div>
             </div>
@@ -211,15 +211,15 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-purple-700 to-fuchsia-700 hover:from-purple-800 hover:to-fuchsia-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50"
+              className="w-full py-3.5 bg-gradient-to-r from-purple-700 via-purple-700 to-fuchsia-700 hover:from-purple-800 hover:to-fuchsia-800 text-white font-bold text-xs rounded-2xl shadow-[0_12px_24px_-10px_rgba(126,34,206,0.7)] ring-1 ring-white/20 transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_30px_-12px_rgba(126,34,206,0.75)] flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50 disabled:hover:translate-y-0"
             >
               <span>{loading ? 'Memproses...' : 'Daftar Akun'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
         ) : (
-          <div className="py-6 text-center space-y-3">
-            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+          <div className="rounded-3xl border border-emerald-100 bg-emerald-50/50 px-4 py-6 text-center space-y-3 shadow-inner shadow-emerald-950/[0.025]">
+            <div className="w-14 h-14 bg-white text-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-900/10 ring-1 ring-emerald-100">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-slate-900 text-base">
@@ -232,7 +232,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             <ResendConfirmation email={email} startCooldown />
             <button
               onClick={() => onNavigate('/login')}
-              className="px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800"
+              className="px-5 py-2.5 bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-purple-900/15 hover:-translate-y-0.5 hover:shadow-lg transition-all"
             >
               Masuk ke Halaman Login
             </button>
@@ -244,7 +244,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
           Sudah memiliki akun?{' '}
           <button
             onClick={() => onNavigate('/login')}
-            className="text-purple-700 font-bold hover:underline"
+            className="text-purple-700 font-bold hover:text-fuchsia-700 hover:underline transition-colors"
           >
             Masuk di Sini
           </button>
