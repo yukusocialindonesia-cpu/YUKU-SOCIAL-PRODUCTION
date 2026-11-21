@@ -22,9 +22,9 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   const visibilityClass = isLoaded ? '' : 'invisible';
   const heightClasses = {
     sm: 'h-8',
-    md: 'h-11',
-    lg: 'h-14',
-    xl: 'h-20',
+    md: 'h-14',
+    lg: 'h-18',
+    xl: 'h-24',
   };
 
   const iconSizes = {
