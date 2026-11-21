@@ -73,7 +73,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="py-4 sm:py-8 bg-white border-b border-slate-100">
+    <section aria-label="Ruang Promosi YUKU" className="relative py-5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
           <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-3xl bg-slate-100 animate-pulse border border-slate-200/80" />
@@ -126,7 +126,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
           >
             {/* Kotak mengikuti rasio asli poster yang sedang tampil (dibatasi 3:2 sampai 3:1), jadi poster tidak terpotong. */}
             <div
-              className="w-full rounded-3xl overflow-hidden border border-slate-200 bg-slate-900 relative touch-pan-y"
+              className="w-full rounded-[28px] overflow-hidden border border-white/80 bg-slate-900 relative shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y"
               style={{ aspectRatio: String(frameRatio) }}
             >
               {promotions.map((promo, index) => {
