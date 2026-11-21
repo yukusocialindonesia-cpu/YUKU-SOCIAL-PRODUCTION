@@ -1926,18 +1926,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <span className="text-slate-500">Lokasi:</span> {b.meeting_location_name || '-'}
                     </div>
                     {isSuperAdmin && (
-                    <div className="rounded-lg border border-slate-100 p-2.5 grid grid-cols-1 gap-2">
-                      <div className="flex items-center justify-between gap-2 text-xs">
-                        <span className="text-slate-500">Total Bayar</span><strong className="text-slate-900 tabular-nums">{formatRupiah(b.gross_amount)}</strong>
+                      <div className="rounded-lg border border-slate-100 p-2.5 grid grid-cols-1 gap-2">
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-slate-500">Total Bayar</span><strong className="text-slate-900 tabular-nums">{formatRupiah(b.gross_amount || 0)}</strong>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-slate-500">Fee YUKU (20%)</span><strong className="text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount || 0)}</strong>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-slate-500">Bagian Talent (80%)</span><strong className="text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share || 0)}</strong>
+                        </div>
                       </div>
                     )}
-                      <div className="flex items-center justify-between gap-2 text-xs">
-                        <span className="text-slate-500">Fee YUKU (20%)</span><strong className="text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount)}</strong>
-                      </div>
-                      <div className="flex items-center justify-between gap-2 text-xs">
-                        <span className="text-slate-500">Bagian Talent (80%)</span><strong className="text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share)}</strong>
-                      </div>
-                    </div>
                   </article>
                 ))}
               </div>
@@ -1950,9 +1950,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <th className="p-3.5">Talent</th>
                       <th className="p-3.5">Lokasi Publik</th>
 {isSuperAdmin && (
-                      <th className="p-3.5">Total Bayar</th>
-                      <th className="p-3.5">Fee YUKU (20%)</th>
-                      <th className="p-3.5">Share Talent (80%)</th>
+                        <>
+                          <th className="p-3.5">Total Bayar</th>
+                          <th className="p-3.5">Fee YUKU (20%)</th>
+                          <th className="p-3.5">Share Talent (80%)</th>
+                        </>
                       )}
                       <th className="p-3.5">Status Escrow</th>
                     </tr>
@@ -1965,10 +1967,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         <td className="p-3.5 font-semibold text-purple-950">{b.talent_name}</td>
                         <td className="p-3.5 text-slate-600 max-w-[180px] truncate">{b.meeting_location_name}</td>
 {isSuperAdmin && (
-                        <td className="p-3.5 font-bold text-slate-900 tabular-nums">{formatRupiah(b.gross_amount)}</td>
-                        <td className="p-3.5 font-bold text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount)}</td>
-                        <td className="p-3.5 font-bold text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share)}</td>
-                      )}
+                          <>
+                            <td className="p-3.5 font-bold text-slate-900 tabular-nums">{formatRupiah(b.gross_amount || 0)}</td>
+                            <td className="p-3.5 font-bold text-emerald-700 tabular-nums">{formatRupiah(b.platform_fee_amount || 0)}</td>
+                            <td className="p-3.5 font-bold text-purple-700 tabular-nums">{formatRupiah(b.talent_gross_share || 0)}</td>
+                          </>
+                        )}
                         <td className="p-3.5">
                           {b.status === 'completed' ? (
                             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
