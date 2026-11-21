@@ -52,14 +52,14 @@ body {
   background-repeat: no-repeat;
   background-position: right 8% center;
   background-size: clamp(220px, 34vw, 420px);
-  opacity: 0.045;
+  opacity: 0.08;
 }
 
 @media (max-width: 640px) {
   #root::before {
     background-position: right -42px center;
     background-size: 250px;
-    opacity: 0.035;
+    opacity: 0.08;
   }
 }
 
