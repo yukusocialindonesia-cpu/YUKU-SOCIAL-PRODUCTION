@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   UserRound,
   Camera,
@@ -39,6 +39,8 @@ const GENDER_OPTIONS: GenderType[] = [
 
 export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavigate }) => {
   const { user, role, isAuthLoading } = useAuth();
+  const onNavigateRef = useRef(onNavigate);
+  onNavigateRef.current = onNavigate;
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [city, setCity] = useState('');
@@ -55,11 +57,11 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   useEffect(() => {
     if (isAuthLoading) return;
     if (!user) {
-      onNavigate('/login');
+      onNavigateRef.current('/login');
       return;
     }
     if (role && role !== 'customer') {
-      onNavigate(role === 'talent' ? '/dashboard-talent' : '/admin');
+      onNavigateRef.current(role === 'talent' ? '/dashboard-talent' : '/admin');
       return;
     }
 
@@ -99,7 +101,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
 
     void loadProfile();
     return () => { active = false; };
-  }, [isAuthLoading, user?.id, role, onNavigate]);
+  }, [isAuthLoading, user?.id, role]);
 
   useEffect(() => {
     if (!avatarFile) {
