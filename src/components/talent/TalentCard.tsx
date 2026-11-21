@@ -74,7 +74,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   return (
     <article
       onClick={() => onSelect(talent.id)}
-      className="group relative bg-white rounded-3xl overflow-hidden border border-purple-100 shadow-sm hover:shadow-xl hover:shadow-purple-200/50 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col"
+      className="group relative bg-white/95 rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
       <div className="relative aspect-[4/5] sm:aspect-[4/3] w-full overflow-hidden">

@@ -490,7 +490,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900">
+                    <div className="relative mx-2 sm:mx-0 rounded-[28px] sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-[0_20px_48px_rgba(28,12,48,0.22)] ring-1 ring-white/80">
                       {heroUrl && !avatarFailed ? (
                         <img
                           src={heroUrl}
@@ -531,7 +531,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       )}
                     </div>
 
-                    <div className="relative -mt-6 rounded-t-3xl bg-[#FAF8FC] px-4 pt-4 space-y-3">
+                    <div className="relative -mt-8 mx-2 rounded-[26px] border border-white/90 bg-white/90 px-4 pt-5 shadow-[0_16px_38px_rgba(76,29,149,0.12)] backdrop-blur-xl space-y-3">
                       {/* Nama + rating */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
