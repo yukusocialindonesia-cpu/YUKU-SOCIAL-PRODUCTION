@@ -103,6 +103,15 @@ export async function reportCommunityPost(postId: string, userId: string, reason
   if (error) throw error;
 }
 
+export async function reportCommunityComment(commentId: string, userId: string, reason: string) {
+  const { error } = await supabase.from('community_reports').insert({
+    comment_id: commentId,
+    reporter_id: userId,
+    reason,
+  });
+  if (error) throw error;
+}
+
 
 export interface CommunityReport {
   id: string;
