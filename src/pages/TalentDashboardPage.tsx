@@ -3424,7 +3424,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => setProfileAvatarFile(e.target.files?.[0] || null)}
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+              className="w-full min-w-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
             />
             {profileAvatarFile && (
               <p className="text-[11px] text-emerald-700 mt-1">Dipilih: {profileAvatarFile.name}</p>
