@@ -23,7 +23,7 @@ export const AdminManagementPanel: React.FC = () => {
   const [accounts, setAccounts] = useState<AdminAccountRow[]>([]);
   const [draftPermissions, setDraftPermissions] = useState<Record<string, AdminPermission[]>>({});
   const [email, setEmail] = useState('');
-  const [invitePermissions, setInvitePermissions] = useState<AdminPermission[]>(['support']);
+  const [invitePermissions, setInvitePermissions] = useState<AdminPermission[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [inviting, setInviting] = useState(false);
