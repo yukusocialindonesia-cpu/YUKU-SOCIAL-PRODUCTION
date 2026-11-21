@@ -148,41 +148,41 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-[#FAF8FC] pb-8">
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1e0938] via-[#38105f] to-[#68164f] text-white">
-        <div className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 left-1/3 h-72 w-72 rounded-full bg-orange-400/15 blur-3xl" />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-7 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between md:py-12 lg:px-8">
+      <section className="relative isolate overflow-hidden border-b border-purple-100 bg-gradient-to-br from-white via-[#F7F0FF] to-[#FFF3F7] text-slate-900">
+        <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-7 sm:px-6 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold tracking-wide text-purple-50 backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" /> RUANG KOMUNITAS YUKU
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-white/85 px-3 py-1.5 text-[11px] font-bold tracking-wide text-purple-800 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-amber-500" /> RUANG KOMUNITAS YUKU
             </div>
-            <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
+            <h1 className="text-3xl font-black leading-tight tracking-tight text-[#1E0938] sm:text-4xl md:text-5xl">
               Temukan teman.
-              <span className="block bg-gradient-to-r from-fuchsia-200 via-pink-200 to-amber-200 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
                 Mulai cerita baru.
               </span>
             </h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-purple-100 sm:text-base">
+            <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
               Berbagi minat, ngobrol dengan orang baru, dan temukan aktivitas seru bersama komunitas YUKU.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-[11px] font-semibold text-white/90">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/80 px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm">
                 <Users className="h-3.5 w-3.5" /> Kenalan dengan komunitas
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-[11px] font-semibold text-white/90">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/80 px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm">
                 <ShieldCheck className="h-3.5 w-3.5" /> Ruang yang saling menghargai
               </span>
             </div>
           </div>
-          <div className="w-full rounded-2xl border border-white/15 bg-white/10 p-4 shadow-xl backdrop-blur-md md:max-w-xs md:p-5">
-            <p className="text-xs font-semibold text-purple-100">Dari obrolan sederhana...</p>
-            <p className="mt-1 text-lg font-extrabold leading-snug">bisa jadi aktivitas yang berkesan.</p>
-            <div className="my-4 h-px bg-white/15" />
-            <p className="text-xs leading-5 text-purple-100">
+          <div className="w-full rounded-2xl border border-purple-100 bg-white/90 p-4 shadow-[0_12px_35px_rgba(76,29,149,0.10)] md:max-w-xs md:p-5">
+            <p className="text-xs font-semibold text-purple-700">Dari obrolan sederhana...</p>
+            <p className="mt-1 text-lg font-extrabold leading-snug text-[#1E0938]">bisa jadi aktivitas yang berkesan.</p>
+            <div className="my-4 h-px bg-purple-100" />
+            <p className="text-xs leading-5 text-slate-600">
               Temukan talent dan aktivitas yang cocok, lalu lakukan booking dengan aman melalui YUKU.
             </p>
             <button type="button" onClick={() => onNavigate('/talent')}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-extrabold text-purple-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-50">
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-3 text-xs font-extrabold text-white shadow-md transition hover:-translate-y-0.5 hover:brightness-105">
               Jelajahi talent <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>
