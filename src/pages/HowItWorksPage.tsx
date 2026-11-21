@@ -57,10 +57,10 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
   ];
 
   return (
-    <div className="py-12 bg-[#FAF8FC]">
+    <div className="relative isolate min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="mx-auto mb-12 max-w-3xl rounded-[2rem] border border-white/80 bg-white/65 p-6 text-center shadow-[0_24px_70px_-38px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:p-9">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
             Panduan Lengkap
           </span>
@@ -72,7 +72,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
           </p>
 
           {/* Role Toggle */}
-          <div className="mt-8 inline-flex p-1 bg-slate-200/80 rounded-xl">
+          <div className="mt-8 inline-flex max-w-full flex-wrap justify-center gap-1 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-inner shadow-violet-900/5 backdrop-blur-xl">
             <button
               onClick={() => setActiveRole('customer')}
               className={`px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
@@ -101,7 +101,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
           {(activeRole === 'customer' ? customerSteps : talentSteps).map((step) => (
             <div
               key={step.num}
-              className="bg-white rounded-2xl border border-slate-200/80 p-6 flex flex-col justify-between shadow-xs hover:border-purple-200 transition-all"
+              className="flex flex-col justify-between rounded-[1.5rem] border border-white/90 bg-white/85 p-6 shadow-[0_20px_48px_-32px_rgba(76,29,149,0.38)] ring-1 ring-violet-100/70 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_26px_55px_-30px_rgba(76,29,149,0.42)]"
             >
               <div>
                 <span className="text-3xl font-black text-purple-700 block mb-3 font-mono">
@@ -119,7 +119,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
         </div>
 
         {/* Ethical Boundaries & Safety Protocol */}
-        <div className="bg-white rounded-3xl border border-purple-200 p-8 sm:p-10 shadow-xs mb-16">
+        <div className="mb-16 rounded-[2rem] border border-white/90 bg-white/80 p-6 shadow-[0_28px_70px_-38px_rgba(76,29,149,0.4)] backdrop-blur-xl sm:p-10">
           <div className="max-w-3xl mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-700 text-xs font-bold rounded-full mb-3 border border-red-200">
               <Ban className="w-3.5 h-3.5" />
@@ -134,7 +134,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 rounded-xl bg-purple-50/50 border border-purple-100 space-y-2">
+            <div className="space-y-2 rounded-2xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/80 p-5 shadow-[0_14px_35px_-28px_rgba(76,29,149,0.35)]">
               <div className="font-bold text-purple-950 text-sm flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-purple-700" />
                 <span>1. Wajib Ruang Publik</span>
@@ -144,7 +144,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
               </p>
             </div>
 
-            <div className="p-5 rounded-xl bg-purple-50/50 border border-purple-100 space-y-2">
+            <div className="space-y-2 rounded-2xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/80 p-5 shadow-[0_14px_35px_-28px_rgba(76,29,149,0.35)]">
               <div className="font-bold text-purple-950 text-sm flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-purple-700" />
                 <span>2. Nol Toleransi Seksual</span>
@@ -154,7 +154,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
               </p>
             </div>
 
-            <div className="p-5 rounded-xl bg-purple-50/50 border border-purple-100 space-y-2">
+            <div className="space-y-2 rounded-2xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/80 p-5 shadow-[0_14px_35px_-28px_rgba(76,29,149,0.35)]">
               <div className="font-bold text-purple-950 text-sm flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-purple-700" />
                 <span>3. Verifikasi Usia 18+</span>
@@ -167,7 +167,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
         </div>
 
         {/* Action Banner */}
-        <div className="text-center bg-gradient-to-r from-purple-800 via-fuchsia-700 to-amber-600 rounded-3xl p-8 sm:p-12 text-white">
+        <div className="rounded-[2rem] border border-white/20 bg-gradient-to-br from-[#251044] via-purple-800 to-fuchsia-700 p-8 text-center text-white shadow-[0_30px_75px_-28px_rgba(76,29,149,0.5)] ring-1 ring-white/20 sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">
             Siap Memulai Pengalaman Sosial yang Menyenangkan?
           </h2>
