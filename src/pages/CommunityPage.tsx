@@ -15,9 +15,8 @@ import {
 } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
 import { useAuth } from '../contexts/AuthContext';
+import type { CommunityTopic } from '../services/communityService';
 import {
-  CommunityPost,
-  CommunityTopic,
   createCommunityComment,
   createCommunityPost,
   loadCommunityPosts,
@@ -290,12 +289,12 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   <div className="mt-4 flex items-center gap-5 border-t border-slate-100 pt-3">
                     <button type="button" onClick={() => void handleLike(post)} aria-pressed={post.likedByMe}
                       className={`inline-flex items-center gap-1.5 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
-                      <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes} Suka
+                      <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes_count} Suka
                     </button>
                     <button type="button" onClick={() => setOpenComments((current) => current === post.id ? null : post.id)}
                       aria-expanded={openComments === post.id}
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 transition hover:text-purple-700">
-                      <MessageCircle className="h-4 w-4" /> {post.comments.length} Komentar
+                      <MessageCircle className="h-4 w-4" /> {post.comments_count} Komentar
                     </button>
                     <button type="button" onClick={() => {
                       if (!requireLogin()) return;
