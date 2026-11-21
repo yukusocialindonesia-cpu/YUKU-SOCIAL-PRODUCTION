@@ -1,5 +1,6 @@
 -- H2 hardening: move Talent booking status transitions into guarded RPCs.
--- Apply only after staging validation. This migration is not deployed to Production.
+-- Production migration: review this SQL and all regression paths before applying.
+-- No staging database is assumed or required for this repository change.
 
 CREATE OR REPLACE FUNCTION public.request_talent_confirmation(p_booking_id uuid)
 RETURNS jsonb
@@ -15,6 +16,18 @@ BEGIN
     RAISE EXCEPTION 'Authentication required';
   END IF;
 
+  -- Lock order: payment, then booking. This matches admin_process_refund()
+  -- and avoids the booking -> payment lock inversion in the original draft.
+  PERFORM 1
+  FROM public.payments p
+  WHERE p.booking_id = p_booking_id
+    AND p.payment_status = 'settled_held'::public.payment_status_type
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pembayaran belum terkonfirmasi dalam escrow.';
+  END IF;
+
   SELECT * INTO v_booking
   FROM public.bookings
   WHERE id = p_booking_id
@@ -26,17 +39,6 @@ BEGIN
 
   IF v_booking.status <> 'paid_held_in_escrow'::public.booking_status_type THEN
     RAISE EXCEPTION 'Status booking tidak dapat dikonfirmasi.';
-  END IF;
-
-  -- Lock the qualifying payment row to serialize this transition with payment changes.
-  PERFORM 1
-  FROM public.payments p
-  WHERE p.booking_id = p_booking_id
-    AND p.payment_status = 'settled_held'::public.payment_status_type
-  FOR UPDATE;
-
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'Pembayaran belum terkonfirmasi dalam escrow.';
   END IF;
 
   UPDATE public.bookings
@@ -65,6 +67,17 @@ BEGIN
     RAISE EXCEPTION 'Authentication required';
   END IF;
 
+  -- Keep the same payment -> booking lock order as the refund RPC.
+  PERFORM 1
+  FROM public.payments p
+  WHERE p.booking_id = p_booking_id
+    AND p.payment_status = 'settled_held'::public.payment_status_type
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pembayaran tidak lagi berada dalam escrow.';
+  END IF;
+
   SELECT * INTO v_booking
   FROM public.bookings
   WHERE id = p_booking_id
@@ -76,17 +89,6 @@ BEGIN
 
   IF v_booking.status <> 'confirmed_by_talent'::public.booking_status_type THEN
     RAISE EXCEPTION 'Booking belum dapat dimulai.';
-  END IF;
-
-  -- Lock the qualifying payment row to serialize this transition with payment changes.
-  PERFORM 1
-  FROM public.payments p
-  WHERE p.booking_id = p_booking_id
-    AND p.payment_status = 'settled_held'::public.payment_status_type
-  FOR UPDATE;
-
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'Pembayaran tidak lagi berada dalam escrow.';
   END IF;
 
   IF EXISTS (
@@ -114,5 +116,6 @@ REVOKE ALL ON FUNCTION public.request_talent_start_session(uuid) FROM PUBLIC, an
 GRANT EXECUTE ON FUNCTION public.request_talent_confirmation(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.request_talent_start_session(uuid) TO authenticated;
 
--- Remove direct status transitions from client role; other permitted columns remain.
+-- Remove direct status transitions from the client role.
+-- SECURITY DEFINER RPCs owned by the database owner retain their internal UPDATE ability.
 REVOKE UPDATE (status) ON public.bookings FROM authenticated;
