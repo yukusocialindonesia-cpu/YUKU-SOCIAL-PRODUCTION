@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from './layouts/MainLayout';
 import { HomePage } from './pages/HomePage';
+import { CommunityPage } from './pages/CommunityPage';
 import { BrowseTalentPage } from './pages/BrowseTalentPage';
 import { TalentDetailPage } from './pages/TalentDetailPage';
 import { HowItWorksPage } from './pages/HowItWorksPage';
@@ -32,6 +33,7 @@ export default function App() {
   const [currentPath, setCurrentPath] = useState<AppRoute>(() => {
     const pathname = window.location.pathname;
     if (pathname === '/talent') return '/talent';
+    if (pathname === '/komunitas') return '/komunitas';
     if (pathname.startsWith('/talent/')) return '/talent/:id';
     if (pathname === '/cara-kerja') return '/cara-kerja';
     if (pathname === '/daftar-talent') return '/daftar-talent';
@@ -69,6 +71,8 @@ export default function App() {
 
     if (pathname === '/' || pathname === '') {
       setCurrentPath('/');
+    } else if (pathname === '/komunitas') {
+      setCurrentPath('/komunitas');
     } else if (pathname === '/talent') {
       setCurrentPath('/talent');
     } else if (pathname.startsWith('/talent/')) {
@@ -172,6 +176,8 @@ export default function App() {
     switch (currentPath) {
       case '/':
         return <HomePage onNavigate={handleNavigate} />;
+      case '/komunitas':
+        return <CommunityPage />;
       case '/talent':
         return (
           <BrowseTalentPage
