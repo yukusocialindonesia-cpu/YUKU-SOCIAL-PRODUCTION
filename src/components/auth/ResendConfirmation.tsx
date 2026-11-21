@@ -50,12 +50,12 @@ export const ResendConfirmation: React.FC<ResendConfirmationProps> = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       <button
         type="button"
         onClick={handleResend}
         disabled={sending || cooldown > 0 || !email}
-        className="w-full py-2.5 border border-purple-300 text-purple-800 bg-purple-50 hover:bg-purple-100 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3 border border-purple-200/80 text-white bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:from-violet-700 hover:via-purple-700 hover:to-fuchsia-700 font-bold text-xs rounded-2xl shadow-[0_12px_26px_-14px_rgba(124,58,237,0.75)] ring-1 ring-white/60 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:shadow-none"
       >
         <MailCheck className="w-4 h-4" />
         <span>
@@ -66,8 +66,16 @@ export const ResendConfirmation: React.FC<ResendConfirmationProps> = ({
             : 'Kirim ulang email konfirmasi'}
         </span>
       </button>
-      {info && <p className="text-[11px] text-emerald-700 leading-relaxed">{info}</p>}
-      {error && <p className="text-[11px] text-rose-700 leading-relaxed">{error}</p>}
+      {info && (
+        <p className="rounded-2xl border border-emerald-200/80 bg-emerald-50/80 px-3.5 py-3 text-[11px] text-emerald-800 leading-relaxed shadow-sm backdrop-blur-lg">
+          {info}
+        </p>
+      )}
+      {error && (
+        <p className="rounded-2xl border border-rose-200/80 bg-rose-50/80 px-3.5 py-3 text-[11px] text-rose-800 leading-relaxed shadow-sm backdrop-blur-lg">
+          {error}
+        </p>
+      )}
     </div>
   );
 };
