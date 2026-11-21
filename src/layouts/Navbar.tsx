@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   if (isAuthLoading) {
     return (
       <header
-        className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs"
+        className="sticky top-0 xl:top-3 z-40 bg-white/95 xl:bg-white/80 backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <header className="sticky top-0 xl:top-3 z-40 bg-white/95 xl:bg-white/80 backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
         <div className="flex items-center justify-between gap-8 h-18">
