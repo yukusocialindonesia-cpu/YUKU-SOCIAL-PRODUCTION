@@ -91,7 +91,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
-AS $
+AS $$
 DECLARE
   v_post_id uuid;
   v_delta integer;
@@ -117,7 +117,7 @@ BEGIN
   IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
   RETURN NEW;
 END;
-$;
+$$;
 REVOKE ALL ON FUNCTION public.update_community_post_counters() FROM PUBLIC, anon, authenticated;
 
 DROP TRIGGER IF EXISTS trg_community_like_counter ON public.community_likes;
