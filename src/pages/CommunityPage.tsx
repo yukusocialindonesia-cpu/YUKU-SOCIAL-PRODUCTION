@@ -21,6 +21,7 @@ import {
   createCommunityPost,
   loadCommunityPosts,
   reportCommunityPost,
+  reportCommunityComment,
   toggleCommunityLike,
   loadPendingCommunityReports,
   moderateCommunityPost,
@@ -59,11 +60,14 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const [busyLikeIds, setBusyLikeIds] = useState<string[]>([]);
   const [busyCommentPostIds, setBusyCommentPostIds] = useState<string[]>([]);
   const [busyReportPostIds, setBusyReportPostIds] = useState<string[]>([]);
+  const [busyReportCommentIds, setBusyReportCommentIds] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
   const [reportingPostId, setReportingPostId] = useState<string | null>(null);
   const [reportReasonsByPost, setReportReasonsByPost] = useState<Record<string, string>>({});
+  const [reportingCommentId, setReportingCommentId] = useState<string | null>(null);
+  const [reportReasonsByComment, setReportReasonsByComment] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState('');
   const [pendingReports, setPendingReports] = useState<CommunityReport[]>([]);
   const [isLoadingReports, setIsLoadingReports] = useState(false);
@@ -201,6 +205,22 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       setNotice('Laporan belum berhasil dikirim. Coba lagi.');
     } finally {
       setBusyReportPostIds((current) => current.filter((id) => id !== postId));
+    }
+  };
+
+  const submitCommentReport = async (commentId: string) => {
+    if (!requireLogin() || !user || busyReportCommentIds.includes(commentId)) return;
+    const reason = reportReasonsByComment[commentId] || 'Konten tidak pantas';
+    setBusyReportCommentIds((current) => [...current, commentId]);
+    try {
+      await reportCommunityComment(commentId, user.id, reason);
+      setReportingCommentId(null);
+      setNotice('Terima kasih. Laporan komentarmu sudah kami terima.');
+    } catch (error) {
+      console.error('YUKU Community: gagal melaporkan komentar', error);
+      setNotice('Laporan komentar belum berhasil dikirim. Coba lagi.');
+    } finally {
+      setBusyReportCommentIds((current) => current.filter((id) => id !== commentId));
     }
   };
 
@@ -434,9 +454,36 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                     <div className="mt-3 border-t border-slate-100 pt-3">
                       <div className="space-y-2">
                         {post.comments.map((comment) => (
-                          <p key={comment.id} className="rounded-xl bg-[#FAF8FC] px-3 py-2.5 text-xs leading-5 text-slate-600">
-                            <span className="font-extrabold text-slate-800">{comment.author_display_name}: </span>{comment.body}
-                          </p>
+                          <div key={comment.id} className="rounded-xl bg-[#FAF8FC] px-3 py-2.5">
+                            <div className="flex items-start justify-between gap-3">
+                              <p className="min-w-0 text-xs leading-5 text-slate-600">
+                                <span className="font-extrabold text-slate-800">{comment.author_display_name}: </span>{comment.body}
+                              </p>
+                              <button type="button"
+                                onClick={() => {
+                                  if (!requireLogin()) return;
+                                  setReportingCommentId((current) => current === comment.id ? null : comment.id);
+                                }}
+                                className="shrink-0 text-[10px] font-semibold text-slate-400 transition hover:text-rose-600"
+                                aria-label="Laporkan komentar">
+                                Laporkan
+                              </button>
+                            </div>
+                            {reportingCommentId === comment.id && (
+                              <div className="mt-2 flex flex-wrap gap-2 rounded-lg bg-rose-50 p-2">
+                                <select value={reportReasonsByComment[comment.id] || 'Konten tidak pantas'}
+                                  onChange={(event) => setReportReasonsByComment((current) => ({ ...current, [comment.id]: event.target.value }))}
+                                  className="min-w-0 flex-1 rounded-lg border border-rose-100 bg-white px-2.5 py-2 text-[11px]">
+                                  {reportReasons.map((reason) => <option key={reason} value={reason}>{reason}</option>)}
+                                </select>
+                                <button type="button" onClick={() => void submitCommentReport(comment.id)}
+                                  disabled={busyReportCommentIds.includes(comment.id)}
+                                  className="rounded-lg bg-rose-600 px-3 py-2 text-[11px] font-bold text-white disabled:opacity-50">
+                                  {busyReportCommentIds.includes(comment.id) ? 'Mengirim...' : 'Kirim laporan'}
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         ))}
                         {post.comments.length === 0 && <p className="text-xs text-slate-400">Belum ada komentar. Jadilah yang pertama.</p>}
                       </div>
