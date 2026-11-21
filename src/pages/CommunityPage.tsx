@@ -192,7 +192,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
-            <section className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5">
+            <section className="relative overflow-hidden rounded-2xl border border-purple-100 bg-white p-4 shadow-[0_8px_28px_rgba(76,29,149,0.06)] sm:rounded-3xl sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white shadow-sm">
                   {user?.email?.slice(0, 1).toUpperCase() || 'YK'}
@@ -249,7 +249,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </button>
             </div>
 
-            <div className="mt-4 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
+            <div aria-label="Filter topik komunitas" className="mt-4 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
                 return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
@@ -274,7 +274,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {isLoading ? (
                 <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
               ) : visiblePosts.map((post) => (
-                <article key={post.id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-purple-100 hover:shadow-md sm:rounded-3xl sm:p-5">
+                <article key={post.id} className="group rounded-2xl border border-purple-100/80 bg-white p-4 shadow-[0_5px_20px_rgba(76,29,149,0.045)] transition duration-200 hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-[0_12px_28px_rgba(76,29,149,0.09)] sm:rounded-3xl sm:p-5">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white ring-4 ring-purple-50">
                       {post.author_display_name.slice(0, 2).toUpperCase()}
@@ -286,7 +286,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                     <span className="shrink-0 rounded-full bg-purple-50 px-3 py-1.5 text-[10px] font-bold text-purple-800">{post.topic}</span>
                   </div>
                   <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{post.body}</p>
-                  <div className="mt-4 flex items-center gap-5 border-t border-slate-100 pt-3">
+                  <div className="mt-4 flex items-center gap-4 border-t border-purple-50 pt-3 sm:gap-5">
                     <button type="button" onClick={() => void handleLike(post)} aria-pressed={post.likedByMe}
                       className={`inline-flex items-center gap-1.5 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
                       <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes_count} Suka
