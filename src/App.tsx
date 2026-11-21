@@ -247,14 +247,7 @@ export default function App() {
 
   return (
     <MainLayout currentPath={currentPath} onNavigate={handleNavigate}>
-      <Suspense
-        fallback={
-          <div className="flex min-h-[20vh] items-center justify-center py-8" role="status" aria-live="polite">
-            <span className="h-6 w-6 animate-spin rounded-full border-2 border-purple-200 border-t-purple-700" aria-hidden="true" />
-            <span className="sr-only">Memuat halaman</span>
-          </div>
-        }
-      >
+      <Suspense fallback={null}>
         {renderCurrentPage()}
       </Suspense>
     </MainLayout>
