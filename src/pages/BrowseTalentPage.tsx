@@ -108,14 +108,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   return (
-    <div className="py-10 bg-[#FAF8FC]">
+    <div className="min-h-screen py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb / Title */}
-        <div className="mb-6">
-          <span className="text-xs font-semibold text-purple-700 tracking-wider uppercase mb-1 block">
+        <div className="mb-7 sm:mb-8">
+          <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-3 shadow-sm backdrop-blur-md">
             Katalog Sahabat Aktivitas
           </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
             Jelajahi Talent YUKU
           </h1>
           <p className="text-sm text-slate-600 mt-1">
@@ -124,7 +124,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Filter Bar Controls */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs mb-8 space-y-4">
+        <div className="relative bg-white/85 p-4 sm:p-5 rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-8 space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
             {/* Search Input */}
@@ -162,7 +162,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-3 border-t border-slate-100">
+          <div className="pt-4 border-t border-purple-100/80">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
               Kategori Aktivitas:
             </span>
@@ -196,7 +196,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
+          <div className="pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
             {/* Gender Segmented */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Gender:</span>
@@ -251,9 +251,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Results Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-80 rounded-2xl bg-slate-200 animate-pulse" />
+              <div key={i} className="h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -281,7 +281,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8">
+          <div className="text-center py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-8 backdrop-blur-xl">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-800 text-base mb-1">
               Tidak Ada Talent yang Sesuai Filter
