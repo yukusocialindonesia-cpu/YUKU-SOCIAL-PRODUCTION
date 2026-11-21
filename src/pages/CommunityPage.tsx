@@ -202,7 +202,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       setNotice('Terima kasih. Laporanmu sudah kami terima.');
     } catch (error) {
       console.error('YUKU Community: gagal mengirim laporan', error);
-      setNotice('Laporan belum berhasil dikirim. Coba lagi.');
+      const code = (error as { code?: string })?.code;
+      setNotice(code === '23505'
+        ? 'Kamu sudah melaporkan postingan ini. Tunggu Admin meninjaunya.'
+        : 'Laporan belum berhasil dikirim. Coba lagi.');
     } finally {
       setBusyReportPostIds((current) => current.filter((id) => id !== postId));
     }
@@ -218,7 +221,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
       setNotice('Terima kasih. Laporan komentarmu sudah kami terima.');
     } catch (error) {
       console.error('YUKU Community: gagal melaporkan komentar', error);
-      setNotice('Laporan komentar belum berhasil dikirim. Coba lagi.');
+      const code = (error as { code?: string })?.code;
+      setNotice(code === '23505'
+        ? 'Kamu sudah melaporkan komentar ini. Tunggu Admin meninjaunya.'
+        : 'Laporan komentar belum berhasil dikirim. Coba lagi.');
     } finally {
       setBusyReportCommentIds((current) => current.filter((id) => id !== commentId));
     }
