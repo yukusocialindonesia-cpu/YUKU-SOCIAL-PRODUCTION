@@ -344,7 +344,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
   if (!currentUser) {
     return (
       <div className="py-16 bg-[#FAF8FC] min-h-[60vh]">
-        <div className="max-w-md mx-auto px-4 text-center bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div className="mx-auto max-w-md space-y-4 rounded-[2rem] border border-white/90 bg-white/90 px-8 py-9 text-center shadow-[0_24px_60px_-34px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/70 backdrop-blur-xl">
           <div className="w-14 h-14 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center mx-auto">
             <Lock className="w-7 h-7" />
           </div>
@@ -377,10 +377,10 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
   const isFullyVerified = ktpStatus === 'verified';
 
   return (
-    <div className="py-12 bg-[#FAF8FC] min-h-screen">
+    <div className="relative isolate min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12 sm:py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Page Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-2">
+        <div className="mx-auto max-w-2xl space-y-2 rounded-[2rem] border border-white/85 bg-white/65 px-5 py-8 text-center shadow-[0_24px_65px_-38px_rgba(76,29,149,0.35)] backdrop-blur-xl sm:px-9">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase block">
             Keamanan & Perlindungan Komunitas 18+
           </span>
@@ -409,7 +409,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
 
         {/* CASE 1: VERIFIED */}
         {isFullyVerified && identity && (
-          <div className="bg-white rounded-3xl border border-emerald-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="space-y-6 rounded-[2rem] border border-emerald-200/80 bg-white/90 p-6 shadow-[0_26px_65px_-36px_rgba(16,185,129,0.22)] ring-1 ring-white backdrop-blur-2xl sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
               <div className="flex items-center gap-3.5">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
@@ -460,7 +460,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
 
         {/* CASE 2: PENDING REVIEW */}
         {ktpStatus === 'pending_review' && identity && (
-          <div className="bg-white rounded-3xl border border-amber-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="space-y-6 rounded-[2rem] border border-amber-200/80 bg-white/90 p-6 shadow-[0_26px_65px_-36px_rgba(217,119,6,0.2)] ring-1 ring-white backdrop-blur-2xl sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
               <div className="flex items-center gap-3.5">
                 <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
