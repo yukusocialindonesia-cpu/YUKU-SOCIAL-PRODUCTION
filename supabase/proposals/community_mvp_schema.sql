@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS public.community_posts (
 CREATE TABLE IF NOT EXISTS public.community_comments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   post_id uuid NOT NULL REFERENCES public.community_posts(id) ON DELETE CASCADE,
-  author_id uuid REFERENCES auth.users(id) ON DELETE SET NULL
+  author_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   author_display_name text NOT NULL DEFAULT 'Anggota YUKU',
   body text NOT NULL CHECK (char_length(btrim(body)) BETWEEN 1 AND 600),
   status text NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'hidden')),
@@ -531,6 +531,96 @@ GRANT SELECT (post_id, user_id, created_at)
 GRANT SELECT (
   id, reason, details, status, created_at, post_id, comment_id
 ) ON public.community_reports TO authenticated;
+
+
+
+-- Basic server-side anti-spam limits. These limits apply even if a client
+-- bypasses the UI. Counts are serialized per account and action type.
+CREATE OR REPLACE FUNCTION public.enforce_community_rate_limit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+DECLARE
+  v_actor_id uuid;
+  v_limit integer;
+  v_count integer;
+  v_window interval := interval '1 hour';
+BEGIN
+  IF TG_TABLE_NAME = 'community_posts' THEN
+    v_actor_id := NEW.author_id;
+    v_limit := 5;
+  ELSIF TG_TABLE_NAME = 'community_comments' THEN
+    v_actor_id := NEW.author_id;
+    v_limit := 20;
+  ELSIF TG_TABLE_NAME = 'community_reports' THEN
+    v_actor_id := NEW.reporter_id;
+    v_limit := 5;
+  ELSIF TG_TABLE_NAME = 'community_likes' THEN
+    v_actor_id := NEW.user_id;
+    v_limit := 60;
+  ELSE
+    RAISE EXCEPTION 'Jenis aktivitas komunitas tidak dikenal';
+  END IF;
+
+  IF v_actor_id IS NULL OR v_actor_id <> auth.uid() THEN
+    RAISE EXCEPTION 'Identitas akun tidak valid untuk aktivitas ini'
+      USING ERRCODE = '42501';
+  END IF;
+
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(v_actor_id::text || ':' || TG_TABLE_NAME, 0)
+  );
+
+  IF TG_TABLE_NAME = 'community_posts' THEN
+    SELECT count(*)::integer INTO v_count
+    FROM public.community_posts
+    WHERE author_id = v_actor_id AND created_at >= pg_catalog.now() - v_window;
+  ELSIF TG_TABLE_NAME = 'community_comments' THEN
+    SELECT count(*)::integer INTO v_count
+    FROM public.community_comments
+    WHERE author_id = v_actor_id AND created_at >= pg_catalog.now() - v_window;
+  ELSIF TG_TABLE_NAME = 'community_reports' THEN
+    SELECT count(*)::integer INTO v_count
+    FROM public.community_reports
+    WHERE reporter_id = v_actor_id AND created_at >= pg_catalog.now() - v_window;
+  ELSE
+    SELECT count(*)::integer INTO v_count
+    FROM public.community_likes
+    WHERE user_id = v_actor_id AND created_at >= pg_catalog.now() - v_window;
+  END IF;
+
+  IF v_count >= v_limit THEN
+    RAISE EXCEPTION 'Batas aktivitas komunitas tercapai. Coba lagi setelah beberapa saat.'
+      USING ERRCODE = 'P0001';
+  END IF;
+
+  RETURN NEW;
+END;
+$function$;
+
+REVOKE ALL ON FUNCTION public.enforce_community_rate_limit() FROM PUBLIC, anon, authenticated;
+
+DROP TRIGGER IF EXISTS trg_community_post_rate_limit ON public.community_posts;
+CREATE TRIGGER trg_community_post_rate_limit
+BEFORE INSERT ON public.community_posts
+FOR EACH ROW EXECUTE FUNCTION public.enforce_community_rate_limit();
+
+DROP TRIGGER IF EXISTS trg_community_comment_rate_limit ON public.community_comments;
+CREATE TRIGGER trg_community_comment_rate_limit
+BEFORE INSERT ON public.community_comments
+FOR EACH ROW EXECUTE FUNCTION public.enforce_community_rate_limit();
+
+DROP TRIGGER IF EXISTS trg_community_report_rate_limit ON public.community_reports;
+CREATE TRIGGER trg_community_report_rate_limit
+BEFORE INSERT ON public.community_reports
+FOR EACH ROW EXECUTE FUNCTION public.enforce_community_rate_limit();
+
+DROP TRIGGER IF EXISTS trg_community_like_rate_limit ON public.community_likes;
+CREATE TRIGGER trg_community_like_rate_limit
+BEFORE INSERT ON public.community_likes
+FOR EACH ROW EXECUTE FUNCTION public.enforce_community_rate_limit();
 
 -- IMPORTANT: this file remains a proposal. It has NOT been applied to Supabase.
 
