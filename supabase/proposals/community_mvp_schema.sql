@@ -212,6 +212,7 @@ FOR DELETE TO authenticated
 USING (author_id = (SELECT auth.uid()) OR (SELECT public.is_admin()));
 
 DROP POLICY IF EXISTS community_likes_public_read ON public.community_likes;
+DROP POLICY IF EXISTS community_likes_owner_read ON public.community_likes;
 CREATE POLICY community_likes_owner_read ON public.community_likes
 FOR SELECT TO authenticated
 USING (user_id = (SELECT auth.uid()));
