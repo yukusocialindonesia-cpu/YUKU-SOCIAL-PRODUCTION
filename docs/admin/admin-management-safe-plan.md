@@ -100,3 +100,12 @@ Tidak ada perubahan Production yang dilakukan selama pemeriksaan ini. Xendit tet
 - Migrasi 64 telah diterapkan ke Staging dan policy hasilnya terverifikasi. Policy SELECT kini hanya berlaku untuk role authenticated dan tidak lagi memakai kondisi `true` untuk semua baris.
 - Production belum diubah. Migrasi 64 menjadi langkah penyelarasan yang perlu masuk paket Production setelah pemeriksaan penuh.
 - Temuan ini memperkuat keputusan untuk tidak menjalankan paket migrasi 48–64 secara langsung tanpa preflight per policy dan tes regresi.
+
+
+### Kompatibilitas guard RPC Production — 21 November 2026
+- Pemeriksaan langsung pada 10 fungsi RPC yang diubah migration 51 menemukan tiga fungsi Production memakai pola guard yang lebih ketat/berbeda dari teks yang semula dicari migration: `admin_process_payout`, `admin_process_refund`, dan `admin_review_talent` memiliki kondisi `auth.uid() IS NULL OR NOT public.is_admin()`.
+- Jika migration 51 lama dijalankan apa adanya, proses akan berhenti karena pola guard tidak ditemukan. Tidak ada perubahan database Production yang dilakukan.
+- Migration 51 di branch diperbarui agar mengenali kedua bentuk guard. Bentuk Production akan tetap mempertahankan pemeriksaan sesi login sekaligus mengganti otorisasi ke izin Finance atau Talent yang sesuai.
+- Pemeriksaan Staging tetap menunjukkan rangkaian tes Admin lulus pada commit kode sebelumnya; perubahan kompatibilitas ini khusus untuk perbedaan definisi RPC yang ditemukan pada Production.
+- Commit terakhir pemeriksaan: `d737e44bf980f8753fcdda64293b9e3316571934`. Status gabungan commit menunjukkan Vercel success; workflow Admin checks terakhir yang terkonfirmasi lulus ada pada commit dokumentasi sebelumnya. Perlu verifikasi workflow Admin checks pada commit final setelah PR/check dijalankan.
+- Branch saat ini 72 commit di depan `main`, 0 di belakang, dengan 30 file berubah. Production belum disentuh.
