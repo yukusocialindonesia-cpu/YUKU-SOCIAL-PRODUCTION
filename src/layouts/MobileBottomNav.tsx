@@ -23,8 +23,19 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : '/riwayat-booking';
 
   const openProfile = () => {
-    if (!loggedIn) { onNavigate('/login'); return; }
-    window.dispatchEvent(new CustomEvent('yuku:open-menu'));
+    if (!loggedIn) {
+      onNavigate('/login');
+      return;
+    }
+
+    // Arahkan langsung ke halaman utama sesuai peran akun.
+    if (role === 'admin') {
+      onNavigate('/admin');
+    } else if (role === 'talent') {
+      onNavigate('/dashboard-talent');
+    } else {
+      onNavigate('/profil-saya');
+    }
   };
 
   const items: NavEntry[] = [
