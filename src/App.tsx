@@ -24,6 +24,7 @@ import { VerifyKtpPage } from './pages/VerifyKtpPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { NotificationSoundListener } from './components/common/NotificationSoundListener';
 import { AppRoute } from './types/navigation';
 import { supabase } from './lib/supabase';
 
@@ -226,8 +227,11 @@ export default function App() {
   };
 
   return (
-    <MainLayout currentPath={currentPath} onNavigate={handleNavigate}>
-      {renderCurrentPage()}
-    </MainLayout>
+    <>
+      <NotificationSoundListener />
+      <MainLayout currentPath={currentPath} onNavigate={handleNavigate}>
+        {renderCurrentPage()}
+      </MainLayout>
+    </>
   );
 }

@@ -8,10 +8,20 @@ import {
   Gift,
   Wallet,
   Loader2,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { NotificationRow, NotificationType } from '../../types/database';
 import { AppRoute } from '../../types/navigation';
+import {
+  installSoundUnlock,
+  isSoundMuted,
+  playNotificationSound,
+  setSoundMuted,
+  soundKindForNotification,
+  subscribeSoundMuted,
+} from '../../lib/notificationSound';
 
 interface NotificationBellProps {
   userId: string;
@@ -29,6 +39,12 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [soundMuted, setSoundMutedState] = useState<boolean>(() => isSoundMuted());
+
+  useEffect(() => {
+    installSoundUnlock();
+    return subscribeSoundMuted(setSoundMutedState);
+  }, []);
 
   const loadNotifications = useCallback(async () => {
     if (!userId) return;
@@ -61,12 +77,28 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          // Notifikasi baru: bunyi sesuai jenis (booking, uang masuk, peringatan).
+          const created = payload.new as Partial<NotificationRow> | undefined;
+          playNotificationSound(soundKindForNotification(created?.type));
+          loadNotifications();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
           schema: 'public',
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
         () => {
+          // Ditandai dibaca dll: segarkan daftar saja, tanpa bunyi.
           loadNotifications();
         }
       )
@@ -99,6 +131,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     const metaRoute = item.metadata?.route;
     if (typeof metaRoute === 'string' && metaRoute.startsWith('/')) {
       return metaRoute as AppRoute;
+    }
+
+    if (userRole === 'admin') {
+      return '/admin';
     }
 
     switch (item.type) {
@@ -216,6 +252,17 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 </span>
               )}
             </div>
+
+            <button
+              type="button"
+              onClick={() => setSoundMuted(!soundMuted)}
+              className="p-1.5 rounded-lg text-slate-500 hover:text-purple-900 hover:bg-purple-50 transition-colors cursor-pointer"
+              aria-label={soundMuted ? 'Nyalakan bunyi notifikasi' : 'Matikan bunyi notifikasi'}
+              aria-pressed={soundMuted}
+              title={soundMuted ? 'Bunyi notifikasi mati' : 'Bunyi notifikasi menyala'}
+            >
+              {soundMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+            </button>
 
             {unreadCount > 0 && (
               <button
