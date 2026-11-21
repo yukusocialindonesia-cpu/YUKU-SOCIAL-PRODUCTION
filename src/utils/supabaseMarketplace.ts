@@ -99,7 +99,7 @@ export async function fetchTalentsFromSupabase(limit?: number): Promise<TalentPr
         supabase.from('talent_media').select('talent_id, media_type').in('talent_id', talentIds),
       ]);
       if (servicesResult.error) throw new Error(`Gagal membaca layanan Talent dari Supabase: ${servicesResult.error.message} (${servicesResult.error.code || 'UNKNOWN'})`);
-      if (mediaResult.error) throw new Error(`Gagal membaca media Talent dari Supabase: ${mediaResult.error.message} (${mediaResult.error.code || 'UNKNOWN'})`);
+      // Media indicators are optional; if the query fails, keep cards usable without badges.
       const servicesMap = new Map<string, string[]>();
       (servicesResult.data || []).forEach((s) => { const list=servicesMap.get(s.talent_id)||[]; list.push(s.activity_category_id); servicesMap.set(s.talent_id,list); });
       const mediaMap = new Map<string, string[]>();
