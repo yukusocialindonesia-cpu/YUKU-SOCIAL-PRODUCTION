@@ -75,7 +75,7 @@ export const ChangePasswordPage: React.FC<ChangePasswordPageProps> = ({ onNaviga
 
   if (isCheckingAuth) {
     return (
-      <div className="py-16 px-4 flex items-center justify-center bg-[#FAF8FC]">
+      <div className="relative isolate min-h-[45vh] overflow-hidden py-16 px-4 flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.85),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)]">
         <div className="text-xs font-semibold text-slate-500">Memeriksa sesi akun...</div>
       </div>
     );
@@ -152,7 +152,7 @@ export const ChangePasswordPage: React.FC<ChangePasswordPageProps> = ({ onNaviga
                 placeholder="Ulangi kata sandi baru"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 text-xs"
+                className="w-full pl-9 pr-10 py-3 bg-white/80 border border-slate-200/80 rounded-2xl shadow-inner shadow-purple-950/[0.025] focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100/80 text-xs transition-all"
               />
               <button
                 type="button"
