@@ -418,13 +418,13 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
             </span>
             <span className="inline-flex items-center gap-1 text-slate-600 truncate max-w-[240px]">
               <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <span className="truncate">{booking.meeting_location_name}</span>
+              <span className="min-w-0 whitespace-normal break-words leading-relaxed">{booking.meeting_location_name}</span>
             </span>
           </div>
         </div>
 
         {/* Safety Strip */}
-        <div className="px-4 py-1.5 bg-amber-50/70 border-b border-amber-100 text-[11px] text-amber-900 flex items-center gap-1.5 shrink-0">
+        <div className="px-4 py-2 bg-amber-50/70 border-b border-amber-100 text-[11px] text-amber-900 flex items-start gap-1.5 shrink-0">
           <ShieldCheck className="w-3.5 h-3.5 text-amber-700 shrink-0" />
           <span className="truncate">
             Bahas detail sesi &amp; titik temu di ruang publik. Hindari transaksi di luar platform YUKU.
