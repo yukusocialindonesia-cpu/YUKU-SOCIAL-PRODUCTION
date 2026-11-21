@@ -20,7 +20,8 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const authorized = Boolean(user && adminAccess);
+  const userId = user?.id;
+  const authorized = Boolean(userId && adminAccess);
 
   useEffect(() => {
     let mounted = true;
@@ -29,7 +30,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
       // AuthContext owns session restoration. Wait for it before checking Admin access.
       if (isAuthLoading) return;
 
-      if (!user) {
+      if (!userId) {
         setError('Sesi undangan tidak ditemukan. Pastikan tautan undangan masih berlaku.');
         setChecking(false);
         return;
@@ -53,7 +54,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
         if (!mounted) return;
 
         // AuthContext state updates trigger a render and this effect will run again.
-        if (user && adminAccess) {
+        if (userId && adminAccess) {
           setError('');
           setChecking(false);
           return;
@@ -74,7 +75,7 @@ export const AdminInviteSetupPage: React.FC<AdminInviteSetupPageProps> = ({ onNa
     return () => {
       mounted = false;
     };
-  }, [isAuthLoading, user, adminAccess, refreshRole]);
+  }, [isAuthLoading, userId, adminAccess, refreshRole]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
