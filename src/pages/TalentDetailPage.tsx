@@ -451,7 +451,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   }
 
   return (
-    <div className="pt-0 sm:pt-10 pb-28 lg:pb-12 bg-[#FAF8FC]">
+    <div className="pt-0 sm:pt-8 pb-28 lg:pb-12 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Link */}
         <button
@@ -462,7 +462,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           <span>Kembali ke Jelajahi Talent</span>
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           {/* Left Column: Photos & Details */}
           <div className="lg:col-span-8 space-y-3 sm:space-y-6">
             {/* Mobile / tablet profile header (layout ala aplikasi) */}
@@ -490,7 +490,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-2 sm:mx-0 rounded-[28px] sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-[0_20px_48px_rgba(28,12,48,0.22)] ring-1 ring-white/80">
+                    <div className="relative mx-2 sm:mx-0 rounded-[30px] sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-[0_24px_56px_rgba(28,12,48,0.24),0_4px_14px_rgba(76,29,149,0.12)] ring-1 ring-white/90">
                       {heroUrl && !avatarFailed ? (
                         <img
                           src={heroUrl}
@@ -531,7 +531,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       )}
                     </div>
 
-                    <div className="relative -mt-8 mx-2 rounded-[26px] border border-white/90 bg-white/90 px-4 pt-5 shadow-[0_16px_38px_rgba(76,29,149,0.12)] backdrop-blur-xl space-y-3">
+                    <div className="relative -mt-8 mx-2 rounded-[28px] border border-white/90 bg-white/90 px-4 pt-5 pb-4 shadow-[0_20px_48px_rgba(76,29,149,0.14),0_3px_12px_rgba(76,29,149,0.05)] ring-1 ring-purple-100/70 backdrop-blur-2xl space-y-3">
                       {/* Nama + rating */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
@@ -650,10 +650,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               })()}
             </div>
             {/* Header Card (desktop) */}
-            <div className="hidden lg:block bg-white rounded-3xl lg:rounded-2xl border border-slate-200/80 p-4 sm:p-6 md:p-8 shadow-xs">
+            <div className="hidden lg:block bg-white/85 rounded-[28px] border border-white/90 p-4 sm:p-6 md:p-8 shadow-[0_18px_44px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 backdrop-blur-xl">
               <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                 {/* Avatar */}
-                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border-2 border-purple-100 shadow-sm relative flex items-center justify-center">
+                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-[24px] overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-[0_12px_28px_rgba(76,29,149,0.18)] ring-1 ring-purple-200/80 relative flex items-center justify-center">
                   {talent.avatarUrl && !avatarFailed && !talent.avatarUrl.includes('photo-1534528741775-53994a69daeb') ? (
                     <img
                       src={talent.avatarUrl}
@@ -752,7 +752,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
             {/* Voice Intro Card (if available) */}
             {voiceMedia.length > 0 && (
-              <div className="hidden lg:block bg-gradient-to-br from-purple-950 via-purple-900 to-[#2D1052] text-white rounded-2xl border border-purple-800/80 p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="hidden lg:block bg-gradient-to-br from-purple-950 via-purple-900 to-[#2D1052] text-white rounded-[26px] border border-purple-800/80 p-5 sm:p-6 shadow-[0_18px_42px_rgba(46,16,82,0.2)] ring-1 ring-white/10 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 rounded-xl bg-amber-400/20 border border-amber-300/30 text-amber-300 flex items-center justify-center shrink-0">
@@ -793,7 +793,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
             {/* Galeri Foto & Video Card */}
             {(photoMedia.length > 0 || videoMedia.length > 0) && (
-              <div className="sm:bg-white sm:rounded-3xl lg:rounded-2xl sm:border sm:border-slate-200/80 sm:p-6 md:p-8 sm:shadow-xs space-y-2 sm:space-y-6">
+              <div className="sm:bg-white/85 sm:rounded-[28px] sm:border sm:border-white/90 sm:p-6 md:p-8 sm:shadow-[0_16px_40px_rgba(76,29,149,0.08)] sm:ring-1 sm:ring-purple-100/70 sm:backdrop-blur-xl space-y-2 sm:space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="w-5 h-5 text-purple-700" />
@@ -882,7 +882,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             )}
 
             {/* About & Bio Card */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl lg:rounded-2xl border border-slate-200/80 p-3 sm:p-6 md:p-8 shadow-xs">
+            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl">
               <h2 className="flex items-center gap-2 text-base sm:text-lg font-bold text-slate-900 mb-2">
                 <UserIcon className="w-5 h-5 text-purple-700 lg:hidden" />
                 <span className="lg:hidden">Tentang Talent</span>
@@ -944,7 +944,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             </div>
 
             {/* Talent Availability Schedule Card */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl lg:rounded-2xl border border-slate-200/80 p-3 sm:p-6 md:p-8 shadow-xs space-y-3 sm:space-y-4">
+            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-purple-700" />
                 <h2 className="text-base sm:text-lg font-bold text-slate-900">
@@ -1036,7 +1036,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </span>
               </div>
             ) : (
-            <div className="bg-white rounded-2xl sm:rounded-3xl lg:rounded-2xl border border-slate-200/80 p-3 sm:p-6 md:p-8 shadow-xs space-y-3 sm:space-y-5">
+            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl space-y-3 sm:space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-purple-700" />
