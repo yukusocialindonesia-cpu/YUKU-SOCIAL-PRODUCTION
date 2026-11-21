@@ -50,7 +50,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
 
       {!isPrivateWorkspace && currentPath !== '/' && <SafetyPledgeBanner />}
 
-      {!isPrivateWorkspace && <Footer onNavigate={onNavigate} />
+      {!isPrivateWorkspace && <Footer onNavigate={onNavigate} />}
 
       {showBottomNav && <MobileBottomNav currentPath={currentPath} onNavigate={onNavigate} />}
     </div>
