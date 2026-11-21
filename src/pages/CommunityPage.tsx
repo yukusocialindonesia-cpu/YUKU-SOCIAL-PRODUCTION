@@ -242,7 +242,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[#FAF8FC] pb-8">
+    <div className="min-h-screen bg-[#FAF8FC] pb-24 md:pb-8">
       <section className="relative isolate overflow-hidden border-b border-purple-100 bg-gradient-to-br from-white via-[#F7F0FF] to-[#FFF3F7] text-slate-900">
         <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
