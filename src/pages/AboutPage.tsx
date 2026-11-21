@@ -31,7 +31,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
         {/* Brand Story & Philosophy */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch mb-16">
-          <div className="lg:col-span-6 space-y-4 rounded-[1.75rem] border border-white/90 bg-white/75 p-6 shadow-[0_20px_55px_-38px_rgba(76,29,149,0.3)] backdrop-blur-xl sm:p-8 text-xs sm:text-sm text-slate-600 leading-relaxed">
+          <div className="lg:col-span-6 space-y-4 rounded-[1.75rem] border border-white/90 bg-white/75 p-6 shadow-[0_20px_55px_-38px_rgba(76,29,149,0.3)] backdrop-blur-xl sm:p-8 text-sm sm:text-base text-slate-700 leading-relaxed">
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               Menghadirkan Solusi Kesepian Modern di Tengah Hiruk-Pikuk Kota
             </h2>
@@ -49,7 +49,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <div className="lg:col-span-6 bg-gradient-to-br from-[#1E0938] via-[#321052] to-[#6421A0] rounded-[2rem] p-8 sm:p-10 text-white shadow-[0_28px_65px_-24px_rgba(30,9,56,0.55)] ring-1 ring-white/15 relative overflow-hidden">
             <div className="relative z-10 space-y-6">
               <BrandLogo size="lg" showTagline={true} inverted={true} />
-              <div className="space-y-3 pt-4 border-t border-purple-800/60 text-xs text-purple-200/90 leading-relaxed">
+              <div className="space-y-3 pt-4 border-t border-purple-300/30 text-sm text-purple-100 leading-relaxed">
                 <div>
                   <strong className="text-white block font-semibold text-sm">Cakupan Wilayah:</strong>
                   Seluruh Indonesia (kota-kota besar dan sekitarnya).
@@ -86,7 +86,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                     <CheckCircle className="w-5 h-5" />
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-2">{val.title}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{val.desc}</p>
+                  <p className="text-sm text-slate-700 leading-relaxed">{val.desc}</p>
                 </div>
               </div>
             ))}
@@ -98,7 +98,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">
             Ingin Mengalami Momen Nyata Bersama Teman Baru?
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mb-6">
+          <p className="text-sm sm:text-base text-slate-700 max-w-md mx-auto mb-6 leading-relaxed">
             Jelajahi berbagai profil Talent terkurasi atau buat akun Customer untuk mulai memesan pendamping aktivitas.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
