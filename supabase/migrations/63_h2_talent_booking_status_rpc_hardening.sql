@@ -11,20 +11,32 @@ AS $$
 DECLARE
   v_actor uuid := auth.uid();
   v_booking public.bookings%ROWTYPE;
+  v_payment_found boolean := false;
 BEGIN
   IF v_actor IS NULL THEN
     RAISE EXCEPTION 'Authentication required';
   END IF;
 
-  -- Lock order: payment, then booking. This matches admin_process_refund()
-  -- and avoids the booking -> payment lock inversion in the original draft.
+  -- Pre-check ownership without locking, so a caller cannot lock another
+  -- user's payment row merely by guessing a booking UUID.
+  PERFORM 1
+  FROM public.bookings b
+  WHERE b.id = p_booking_id
+    AND b.talent_id = v_actor;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Booking tidak ditemukan atau bukan milik Anda.';
+  END IF;
+
+  -- Lock order: payment, then booking. This matches admin_process_refund().
   PERFORM 1
   FROM public.payments p
   WHERE p.booking_id = p_booking_id
     AND p.payment_status = 'settled_held'::public.payment_status_type
   FOR UPDATE;
 
-  IF NOT FOUND THEN
+  v_payment_found := FOUND;
+  IF NOT v_payment_found THEN
     RAISE EXCEPTION 'Pembayaran belum terkonfirmasi dalam escrow.';
   END IF;
 
@@ -62,19 +74,31 @@ AS $$
 DECLARE
   v_actor uuid := auth.uid();
   v_booking public.bookings%ROWTYPE;
+  v_payment_found boolean := false;
 BEGIN
   IF v_actor IS NULL THEN
     RAISE EXCEPTION 'Authentication required';
   END IF;
 
-  -- Keep the same payment -> booking lock order as the refund RPC.
+  -- Ownership pre-check before taking any row lock.
+  PERFORM 1
+  FROM public.bookings b
+  WHERE b.id = p_booking_id
+    AND b.talent_id = v_actor;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Booking tidak ditemukan atau bukan milik Anda.';
+  END IF;
+
+  -- Keep the payment -> booking lock order consistent with refund processing.
   PERFORM 1
   FROM public.payments p
   WHERE p.booking_id = p_booking_id
     AND p.payment_status = 'settled_held'::public.payment_status_type
   FOR UPDATE;
 
-  IF NOT FOUND THEN
+  v_payment_found := FOUND;
+  IF NOT v_payment_found THEN
     RAISE EXCEPTION 'Pembayaran tidak lagi berada dalam escrow.';
   END IF;
 
