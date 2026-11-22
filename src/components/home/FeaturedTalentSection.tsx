@@ -59,10 +59,10 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         <div className="flex items-end justify-between mb-5 md:mb-7 gap-3 md:gap-4">
           <div>
             <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
-              Kurasi Pilihan Terverifikasi
+              Temukan teman untuk aktivitasmu
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Talent Pilihan di Kotamu
+              Talent Pilihan YUKU
             </h2>
           </div>
           <button
