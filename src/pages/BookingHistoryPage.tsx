@@ -683,9 +683,12 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
               <option value="all">Semua Status</option>
               <option value="pending_payment">Menunggu Pembayaran</option>
               <option value="paid_held_in_escrow">Dibayar (Escrow)</option>
-              <option value="confirmed_by_talent">Terkonfirmasi</option>
+              <option value="confirmed_by_talent">Terkonfirmasi Talent</option>
+              <option value="in_progress">Aktivitas Berlangsung</option>
               <option value="completed">Selesai</option>
-              <option value="cancelled_by_customer">Dibatalkan</option>
+              <option value="cancelled_by_customer">Dibatalkan Customer</option>
+              <option value="cancelled_by_talent">Dibatalkan Talent</option>
+              <option value="expired">Kedaluwarsa</option>
             </select>
           </div>
         </div>
