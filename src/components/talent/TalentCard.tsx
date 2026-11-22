@@ -72,7 +72,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden">
+      <div className="relative aspect-[4/3] sm:aspect-[4/5] w-full overflow-hidden">
         {hasRealPhoto ? (
           <img
             src={talent.avatarUrl}
@@ -168,7 +168,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-3 pt-3 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
+      <div className="p-2.5 pt-2 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 max-sm:p-2 max-sm:pt-1.5 flex flex-col flex-1">
         {showPrice && (
           <div className="mb-1 flex min-w-0 flex-col items-start gap-1">
             <span className="text-[10px] sm:text-xs text-slate-500">Tarif mulai</span>
@@ -184,12 +184,12 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {talent.bio && (
-          <p className="mt-2 max-sm:mt-1 text-xs text-slate-600 line-clamp-2 leading-snug">{talent.bio}</p>
+          <p className="mt-1.5 max-sm:mt-0.5 text-[11px] sm:text-xs text-slate-600 line-clamp-1 sm:line-clamp-2 leading-snug">{talent.bio}</p>
         )}
 
         {talent.interests && talent.interests.length > 0 && (
-          <div className="mt-2.5 max-sm:mt-1 flex flex-wrap gap-1 max-sm:gap-1">
-            {talent.interests.slice(0, 3).map((item) => (
+          <div className="mt-2 max-sm:mt-1 flex flex-wrap gap-1 max-sm:gap-1">
+            {talent.interests.slice(0, 2).map((item) => (
               <span
                 key={item}
                 className="text-[11px] max-sm:text-[10.5px] font-medium text-purple-800 bg-purple-50 border border-purple-100 px-2 max-sm:px-1.5 py-0.5 rounded-full"
@@ -200,15 +200,15 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-auto pt-3 max-sm:pt-2">
-          <div className="pt-3 max-sm:pt-2 border-t border-purple-100">
+        <div className="mt-auto pt-2 max-sm:pt-1.5">
+          <div className="pt-2 max-sm:pt-1.5 border-t border-purple-100">
             <button
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
                 onSelect(talent.id);
               }}
-              className={`inline-flex w-full sm:w-auto min-h-10 sm:min-h-11 items-center justify-center gap-1 px-3 sm:gap-1.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
+              className={`inline-flex w-full sm:w-auto min-h-9 sm:min-h-11 items-center justify-center gap-1 px-3 sm:gap-1.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
