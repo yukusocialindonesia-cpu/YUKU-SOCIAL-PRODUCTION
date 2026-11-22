@@ -118,7 +118,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-3 sm:right-3 flex items-end justify-between gap-1.5 sm:gap-2 text-white">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[13px] sm:text-base font-extrabold leading-tight drop-shadow line-clamp-1 break-all">{talent.name}</span>
+              <span className="text-[13px] sm:text-base font-extrabold leading-tight drop-shadow line-clamp-1">{talent.name}</span>
               {talent.isVerified === true && <VerifiedBadge className="shrink-0" />}
             </div>
             <div className="mt-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-medium">
@@ -136,16 +136,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               )}
             </div>
           </div>
-          {showPrice && (
-            <div className="shrink-0 max-w-[40%] rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-700 to-fuchsia-600 px-1.5 py-1.5 sm:px-2.5 sm:py-2 text-center shadow-lg shadow-purple-950/25">
-              <span className="block text-[9px] sm:text-xs font-extrabold leading-tight whitespace-nowrap">
-                {displayedRate ? formatRupiah(displayedRate) : 'Hubungi'}
-              </span>
-              <span className="block text-[8px] sm:text-[10px] font-semibold text-white/85">
-                {displayedRate ? (showOnlineRate ? '/jam online' : '/jam offline') : 'Talent'}
-              </span>
-            </div>
-          )}
+
         </div>
       </div>
 
@@ -181,7 +172,14 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
       {/* Isi */}
       <div className="p-3 pt-3 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
-
+        {showPrice && (
+          <div className="mb-1 flex items-center justify-between gap-2">
+            <span className="text-[10px] sm:text-xs text-slate-500">Tarif mulai</span>
+            <span className="shrink-0 rounded-full bg-purple-50 px-2.5 py-1 text-[10px] sm:text-xs font-extrabold text-purple-800">
+              {displayedRate ? `${formatRupiah(displayedRate)} ${showOnlineRate ? '/jam online' : '/jam offline'}` : 'Hubungi talent'}
+            </span>
+          </div>
+        )}
 
         {talent.headline && (
           <p className="mt-1.5 max-sm:mt-1 text-[13px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
