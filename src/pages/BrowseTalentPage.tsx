@@ -21,21 +21,21 @@ interface BrowseTalentPageProps {
 
 interface ExploreBannerProps {
   promotion?: PromotionRow;
-  position: 'top' | 'bottom';
+  position: 'top';
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
 }
 
 const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNavigate }) => {
-  const title = position === 'top' ? 'Temukan teman, ciptakan momen.' : 'Ada banyak momen seru menunggumu di YUKU.';
+  const title = 'Temukan teman, ciptakan momen.';
   const link = promotion?.link_url?.trim() || '';
   const isExternal = link.startsWith('https://') || link.startsWith('http://');
   const isInternal = link.startsWith('/');
 
   const fallback = (
-    <div className={`flex h-[52px] items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)] ${position === 'top' ? 'bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5]' : 'bg-gradient-to-r from-[#32134F] via-[#6331A8] to-[#A43CC1]'}`}>
+    <div className="flex h-[52px] items-center justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5] px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)]">
       <div className="min-w-0">
         <p className="text-[12px] font-extrabold leading-tight sm:text-sm">{promotion?.title || title}</p>
-        <p className="mt-1 text-[10px] text-white/85">{position === 'top' ? 'Jelajahi teman online dan offline' : 'Buka profil dan temukan aktivitas yang cocok'}</p>
+        <p className="mt-1 text-[10px] text-white/85">Jelajahi teman online dan offline</p>
       </div>
       <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[10px] font-bold text-purple-800">Jelajahi</span>
     </div>
@@ -48,7 +48,7 @@ const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNa
       src={promotion.image_url}
       alt={promotion.title || 'Promosi YUKU'}
       className="h-[52px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[68px]"
-      loading={position === 'top' ? 'eager' : 'lazy'}
+      loading="eager"
       decoding="async"
       referrerPolicy="no-referrer"
     />
@@ -149,7 +149,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const firstFourTalents = filteredTalents.slice(0, 4);
   const remainingTalents = filteredTalents.slice(4);
   const topPromotion = promotions[0];
-  const bottomPromotion = promotions[1];
 
   return (
     <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-0 sm:py-5">
@@ -234,7 +233,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {loading ? (
           <div className="grid grid-cols-2 gap-2">
-            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(168px,22vh,190px)] animate-pulse rounded-[18px] bg-purple-100" />)}
+            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(210px,30vh,240px)] animate-pulse rounded-[18px] bg-purple-100" />)}
           </div>
         ) : errorMsg ? (
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-5 text-center text-sm text-rose-800">
@@ -258,9 +257,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 />
               ))}
             </div>
-
-            {/* Second banner follows the first four talent photos in the initial mobile viewport. */}
-            <ExploreBanner promotion={bottomPromotion} position="bottom" onNavigate={onNavigate} />
 
             {remainingTalents.length > 0 && (
               <section className="space-y-3 pt-1">
@@ -293,7 +289,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 <RotateCcw className="h-3.5 w-3.5" /> Reset filter
               </button>
             </div>
-            <ExploreBanner promotion={bottomPromotion} position="bottom" onNavigate={onNavigate} />
           </>
         )}
       </div>
