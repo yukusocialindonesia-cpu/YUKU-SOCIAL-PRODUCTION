@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw, Flame, MapPin, Wifi, Heart } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, Flame, MapPin, Wifi } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
 import { PromoCarousel } from '../components/home/PromoCarousel';
 import { AppRoute } from '../types/navigation';
 import { PromotionRow } from '../types/database';
-import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase, addFavoriteTalent, fetchFavoriteTalentIds, removeFavoriteTalent } from '../utils/supabaseMarketplace';
+import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -35,10 +35,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
-  const [activeTab, setActiveTab] = useState<'hot' | 'nearby' | 'online' | 'favorites'>('hot');
-  const [favoriteTalentIds, setFavoriteTalentIds] = useState<string[]>([]);
-  const [favoritesLoading, setFavoritesLoading] = useState(false);
-  const [favoriteError, setFavoriteError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'hot' | 'nearby' | 'online'>('hot');
   const { user } = useAuth();
 
   const loadMarketplaceData = async () => {
@@ -84,48 +81,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setSelectedMode(initialMode);
   }, [initialActivity, initialCity, initialMode]);
 
-  useEffect(() => {
-    let isMounted = true;
-    if (!user) {
-      setFavoriteTalentIds([]);
-      setFavoriteError(null);
-      setFavoritesLoading(false);
-      return () => { isMounted = false; };
-    }
-    setFavoritesLoading(true);
-    setFavoriteError(null);
-    fetchFavoriteTalentIds(user.id)
-      .then((ids) => { if (isMounted) setFavoriteTalentIds(ids); })
-      .catch((err) => {
-        if (isMounted) {
-          setFavoriteTalentIds([]);
-          setFavoriteError(err.message || 'Gagal memuat favorit.');
-        }
-      })
-      .finally(() => { if (isMounted) setFavoritesLoading(false); });
-    return () => { isMounted = false; };
-  }, [user?.id]);
-
-  const handleToggleFavorite = async (talentId: string) => {
-    if (!user) {
-      onNavigate('/login');
-      return;
-    }
-    setFavoriteError(null);
-    const alreadySaved = favoriteTalentIds.includes(talentId);
-    try {
-      if (alreadySaved) {
-        await removeFavoriteTalent(user.id, talentId);
-        setFavoriteTalentIds((ids) => ids.filter((id) => id !== talentId));
-      } else {
-        await addFavoriteTalent(user.id, talentId);
-        setFavoriteTalentIds((ids) => [...ids, talentId]);
-      }
-    } catch (err: any) {
-      setFavoriteError(err.message || 'Favorit belum dapat diperbarui.');
-    }
-  };
-
   const talentCities = useMemo(() => talents.map((t) => t.city), [talents]);
 
   const filteredTalents = useMemo(() => {
@@ -150,7 +105,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
       // Discovery tab filters
       if (activeTab === 'online' && !talent.serviceMode?.includes('Online')) return false;
-      if (activeTab === 'favorites' && !favoriteTalentIds.includes(talent.id)) return false;
       if (activeTab === 'nearby' && selectedCity === 'Semua Kota') return false;
 
       // Mode filter
@@ -173,7 +127,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
       return true;
     });
-  }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, activeTab, favoriteTalentIds]);
+  }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, activeTab]);
 
   // Hot: prioritize verified profiles, then review volume and rating.
   const displayedTalents = useMemo(() => {
@@ -213,21 +167,16 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-4 gap-1.5 rounded-2xl bg-purple-50/80 p-1.5 border border-purple-100">
+          <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-purple-50/80 p-1.5 border border-purple-100">
             {[
               { id: 'hot', label: 'Hot', icon: <Flame className="w-3.5 h-3.5" /> },
               { id: 'nearby', label: 'Terdekat', icon: <MapPin className="w-3.5 h-3.5" /> },
               { id: 'online', label: 'Online', icon: <Wifi className="w-3.5 h-3.5" /> },
-              { id: 'favorites', label: 'Favorit', icon: <Heart className="w-3.5 h-3.5" /> },
             ].map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => {
-                  if (tab.id === 'favorites' && !user) {
-                    onNavigate('/login');
-                    return;
-                  }
                   setActiveTab(tab.id as typeof activeTab);
                   setSelectedMode('all');
                 }}
@@ -247,9 +196,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <span className="text-[11px] text-slate-500">
               {activeTab === 'nearby' && selectedCity === 'Semua Kota'
                 ? 'Pilih kota untuk melihat talent di sekitar.'
-                : activeTab === 'favorites'
-                  ? 'Talent yang kamu simpan.'
-                  : activeTab === 'hot'
+                : activeTab === 'hot'
                     ? 'Talent unggulan berdasarkan verifikasi, ulasan, dan rating.'
                     : 'Talent yang menyediakan layanan online.'}
             </span>
@@ -329,12 +276,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           />
         </div>
 
-        {favoriteError && (
-          <p role="alert" className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">{favoriteError}</p>
-        )}
-
         {/* Results Grid */}
-        {loading || (activeTab === 'favorites' && favoritesLoading) ? (
+        {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
@@ -361,8 +304,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 key={talent.id}
                 talent={talent}
                 priceMode={activeTab === 'online' ? 'online' : selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
-                isFavorite={favoriteTalentIds.includes(talent.id)}
-                onToggleFavorite={handleToggleFavorite}
                 onSelect={(id) => onNavigate('/talent/:id', { id })}
               />
             ))}
@@ -371,10 +312,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-800 text-base mb-1">
-              {activeTab === 'favorites' && favoriteError ? 'Favorit Belum Bisa Dimuat' : activeTab === 'favorites' ? 'Belum Ada Talent Favorit' : activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih Kota Terlebih Dahulu' : 'Tidak Ada Talent yang Sesuai Filter'}
+              {activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih Kota Terlebih Dahulu' : 'Tidak Ada Talent yang Sesuai Filter'}
             </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
-              {activeTab === 'favorites' && favoriteError ? 'Penyimpanan favorit membutuhkan tabel database yang belum tersedia. Database Production tidak diubah; fitur ini perlu diuji melalui migrasi terpisah.' : activeTab === 'favorites' ? 'Tekan ikon hati pada kartu talent untuk menyimpannya ke daftar favorit.' : activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih kota pada filter lokasi. Untuk saat ini, pencarian terdekat menggunakan kota, bukan GPS.' : 'Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.'}
+              {activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih kota pada filter lokasi. Untuk saat ini, pencarian terdekat menggunakan kota, bukan GPS.' : 'Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.'}
             </p>
             <button
               onClick={handleResetFilters}
