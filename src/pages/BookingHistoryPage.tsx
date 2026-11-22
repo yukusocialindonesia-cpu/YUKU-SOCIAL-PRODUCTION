@@ -810,7 +810,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
                   {/* Partner Profile (Talent or Customer) */}
                   <div className="md:col-span-4 flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-white overflow-hidden shrink-0 border-2 border-white shadow-[0_8px_20px_-8px_rgba(49,24,86,0.35)] ring-1 ring-purple-100 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200 flex items-center justify-center">
                       {(roleFilter === 'customer' ? item.talentAvatar : item.customerAvatar) ? (
                         <img
                           src={roleFilter === 'customer' ? item.talentAvatar : item.customerAvatar}
@@ -858,7 +858,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                   </div>
 
                   {/* Pricing & Escrow */}
-                  <div className="md:col-span-3 text-right sm:text-right space-y-1">
+                  <div className="md:col-span-3 text-left md:text-right space-y-1 rounded-xl bg-slate-50 border border-slate-100 p-3 md:bg-transparent md:border-0 md:p-0">
                     <span className="text-[11px] text-slate-400 font-medium block">
                       Total Biaya Sesi
                     </span>
@@ -965,7 +965,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 )}
 
                 {roleFilter === 'customer' && item.status === 'in_progress' && (
-                  <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
                     {item.customer_completed_at ? (
                       <span className="text-amber-700 font-semibold">Konfirmasi Anda tercatat. Menunggu Talent mengonfirmasi sesi selesai.</span>
                     ) : (
@@ -987,7 +987,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 {/* Bottom Row: Actions & Expiration Notice */}
                 {roleFilter === 'customer' && ['pending_payment', 'paid_held_in_escrow', 'confirmed_by_talent'].includes(item.status) && new Date(item.start_time).getTime() > Date.now() && (
                   <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2 text-amber-800 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 text-[11px]">
+                    <div className="flex items-start gap-2 text-amber-800 bg-amber-50 px-3 py-2.5 rounded-lg border border-amber-200 text-[11px] leading-relaxed">
                       <Clock className="w-3.5 h-3.5 shrink-0" />
                       <span>
                         {item.status === 'pending_payment'
@@ -999,7 +999,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                     <button
                         onClick={() => handleCancelBooking(item.id)}
                         disabled={actionInProgressId === item.id}
-                        className="px-3.5 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 rounded-lg font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                        className="w-full sm:w-auto px-3.5 py-2 bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 rounded-lg font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
                       >
                         {actionInProgressId === item.id ? 'Membatalkan...' : 'Batalkan Reservasi'}
                     </button>
