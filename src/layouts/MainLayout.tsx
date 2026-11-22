@@ -18,6 +18,7 @@ const HIDE_BOTTOM_NAV: string[] = [
   '/lupa-sandi',
   '/reset-sandi',
   '/ganti-sandi',
+  '/aktivasi-admin',
 ];
 
 /**
