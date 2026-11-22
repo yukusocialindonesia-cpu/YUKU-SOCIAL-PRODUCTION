@@ -557,7 +557,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
                           {talent.name}
-                          <VerifiedBadge />
+                          {talent.isVerified === true && <VerifiedBadge />}
                         </h1>
                         <div className="flex items-center gap-1 text-sm font-bold text-slate-800 tabular-nums">
                           <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
@@ -695,7 +695,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   <div className="flex flex-wrap items-center justify-center sm:justify-between gap-2 mb-1">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 inline-flex items-center gap-2">
                       <span>{talent.name}{talent.age ? `, ${talent.age}` : ''}</span>
-                      <VerifiedBadge size="md" />
+                      {talent.isVerified === true && <VerifiedBadge size="md" />}
                     </h1>
                     {(() => {
                       const effectiveReviewCount =
@@ -1181,15 +1181,17 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <ShieldCheck className="w-4 h-4 text-emerald-600" />
                     <span>Perlindungan Escrow:</span>
                   </span>
-                  <span className="font-semibold text-emerald-700">Dana Terlindungi</span>
+                  <span className="font-semibold text-emerald-700">Diproses melalui sistem escrow</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
-                    <span>Status Verifikasi:</span>
-                  </span>
-                  <span className="font-semibold text-purple-900">Terverifikasi 18+</span>
-                </div>
+                {talent.isVerified === true && (
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span>Status Verifikasi:</span>
+                    </span>
+                    <span className="font-semibold text-purple-900">Identitas terverifikasi</span>
+                  </div>
+                )}
               </div>
 
               <button
