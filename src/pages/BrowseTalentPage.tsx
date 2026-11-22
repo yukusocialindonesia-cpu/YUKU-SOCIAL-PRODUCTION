@@ -141,10 +141,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen pb-28 sm:pb-10 pt-2 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen pb-28 sm:pb-10 pt-1 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Banner promosi ditampilkan di bagian atas halaman Jelajahi. */}
-        <div className="mb-2 sm:mb-5">
+        <div className="mb-1 sm:mb-5">
           <PromoCarousel
             compact
             promotions={promotions}
@@ -153,7 +153,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           />
         </div>
         {/* Search & quick filters — mobile-first marketplace layout */}
-        <section className="mb-1.5 sm:mb-5 space-y-1.5 sm:space-y-3">
+        <section className="mb-1 sm:mb-5 space-y-1 sm:space-y-3">
           <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)] sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-center gap-1 sm:gap-2">
             <div className="relative min-w-0">
               <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute left-3 sm:left-4 top-1/2 -translate-y-1/2" />
@@ -163,7 +163,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 aria-label="Cari talent dan aktivitas"
-                className="w-full h-10 sm:h-14 pl-9 sm:pl-12 pr-2 sm:pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-xs sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
+                className="w-full h-9 sm:h-14 pl-9 sm:pl-12 pr-2 sm:pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-xs sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
               />
             </div>
 
@@ -181,7 +181,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   setSelectedMode('all');
                 }}
                 aria-pressed={activeTab === tab.id}
-                className={`flex min-h-9 sm:min-h-10 flex-row items-center justify-center gap-0.5 sm:gap-1 rounded-lg px-0.5 sm:px-1 text-[9px] sm:text-sm font-bold whitespace-nowrap transition-all ${
+                className={`flex min-h-8 sm:min-h-10 flex-row items-center justify-center gap-0.5 sm:gap-1 rounded-lg px-0.5 sm:px-1 text-[9px] sm:text-sm font-bold whitespace-nowrap transition-all ${
                   activeTab === tab.id
                     ? 'bg-white text-purple-800 shadow-sm ring-1 ring-purple-100'
                     : 'text-slate-600 hover:bg-white/70'
@@ -200,7 +200,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               onClick={() => setFiltersOpen((open) => !open)}
               aria-expanded={filtersOpen}
               aria-controls="browse-advanced-filters"
-              className="min-h-8 inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/90 px-3 text-[11px] font-semibold text-purple-800 shadow-sm"
+              className="min-h-7 inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/90 px-3 text-[11px] font-semibold text-purple-800 shadow-sm"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
               Filter
@@ -234,7 +234,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </section>
 
         {/* Main talent directory */}
-        <section className="mb-1 sm:mb-4" aria-labelledby="browse-talent-heading">
+        <section className="mb-0.5 sm:mb-4" aria-labelledby="browse-talent-heading">
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
               <h2 id="browse-talent-heading" className="text-sm sm:text-2xl font-extrabold tracking-tight text-slate-900">
