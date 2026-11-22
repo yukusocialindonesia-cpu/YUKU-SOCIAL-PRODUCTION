@@ -29,7 +29,7 @@ export const SafetySection: React.FC = () => {
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center mb-3 md:mb-4">
                 <Ban className="w-6 h-6" />
               </div>
-              <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
+              <h3 className="text-base md:text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
                 Bukan Layanan Kencan & Bukan Prostitusi
               </h3>
               <p className="text-[11px] md:text-xs text-purple-200/70 leading-relaxed mb-2 md:mb-4">
@@ -48,10 +48,10 @@ export const SafetySection: React.FC = () => {
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-3 md:mb-4">
                 <FileCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-1.5 md:mb-2">
+              <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
                 Verifikasi Usia Wajib 18+ (KTP)
               </h3>
-              <p className="text-xs text-purple-200/70 leading-relaxed mb-3 md:mb-4">
+              <p className="text-[11px] md:text-xs text-purple-200/70 leading-relaxed mb-2 md:mb-4">
                 Baik Customer maupun Talent wajib melalui proses validasi identitas resmi. Kami menjamin tidak ada pengguna di bawah umur demi menjaga keamanan hukum dan etika sosial.
               </p>
             </div>
@@ -62,15 +62,15 @@ export const SafetySection: React.FC = () => {
           </div>
 
           {/* Card 3: Public Spaces Only */}
-          <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-4 md:p-6 rounded-2xl bg-purple-950/40 border border-purple-800/50 backdrop-blur-xs flex flex-col justify-between">
+          <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-3 md:p-6 rounded-2xl bg-purple-950/40 border border-purple-800/50 backdrop-blur-xs flex flex-col justify-between">
             <div>
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3 md:mb-4">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-1.5 md:mb-2">
+              <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
                 Zona Publik & Pusat Bantuan
               </h3>
-              <p className="text-xs text-purple-200/70 leading-relaxed mb-3 md:mb-4">
+              <p className="text-[11px] md:text-xs text-purple-200/70 leading-relaxed mb-2 md:mb-4">
                 Pertemuan langsung hanya diizinkan di fasilitas umum beramai-ramai seperti kafe, restoran, mall, atau gedung pertemuan. Dilarang keras bertemu di kamar hotel atau kediaman pribadi tertutup.
               </p>
             </div>
