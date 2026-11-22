@@ -1328,7 +1328,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <select
                       value={selectedActivity}
                       onChange={(e) => setSelectedActivity(e.target.value)}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                     >
                       {talent.activities.length > 0 ? (
                         talent.activities.map((actId) => {
@@ -1356,7 +1356,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <select
                       value={bookingMode}
                       onChange={(e) => setBookingMode(e.target.value as 'offline' | 'online')}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                     >
                       <option value="offline">Tatap Muka di Tempat Publik (Offline)</option>
                       {talent.onlineChatRate && (
@@ -1378,7 +1378,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       min={tomorrowStr}
                       value={bookingDate}
                       onChange={(e) => setBookingDate(e.target.value)}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                     />
                   </div>
 
@@ -1389,7 +1389,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <select
                       value={bookingTime}
                       onChange={(e) => setBookingTime(e.target.value)}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                     >
                       <option value="09:00">09:00 Pagi</option>
                       <option value="10:00">10:00 Pagi</option>
@@ -1446,7 +1446,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <select
                       value={durationHours}
                       onChange={(e) => setDurationHours(Number(e.target.value))}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                     >
                       <option value={1}>1 Jam</option>
                       <option value={2}>2 Jam</option>
@@ -1482,7 +1482,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       : 'Contoh: WhatsApp Video, Zoom, atau Google Meet'}
                     value={meetingLocation}
                     onChange={(e) => setMeetingLocation(e.target.value)}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                    className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                   />
                 </div>
 
@@ -1497,7 +1497,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       placeholder="Contoh: Lobby utama, lantai dasar dekat pintu masuk"
                       value={meetingAddress}
                       onChange={(e) => setMeetingAddress(e.target.value)}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
+                      className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                     />
                   </div>
                 )}
