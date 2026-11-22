@@ -17,9 +17,9 @@ interface HowItWorksSectionProps {
 
 export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMoreClick }) => {
   return (
-    <section className="py-5 md:py-16 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section className="py-4 md:py-16 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10">
           {/* Cara Kerja */}
           <div className="lg:col-span-8">
             <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase block">
@@ -35,11 +35,11 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                 return (
                   <div
                     key={item.step}
-                    className="flex flex-col items-center text-center bg-white/80 backdrop-blur-xl border border-white rounded-[22px] p-2.5 sm:p-4 shadow-[0_12px_28px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(76,29,149,0.13)] transition-all duration-300"
+                    className="flex flex-col items-center text-center bg-white/80 backdrop-blur-xl border border-white rounded-[22px] p-2 sm:p-4 shadow-[0_12px_28px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(76,29,149,0.13)] transition-all duration-300"
                   >
                     <div className="relative mb-2.5">
-                      <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center shadow-md shadow-purple-300/50">
-                        <Icon className="w-6 h-6" />
+                      <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center shadow-md shadow-purple-300/50">
+                        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                       </span>
                       <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-amber-400 text-amber-950 text-[11px] font-black flex items-center justify-center">
                         {index + 1}
@@ -73,8 +73,8 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
             <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-3">
               {TRUST_ITEMS.map(({ label, Icon }) => (
                 <div key={label} className="flex flex-col lg:flex-row items-center lg:gap-3 text-center lg:text-left">
-                  <span className="w-12 h-12 shrink-0 rounded-2xl bg-white/90 border border-purple-100 text-purple-700 shadow-[0_8px_20px_rgba(76,29,149,0.08)] flex items-center justify-center">
-                    <Icon className="w-6 h-6" />
+                  <span className="w-9 h-9 md:w-12 md:h-12 shrink-0 rounded-2xl bg-white/90 border border-purple-100 text-purple-700 shadow-[0_8px_20px_rgba(76,29,149,0.08)] flex items-center justify-center">
+                    <Icon className="w-5 h-5 md:w-6 md:h-6" />
                   </span>
                   <span className="mt-1.5 lg:mt-0 text-xs lg:text-sm font-semibold text-slate-700 leading-tight">{label}</span>
                 </div>
