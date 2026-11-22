@@ -78,24 +78,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* Kategori Aktivitas */}
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      {/* 6. Talent Pilihan dari profil publik Supabase */}
+      {/* Cara kerja dijelaskan sebelum pengunjung melihat pilihan Talent */}
+      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+
+      {/* Talent Pilihan dari profil publik Supabase */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Ruang Promosi Poster Berjalan */}
+      {/* Keamanan dan Verifikasi */}
+      <SafetySection />
+
+      {/* Informasi promosi setelah pengunjung memahami layanan dan keamanannya */}
       <PromoCarousel
         promotions={promotions}
         isLoading={isLoadingPromotions}
         onNavigate={onNavigate}
       />
-
-      {/* 7. Cara Kerja YUKU + Keamanan */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
-
-      {/* 9. Keamanan dan Verifikasi */}
-      <SafetySection />
 
       {/* 10. Ajakan Customer & Tautan Talent */}
       <TalentCtaSection
