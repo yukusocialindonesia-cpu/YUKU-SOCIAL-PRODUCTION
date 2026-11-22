@@ -130,7 +130,7 @@ export const TalentQuickFilter: React.FC<TalentQuickFilterProps> = ({ value, onC
           type="button"
           onClick={() => onChange(opt.id)}
           aria-pressed={value === opt.id}
-          className={`inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors cursor-pointer ${
+          className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors cursor-pointer ${
             value === opt.id
               ? 'bg-purple-100 text-purple-800 border-purple-300'
               : 'bg-white text-slate-700 border-slate-200 hover:border-purple-300'
