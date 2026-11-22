@@ -142,7 +142,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                 value={citySearch}
                 onChange={(e) => setCitySearch(e.target.value)}
                 placeholder="Cari kota (misal: Jaksel, Bandung, Bali)..."
-                className="w-full pl-8 pr-7 py-2.5 text-xs bg-white/90 border border-slate-200/80 rounded-xl shadow-inner focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                className="w-full min-h-11 sm:min-h-0 pl-8 pr-7 py-2.5 text-base sm:text-xs bg-white/90 border border-slate-200/80 rounded-xl shadow-inner focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
               />
               {citySearch && (
                 <button
@@ -164,7 +164,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               role="option"
               aria-selected={selectedCity === 'Semua Kota'}
               onClick={() => handleSelect('Semua Kota')}
-              className={`w-full px-3 py-2 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+              className={`w-full min-h-10 px-3 py-2 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                 selectedCity === 'Semua Kota'
                   ? 'bg-purple-50 text-purple-900 font-bold'
                   : 'text-slate-700 hover:bg-slate-50 font-medium'
@@ -190,7 +190,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                         role="option"
                         aria-selected={isSelected}
                         onClick={() => handleSelect(item.name)}
-                        className={`w-full px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+                        className={`w-full min-h-10 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                           isSelected
                             ? 'bg-purple-50 text-purple-900 font-bold'
                             : 'text-slate-700 hover:bg-slate-50'
@@ -228,7 +228,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                           role="option"
                           aria-selected={isSelected}
                           onClick={() => handleSelect(item.name)}
-                          className={`w-full px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+                          className={`w-full min-h-10 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                             isSelected
                               ? 'bg-purple-50 text-purple-900 font-bold'
                               : 'text-slate-700 hover:bg-slate-50'
