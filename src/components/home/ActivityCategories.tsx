@@ -53,7 +53,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   const gridClass = 'grid grid-cols-2 min-[360px]:grid-cols-3 gap-2 sm:flex sm:gap-3 sm:overflow-x-auto sm:snap-x sm:pb-2 sm:-mx-4 sm:px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
 
   return (
-    <section className="relative py-3 sm:py-12 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section className="relative py-3.5 sm:py-12 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 sm:mb-7 gap-1 md:gap-4">
           <div>
@@ -73,7 +73,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         {loading ? (
           <div className={gridClass}>
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-xl border border-slate-200/80 bg-slate-50 animate-pulse h-14 lg:h-20" />
+              <div key={i} className="rounded-2xl border border-purple-100/80 bg-gradient-to-br from-white to-purple-50/70 animate-pulse h-[76px] lg:h-20" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -110,12 +110,12 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-4 min-h-[76px] rounded-[22px] border border-white/90 bg-white/85 backdrop-blur-xl shadow-[0_10px_28px_rgba(76,29,149,0.09),inset_0_1px_0_rgba(255,255,255,0.9)] ring-1 ring-purple-100/80 hover:border-purple-200 hover:shadow-[0_18px_36px_rgba(76,29,149,0.16)] hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-4 min-h-[76px] rounded-[22px] border border-purple-100/80 bg-gradient-to-br from-white via-white to-purple-50/60 backdrop-blur-xl shadow-[0_8px_22px_rgba(76,29,149,0.07),inset_0_1px_0_rgba(255,255,255,0.95)] ring-1 ring-white/90 hover:border-purple-200 hover:shadow-[0_16px_30px_rgba(76,29,149,0.13)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
                 >
-                  <span className={`w-9 h-9 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-inner ${tones[idx % tones.length]} group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-300`}>
+                  <span className={`w-9 h-9 sm:w-12 sm:h-12 rounded-[15px] flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.7),0_3px_8px_rgba(76,29,149,0.07)] ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <h3 className="font-bold text-[10.5px] sm:text-[12px] leading-tight text-center text-slate-800 group-hover:text-purple-700 transition-colors">
+                  <h3 className="font-bold text-[11px] sm:text-[12px] leading-tight text-center text-slate-800 group-hover:text-purple-700 transition-colors">
                     {cat.title}
                   </h3>
                 </button>
