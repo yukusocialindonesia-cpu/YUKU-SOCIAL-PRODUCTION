@@ -32,7 +32,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
   return (
     <div
       className={`min-h-screen flex flex-col bg-transparent text-slate-800 ${
-        showBottomNav ? 'pb-[calc(92px+env(safe-area-inset-bottom))] md:pb-0' : ''
+        showBottomNav ? (currentPath === '/talent' ? 'pb-[calc(112px+env(safe-area-inset-bottom))] md:pb-0' : 'pb-[calc(92px+env(safe-area-inset-bottom))] md:pb-0') : ''
       }`}
     >
       {/* Navbar disembunyikan khusus di halaman Jelajah agar banner dan talent lebih leluasa terlihat. */}
