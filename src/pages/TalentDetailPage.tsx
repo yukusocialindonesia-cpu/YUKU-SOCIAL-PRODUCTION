@@ -185,12 +185,25 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           .eq('talent_id', talentId),
       ]);
 
+      // Jangan tampilkan jadwal seolah-olah fleksibel jika pembacaan jadwal gagal.
+      if (availabilityRes.error) {
+        throw new Error(`Gagal membaca jadwal ketersediaan Talent: ${availabilityRes.error.message}`);
+      }
+      if (reviewsRes.error) {
+        throw new Error(`Gagal membaca ulasan Talent: ${reviewsRes.error.message}`);
+      }
+      if (mediaRes.error) {
+        throw new Error(`Gagal membaca galeri Talent: ${mediaRes.error.message}`);
+      }
+      if (serviceRatesRes.error) {
+        throw new Error(`Gagal membaca tarif layanan Talent: ${serviceRatesRes.error.message}`);
+      }
+
       setTalent(talentData);
       setCategories(categoriesData);
       setAvailabilitySlots((availabilityRes.data as TalentAvailabilityRow[]) || []);
-      if (serviceRatesRes.error) throw new Error(`Gagal membaca tarif layanan Talent: ${serviceRatesRes.error.message}`);
       setServiceRateOverrides(Object.fromEntries((serviceRatesRes.data || []).map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
-      setMediaItems(mediaRes.error ? [] : ((mediaRes.data as TalentMediaRow[]) || []));
+      setMediaItems((mediaRes.data as TalentMediaRow[]) || []);
       if (talentData && talentData.activities.length > 0) {
         setSelectedActivity(talentData.activities[0]);
       }
