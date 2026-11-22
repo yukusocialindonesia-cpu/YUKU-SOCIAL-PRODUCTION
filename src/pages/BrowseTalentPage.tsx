@@ -142,6 +142,15 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   return (
     <div className="min-h-screen pb-28 sm:pb-10 pt-2 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Banner promosi ditampilkan di bagian atas halaman Jelajahi. */}
+        <div className="mb-3 sm:mb-5">
+          <PromoCarousel
+            compact
+            promotions={promotions}
+            isLoading={isLoadingPromotions}
+            onNavigate={onNavigate}
+          />
+        </div>
         {/* Search & quick filters — mobile-first marketplace layout */}
         <section className="mb-2 sm:mb-5 space-y-2 sm:space-y-3">
           <div className="relative">
@@ -308,15 +317,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         )}
 
-        {/* Promo dipindahkan ke bawah daftar agar talent langsung terlihat. */}
-        <div className="mt-6 mb-5 sm:mt-10 sm:mb-8">
-          <PromoCarousel
-            compact
-            promotions={promotions}
-            isLoading={isLoadingPromotions}
-            onNavigate={onNavigate}
-          />
-        </div>
       </div>
     </div>
   );
