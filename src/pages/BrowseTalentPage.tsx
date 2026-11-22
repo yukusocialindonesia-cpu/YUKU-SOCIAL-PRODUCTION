@@ -143,7 +143,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     <div className="min-h-screen pb-28 sm:pb-10 pt-2 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search & quick filters — mobile-first marketplace layout */}
-        <section className="mb-5 sm:mb-7 space-y-3">
+        <section className="mb-3 sm:mb-5 space-y-2.5 sm:space-y-3">
           <div className="relative">
             <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
@@ -256,17 +256,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
-        <div className="mb-5 sm:mb-8">
-          <PromoCarousel
-            compact
-            promotions={promotions}
-            isLoading={isLoadingPromotions}
-            onNavigate={onNavigate}
-          />
-        </div>
-
         {/* Main talent directory */}
-        <section className="mb-3 sm:mb-5" aria-labelledby="browse-talent-heading">
+        <section className="mb-2 sm:mb-4" aria-labelledby="browse-talent-heading">
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
               <h2 id="browse-talent-heading" className="text-lg sm:text-2xl font-extrabold tracking-tight text-slate-900">
@@ -329,6 +320,16 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </button>
           </div>
         )}
+
+        {/* Promo dipindahkan ke bawah daftar agar talent langsung terlihat. */}
+        <div className="mt-6 mb-5 sm:mt-10 sm:mb-8">
+          <PromoCarousel
+            compact
+            promotions={promotions}
+            isLoading={isLoadingPromotions}
+            onNavigate={onNavigate}
+          />
+        </div>
       </div>
     </div>
   );
