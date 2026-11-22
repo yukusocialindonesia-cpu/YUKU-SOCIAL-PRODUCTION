@@ -9,6 +9,7 @@ interface TalentCardProps {
   onSelect: (talentId: string) => void;
   availableToday?: boolean;
   mediaTypes?: string[];
+  priceMode?: 'online' | 'offline' | 'all';
 }
 
 // Foto stok bawaan lama dianggap "belum ada foto", supaya kartu tidak terlihat kembar.
@@ -34,15 +35,16 @@ function initialsOf(name: string): string {
   return letters.toUpperCase();
 }
 
-export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [] }) => {
+export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all' }) => {
   const [imageFailed, setImageFailed] = useState(false);
 
   const hasVoice = mediaTypes.includes('voice');
   const hasVideo = mediaTypes.includes('video');
   const hasPhoto = mediaTypes.includes('photo');
   const isOnlineOnly = talent.serviceMode === 'Online Only';
-  const displayedRate = isOnlineOnly ? talent.onlineChatRate : talent.hourlyRate;
-  const displayedRateLabel = isOnlineOnly ? ' / jam online' : ' / jam offline';
+  const showOnlineRate = priceMode === 'online' || (priceMode === 'all' && isOnlineOnly);
+  const displayedRate = showOnlineRate ? talent.onlineChatRate : talent.hourlyRate;
+  const displayedRateLabel = showOnlineRate ? ' / jam online' : ' / jam offline';
 
   const hasRealPhoto =
     Boolean(talent.avatarUrl) &&
