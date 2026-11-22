@@ -7,13 +7,13 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-3 sm:py-12 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section className="relative overflow-hidden py-5 sm:py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-2 sm:mb-6">
-          <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase">
+          <span className="text-xs font-semibold text-purple-700 tracking-wide uppercase">
             Pilih Cara Menemani
           </span>
-          <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="mt-1 text-lg sm:text-2xl font-bold text-slate-900 tracking-tight">
             Mau Teman Offline atau Online?
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
@@ -25,9 +25,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
           <button
             type="button"
             onClick={() => onSelectMode('offline')}
-            className="group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-fuchsia-100/90 bg-white p-2.5 sm:p-5 text-left shadow-[0_8px_24px_rgba(124,58,237,0.07)] hover:shadow-[0_16px_34px_rgba(124,58,237,0.14)] hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+            className="group relative min-w-0 overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 bg-white p-3 sm:p-5 text-left transition-colors hover:border-purple-300 hover:bg-purple-50/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
           >
-            <span className="mb-2 flex h-8 w-8 sm:mb-2.5 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-700 text-white shadow-md shadow-fuchsia-200/70">
+            <span className="mb-2 flex h-8 w-8 sm:mb-2.5 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
               <span className="relative flex items-center justify-center" aria-hidden="true">
                 <UsersRound className="h-4 w-4 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
                 <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-fuchsia-700">
@@ -47,9 +47,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
           <button
             type="button"
             onClick={() => onSelectMode('online')}
-            className="group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-purple-100/90 bg-white p-2.5 sm:p-5 text-left shadow-[0_8px_24px_rgba(124,58,237,0.07)] hover:shadow-[0_16px_34px_rgba(124,58,237,0.14)] hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+            className="group relative min-w-0 overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 bg-white p-3 sm:p-5 text-left transition-colors hover:border-purple-300 hover:bg-purple-50/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
           >
-            <span className="mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-md shadow-purple-200/70">
+            <span className="mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
               <span className="relative flex items-center justify-center" aria-hidden="true">
                 <Video className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
                 <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-indigo-700">
