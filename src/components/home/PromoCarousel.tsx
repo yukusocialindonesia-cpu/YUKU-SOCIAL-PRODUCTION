@@ -128,7 +128,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
           >
             {/* Kotak mengikuti rasio asli poster yang sedang tampil (dibatasi 3:2 sampai 3:1), jadi poster tidak terpotong. */}
             <div
-              className="w-full rounded-[22px] sm:rounded-[28px] overflow-hidden border border-white/90 bg-slate-900 relative shadow-[0_12px_32px_rgba(76,29,149,0.13)] sm:shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y"
+              className={`w-full max-sm:max-h-[108px] rounded-[18px] sm:rounded-[28px] overflow-hidden border border-white/90 bg-slate-900 relative shadow-[0_8px_20px_rgba(76,29,149,0.10)] sm:shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y`}
               style={{ aspectRatio: String(frameRatio) }}
             >
               {promotions.map((promo, index) => {
