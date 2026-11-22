@@ -31,6 +31,7 @@ import { TalentProfile, ActivityCategory } from '../types/talent';
 import { formatRupiah } from '../utils/formatters';
 import { AppRoute } from '../types/navigation';
 import { Modal } from '../components/common/Modal';
+import { PhotoLightbox } from '../components/common/PhotoLightbox';
 import { VerifiedBadge } from '../components/talent/VerifiedBadge';
 import { fetchTalentByIdFromSupabase, fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
 import { supabase } from '../lib/supabase';
@@ -520,12 +521,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   <>
                     <div className="relative mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-md">
                       {heroUrl && !avatarFailed ? (
-                        <img
+                        <PhotoLightbox
                           src={heroUrl}
-                          alt={talent.name}
-                          className="w-full h-full object-cover object-[50%_25%]"
-                          referrerPolicy="no-referrer"
-                          onError={() => setAvatarFailed(true)}
+                          alt={`Foto profil ${talent.name}`}
+                          className="h-full w-full"
+                          imageClassName="h-full w-full object-cover object-[50%_25%]"
                         />
                       ) : (
                         <div className={`w-full h-full bg-gradient-to-br ${avatarGradient(talent.id)} flex items-center justify-center`}>
@@ -680,12 +680,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 {/* Avatar */}
                 <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-[24px] overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-[0_12px_28px_rgba(76,29,149,0.18)] ring-1 ring-purple-200/80 relative flex items-center justify-center">
                   {talent.avatarUrl && !avatarFailed && !talent.avatarUrl.includes('photo-1534528741775-53994a69daeb') ? (
-                    <img
+                    <PhotoLightbox
                       src={talent.avatarUrl}
-                      alt={talent.name}
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                      onError={() => setAvatarFailed(true)}
+                      alt={`Foto profil ${talent.name}`}
+                      className="h-full w-full"
+                      imageClassName="h-full w-full object-cover"
                     />
                   ) : (
                     <div className={`w-full h-full bg-gradient-to-br ${avatarGradient(talent.id)} flex items-center justify-center`}>
