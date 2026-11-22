@@ -108,25 +108,14 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/70 to-transparent" />
 
-        {/* Badges (atas) */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            {availableToday && (
-              <span className="min-w-0 inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-950/65 backdrop-blur-md border border-white/25 text-white text-[10.5px] font-semibold">
-                <span className="relative flex shrink-0 w-1.5 h-1.5">
-                  <span className="absolute inset-0 rounded-full bg-fuchsia-300 opacity-60 animate-ping motion-reduce:animate-none" />
-                  <span className="relative w-1.5 h-1.5 rounded-full bg-fuchsia-300" />
-                </span>
-                <span className="truncate">Tersedia hari ini</span>
-              </span>
-            )}
-          </div>
-          {isNew && (
+        {/* Badge BARU tetap di atas; status ketersediaan dipindah ke bawah foto. */}
+        {isNew && (
+          <div className="absolute top-3 right-3">
             <span className="shrink-0 inline-flex items-center h-[22px] px-2.5 rounded-full bg-amber-400 text-amber-950 text-[9.5px] font-extrabold tracking-widest">
               BARU
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Lokasi & mode (bawah foto) */}
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-medium">
@@ -146,9 +135,18 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         </div>
       </div>
 
-      {/* Ikon media: di bawah foto, tidak menimpa gambar */}
-      {(hasVoice || hasVideo || hasPhoto) && (
+      {/* Status ketersediaan dan ikon media: di bawah foto, tidak menimpa gambar */}
+      {(availableToday || hasVoice || hasVideo || hasPhoto) && (
         <div className="px-3 pt-1.5 sm:px-5 sm:pt-3 flex flex-wrap gap-1.5">
+          {availableToday && (
+            <span className="inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-50 border border-purple-100 text-purple-800 text-[10.5px] font-semibold">
+              <span className="relative flex shrink-0 w-1.5 h-1.5">
+                <span className="absolute inset-0 rounded-full bg-fuchsia-500 opacity-40 animate-ping motion-reduce:animate-none" />
+                <span className="relative w-1.5 h-1.5 rounded-full bg-fuchsia-600" />
+              </span>
+              Tersedia hari ini
+            </span>
+          )}
           {hasVoice && (
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-fuchsia-800 bg-fuchsia-50 border border-fuchsia-100 px-2 py-0.5 rounded-full">
               <Mic className="w-3 h-3" /> Voice
