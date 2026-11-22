@@ -200,6 +200,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       }
 
       setTalent(talentData);
+      setBookingMode(talentData?.serviceMode === 'Online Only' ? 'online' : 'offline');
       setCategories(categoriesData);
       setAvailabilitySlots((availabilityRes.data as TalentAvailabilityRow[]) || []);
       setServiceRateOverrides(Object.fromEntries((serviceRatesRes.data || []).map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
@@ -1358,8 +1359,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       onChange={(e) => setBookingMode(e.target.value as 'offline' | 'online')}
                       className="w-full min-h-11 sm:min-h-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-base sm:text-xs"
                     >
-                      <option value="offline">Tatap Muka di Tempat Publik (Offline)</option>
-                      {talent.onlineChatRate && (
+                      {talent.serviceMode !== 'Online Only' && (
+                        <option value="offline">Tatap Muka di Tempat Publik (Offline)</option>
+                      )}
+                      {talent.onlineChatRate && talent.serviceMode !== 'Offline Only' && (
                         <option value="online">Online Companion / Video Chat</option>
                       )}
                     </select>
