@@ -153,9 +153,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       }
     }
     loadCategories();
-    return (
-    <>
-      {pendingAvatarFile && <PhotoCropEditor file={pendingAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingAvatarFile(null)} onApply={(cropped) => { setAvatarFile(cropped); setPendingAvatarFile(null); }} />}) => {
+    return () => {
       isMounted = false;
     };
   }, []);
@@ -445,6 +443,8 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
   };
 
   return (
+    <>
+      {pendingAvatarFile && <PhotoCropEditor file={pendingAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingAvatarFile(null)} onApply={(cropped) => { setAvatarFile(cropped); setPendingAvatarFile(null); }} />}
     <div className="relative isolate overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
