@@ -52,8 +52,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
+                  onClick={() => onNavigate('/komunitas')}
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                >
+                  Komunitas
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => onNavigate('/cara-kerja')}
-                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Cara Kerja
                 </button>
@@ -61,7 +69,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/daftar-talent')}
-                  className="inline-flex min-h-8 items-center rounded-lg px-2 -ml-2 bg-amber-400/10 !text-amber-200 font-semibold hover:bg-amber-400/15 hover:!text-amber-100 transition-all cursor-pointer"
+                  className="inline-flex min-h-11 items-center inline-flex min-h-8 items-center rounded-lg px-2 -ml-2 bg-amber-400/10 !text-amber-200 font-semibold hover:bg-amber-400/15 hover:!text-amber-100 transition-all cursor-pointer"
                 >
                   Daftar Jadi Talent
                 </button>
@@ -78,7 +86,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/tentang')}
-                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Tentang YUKU
                 </button>
@@ -86,7 +94,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/faq')}
-                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   FAQ & Tanya Jawab
                 </button>
@@ -94,7 +102,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/bantuan')}
-                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Pusat Bantuan
                 </button>
@@ -102,7 +110,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/login')}
-                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Masuk Akun
                 </button>
@@ -119,7 +127,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/syarat-ketentuan')}
-                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Syarat & Ketentuan
                 </button>
@@ -127,7 +135,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/kebijakan-privasi')}
-                  className="!text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 items-center !text-white font-medium hover:!text-amber-200 transition-colors cursor-pointer"
                 >
                   Kebijakan Privasi
                 </button>
