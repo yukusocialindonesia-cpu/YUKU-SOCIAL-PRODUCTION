@@ -10,6 +10,7 @@ interface TalentCardProps {
   availableToday?: boolean;
   mediaTypes?: string[];
   priceMode?: 'online' | 'offline' | 'all';
+  showPrice?: boolean;
 }
 
 // Foto stok bawaan lama dianggap "belum ada foto", supaya kartu tidak terlihat kembar.
@@ -35,7 +36,7 @@ function initialsOf(name: string): string {
   return letters.toUpperCase();
 }
 
-export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all' }) => {
+export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true }) => {
   const [imageFailed, setImageFailed] = useState(false);
 
   const hasVoice = mediaTypes.includes('voice');
@@ -184,16 +185,18 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-1">
-          <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
-            <div>
-              <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
-              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
-                {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
-                {displayedRate ? (
-                  <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
-                ) : null}
+          <div className={`pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center gap-3 ${showPrice ? 'justify-between' : 'justify-end'}`}>
+            {showPrice && (
+              <div>
+                <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
+                <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
+                  {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
+                  {displayedRate ? (
+                    <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
+                  ) : null}
+                </div>
               </div>
-            </div>
+            )}
 
             <button
               type="button"
