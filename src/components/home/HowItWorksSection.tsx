@@ -35,17 +35,17 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                 return (
                   <div
                     key={item.step}
-                    className="flex flex-col items-center text-center bg-white/80 backdrop-blur-xl border border-white rounded-[22px] p-2 sm:p-4 shadow-[0_12px_28px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(76,29,149,0.13)] transition-all duration-300"
+                    className="flex flex-col items-center text-center bg-gradient-to-b from-white to-purple-50/60 backdrop-blur-xl border border-purple-100/80 rounded-[20px] sm:rounded-[22px] p-2.5 sm:p-4 shadow-[0_7px_18px_rgba(76,29,149,0.06)] ring-1 ring-white/90 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.12)] transition-all duration-300"
                   >
-                    <div className="relative mb-2.5">
-                      <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center shadow-md shadow-purple-300/50">
+                    <div className="relative mb-2">
+                      <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] sm:rounded-2xl bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center shadow-[0_5px_12px_rgba(126,34,206,0.22)] ring-2 ring-white">
                         <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                       </span>
-                      <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-amber-400 text-amber-950 text-[11px] font-black flex items-center justify-center">
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-amber-950 text-[11px] font-black flex items-center justify-center ring-2 ring-white">
                         {index + 1}
                       </span>
                     </div>
-                    <h3 className="text-[13px] font-bold text-[#1E0938] mb-1 leading-tight">{item.title}</h3>
+                    <h3 className="text-[13px] font-bold text-[#1E0938] mb-1 leading-tight tracking-tight">{item.title}</h3>
                     <p className="text-xs text-slate-600 leading-snug line-clamp-4">{item.description}</p>
                   </div>
                 );
