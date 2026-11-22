@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw, Flame, MapPin, Wifi } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, MapPin, Wifi } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
@@ -34,7 +34,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
-  const [activeTab, setActiveTab] = useState<'hot' | 'nearby' | 'online'>('hot');
+  const [activeTab, setActiveTab] = useState<'offline' | 'nearby' | 'online'>('offline');
 
   const loadMarketplaceData = async () => {
     setLoading(true);
@@ -103,6 +103,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
       // Discovery tab filters
       if (activeTab === 'online' && !talent.serviceMode?.includes('Online')) return false;
+      if (activeTab === 'offline' && !talent.serviceMode?.includes('Offline')) return false;
       if (activeTab === 'nearby' && selectedCity === 'Semua Kota') return false;
 
       // Mode filter
@@ -127,17 +128,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     });
   }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, activeTab]);
 
-  // Hot: prioritize verified profiles, then review volume and rating.
-  const displayedTalents = useMemo(() => {
-    if (activeTab !== 'hot') return filteredTalents;
-    return [...filteredTalents].sort((a, b) => {
-      const verifiedDifference = Number(b.isVerified === true) - Number(a.isVerified === true);
-      if (verifiedDifference !== 0) return verifiedDifference;
-      const reviewDifference = (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
-      if (reviewDifference !== 0) return reviewDifference;
-      return (b.rating ?? 0) - (a.rating ?? 0);
-    });
-  }, [filteredTalents, activeTab]);
+  const displayedTalents = filteredTalents;
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -145,7 +136,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setSelectedCity('Semua Kota');
     setSelectedGender('Semua');
     setSelectedMode('all');
-    setActiveTab('hot');
+    setActiveTab('offline');
   };
 
   return (
@@ -167,7 +158,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
           <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-purple-50/80 p-1.5 border border-purple-100">
             {[
-              { id: 'hot', label: 'Hot', icon: <Flame className="w-3.5 h-3.5" /> },
+              { id: 'offline', label: 'Teman Offline', icon: <Users className="w-3.5 h-3.5" /> },
               { id: 'nearby', label: 'Terdekat', icon: <MapPin className="w-3.5 h-3.5" /> },
               { id: 'online', label: 'Online', icon: <Wifi className="w-3.5 h-3.5" /> },
             ].map((tab) => (
