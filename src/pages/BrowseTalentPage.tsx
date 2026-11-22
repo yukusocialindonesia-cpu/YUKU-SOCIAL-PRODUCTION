@@ -113,148 +113,106 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   return (
     <div className="min-h-screen py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb / Title */}
-        <div className="mb-7 sm:mb-8">
-          <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-3 shadow-sm backdrop-blur-md">
-            {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
-            {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
-          </h1>
-          <p className="text-sm text-slate-600 mt-1">
-            {selectedMode === 'offline'
-              ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
-              : selectedMode === 'online'
-                ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
-                : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
-          </p>
-        </div>
+        {/* Search & quick filters — mobile-first marketplace layout */}
+        <section className="mb-5 sm:mb-7 space-y-3">
+          <div className="relative">
+            <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Cari teman, aktivitas..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Cari talent dan aktivitas"
+              className="w-full h-12 sm:h-14 pl-12 pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-sm sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
+            />
+          </div>
 
-        {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-4 sm:p-5 rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-8 space-y-4 backdrop-blur-xl">
-          {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            {/* Search Input */}
-            <div className="md:col-span-5 relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Cari nama, hobi (kopi, lari, seni), minat..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-11 sm:min-h-0 pl-9 pr-4 py-2.5 text-base sm:text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
-              />
+          <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1">
+            {[
+              { id: 'all', label: 'Semua' },
+              { id: 'offline', label: 'Offline' },
+              { id: 'online', label: 'Online' },
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => setSelectedMode(mode.id)}
+                aria-pressed={selectedMode === mode.id}
+                className={`min-h-10 px-4 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
+                  selectedMode === mode.id
+                    ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40'
+                    : 'bg-white/85 text-slate-600 border border-purple-100 hover:bg-purple-50'
+                }`}
+              >
+                {mode.label}
+              </button>
+            ))}
+            <span className="ml-auto shrink-0 text-[11px] sm:text-xs font-semibold text-slate-500 tabular-nums">
+              {filteredTalents.length} talent
+            </span>
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="shrink-0 inline-flex items-center gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
+              <span className="text-[11px] font-semibold text-slate-500">Gender</span>
+              <select
+                value={selectedGender}
+                onChange={(e) => setSelectedGender(e.target.value as GenderType)}
+                aria-label="Filter gender"
+                className="max-w-[92px] bg-transparent text-xs font-bold text-purple-900 outline-none"
+              >
+                <option value="Semua">Semua</option>
+                <option value="Wanita">Wanita</option>
+                <option value="Pria">Pria</option>
+              </select>
             </div>
-
-            {/* Dynamic Regional Location Filter */}
-            <div className="md:col-span-4">
+            <div className="shrink-0 min-w-[150px] rounded-full bg-white/90 border border-purple-100 px-3 py-1.5 shadow-sm">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
                 onChangeCity={setSelectedCity}
               />
             </div>
-
-            {/* Reset Button */}
-            <div className="md:col-span-3 flex items-center justify-end">
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="w-full md:w-auto min-h-11 sm:min-h-0 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-purple-800 bg-white/80 hover:bg-white border border-purple-100 shadow-sm hover:shadow rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset Filter</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="shrink-0 min-h-10 px-3 rounded-full bg-white/90 border border-purple-100 text-xs font-semibold text-slate-600 hover:text-purple-800 shadow-sm inline-flex items-center gap-1.5"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reset
+            </button>
           </div>
 
-          {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-4 border-t border-purple-100/80">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-              Kategori Aktivitas:
-            </span>
-            <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button
+              type="button"
+              onClick={() => setSelectedActivity('all')}
+              aria-pressed={selectedActivity === 'all'}
+              className={`shrink-0 min-h-9 px-4 rounded-full text-xs font-bold whitespace-nowrap ${
+                selectedActivity === 'all'
+                  ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200'
+                  : 'bg-white/80 text-slate-600 border border-slate-200'
+              }`}
+            >
+              Semua Kategori
+            </button>
+            {categories.map((cat) => (
               <button
+                key={cat.id}
                 type="button"
-                onClick={() => setSelectedActivity('all')}
-                className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  selectedActivity === 'all'
-                    ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
-                    : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
+                onClick={() => setSelectedActivity(cat.id)}
+                aria-pressed={selectedActivity === cat.id}
+                className={`shrink-0 min-h-9 px-4 rounded-full text-xs font-semibold whitespace-nowrap ${
+                  selectedActivity === cat.id
+                    ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200'
+                    : 'bg-white/80 text-slate-600 border border-slate-200'
                 }`}
               >
-                Semua Aktivitas
+                {cat.title}
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedActivity(cat.id)}
-                  className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                    selectedActivity === cat.id
-                      ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
-                      : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
-                  }`}
-                >
-                  {cat.title}
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
-
-          {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
-            {/* Gender Segmented */}
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-              <span className="font-semibold text-slate-500">Gender:</span>
-              <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
-                {(['Semua', 'Wanita', 'Pria'] as GenderType[]).map((gender) => (
-                  <button
-                    key={gender}
-                    type="button"
-                    onClick={() => setSelectedGender(gender)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
-                      selectedGender === gender
-                        ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {gender}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Service Mode */}
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-              <span className="font-semibold text-slate-500">Metode:</span>
-              <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
-                {[
-                  { id: 'all', label: 'Semua' },
-                  { id: 'offline', label: 'Offline' },
-                  { id: 'online', label: 'Online' },
-                ].map((mode) => (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    onClick={() => setSelectedMode(mode.id)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
-                      selectedMode === mode.id
-                        ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {mode.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="text-slate-500 font-medium tabular-nums">
-              Menampilkan <strong>{filteredTalents.length}</strong> Talent terverifikasi
-            </div>
-          </div>
-        </div>
+        </section>
 
         {/* Results Grid */}
         {loading ? (
