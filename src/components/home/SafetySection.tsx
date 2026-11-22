@@ -1,88 +1,52 @@
 import React from 'react';
-import { ShieldCheck, Ban, Lock, AlertCircle, FileCheck, PhoneCall } from 'lucide-react';
+import { ShieldCheck, Ban, UserCheck, MapPin } from 'lucide-react';
+
+const GUIDELINES = [
+  {
+    Icon: Ban,
+    title: 'Untuk Pertemanan Positif',
+    description: 'YUKU berfokus pada teman aktivitas dan interaksi sosial. Layanan kencan maupun permintaan seksual bukan bagian dari layanan YUKU.',
+  },
+  {
+    Icon: UserCheck,
+    title: 'Khusus Pengguna Dewasa',
+    description: 'YUKU ditujukan untuk pengguna berusia 18 tahun ke atas. Ikuti proses verifikasi identitas yang diminta saat menggunakan layanan.',
+  },
+  {
+    Icon: MapPin,
+    title: 'Utamakan Tempat Umum',
+    description: 'Saat memilih aktivitas offline, sepakati lokasi yang terbuka dan ramai seperti kafe, pusat perbelanjaan, atau tempat publik lainnya.',
+  },
+];
 
 export const SafetySection: React.FC = () => {
   return (
-    <section className="py-4 md:py-20 bg-[#17082A] text-white relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="max-w-3xl mb-2 md:mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-900/60 border border-purple-700/60 rounded-full text-purple-300 text-xs font-semibold mb-2 md:mb-4">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Protokol Keamanan & Integritas Komunitas</span>
+    <section className="bg-[#211334] py-7 text-white sm:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-5 max-w-2xl sm:mb-7">
+          <div className="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-purple-200">
+            <ShieldCheck className="h-4 w-4" />
+            Panduan Penggunaan
           </div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mb-1.5 md:mb-4">
-            Keamanan, Privasi & Batasan Etika yang Tegas
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
+            Bangun Pengalaman Sosial yang Nyaman
           </h2>
-          <p className="text-purple-200/80 text-xs sm:text-base leading-relaxed">
-            YUKU didesain sejak awal dengan perlindungan ganda. Kami menciptakan ruang aman di mana setiap orang dapat memperluas pergaulan sosial tanpa rasa khawatir.
+          <p className="mt-2 text-sm leading-relaxed text-purple-100/80">
+            Kenali batasan layanan dan utamakan keselamatan saat berinteraksi, baik online maupun offline.
           </p>
         </div>
 
-        {/* 3 Pillar Cards */}
-        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-3 md:gap-6 mb-4 md:mb-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {/* Card 1: Anti-Dating & Anti-Sexual Services */}
-          <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-3 md:p-6 rounded-[22px] bg-white/[0.07] border border-white/15 backdrop-blur-xl shadow-[0_10px_26px_rgba(0,0,0,0.14)] ring-1 ring-white/5 flex flex-col justify-between">
-            <div>
-              <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center mb-3 md:mb-4 ring-1 ring-white/10">
-                <Ban className="w-6 h-6" />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+          {GUIDELINES.map(({ Icon, title, description }, index) => (
+            <article key={title} className="rounded-xl border border-white/15 bg-white/[0.06] p-4 sm:rounded-2xl sm:p-5">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-purple-200">
+                <Icon className="h-5 w-5" />
               </div>
-              <h3 className="text-base md:text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
-                Bukan Layanan Kencan & Bukan Prostitusi
-              </h3>
-              <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
-                YUKU secara tegas melarang segala bentuk permintaan bernuansa asmara, rayuan sensual, atau layanan seksual. Pelanggaran terhadap aturan ini berakibat sanksi blokir permanen dan tindakan hukum.
-              </p>
-            </div>
-            <div className="text-[11px] font-semibold text-pink-300 flex items-center gap-1.5 pt-3 border-t border-purple-900/60">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>Zero-Tolerance Policy</span>
-            </div>
-          </div>
-
-          {/* Card 2: 18+ & ID Verification */}
-          <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-3 md:p-6 rounded-[22px] bg-white/[0.07] border border-white/15 backdrop-blur-xl shadow-[0_10px_26px_rgba(0,0,0,0.14)] ring-1 ring-white/5 flex flex-col justify-between">
-            <div>
-              <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-3 md:mb-4 ring-1 ring-white/10">
-                <FileCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
-                Verifikasi Usia Wajib 18+ (KTP)
-              </h3>
-              <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
-                Baik Customer maupun Talent wajib melalui proses validasi identitas resmi. Kami menjamin tidak ada pengguna di bawah umur demi menjaga keamanan hukum dan etika sosial.
-              </p>
-            </div>
-            <div className="text-[11px] font-semibold text-amber-300 flex items-center gap-1.5 pt-3 border-t border-purple-900/60">
-              <Lock className="w-4 h-4 shrink-0" />
-              <span>Data Identitas Terenkripsi</span>
-            </div>
-          </div>
-
-          {/* Card 3: Public Spaces Only */}
-          <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-3 md:p-6 rounded-[22px] bg-white/[0.07] border border-white/15 backdrop-blur-xl shadow-[0_10px_26px_rgba(0,0,0,0.14)] ring-1 ring-white/5 flex flex-col justify-between">
-            <div>
-              <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3 md:mb-4 ring-1 ring-white/10">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
-                Zona Publik & Pusat Bantuan
-              </h3>
-              <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
-                Pertemuan langsung hanya diizinkan di fasilitas umum beramai-ramai seperti kafe, restoran, mall, atau gedung pertemuan. Dilarang keras bertemu di kamar hotel atau kediaman pribadi tertutup.
-              </p>
-            </div>
-            <div className="text-[11px] font-semibold text-emerald-300 flex items-center gap-1.5 pt-3 border-t border-purple-900/60">
-              <PhoneCall className="w-4 h-4 shrink-0" />
-              <span>Dukungan Laporan Insiden Cepat</span>
-            </div>
-          </div>
+              <h3 className="text-sm font-semibold text-white sm:text-base">{title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-purple-100/80">{description}</p>
+            </article>
+          ))}
         </div>
-        <p className="md:hidden text-[11px] text-purple-300/80 text-center mt-1">
-          Geser kartu ke samping untuk melihat semua aturan keamanan.
-        </p>
       </div>
     </section>
   );
