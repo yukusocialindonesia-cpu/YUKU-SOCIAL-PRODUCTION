@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw, MapPin, Wifi } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, MapPin, Wifi, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
@@ -35,6 +35,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
   const [activeTab, setActiveTab] = useState<'offline' | 'nearby' | 'online'>('offline');
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const loadMarketplaceData = async () => {
     setLoading(true);
@@ -193,65 +194,42 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
             </div>
           </div>
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1 sm:flex sm:items-center">
-            <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
-              <span className="text-[11px] font-semibold text-slate-500">Gender</span>
-              <select
-                value={selectedGender}
-                onChange={(e) => setSelectedGender(e.target.value as GenderType)}
-                aria-label="Filter gender"
-                className="max-w-[92px] bg-transparent text-xs font-bold text-purple-900 outline-none"
-              >
-                <option value="Semua">Semua</option>
-                <option value="Wanita">Wanita</option>
-                <option value="Pria">Pria</option>
-              </select>
-            </div>
-            <div className="min-w-0 w-full rounded-full bg-white/90 border border-purple-100 px-2 py-1.5 shadow-sm">
-              <LocationFilter
-                selectedCity={selectedCity}
-                talentCities={talentCities}
-                onChangeCity={setSelectedCity}
-              />
-            </div>
+          <div className="flex items-center justify-end sm:hidden">
             <button
               type="button"
-              onClick={handleResetFilters}
-              className="min-h-9 px-2 sm:px-3 rounded-full bg-white/90 border border-purple-100 text-[11px] sm:text-xs font-semibold text-slate-600 hover:text-purple-800 shadow-sm inline-flex items-center justify-center gap-1"
+              onClick={() => setFiltersOpen((open) => !open)}
+              aria-expanded={filtersOpen}
+              aria-controls="browse-advanced-filters"
+              className="min-h-8 inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/90 px-3 text-[11px] font-semibold text-purple-800 shadow-sm"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              Filter
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>
-
-          <div className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <button
-              type="button"
-              onClick={() => setSelectedActivity('all')}
-              aria-pressed={selectedActivity === 'all'}
-              className={`shrink-0 min-h-9 px-4 rounded-full text-xs font-bold whitespace-nowrap ${
-                selectedActivity === 'all'
-                  ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200'
-                  : 'bg-white/80 text-slate-600 border border-slate-200'
-              }`}
-            >
-              Semua Kategori
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setSelectedActivity(cat.id)}
-                aria-pressed={selectedActivity === cat.id}
-                className={`shrink-0 min-h-9 px-4 rounded-full text-xs font-semibold whitespace-nowrap ${
-                  selectedActivity === cat.id
-                    ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200'
-                    : 'bg-white/80 text-slate-600 border border-slate-200'
-                }`}
-              >
-                {cat.title}
+          <div id="browse-advanced-filters" className={`${filtersOpen ? 'grid' : 'hidden'} sm:grid grid-cols-1 gap-2 sm:gap-3`}>
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1 sm:flex sm:items-center">
+              <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
+                <span className="text-[11px] font-semibold text-slate-500">Gender</span>
+                <select value={selectedGender} onChange={(e) => setSelectedGender(e.target.value as GenderType)} aria-label="Filter gender" className="max-w-[92px] bg-transparent text-xs font-bold text-purple-900 outline-none">
+                  <option value="Semua">Semua</option><option value="Wanita">Wanita</option><option value="Pria">Pria</option>
+                </select>
+              </div>
+              <div className="min-w-0 w-full rounded-full bg-white/90 border border-purple-100 px-2 py-1.5 shadow-sm">
+                <LocationFilter selectedCity={selectedCity} talentCities={talentCities} onChangeCity={setSelectedCity} />
+              </div>
+              <button type="button" onClick={handleResetFilters} className="min-h-9 px-2 sm:px-3 rounded-full bg-white/90 border border-purple-100 text-[11px] sm:text-xs font-semibold text-slate-600 hover:text-purple-800 shadow-sm inline-flex items-center justify-center gap-1">
+                <RotateCcw className="w-3.5 h-3.5" /> Reset
               </button>
-            ))}
+            </div>
+            <div className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <button type="button" onClick={() => setSelectedActivity('all')} aria-pressed={selectedActivity === 'all'} className={`shrink-0 min-h-8 px-3 sm:min-h-9 sm:px-4 rounded-full text-[10px] sm:text-xs font-bold whitespace-nowrap ${selectedActivity === 'all' ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200' : 'bg-white/80 text-slate-600 border border-slate-200'}`}>Semua Kategori</button>
+              {categories.map((cat) => (
+                <button key={cat.id} type="button" onClick={() => setSelectedActivity(cat.id)} aria-pressed={selectedActivity === cat.id} className={`shrink-0 min-h-8 px-3 sm:min-h-9 sm:px-4 rounded-full text-[10px] sm:text-xs font-semibold whitespace-nowrap ${selectedActivity === cat.id ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200' : 'bg-white/80 text-slate-600 border border-slate-200'}`}>
+                  {cat.title}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -262,7 +240,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <h2 id="browse-talent-heading" className="text-sm sm:text-2xl font-extrabold tracking-tight text-slate-900">
                 Temukan Temanmu
               </h2>
-              <p className="mt-0 text-[10px] sm:text-sm text-slate-500">
+              <p className="hidden sm:block mt-0.5 text-sm text-slate-500">
                 Kenali talent dan pilih teman untuk aktivitasmu.
               </p>
             </div>
