@@ -63,6 +63,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   const hasVoice = mediaTypes.includes('voice');
   const hasVideo = mediaTypes.includes('video');
   const hasPhoto = mediaTypes.includes('photo');
+  const isOnlineOnly = talent.serviceMode === 'Online Only';
+  const displayedRate = isOnlineOnly ? talent.onlineChatRate : talent.hourlyRate;
+  const displayedRateLabel = isOnlineOnly ? ' / jam online' : ' / jam offline';
 
   const hasRealPhoto =
     Boolean(talent.avatarUrl) &&
@@ -207,9 +210,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
               <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
-                {talent.hourlyRate ? formatRupiah(talent.hourlyRate) : 'Hubungi Talent'}
-                {talent.hourlyRate ? (
-                  <span className="text-xs font-medium text-slate-500"> / jam</span>
+                {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
+                {displayedRate ? (
+                  <span className="text-xs font-medium text-slate-500">{displayedRateLabel}</span>
                 ) : null}
               </div>
             </div>
