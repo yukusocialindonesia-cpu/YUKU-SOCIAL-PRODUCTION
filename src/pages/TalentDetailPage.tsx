@@ -80,6 +80,13 @@ function isValidUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function avatarInitials(name: string): string {
   const parts = (name || '?').trim().split(/\s+/).slice(0, 2);
   return parts.map((w) => w.charAt(0).toUpperCase()).join('') || '?';
@@ -127,7 +134,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   // Tomorrow date string as minimum booking date
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const tomorrowStr = toLocalDateString(tomorrow);
 
   const [bookingDate, setBookingDate] = useState(tomorrowStr);
   const [bookingTime, setBookingTime] = useState('14:00');
@@ -962,7 +969,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     const weeklyActive = availabilitySlots.filter(
                       (s) => s.day_of_week !== null && s.specific_date === null && s.is_available
                     );
-                    const todayIso = new Date().toISOString().split('T')[0];
+                    const todayIso = toLocalDateString(new Date());
                     const specificUpcoming = availabilitySlots.filter(
                       (s) => s.specific_date && s.specific_date >= todayIso
                     );
