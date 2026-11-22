@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="relative overflow-hidden bg-[radial-gradient(ellipse_at_top,rgba(109,40,217,0.18),transparent_55%),#140624] text-slate-200 pt-10 pb-8 md:pt-16 md:pb-12 border-t border-purple-950">
+    <footer className="relative overflow-hidden pt-10 pb-8 md:pt-16 md:pb-12 border-t border-purple-950" style={{ backgroundColor: "#260D3D", color: "#FFFFFF" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-8 md:gap-10 pb-8 md:pb-12 border-b border-purple-900/40">
           {/* Brand Col */}
