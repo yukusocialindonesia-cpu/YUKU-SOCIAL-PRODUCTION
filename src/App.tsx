@@ -60,6 +60,7 @@ export default function App() {
   const [activeTalentId, setActiveTalentId] = useState<string>('');
   const [initialActivityFilter, setInitialActivityFilter] = useState<string>('all');
   const [initialCityFilter, setInitialCityFilter] = useState<string>('Semua Kota');
+  const [initialModeFilter, setInitialModeFilter] = useState<string>('all');
   const [isPasswordRecovery, setIsPasswordRecovery] = useState<boolean>(false);
 
   // Parse path and params from current location
@@ -70,8 +71,10 @@ export default function App() {
 
     const act = searchParams.get('activity') || 'all';
     const city = searchParams.get('city') || 'Semua Kota';
+    const mode = searchParams.get('mode') || 'all';
     setInitialActivityFilter(act);
     setInitialCityFilter(city);
+    setInitialModeFilter(mode === 'online' || mode === 'offline' ? mode : 'all');
 
     if (pathname === '/aktivasi-admin' || hashParams.get('type') === 'invite') {
       setCurrentPath('/aktivasi-admin');
@@ -159,10 +162,12 @@ export default function App() {
     } else if (path === '/talent') {
       if (params?.activity) setInitialActivityFilter(params.activity);
       if (params?.city) setInitialCityFilter(params.city);
+      setInitialModeFilter(params?.mode === 'online' || params?.mode === 'offline' ? params.mode : 'all');
 
       const qs = new URLSearchParams();
       if (params?.activity && params.activity !== 'all') qs.set('activity', params.activity);
       if (params?.city && params.city !== 'Semua Kota') qs.set('city', params.city);
+      if (params?.mode === 'online' || params?.mode === 'offline') qs.set('mode', params.mode);
       const queryString = qs.toString();
       targetUrl = queryString ? `/talent?${queryString}` : '/talent';
     }
@@ -189,6 +194,7 @@ export default function App() {
           <BrowseTalentPage
             initialActivity={initialActivityFilter}
             initialCity={initialCityFilter}
+            initialMode={initialModeFilter}
             onNavigate={handleNavigate}
           />
         );
