@@ -6,10 +6,9 @@ import { LocationFilter } from '../components/talent/LocationFilter';
 import { PromoCarousel } from '../components/home/PromoCarousel';
 import { AppRoute } from '../types/navigation';
 import { PromotionRow } from '../types/database';
-import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
+import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase, addFavoriteTalent, fetchFavoriteTalentIds, removeFavoriteTalent } from '../utils/supabaseMarketplace';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 import { useAuth } from '../contexts/AuthContext';
-import { addFavoriteTalent, fetchFavoriteTalentIds, removeFavoriteTalent } from '../utils/supabaseMarketplace';
 
 interface BrowseTalentPageProps {
   initialActivity?: string;
