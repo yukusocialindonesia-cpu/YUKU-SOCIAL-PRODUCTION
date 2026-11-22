@@ -85,14 +85,20 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setLoading(true);
     setErrorMsg(null);
     try {
-      const [talentsData, categoriesData, promotionsData] = await Promise.all([
+      const [talentsData, categoriesData] = await Promise.all([
         fetchTalentsFromSupabase(),
         fetchCategoriesFromSupabase(),
-        fetchPromotionsFromSupabase(),
       ]);
       setTalents(talentsData);
       setCategories(categoriesData);
-      setPromotions(promotionsData);
+
+      // Promosi bersifat tambahan: kegagalan tabel promosi tidak boleh memblokir daftar talent.
+      try {
+        const promotionsData = await fetchPromotionsFromSupabase();
+        setPromotions(promotionsData);
+      } catch {
+        setPromotions([]);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal memuat data Jelajah dari Supabase.');
     } finally {
