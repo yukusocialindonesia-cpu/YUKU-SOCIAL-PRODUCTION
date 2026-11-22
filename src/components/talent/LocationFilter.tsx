@@ -93,7 +93,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
-          className={`w-full min-h-[46px] pl-9 pr-14 py-2.5 text-sm bg-white/75 border rounded-2xl text-left shadow-[0_10px_24px_-18px_rgba(30,41,59,0.45)] backdrop-blur-xl transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
+          className={`w-full min-h-10 pl-9 pr-14 py-2 text-sm bg-white/75 border rounded-2xl text-left shadow-[0_10px_24px_-18px_rgba(30,41,59,0.45)] backdrop-blur-xl transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
             isOpen
               ? 'border-purple-400 bg-white shadow-[0_12px_28px_-16px_rgba(124,58,237,0.55)]'
               : selectedCity !== 'Semua Kota'
