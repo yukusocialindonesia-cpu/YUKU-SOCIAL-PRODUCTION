@@ -78,9 +78,9 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
     <section aria-label="Ruang Promosi YUKU" className={compact ? 'relative py-0 bg-transparent' : 'relative py-2.5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]'}>
       <div className={compact ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}>
         {isLoading ? (
-          <div className={`w-full h-[140px] sm:h-auto sm:aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80 ${compact ? '' : 'sm:aspect-[16/9]'}`} />
+          <div className={`w-full h-[112px] sm:h-auto sm:aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80 ${compact ? '' : 'sm:aspect-[16/9]'}`} />
         ) : totalSlides === 0 ? (
-          <div className="relative h-[140px] w-full overflow-hidden rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-900 via-purple-700 to-fuchsia-600 px-4 py-3.5 sm:h-auto sm:aspect-[21/6] sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="relative h-[112px] w-full overflow-hidden rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-900 via-purple-700 to-fuchsia-600 px-4 py-3.5 sm:h-auto sm:aspect-[21/6] sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="relative z-10 flex items-start gap-3 sm:gap-4 max-w-[65%]">
               <div className="hidden sm:flex w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/15 text-amber-300 items-center justify-center shrink-0">
                 <Megaphone className="w-5 h-5" />
@@ -132,7 +132,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
           >
             {/* Kotak mengikuti rasio asli poster yang sedang tampil (dibatasi 3:2 sampai 3:1), jadi poster tidak terpotong. */}
             <div
-              className={`relative w-full overflow-hidden rounded-[18px] border border-white/90 bg-slate-900 shadow-[0_8px_20px_rgba(76,29,149,0.10)] sm:rounded-[28px] sm:shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y ${compact ? 'h-[140px] sm:h-auto' : ''}`}
+              className={`relative w-full overflow-hidden rounded-[18px] border border-white/90 bg-slate-900 shadow-[0_8px_20px_rgba(76,29,149,0.10)] sm:rounded-[28px] sm:shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y ${compact ? 'h-[112px] sm:h-auto' : ''}`}
               style={compact ? undefined : { aspectRatio: String(frameRatio) }}
             >
               {promotions.map((promo, index) => {
