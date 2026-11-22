@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Users, Monitor, MessageCircle, ArrowRight } from 'lucide-react';
+import { UsersRound, MapPin, Video, MessageCircle, ArrowRight } from 'lucide-react';
 
 interface ServiceModeSectionProps {
   onSelectMode: (mode: 'offline' | 'online') => void;
@@ -27,10 +27,12 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             onClick={() => onSelectMode('offline')}
             className="group min-w-0 rounded-2xl sm:rounded-3xl border border-fuchsia-100 bg-gradient-to-br from-white via-fuchsia-50 to-purple-50 p-3 sm:p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
           >
-            <span className="mb-3 flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-700 text-white shadow-md">
-              <span className="relative flex items-center">
-                <Users className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2.1} />
-                <MapPin className="absolute -right-2 -top-2 h-3.5 w-3.5 rounded-full bg-white text-fuchsia-700" strokeWidth={2.5} />
+            <span className="mb-2.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-700 text-white shadow-sm">
+              <span className="relative flex items-center justify-center" aria-hidden="true">
+                <UsersRound className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
+                <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-fuchsia-700">
+                  <MapPin className="h-2.5 w-2.5" strokeWidth={2.7} />
+                </span>
               </span>
             </span>
             <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Jasa Offline</span>
@@ -47,10 +49,12 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             onClick={() => onSelectMode('online')}
             className="group min-w-0 rounded-2xl sm:rounded-3xl border border-purple-100 bg-gradient-to-br from-white via-purple-50 to-indigo-50 p-3 sm:p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
           >
-            <span className="mb-3 flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-md">
-              <span className="relative flex items-center">
-                <Monitor className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2.1} />
-                <MessageCircle className="absolute -right-2 -top-2 h-3.5 w-3.5 rounded-full bg-white text-purple-700" strokeWidth={2.5} />
+            <span className="mb-2.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-sm">
+              <span className="relative flex items-center justify-center" aria-hidden="true">
+                <Video className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
+                <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-indigo-700">
+                  <MessageCircle className="h-2.5 w-2.5" strokeWidth={2.7} />
+                </span>
               </span>
             </span>
             <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Jasa Online</span>
