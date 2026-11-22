@@ -166,6 +166,18 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     });
   }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, activeTab, favoriteTalentIds]);
 
+  // Hot: prioritize verified profiles, then review volume and rating.
+  const displayedTalents = useMemo(() => {
+    if (activeTab !== 'hot') return filteredTalents;
+    return [...filteredTalents].sort((a, b) => {
+      const verifiedDifference = Number(b.isVerified === true) - Number(a.isVerified === true);
+      if (verifiedDifference !== 0) return verifiedDifference;
+      const reviewDifference = (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
+      if (reviewDifference !== 0) return reviewDifference;
+      return (b.rating ?? 0) - (a.rating ?? 0);
+    });
+  }, [filteredTalents, activeTab]);
+
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedActivity('all');
@@ -233,7 +245,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     : 'Talent yang menyediakan layanan online.'}
             </span>
             <span className="shrink-0 text-[11px] sm:text-xs font-semibold text-slate-500 tabular-nums">
-              {filteredTalents.length} talent
+              {displayedTalents.length} talent
             </span>
           </div>
 
@@ -334,7 +346,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         ) : filteredTalents.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-            {filteredTalents.map((talent) => (
+            {displayedTalents.map((talent) => (
               <TalentCard
                 key={talent.id}
                 talent={talent}
