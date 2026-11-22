@@ -70,10 +70,10 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                 <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
-                    Dana Aman di Escrow
+                    Pembayaran Terlindungi
                   </strong>
                   <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Pembayaran ditahan aman dan hanya diteruskan setelah sesi selesai.
+                    Dana booking diamankan melalui sistem YUKU dan diteruskan setelah sesi selesai dikonfirmasi.
                   </span>
                 </div>
               </div>
