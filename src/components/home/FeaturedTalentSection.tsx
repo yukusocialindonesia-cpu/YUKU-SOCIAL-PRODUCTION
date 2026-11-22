@@ -180,6 +180,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
                   onSelect={onSelectTalent}
                   availableToday={availableTodayIds.has(talent.id)}
                   mediaTypes={mediaTypesByTalent[talent.id] ?? []}
+                  showPrice={false}
                 />
               </motion.div>
             ))}
