@@ -87,15 +87,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Keamanan dan Verifikasi */}
-      <SafetySection />
-
-      {/* Informasi promosi setelah pengunjung memahami layanan dan keamanannya */}
+      {/* Ruang Promosi Poster Berjalan */}
       <PromoCarousel
         promotions={promotions}
         isLoading={isLoadingPromotions}
         onNavigate={onNavigate}
       />
+
+      {/* Keamanan dan Verifikasi */}
+      <SafetySection />
 
       {/* 10. Ajakan Customer & Tautan Talent */}
       <TalentCtaSection
