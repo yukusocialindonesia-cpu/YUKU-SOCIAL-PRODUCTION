@@ -17,7 +17,7 @@ export const SafetySection: React.FC = () => {
             Keamanan, Privasi & Batasan Etika yang Tegas
           </h2>
           <p className="text-purple-200/80 text-xs sm:text-base leading-relaxed">
-            YUKU didesain sejak awal dengan perlindungan ganda. Kami menciptakan ruang aman di mana setiap orang dapat memperluas pergaulan sosial tanpa rasa khawatir.
+            YUKU didesain sejak awal dengan perlindungan ganda. Kami menetapkan aturan yang jelas agar setiap orang dapat membangun pertemanan sosial dengan lebih nyaman dan saling menghormati.
           </p>
         </div>
 
@@ -52,12 +52,12 @@ export const SafetySection: React.FC = () => {
                 Verifikasi Usia Wajib 18+ (KTP)
               </h3>
               <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
-                Baik Customer maupun Talent wajib melalui proses validasi identitas resmi. Kami menjamin tidak ada pengguna di bawah umur demi menjaga keamanan hukum dan etika sosial.
+                Customer dan Talent wajib berusia minimal 18 tahun serta menyelesaikan verifikasi identitas sebelum menggunakan fitur booking.
               </p>
             </div>
             <div className="text-[11px] font-semibold text-amber-300 flex items-center gap-1.5 pt-3 border-t border-purple-900/60">
               <Lock className="w-4 h-4 shrink-0" />
-              <span>Data Identitas Terenkripsi</span>
+              <span>Verifikasi Identitas Wajib</span>
             </div>
           </div>
 
