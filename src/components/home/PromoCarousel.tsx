@@ -73,12 +73,12 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="relative py-4 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section aria-label="Ruang Promosi YUKU" className="relative py-3 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
           <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-3xl bg-slate-100 animate-pulse border border-slate-200/80" />
         ) : totalSlides === 0 ? (
-          <div className="w-full min-h-[144px] sm:aspect-[21/6] rounded-2xl border border-slate-200 bg-gradient-to-r from-[#FAF8FC] via-purple-50/60 to-amber-50/50 px-4 py-5 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="w-full min-h-[112px] sm:aspect-[21/6] rounded-2xl border border-slate-200 bg-gradient-to-r from-[#FAF8FC] via-purple-50/60 to-amber-50/50 px-3.5 py-4 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-start gap-3 sm:gap-4 max-w-2xl">
               <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-purple-950 text-amber-400 flex items-center justify-center shrink-0">
                 <Megaphone className="w-5 h-5" />
