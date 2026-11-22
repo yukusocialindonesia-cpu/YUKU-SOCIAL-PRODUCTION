@@ -148,7 +148,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
       {/* Status ketersediaan dan ikon media: di bawah foto, tidak menimpa gambar */}
       {(availableToday || serviceModeLabel || hasVoice || hasVideo || hasPhoto) && (
-        <div className="px-2 pt-1 sm:px-4 sm:pt-3 flex flex-wrap gap-1 sm:gap-1.5">
+        <div className="px-2 pt-0.5 sm:px-4 sm:pt-3 flex flex-wrap gap-1 sm:gap-1.5">
           {serviceModeLabel && (
             <span className="inline-flex items-center h-5 sm:h-6 rounded-full bg-emerald-50 border border-emerald-100 px-2 sm:px-2.5 text-[9px] sm:text-[10.5px] font-semibold text-emerald-800">
               {serviceModeLabel}
@@ -182,7 +182,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-2 pt-1.5 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 flex flex-col flex-1">
+      <div className="p-1.5 pt-1 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 flex flex-col flex-1">
         {showPrice && (
           <div className="mb-1 flex min-w-0 flex-col items-start gap-1">
             <span className="text-[10px] sm:text-xs text-slate-500">Tarif mulai</span>
@@ -215,14 +215,14 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         <div className="mt-auto pt-1 sm:pt-2">
-          <div className="pt-1.5 sm:pt-2 border-t border-purple-100">
+          <div className="pt-1 sm:pt-2 border-t border-purple-100">
             <button
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
                 onSelect(talent.id);
               }}
-              className={`inline-flex w-full sm:w-auto min-h-10 sm:min-h-11 items-center justify-center gap-1 px-2.5 sm:gap-1.5 sm:px-4 py-1 sm:py-2.5 text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
+              className={`inline-flex w-full sm:w-auto min-h-9 sm:min-h-11 items-center justify-center gap-1 px-2.5 sm:gap-1.5 sm:px-4 py-1 sm:py-2.5 text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
