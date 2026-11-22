@@ -120,7 +120,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         const matchesHeadline = talent.headline?.toLowerCase().includes(q) ?? false;
         const matchesBio = talent.bio?.toLowerCase().includes(q) ?? false;
         const matchesInterests = talent.interests?.some((i) => i.toLowerCase().includes(q)) ?? false;
-        if (!matchesName && !matchesHeadline && !matchesBio && !matchesInterests) {
+        const matchesActivities = talent.activities?.some((activity) => activity.toLowerCase().includes(q)) ?? false;
+        if (!matchesName && !matchesHeadline && !matchesBio && !matchesInterests && !matchesActivities) {
           return false;
         }
       }
@@ -281,7 +282,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </button>
           </div>
         ) : displayedTalents.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+          <div className="grid grid-cols-[repeat(2,minmax(0,171px))] justify-start gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4 xl:gap-5">
             {displayedTalents.map((talent) => (
               <TalentCard
                 key={talent.id}
