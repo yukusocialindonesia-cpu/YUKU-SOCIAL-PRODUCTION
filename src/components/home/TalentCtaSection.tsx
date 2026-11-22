@@ -13,7 +13,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
   onRegisterClick,
 }) => {
   return (
-    <section className="py-6 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
+    <section className="py-5 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
           {/* Left Content: Customer-First */}
@@ -21,22 +21,22 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             <span className="text-xs font-bold text-amber-400 tracking-wider uppercase mb-2 block">
               Mulai Pengalaman Sosial Baru
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3 md:mb-4">
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 md:mb-4">
               Cari Teman Ngopi, Nonton, atau Partner Acara di Kotamu
             </h2>
-            <p className="text-purple-200/90 text-sm sm:text-base leading-relaxed mb-4 md:mb-5">
+            <p className="text-xs sm:text-base text-purple-200/90 leading-relaxed mb-3 md:mb-5">
               Tidak perlu datang sendirian ke kafe baru, konser, atau kondangan. Pilih Talent terverifikasi sesuai hobi dan jadwalmu, lalu pesan dengan sistem pembayaran yang aman.
             </p>
 
             {/* Customer Feature Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-8 text-xs">
-              <div className="flex items-start gap-2.5">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 sm:gap-4 mb-4 sm:mb-8 text-[10px] sm:text-xs">
+              <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white block font-semibold text-sm">
+                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Profil Terkurasi & Terverifikasi
                   </strong>
-                  <span className="text-purple-200/70">
+                  <span className="text-purple-200/70 leading-snug">
                     Semua Talent melalui verifikasi identitas 18+ dan standar etika komunikasi.
                   </span>
                 </div>
@@ -79,7 +79,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
               <button
                 onClick={onExploreClick}
                 className="px-7 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-pink-600 hover:from-amber-600 hover:to-pink-700 rounded-xl shadow-lg shadow-orange-950/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -124,7 +124,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             </div>
 
             {/* Secondary subtle Talent invitation */}
-            <div className="p-4 rounded-[22px] bg-white/[0.08] backdrop-blur-xl border border-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.18)] flex items-center justify-between gap-3">
+            <div className="p-3 sm:p-4 rounded-[22px] bg-white/[0.08] backdrop-blur-xl border border-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.18)] flex items-center justify-between gap-3">
               <div className="text-xs">
                 <span className="font-bold text-white block">Ingin bergabung menjadi Talent?</span>
                 <span className="text-purple-200/75 text-[11px]">
