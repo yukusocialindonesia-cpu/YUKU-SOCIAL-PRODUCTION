@@ -30,13 +30,13 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
             {/* Customer Feature Highlights */}
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-4 mb-3 sm:mb-8 text-[10px] sm:text-xs">
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Profil Terkurasi & Terverifikasi
                   </strong>
-                  <span className="text-purple-200/70 leading-snug">
+                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
                     Semua Talent melalui verifikasi identitas 18+ dan standar etika komunikasi.
                   </span>
                 </div>
@@ -79,17 +79,17 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-3 sm:mt-0">
               <button
                 onClick={onExploreClick}
-                className="px-6 py-3 md:px-7 md:py-3.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-pink-600 hover:from-amber-600 hover:to-pink-700 rounded-xl shadow-lg shadow-orange-950/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="min-h-11 px-6 py-3 md:px-7 md:py-3.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-pink-600 hover:from-amber-600 hover:to-pink-700 rounded-xl shadow-[0_8px_22px_rgba(234,88,12,0.22)] ring-1 ring-white/15 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Jelajahi Talent Sekarang</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
               <button
                 onClick={onRegisterCustomerClick}
-                className="px-5 py-3 md:px-6 md:py-3.5 text-sm font-bold text-white bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="min-h-11 px-5 py-3 md:px-6 md:py-3.5 text-sm font-bold text-white bg-white/10 hover:bg-white/20 border border-white/25 rounded-xl shadow-[0_5px_16px_rgba(0,0,0,0.12)] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Daftar Akun Customer</span>
               </button>
@@ -124,7 +124,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             </div>
 
             {/* Secondary subtle Talent invitation */}
-            <div className="p-3 sm:p-4 rounded-[22px] bg-white/[0.08] backdrop-blur-xl border border-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.18)] flex items-center justify-between gap-3">
+            <div className="p-3.5 sm:p-4 rounded-[22px] bg-gradient-to-r from-white/[0.11] to-white/[0.06] backdrop-blur-xl border border-white/20 shadow-[0_10px_26px_rgba(0,0,0,0.16)] flex items-center justify-between gap-3">
               <div className="text-xs">
                 <span className="font-bold text-white block">Ingin bergabung menjadi Talent?</span>
                 <span className="text-purple-200/75 text-[11px]">
@@ -133,7 +133,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
               <button
                 onClick={onRegisterClick}
-                className="shrink-0 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-amber-300 transition-colors cursor-pointer whitespace-nowrap"
+                className="shrink-0 min-h-10 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/25 text-xs font-bold text-amber-300 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
               >
                 Daftar Talent →
               </button>
