@@ -36,7 +36,7 @@ function initialsOf(name: string): string {
   return letters.toUpperCase();
 }
 
-export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true) => {
+export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true }) => {
   const [imageFailed, setImageFailed] = useState(false);
 
   const hasVoice = mediaTypes.includes('voice');
@@ -45,13 +45,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   const isOnlineOnly = talent.serviceMode === 'Online Only';
   const showOnlineRate = priceMode === 'online' || (priceMode === 'all' && isOnlineOnly);
   const displayedRate = showOnlineRate ? talent.onlineChatRate : talent.hourlyRate;
-  const serviceModeLabel = talent.serviceMode === 'Online Only'
-    ? 'Online'
-    : talent.serviceMode === 'Offline Only'
-      ? 'Offline'
-      : talent.serviceMode === 'Offline & Online'
-        ? 'Online & Offline'
-        : '';
+  const displayedRateLabel = showOnlineRate ? ' / jam online' : ' / jam offline';
 
   const hasRealPhoto =
     Boolean(talent.avatarUrl) &&
@@ -93,7 +87,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/70 to-transparent" />
 
         {/* Badge BARU tetap di atas; status ketersediaan dipindah ke bawah foto. */}
         {isNew && (
@@ -104,44 +98,29 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        {/* Identitas talent, usia, lokasi, dan rating di atas foto */}
-        <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-3 sm:right-3 flex items-end justify-between gap-1.5 sm:gap-2 text-white">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[13px] sm:text-base font-extrabold leading-tight drop-shadow line-clamp-1">
-                {talent.name}{talent.age ? `, ${talent.age}` : ''}
-              </span>
-              {talent.isVerified === true && <VerifiedBadge className="shrink-0" />}
-            </div>
-            <div className="mt-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-medium">
-              {talent.city && (
-                <span className="inline-flex items-center gap-1 min-w-0">
-                  <MapPin className="w-3 h-3 text-amber-300 shrink-0" />
-                  <span className="truncate">{talent.city}</span>
-                </span>
-              )}
-              {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
-                <span className="inline-flex items-center gap-1 shrink-0">
-                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                  {talent.rating.toFixed(1)} <span className="text-white/80">({talent.reviewCount})</span>
-                </span>
-              )}
-            </div>
-          </div>
-
+        {/* Lokasi & mode (bawah foto) */}
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-medium">
+          {talent.city ? (
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+              {talent.city}
+            </span>
+          ) : (
+            <span />
+          )}
+          {talent.serviceMode && (
+            <span className="text-[11px] bg-white/20 backdrop-blur-sm border border-white/30 px-2 py-0.5 rounded-full">
+              {priceMode === 'online' ? 'Jasa Online' : priceMode === 'offline' ? 'Jasa Offline' : talent.serviceMode}
+            </span>
+          )}
         </div>
       </div>
 
       {/* Status ketersediaan dan ikon media: di bawah foto, tidak menimpa gambar */}
-      {(availableToday || serviceModeLabel || hasVoice || hasVideo || hasPhoto) && (
-        <div className="px-2 pt-0.5 sm:px-4 sm:pt-3 flex flex-wrap gap-1 sm:gap-1.5">
-          {serviceModeLabel && (
-            <span className="inline-flex items-center h-5 sm:h-6 rounded-full bg-emerald-50 border border-emerald-100 px-2 sm:px-2.5 text-[9px] sm:text-[10.5px] font-semibold text-emerald-800">
-              {serviceModeLabel}
-            </span>
-          )}
+      {(availableToday || hasVoice || hasVideo || hasPhoto) && (
+        <div className="px-2.5 pt-1 sm:px-5 sm:pt-3 flex flex-wrap gap-1.5">
           {availableToday && (
-            <span className="inline-flex items-center gap-1 h-5 sm:h-6 pl-1.5 pr-2 sm:pl-2 sm:pr-2.5 rounded-full bg-purple-50 border border-purple-100 text-purple-800 text-[9px] sm:text-[10.5px] font-semibold">
+            <span className="inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-50 border border-purple-100 text-purple-800 text-[10.5px] font-semibold">
               <span className="relative flex shrink-0 w-1.5 h-1.5">
                 <span className="absolute inset-0 rounded-full bg-fuchsia-500 opacity-40 animate-ping motion-reduce:animate-none" />
                 <span className="relative w-1.5 h-1.5 rounded-full bg-fuchsia-600" />
@@ -150,17 +129,17 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             </span>
           )}
           {hasVoice && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-fuchsia-800 bg-fuchsia-50 border border-fuchsia-100 px-2 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-fuchsia-800 bg-fuchsia-50 border border-fuchsia-100 px-2 py-0.5 rounded-full">
               <Mic className="w-3 h-3" /> Voice
             </span>
           )}
           {hasVideo && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
               <Video className="w-3 h-3" /> Video
             </span>
           )}
           {hasPhoto && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-sky-800 bg-sky-50 border border-sky-100 px-2 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-800 bg-sky-50 border border-sky-100 px-2 py-0.5 rounded-full">
               <ImageIcon className="w-3 h-3" /> Foto
             </span>
           )}
@@ -168,28 +147,33 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-1.5 pt-1 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 flex flex-col flex-1">
-        {showPrice && (
-          <div className="mb-1 flex min-w-0 flex-col items-start gap-1">
-            <span className="text-[10px] sm:text-xs text-slate-500">Tarif mulai</span>
-            <span className="inline-flex max-w-full min-w-0 flex-col rounded-xl bg-purple-50 px-2.5 py-1.5 text-xs sm:text-xs font-extrabold leading-tight text-purple-800">
-              <span className="max-w-full break-words">{displayedRate ? formatRupiah(displayedRate) : 'Hubungi talent'}</span>
-              {displayedRate && <span className="mt-0.5 text-[9px] sm:text-[10px] font-semibold text-purple-600">{showOnlineRate ? '/jam online' : '/jam offline'}</span>}
-            </span>
-          </div>
-        )}
+      <div className="p-4 pt-3 max-sm:p-1.5 max-sm:pt-1 flex flex-col flex-1">
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
+          <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
+            {talent.name}
+            {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
+            {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
+          </h3>
+          {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
+            <div className="shrink-0 inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-xs font-bold px-2 py-1 rounded-full tabular-nums">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              {talent.rating.toFixed(1)}
+              <span className="font-normal text-amber-700/70">({talent.reviewCount})</span>
+            </div>
+          )}
+        </div>
 
         {talent.headline && (
-          <p className="hidden sm:block mt-1.5 text-[13px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
+          <p className="mt-1 max-sm:mt-0.5 text-[13px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
         )}
 
         {talent.bio && (
-          <p className="hidden sm:block mt-1.5 text-[11px] sm:text-xs text-slate-600 line-clamp-1 sm:line-clamp-2 leading-snug">{talent.bio}</p>
+          <p className="mt-1.5 max-sm:mt-0.5 text-xs text-slate-600 line-clamp-2 leading-snug">{talent.bio}</p>
         )}
 
         {talent.interests && talent.interests.length > 0 && (
-          <div className="hidden sm:flex mt-2 flex-wrap gap-1">
-            {talent.interests.slice(0, 2).map((item) => (
+          <div className="mt-2 max-sm:mt-0.5 flex flex-wrap gap-1 max-sm:gap-1">
+            {talent.interests.slice(0, 3).map((item) => (
               <span
                 key={item}
                 className="text-[11px] max-sm:text-[10.5px] font-medium text-purple-800 bg-purple-50 border border-purple-100 px-2 max-sm:px-1.5 py-0.5 rounded-full"
@@ -200,15 +184,21 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-auto pt-1 sm:pt-2">
-          <div className="pt-1 sm:pt-2 border-t border-purple-100">
+        <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-1">
+          <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
+            {showPrice && <div>
+              <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
+              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
+                {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
+                {displayedRate ? (
+                  <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
+                ) : null}
+              </div>
+            </div>}
+
             <button
               type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onSelect(talent.id);
-              }}
-              className={`inline-flex w-full sm:w-auto min-h-9 sm:min-h-11 items-center justify-center gap-1 px-2.5 sm:gap-1.5 sm:px-4 py-1 sm:py-2.5 text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
+              className={`inline-flex min-h-9 sm:min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-1 sm:py-2 ${showPrice ? "text-[10px] sm:text-xs shrink-0" : "w-full justify-center text-xs"} font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
