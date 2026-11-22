@@ -83,7 +83,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   return (
     <article
       onClick={() => onSelect(talent.id)}
-      className="group relative max-sm:self-start bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
+      className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
       <div className="relative aspect-[4/5] sm:aspect-[4/3] w-full overflow-hidden">
@@ -166,7 +166,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-5 pt-3 max-sm:p-2 max-sm:pt-1 flex flex-col">
+      <div className="p-5 pt-3 max-sm:p-2 max-sm:pt-1 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
@@ -203,7 +203,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-2 pt-3 max-sm:mt-1 max-sm:pt-0">
+        <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-1">
           <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
             <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
