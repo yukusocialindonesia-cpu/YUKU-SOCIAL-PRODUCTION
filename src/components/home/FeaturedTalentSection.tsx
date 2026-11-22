@@ -177,6 +177,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
                 transition={{ duration: 0.4, delay: Math.min(i, 5) * 0.06, ease: 'easeOut' }}
               >
                 <TalentCard
+                  variant="home"
                   talent={talent}
                   onSelect={onSelectTalent}
                   availableToday={availableTodayIds.has(talent.id)}
