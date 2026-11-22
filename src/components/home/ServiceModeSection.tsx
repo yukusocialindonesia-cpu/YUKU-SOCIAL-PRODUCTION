@@ -17,7 +17,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             Mau Teman Offline atau Online?
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
-            Pilih layanan yang sesuai dengan kebutuhanmu.
+            Pilih pengalaman yang sesuai dengan kebutuhanmu.
           </p>
         </div>
 
@@ -35,7 +35,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                 </span>
               </span>
             </span>
-            <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Jasa Offline</span>
+            <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Teman Offline</span>
             <span className="mt-1 block min-h-9 text-[11px] sm:text-sm leading-relaxed text-slate-600">
               Teman untuk bertemu dan beraktivitas langsung.
             </span>
@@ -57,7 +57,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                 </span>
               </span>
             </span>
-            <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Jasa Online</span>
+            <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Teman Online</span>
             <span className="mt-1 block min-h-9 text-[11px] sm:text-sm leading-relaxed text-slate-600">
               Teman ngobrol dan berinteraksi dari mana saja.
             </span>
