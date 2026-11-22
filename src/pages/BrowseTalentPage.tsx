@@ -114,21 +114,24 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     <div className="min-h-screen pt-2 pb-24 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb / Title */}
-        <div className="mb-2 sm:mb-8">
-          <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2 shadow-sm backdrop-blur-md">
-            {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
-          </span>
-          <h1 className="text-[26px] leading-[1.15] sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
-            {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-            {selectedMode === 'offline'
-              ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
-              : selectedMode === 'online'
-                ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
-                : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
-          </p>
-        </div>
+        <section className="relative mb-4 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/65 px-4 py-4 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
+          <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-purple-200/25 blur-3xl" />
+          <div className="relative max-w-3xl">
+            <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/85 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2.5 shadow-sm">
+              {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
+            </span>
+            <h1 className="text-[27px] leading-[1.12] sm:text-4xl font-extrabold text-[#1E0938] tracking-tight">
+              {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
+            </h1>
+            <p className="max-w-2xl text-[12px] sm:text-sm text-slate-600 mt-2 leading-relaxed">
+              {selectedMode === 'offline'
+                ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
+                : selectedMode === 'online'
+                  ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
+                  : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
+            </p>
+          </div>
+        </section>
 
         {/* Filter Bar Controls */}
         <div className="relative bg-white/85 p-2 sm:p-5 rounded-[18px] sm:rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-2.5 sm:mb-8 space-y-2 sm:space-y-4 backdrop-blur-xl">
