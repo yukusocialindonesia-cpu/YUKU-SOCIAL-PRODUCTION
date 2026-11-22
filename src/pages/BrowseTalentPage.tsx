@@ -305,7 +305,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 key={talent.id}
                 talent={talent}
                 priceMode={activeTab === 'online' ? 'online' : selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
-                showPrice={true}
+                showPrice={false}
                 isFavorite={favoriteTalentIds.has(talent.id)}
                 onToggleFavorite={toggleFavorite}
                 onSelect={(id) => onNavigate('/talent/:id', { id })}
