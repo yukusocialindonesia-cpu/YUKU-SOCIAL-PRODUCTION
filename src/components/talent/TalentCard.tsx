@@ -93,6 +93,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             alt={`Foto profil ${talent.name}`}
             className="w-full h-full object-cover object-[50%_25%] group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
             onError={() => setImageFailed(true)}
           />
