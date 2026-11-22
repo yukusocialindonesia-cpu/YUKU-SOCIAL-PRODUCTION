@@ -81,9 +81,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-8 ${isBrowsePage ? 'h-14' : 'h-16'} xl:h-18">
+          <div className={`flex items-center justify-between gap-8 ${isBrowsePage ? 'h-14' : 'h-16'} xl:h-18`}>
             <div className="shrink-0 flex items-center">
-              <BrandLogo size="md" showTagline={false} className="[&>img]:${isBrowsePage ? 'h-9' : 'h-11'} xl:[&>img]:h-14" onClick={() => onNavigate('/')} />
+              <BrandLogo size="md" showTagline={false} className={`[&>img]:${isBrowsePage ? 'h-9' : 'h-11'} xl:[&>img]:h-14`} onClick={() => onNavigate('/')} />
             </div>
           </div>
         </div>
@@ -95,13 +95,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     <header className="sticky top-0 xl:top-3 z-40 bg-white/95 xl:bg-white/80 backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
-        <div className="flex items-center justify-between gap-8 ${isBrowsePage ? 'h-14' : 'h-16'} xl:h-18">
+        <div className={`flex items-center justify-between gap-8 ${isBrowsePage ? 'h-14' : 'h-16'} xl:h-18`}>
           {/* Zone 1: Single Brand Element */}
           <div className="shrink-0 flex items-center">
             <BrandLogo
               size="md"
               showTagline={false}
-              className="[&>img]:${isBrowsePage ? 'h-9' : 'h-11'} xl:[&>img]:h-14"
+              className={`[&>img]:${isBrowsePage ? 'h-9' : 'h-11'} xl:[&>img]:h-14`}
               onClick={() => handleLinkClick('/')}
             />
           </div>
