@@ -34,7 +34,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
-  const [activeTab, setActiveTab] = useState<'offline' | 'nearby' | 'online'>('offline');
+  const [activeTab, setActiveTab] = useState<'hot' | 'nearby' | 'online' | 'favorites'>('hot');
+  const [favoriteTalentIds, setFavoriteTalentIds] = useState<Set<string>>(() => new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const loadMarketplaceData = async () => {
@@ -104,7 +105,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
       // Discovery tab filters
       if (activeTab === 'online' && !talent.serviceMode?.includes('Online')) return false;
-      if (activeTab === 'offline' && !talent.serviceMode?.includes('Offline')) return false;
+      if (activeTab === 'favorites' && !favoriteTalentIds.has(talent.id)) return false;
       if (activeTab === 'nearby' && selectedCity === 'Semua Kota') return false;
 
       // Mode filter
@@ -128,9 +129,23 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
       return true;
     });
-  }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, activeTab]);
+  }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, activeTab, favoriteTalentIds]);
 
-  const displayedTalents = filteredTalents;
+  const displayedTalents = useMemo(() => {
+    if (activeTab !== 'hot') return filteredTalents;
+    return [...filteredTalents].sort((a, b) =>
+      (b.rating ?? 0) - (a.rating ?? 0) || (b.reviewCount ?? 0) - (a.reviewCount ?? 0)
+    );
+  }, [filteredTalents, activeTab]);
+
+  const toggleFavorite = (talentId: string) => {
+    setFavoriteTalentIds((current) => {
+      const next = new Set(current);
+      if (next.has(talentId)) next.delete(talentId);
+      else next.add(talentId);
+      return next;
+    });
+  };
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -138,7 +153,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setSelectedCity('Semua Kota');
     setSelectedGender('Semua');
     setSelectedMode('all');
-    setActiveTab('offline');
+    setActiveTab('hot');
   };
 
   return (
@@ -160,9 +175,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
           <div role="tablist" aria-label="Mode pencarian" className="flex h-9 items-stretch gap-6 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {[
+              { id: 'hot', label: 'Hot' },
               { id: 'nearby', label: 'Terdekat' },
-              { id: 'offline', label: 'Teman Offline' },
-              { id: 'online', label: 'Teman Online' },
+              { id: 'online', label: 'Online' },
+              { id: 'favorites', label: 'Favorit' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -289,7 +305,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 key={talent.id}
                 talent={talent}
                 priceMode={activeTab === 'online' ? 'online' : selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
-                showPrice={false}
+                showPrice={true}
+                isFavorite={favoriteTalentIds.has(talent.id)}
+                onToggleFavorite={toggleFavorite}
                 onSelect={(id) => onNavigate('/talent/:id', { id })}
               />
             ))}
@@ -298,10 +316,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-800 text-base mb-1">
-              {activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih Kota Terlebih Dahulu' : 'Tidak Ada Talent yang Sesuai Filter'}
+              {activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih Kota Terlebih Dahulu' : activeTab === 'favorites' ? 'Belum Ada Talent Favorit' : 'Tidak Ada Talent yang Sesuai Filter'}
             </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
-              {activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih kota pada filter lokasi. Untuk saat ini, pencarian terdekat menggunakan kota, bukan GPS.' : 'Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.'}
+              {activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih kota pada filter lokasi. Untuk saat ini, pencarian terdekat menggunakan kota, bukan GPS.' : activeTab === 'favorites' ? 'Tekan ikon hati pada kartu talent untuk menyimpan profil favorit di sesi ini.' : 'Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.'}
             </p>
             <button
               onClick={handleResetFilters}
