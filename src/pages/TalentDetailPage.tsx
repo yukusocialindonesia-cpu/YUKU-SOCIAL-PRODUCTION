@@ -281,6 +281,13 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     e.preventDefault();
     setBookingError(null);
 
+    // Keep the submit handler protected even if it is triggered outside the disabled UI.
+    if (!isPaymentCheckoutEnabled) {
+      setBookingError('Booking berbayar YUKU belum tersedia saat ini.');
+      return;
+    }
+    if (isSubmittingBooking) return;
+
     if (!talent) return;
 
     // 1. Auth Guard
@@ -1534,7 +1541,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               <CheckCircle className="w-8 h-8" />
             </div>
             <h4 className="text-lg font-bold text-slate-900">
-              Reservasi Booking Berhasil Tersimpan di Supabase!
+              Permintaan Booking Berhasil Dibuat
             </h4>
             
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left space-y-2 max-w-md mx-auto">
@@ -1565,7 +1572,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             </div>
 
             <p className="text-slate-600 max-w-sm mx-auto leading-relaxed text-[11px]">
-              Slot Anda diamankan selama <strong>15 menit</strong>. Langkah berikutnya: ketuk <strong>Bayar Sekarang</strong>, scan QRIS, lalu unggah bukti pembayaran. Booking baru aktif setelah pembayaran diverifikasi Admin.
+              Permintaan ini belum berarti booking sudah aktif. Slot diamankan selama <strong>15 menit</strong>. Lanjutkan ke halaman riwayat booking untuk melihat instruksi pembayaran QRIS dan unggah bukti pembayaran. Booking baru aktif setelah pembayaran diverifikasi Admin.
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
