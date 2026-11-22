@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Star, MapPin, ArrowRight, Mic, Video, Image as ImageIcon } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 import { TalentProfile } from '../../types/talent';
