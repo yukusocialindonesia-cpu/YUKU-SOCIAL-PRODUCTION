@@ -898,7 +898,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             )}
 
             {/* About & Bio Card */}
-            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl">
+            <div className="rounded-2xl bg-white border border-slate-100 p-4 sm:rounded-[24px] sm:p-6">
               <h2 className="flex items-center gap-2 text-base sm:text-lg font-bold text-slate-900 mb-2">
                 <UserIcon className="w-5 h-5 text-purple-700 lg:hidden" />
                 <span className="lg:hidden">Tentang Talent</span>
@@ -915,14 +915,14 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               {/* Interests */}
               {talent.interests && talent.interests.length > 0 && (
                 <>
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Minat & Hobi Favorit
+                  <h3 className="text-sm font-semibold text-slate-800 mb-2">
+                    Minat &amp; Hobi
                   </h3>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-6">
                     {talent.interests.map((interest) => (
                       <span
                         key={interest}
-                        className="px-3 py-1 bg-purple-50 text-purple-900 text-xs font-medium rounded-full border border-purple-100"
+                        className="px-3 py-1.5 bg-slate-50 text-slate-700 text-xs font-medium rounded-lg border border-slate-200"
                       >
                         {interest}
                       </span>
@@ -933,23 +933,20 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
               {/* Supported Activities */}
               {talent.activities && talent.activities.length > 0 && (
-                <div className="hidden lg:block">
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Aktivitas yang Didukung
+                <div className="mt-4">
+                  <h3 className="text-sm font-semibold text-slate-800 mb-2">
+                    Aktivitas yang Ditawarkan
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {talent.activities.map((actId) => {
                       const cat = categories.find((c) => c.id === actId);
                       if (!cat) return null;
                       return (
                         <div
                           key={actId}
-                          className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-xs"
+                          className="min-w-0 px-3 py-2.5 rounded-xl bg-purple-50/70 border border-purple-100 text-xs font-semibold text-purple-900"
                         >
-                          <strong className="text-slate-900 block font-semibold mb-0.5">
-                            {cat.title}
-                          </strong>
-                          <span className="text-slate-500 line-clamp-1">{cat.description}</span>
+                          {cat.title}
                         </div>
                       );
                     })}
@@ -960,7 +957,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             </div>
 
             {/* Talent Availability Schedule Card */}
-            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl space-y-3 sm:space-y-4">
+            <div className="rounded-2xl bg-white border border-slate-100 p-4 sm:rounded-[24px] sm:p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-purple-700" />
                 <h2 className="text-base sm:text-lg font-bold text-slate-900">
@@ -993,7 +990,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                               return (
                                 <div
                                   key={dayOpt.value}
-                                  className="px-3 py-2 sm:p-3 rounded-xl bg-purple-50/60 border border-purple-100 flex items-center justify-between gap-2"
+                                  className="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2"
                                 >
                                   <span className="font-bold text-slate-800">{dayOpt.label}</span>
                                   <span className="font-mono text-purple-900 font-semibold">
@@ -1052,7 +1049,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </span>
               </div>
             ) : (
-            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl space-y-3 sm:space-y-5">
+            <div className="rounded-2xl bg-white border border-slate-100 p-4 sm:rounded-[24px] sm:p-6 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-purple-700" />
@@ -1078,7 +1075,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   {reviews.map((rev) => (
                     <div
                       key={rev.id}
-                      className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 space-y-2"
+                      className="p-4 rounded-xl bg-white border border-slate-200 space-y-2"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
