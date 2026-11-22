@@ -96,15 +96,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
           </div>
         ) : (
           <div className={gridClass}>
-            {categories.map((cat, idx) => {
-              const tones = [
-                'bg-purple-100 text-purple-700',
-                'bg-fuchsia-100 text-fuchsia-700',
-                'bg-amber-100 text-amber-700',
-                'bg-sky-100 text-sky-700',
-                'bg-rose-100 text-rose-700',
-                'bg-emerald-100 text-emerald-700',
-              ];
+            {categories.map((cat) => {
               return (
                 <button
                   type="button"
