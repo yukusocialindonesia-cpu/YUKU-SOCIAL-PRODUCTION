@@ -13,9 +13,9 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
   onRegisterClick,
 }) => {
   return (
-    <section className="py-12 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
+    <section className="py-8 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           {/* Left Content: Customer-First */}
           <div className="lg:col-span-7">
             <span className="text-xs font-bold text-amber-400 tracking-wider uppercase mb-2 block">
@@ -24,12 +24,12 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-4">
               Cari Teman Ngopi, Nonton, atau Partner Acara di Kotamu
             </h2>
-            <p className="text-purple-200/90 text-sm sm:text-base leading-relaxed mb-6">
+            <p className="text-purple-200/90 text-sm sm:text-base leading-relaxed mb-5">
               Tidak perlu datang sendirian ke kafe baru, konser, atau kondangan. Pilih Talent terverifikasi sesuai hobi dan jadwalmu, lalu pesan dengan sistem pembayaran yang aman.
             </p>
 
             {/* Customer Feature Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 text-xs">
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
