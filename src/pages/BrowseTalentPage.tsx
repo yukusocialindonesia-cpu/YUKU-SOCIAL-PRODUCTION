@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, Flame, Wifi, MapPin } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
 import { AppRoute } from '../types/navigation';
-import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
+import { PromotionRow } from '../types/database';
+import {
+  fetchTalentsFromSupabase,
+  fetchCategoriesFromSupabase,
+  fetchPromotionsFromSupabase,
+} from '../utils/supabaseMarketplace';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 
 interface BrowseTalentPageProps {
@@ -14,6 +19,50 @@ interface BrowseTalentPageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
 }
 
+interface ExploreBannerProps {
+  promotion?: PromotionRow;
+  position: 'top' | 'bottom';
+  onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
+}
+
+const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNavigate }) => {
+  const title = position === 'top' ? 'Temukan teman, ciptakan momen.' : 'Ada banyak momen seru menunggumu di YUKU.';
+  const link = promotion?.link_url?.trim() || '';
+  const isExternal = link.startsWith('https://') || link.startsWith('http://');
+  const isInternal = link.startsWith('/');
+
+  const fallback = (
+    <div className={`flex h-[66px] items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)] ${position === 'top' ? 'bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5]' : 'bg-gradient-to-r from-[#32134F] via-[#6331A8] to-[#A43CC1]'}`}>
+      <div className="min-w-0">
+        <p className="text-[12px] font-extrabold leading-tight sm:text-sm">{promotion?.title || title}</p>
+        <p className="mt-1 text-[10px] text-white/85">{position === 'top' ? 'Jelajahi teman online dan offline' : 'Buka profil dan temukan aktivitas yang cocok'}</p>
+      </div>
+      <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[10px] font-bold text-purple-800">Jelajahi</span>
+    </div>
+  );
+
+  if (!promotion?.image_url) return fallback;
+
+  const image = (
+    <img
+      src={promotion.image_url}
+      alt={promotion.title || 'Promosi YUKU'}
+      className="h-[66px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[82px]"
+      loading={position === 'top' ? 'eager' : 'lazy'}
+      decoding="async"
+      referrerPolicy="no-referrer"
+    />
+  );
+
+  if (isExternal) {
+    return <a href={link} target="_blank" rel="noopener noreferrer" aria-label={promotion.title || 'Lihat promosi'} className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600">{image}</a>;
+  }
+  if (isInternal) {
+    return <button type="button" onClick={() => onNavigate(link as AppRoute)} aria-label={promotion.title || 'Lihat promosi'} className="block w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600">{image}</button>;
+  }
+  return image;
+};
+
 export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   initialActivity = 'all',
   initialCity = 'Semua Kota',
@@ -22,27 +71,30 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 }) => {
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
+  const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedActivity, setSelectedActivity] = useState<string>(initialActivity);
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
+  const [showFilters, setShowFilters] = useState(false);
 
   const loadMarketplaceData = async () => {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const [talentsData, categoriesData] = await Promise.all([
+      const [talentsData, categoriesData, promotionsData] = await Promise.all([
         fetchTalentsFromSupabase(),
         fetchCategoriesFromSupabase(),
+        fetchPromotionsFromSupabase(),
       ]);
       setTalents(talentsData);
       setCategories(categoriesData);
+      setPromotions(promotionsData);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal memuat data marketplace dari Supabase.');
+      setErrorMsg(err.message || 'Gagal memuat data Jelajah dari Supabase.');
     } finally {
       setLoading(false);
     }
@@ -58,49 +110,27 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setSelectedMode(initialMode);
   }, [initialActivity, initialCity, initialMode]);
 
-  const talentCities = useMemo(() => talents.map((t) => t.city), [talents]);
+  const talentCities = useMemo(() => talents.map((talent) => talent.city), [talents]);
 
-  const filteredTalents = useMemo(() => {
-    return talents.filter((talent) => {
-      // Activity filter
-      if (
-        selectedActivity !== 'all' &&
-        !talent.activities.includes(selectedActivity as any)
-      ) {
-        return false;
-      }
+  const filteredTalents = useMemo(() => talents.filter((talent) => {
+    if (selectedActivity !== 'all' && !talent.activities.includes(selectedActivity as any)) return false;
+    if (!doesTalentCityMatchFilter(talent.city, selectedCity)) return false;
+    if (selectedGender !== 'Semua' && talent.gender !== selectedGender) return false;
+    if (selectedMode === 'online' && !talent.serviceMode?.includes('Online')) return false;
+    if (selectedMode === 'offline' && !talent.serviceMode?.includes('Offline')) return false;
 
-      // City filter
-      if (!doesTalentCityMatchFilter(talent.city, selectedCity)) {
-        return false;
-      }
-
-      // Gender filter
-      if (selectedGender !== 'Semua' && talent.gender !== selectedGender) {
-        return false;
-      }
-
-      // Mode filter
-      if (selectedMode !== 'all') {
-        if (selectedMode === 'online' && !talent.serviceMode?.includes('Online')) return false;
-        if (selectedMode === 'offline' && !talent.serviceMode?.includes('Offline')) return false;
-      }
-
-      // Search query (name, headline, interests, bio)
-      if (searchQuery.trim()) {
-        const q = searchQuery.trim().toLowerCase();
-        const matchesName = talent.name?.toLowerCase().includes(q) ?? false;
-        const matchesHeadline = talent.headline?.toLowerCase().includes(q) ?? false;
-        const matchesBio = talent.bio?.toLowerCase().includes(q) ?? false;
-        const matchesInterests = talent.interests?.some((i) => i.toLowerCase().includes(q)) ?? false;
-        if (!matchesName && !matchesHeadline && !matchesBio && !matchesInterests) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
+    if (searchQuery.trim()) {
+      const query = searchQuery.trim().toLowerCase();
+      const matches = [
+        talent.name,
+        talent.headline,
+        talent.bio,
+        ...(talent.interests || []),
+      ].some((value) => value?.toLowerCase().includes(query));
+      if (!matches) return false;
+    }
+    return true;
+  }), [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -110,200 +140,156 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setSelectedMode('all');
   };
 
+  const firstFourTalents = filteredTalents.slice(0, 4);
+  const remainingTalents = filteredTalents.slice(4);
+  const topPromotion = promotions[0];
+  const bottomPromotion = promotions[1];
+
   return (
-    <div className="min-h-screen py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb / Title */}
-        <div className="mb-7 sm:mb-8">
-          <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-3 shadow-sm backdrop-blur-md">
-            {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
-            {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
-          </h1>
-          <p className="text-sm text-slate-600 mt-1">
-            {selectedMode === 'offline'
-              ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
-              : selectedMode === 'online'
-                ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
-                : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
-          </p>
+    <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-2 sm:py-8">
+      <div className="mx-auto max-w-7xl space-y-2.5 px-3 sm:space-y-5 sm:px-6 lg:px-8">
+        {/* Search is intentionally the first content row under the existing global YUKU header. */}
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-700" />
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Cari teman, aktivitas..."
+            aria-label="Cari teman atau aktivitas"
+            className="h-10 w-full rounded-full border border-purple-100 bg-white pl-10 pr-4 text-[13px] text-slate-800 shadow-[0_4px_16px_rgba(76,29,149,0.07)] outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100 sm:h-12 sm:text-sm"
+          />
         </div>
 
-        {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-4 sm:p-5 rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-8 space-y-4 backdrop-blur-xl">
-          {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            {/* Search Input */}
-            <div className="md:col-span-5 relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Cari nama, hobi (kopi, lari, seni), minat..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-11 sm:min-h-0 pl-9 pr-4 py-2.5 text-base sm:text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
-              />
-            </div>
+        {/* Compact discovery tabs. Online/offline use the existing marketplace filters. */}
+        <div className="flex items-center justify-between gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {[
+            { id: 'all', label: 'Hot', icon: <Flame className="h-4 w-4" /> },
+            { id: 'online', label: 'Online', icon: <Wifi className="h-4 w-4" /> },
+            { id: 'offline', label: 'Offline', icon: <MapPin className="h-4 w-4" /> },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setSelectedMode(tab.id)}
+              aria-pressed={selectedMode === tab.id}
+              className={`inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-full px-4 text-[12px] font-bold transition ${selectedMode === tab.id ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-200' : 'text-slate-600 hover:bg-purple-50'}`}
+            >
+              {tab.icon}{tab.label}
+            </button>
+          ))}
+          <span className="ml-auto shrink-0 pr-1 text-[10px] font-semibold text-slate-400">{filteredTalents.length} talent</span>
+        </div>
 
-            {/* Dynamic Regional Location Filter */}
-            <div className="md:col-span-4">
-              <LocationFilter
-                selectedCity={selectedCity}
-                talentCities={talentCities}
-                onChangeCity={setSelectedCity}
-              />
-            </div>
-
-            {/* Reset Button */}
-            <div className="md:col-span-3 flex items-center justify-end">
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="w-full md:w-auto min-h-11 sm:min-h-0 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-purple-800 bg-white/80 hover:bg-white border border-purple-100 shadow-sm hover:shadow rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset Filter</span>
-              </button>
-            </div>
+        {/* Small filter row; advanced controls stay tucked away until requested. */}
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <LocationFilter selectedCity={selectedCity} talentCities={talentCities} onChangeCity={setSelectedCity} />
           </div>
-
-          {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-4 border-t border-purple-100/80">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-              Kategori Aktivitas:
-            </span>
-            <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => setSelectedActivity('all')}
-                className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  selectedActivity === 'all'
-                    ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
-                    : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
-                }`}
-              >
-                Semua Aktivitas
-              </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedActivity(cat.id)}
-                  className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                    selectedActivity === cat.id
-                      ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
-                      : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
-                  }`}
-                >
-                  {cat.title}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
-            {/* Gender Segmented */}
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-              <span className="font-semibold text-slate-500">Gender:</span>
-              <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
-                {(['Semua', 'Wanita', 'Pria'] as GenderType[]).map((gender) => (
-                  <button
-                    key={gender}
-                    type="button"
-                    onClick={() => setSelectedGender(gender)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
-                      selectedGender === gender
-                        ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {gender}
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowFilters((value) => !value)}
+              aria-expanded={showFilters}
+              aria-label="Buka filter lanjutan"
+              className={`inline-flex h-[46px] items-center gap-2 rounded-2xl border px-3 text-xs font-bold shadow-sm transition ${showFilters || selectedActivity !== 'all' || selectedGender !== 'Semua' ? 'border-purple-300 bg-purple-50 text-purple-800' : 'border-slate-200 bg-white text-slate-700'}`}
+            >
+              <SlidersHorizontal className="h-4 w-4" /> Filter
+            </button>
+            {showFilters && (
+              <div className="absolute right-0 z-30 mt-2 w-[min(290px,calc(100vw-24px))] space-y-3 rounded-2xl border border-purple-100 bg-white p-4 shadow-xl">
+                <label className="block space-y-1.5 text-xs font-semibold text-slate-600">
+                  Gender
+                  <select value={selectedGender} onChange={(event) => setSelectedGender(event.target.value as GenderType)} className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800">
+                    <option value="Semua">Semua</option>
+                    <option value="Wanita">Wanita</option>
+                    <option value="Pria">Pria</option>
+                  </select>
+                </label>
+                <label className="block space-y-1.5 text-xs font-semibold text-slate-600">
+                  Kategori aktivitas
+                  <select value={selectedActivity} onChange={(event) => setSelectedActivity(event.target.value)} className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800">
+                    <option value="all">Semua aktivitas</option>
+                    {categories.map((category) => <option key={category.id} value={category.id}>{category.title}</option>)}
+                  </select>
+                </label>
+                <div className="flex items-center justify-between gap-2">
+                  <button type="button" onClick={handleResetFilters} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-purple-700">
+                    <RotateCcw className="h-3.5 w-3.5" /> Reset
                   </button>
-                ))}
+                  <button type="button" onClick={() => setShowFilters(false)} className="rounded-full bg-purple-700 px-4 py-2 text-xs font-bold text-white">Terapkan</button>
+                </div>
               </div>
-            </div>
-
-            {/* Service Mode */}
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-              <span className="font-semibold text-slate-500">Metode:</span>
-              <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
-                {[
-                  { id: 'all', label: 'Semua' },
-                  { id: 'offline', label: 'Offline' },
-                  { id: 'online', label: 'Online' },
-                ].map((mode) => (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    onClick={() => setSelectedMode(mode.id)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
-                      selectedMode === mode.id
-                        ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {mode.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="text-slate-500 font-medium tabular-nums">
-              Menampilkan <strong>{filteredTalents.length}</strong> Talent terverifikasi
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Results Grid */}
+        {/* First promotional banner: active content from the existing promotions table. */}
+        <ExploreBanner promotion={topPromotion} position="top" onNavigate={onNavigate} />
+
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
-            ))}
+          <div className="grid grid-cols-2 gap-2">
+            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(148px,22vh,188px)] animate-pulse rounded-[18px] bg-purple-100" />)}
           </div>
         ) : errorMsg ? (
-          <div className="p-4 sm:p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-              <span>{errorMsg}</span>
-            </div>
-            <button
-              onClick={loadMarketplaceData}
-              className="min-h-11 px-3 py-2 bg-rose-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 hover:bg-rose-700 cursor-pointer"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Coba Lagi</span>
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-5 text-center text-sm text-rose-800">
+            <AlertCircle className="h-6 w-6" />
+            <p>{errorMsg}</p>
+            <button type="button" onClick={loadMarketplaceData} className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-rose-600 px-4 text-xs font-bold text-white">
+              <RefreshCw className="h-4 w-4" /> Coba lagi
             </button>
           </div>
         ) : filteredTalents.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
-            {filteredTalents.map((talent) => (
-              <TalentCard
-                key={talent.id}
-                talent={talent}
-                priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
-                onSelect={(id) => onNavigate('/talent/:id', { id })}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-2 sm:gap-5">
+              {firstFourTalents.map((talent) => (
+                <TalentCard
+                  key={talent.id}
+                  talent={talent}
+                  compact
+                  showPrice={false}
+                  priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
+                  onSelect={(id) => onNavigate('/talent/:id', { id })}
+                />
+              ))}
+            </div>
+
+            {/* Second banner follows the first four talent photos in the initial mobile viewport. */}
+            <ExploreBanner promotion={bottomPromotion} position="bottom" onNavigate={onNavigate} />
+
+            {remainingTalents.length > 0 && (
+              <section className="space-y-3 pt-1">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-extrabold text-[#32134F] sm:text-lg">Temukan lebih banyak teman</h2>
+                  <span className="text-[10px] font-medium text-slate-400">{remainingTalents.length} lainnya</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:gap-5">
+                  {remainingTalents.map((talent) => (
+                    <TalentCard
+                      key={talent.id}
+                      talent={talent}
+                      compact
+                      showPrice={false}
+                      priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
+                      onSelect={(id) => onNavigate('/talent/:id', { id })}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         ) : (
-          <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
-            <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="font-bold text-slate-800 text-base mb-1">
-              Tidak Ada Talent yang Sesuai Filter
-            </h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
-              Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.
-            </p>
-            <button
-              onClick={handleResetFilters}
-              className="min-h-11 px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800 transition-colors"
-            >
-              Reset Semua Filter
-            </button>
-          </div>
+          <>
+            <div className="rounded-2xl border border-purple-100 bg-white px-5 py-9 text-center shadow-sm">
+              <Users className="mx-auto mb-3 h-10 w-10 text-purple-300" />
+              <h2 className="text-sm font-bold text-slate-800">Belum ada talent yang cocok</h2>
+              <p className="mt-1 text-xs text-slate-500">Coba ubah kata pencarian atau filter yang dipilih.</p>
+              <button type="button" onClick={handleResetFilters} className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-purple-700 px-4 text-xs font-bold text-white">
+                <RotateCcw className="h-3.5 w-3.5" /> Reset filter
+              </button>
+            </div>
+            <ExploreBanner promotion={bottomPromotion} position="bottom" onNavigate={onNavigate} />
+          </>
         )}
       </div>
     </div>
