@@ -66,7 +66,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
-      <div className="relative aspect-[4/5] sm:aspect-[4/3] w-full overflow-hidden">
+      <div className="relative aspect-[4/5] w-full overflow-hidden">
         {hasRealPhoto ? (
           <img
             src={talent.avatarUrl}
@@ -118,7 +118,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
       {/* Status ketersediaan dan ikon media: di bawah foto, tidak menimpa gambar */}
       {(availableToday || hasVoice || hasVideo || hasPhoto) && (
-        <div className="px-2.5 pt-1 sm:px-5 sm:pt-3 flex flex-wrap gap-1.5">
+        <div className="px-2.5 pt-1 sm:px-4 sm:pt-3 flex flex-wrap gap-1.5">
           {availableToday && (
             <span className="inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-50 border border-purple-100 text-purple-800 text-[10.5px] font-semibold">
               <span className="relative flex shrink-0 w-1.5 h-1.5">
@@ -147,7 +147,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
+      <div className="p-3 pt-3 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 sm:gap-3">
           <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
