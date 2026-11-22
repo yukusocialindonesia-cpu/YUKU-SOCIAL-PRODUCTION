@@ -158,7 +158,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
           <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-purple-50/80 p-1.5 border border-purple-100">
             {[
-              { id: 'offline', label: 'Teman Offline', icon: <Users className="w-3.5 h-3.5" /> },
+              { id: 'offline', label: 'Teman Aktivitas', icon: <Users className="w-3.5 h-3.5" /> },
               { id: 'nearby', label: 'Terdekat', icon: <MapPin className="w-3.5 h-3.5" /> },
               { id: 'online', label: 'Online', icon: <Wifi className="w-3.5 h-3.5" /> },
             ].map((tab) => (
@@ -185,9 +185,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <span className="text-[11px] text-slate-500">
               {activeTab === 'nearby' && selectedCity === 'Semua Kota'
                 ? 'Pilih kota untuk melihat talent di sekitar.'
-                : activeTab === 'hot'
-                    ? 'Talent unggulan berdasarkan verifikasi, ulasan, dan rating.'
-                    : 'Talent yang menyediakan layanan online.'}
+                : activeTab === 'offline'
+                  ? 'Temukan teman untuk bertemu dan melakukan aktivitas bersama.'
+                  : 'Talent yang menyediakan layanan online.'}
             </span>
             <span className="shrink-0 text-[11px] sm:text-xs font-semibold text-slate-500 tabular-nums">
               {displayedTalents.length} talent
