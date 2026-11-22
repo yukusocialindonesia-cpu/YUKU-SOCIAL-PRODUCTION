@@ -56,7 +56,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
     <section className="relative py-4 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-4 md:mb-7 gap-3 md:gap-4">
+        <div className="flex items-end justify-between mb-3 md:mb-7 gap-3 md:gap-4">
           <div>
             <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
               Temukan teman untuk aktivitasmu
@@ -76,7 +76,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         </div>
 
         {!loading && !errorMsg && talents.length > 0 && (
-          <div className="mb-3 md:mb-6">
+          <div className="mb-2 md:mb-6">
             <TalentQuickFilter value={quickFilter} onChange={setQuickFilter} showToday={todayReady} />
           </div>
         )}
@@ -137,7 +137,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </button>
           <div
             ref={scrollRef}
-            className="grid grid-cols-2 gap-2 pb-4 sm:pb-5 pt-1 -mx-4 px-2 sm:mx-0 sm:grid-cols-none sm:flex sm:gap-4 sm:overflow-x-auto sm:snap-x sm:snap-mandatory sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="grid grid-cols-2 gap-2 pb-4 sm:pb-5 pt-0 -mx-4 px-2 sm:mx-0 sm:grid-cols-none sm:flex sm:gap-4 sm:overflow-x-auto sm:snap-x sm:snap-mandatory sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleTalents.map((talent, i) => (
               <motion.div
