@@ -28,6 +28,8 @@ export function mapSupabaseTalent(row: any, servicesCategoryIds: string[] = []):
     languages: Array.isArray(row.languages) ? row.languages : [],
     interests: Array.isArray(row.interests) ? row.interests : [],
     serviceMode: row.service_mode ?? '',
+    // is_approved is set by the admin approval flow, which requires verified KTP.
+    isVerified: row.is_approved === true,
   };
 }
 
@@ -78,7 +80,7 @@ export async function fetchTalentsFromSupabase(limit?: number): Promise<TalentPr
   let query = supabase
     .from('talent_profiles')
     .select(
-      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests'
+      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved'
     );
   
   if (limit) {
