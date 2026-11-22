@@ -32,7 +32,7 @@ const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNa
   const isInternal = link.startsWith('/');
 
   const fallback = (
-    <div className={`flex h-[66px] items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)] ${position === 'top' ? 'bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5]' : 'bg-gradient-to-r from-[#32134F] via-[#6331A8] to-[#A43CC1]'}`}>
+    <div className={`flex h-[60px] items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)] ${position === 'top' ? 'bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5]' : 'bg-gradient-to-r from-[#32134F] via-[#6331A8] to-[#A43CC1]'}`}>
       <div className="min-w-0">
         <p className="text-[12px] font-extrabold leading-tight sm:text-sm">{promotion?.title || title}</p>
         <p className="mt-1 text-[10px] text-white/85">{position === 'top' ? 'Jelajahi teman online dan offline' : 'Buka profil dan temukan aktivitas yang cocok'}</p>
@@ -47,7 +47,7 @@ const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNa
     <img
       src={promotion.image_url}
       alt={promotion.title || 'Promosi YUKU'}
-      className="h-[66px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[82px]"
+      className="h-[60px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[76px]"
       loading={position === 'top' ? 'eager' : 'lazy'}
       decoding="async"
       referrerPolicy="no-referrer"
@@ -235,7 +235,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {loading ? (
           <div className="grid grid-cols-2 gap-2">
-            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(148px,22vh,188px)] animate-pulse rounded-[18px] bg-purple-100" />)}
+            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(132px,19vh,164px)] animate-pulse rounded-[18px] bg-purple-100" />)}
           </div>
         ) : errorMsg ? (
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-5 text-center text-sm text-rose-800">
