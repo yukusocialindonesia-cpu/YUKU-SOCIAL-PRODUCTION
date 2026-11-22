@@ -1173,7 +1173,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <ShieldCheck className="w-4 h-4 text-emerald-600" />
                     <span>Perlindungan Escrow:</span>
                   </span>
-                  <span className="font-semibold text-emerald-700">Diproses melalui sistem escrow</span>
+                  <span className="font-semibold text-slate-600">{isPaymentCheckoutEnabled ? 'Diproses melalui sistem escrow' : 'Aktif saat booking berbayar tersedia'}</span>
                 </div>
                 {talent.isVerified === true && (
                   <div className="flex items-center justify-between">
@@ -1192,11 +1192,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 className="w-full py-3.5 px-4 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calendar className="w-4 h-4" />
-                <span>{{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}}</span>
+                <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}</span>
               </button>
 
               <p className="text-[11px] text-slate-400 text-center leading-tight">
-                *Seluruh transaksi dilindungi oleh Sistem Escrow & Komitmen Keamanan YUKU.
+                {isPaymentCheckoutEnabled ? '*Pembayaran booking diproses melalui sistem escrow YUKU.' : '*Booking berbayar belum tersedia. Sistem escrow digunakan saat fitur booking aktif.'}
               </p>
             </div>
           </div>
