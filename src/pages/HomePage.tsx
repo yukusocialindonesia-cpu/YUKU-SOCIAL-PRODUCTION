@@ -78,9 +78,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* Kategori Aktivitas */}
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      {/* Cara kerja dijelaskan sebelum pengunjung melihat pilihan Talent */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
-
       {/* Talent Pilihan dari profil publik Supabase */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
@@ -93,6 +90,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         isLoading={isLoadingPromotions}
         onNavigate={onNavigate}
       />
+
+      {/* Cara kerja setelah pengunjung melihat pilihan Talent dan promosi */}
+      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
 
       {/* Keamanan dan Verifikasi */}
       <SafetySection />
