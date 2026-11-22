@@ -85,7 +85,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
       // Search query (name, headline, interests, bio)
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
+        const q = searchQuery.trim().toLowerCase();
         const matchesName = talent.name?.toLowerCase().includes(q) ?? false;
         const matchesHeadline = talent.headline?.toLowerCase().includes(q) ?? false;
         const matchesBio = talent.bio?.toLowerCase().includes(q) ?? false;
