@@ -8,7 +8,6 @@ import { AppRoute } from '../types/navigation';
 import { PromotionRow } from '../types/database';
 import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
 import { doesTalentCityMatchFilter } from '../utils/cities';
-import { useAuth } from '../contexts/AuthContext';
 
 interface BrowseTalentPageProps {
   initialActivity?: string;
@@ -36,7 +35,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
   const [activeTab, setActiveTab] = useState<'hot' | 'nearby' | 'online'>('hot');
-  const { user } = useAuth();
 
   const loadMarketplaceData = async () => {
     setLoading(true);
