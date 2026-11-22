@@ -30,13 +30,13 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
             {/* Customer Feature Highlights */}
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-4 mb-3 sm:mb-8 text-[10px] sm:text-xs">
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Profil Terkurasi & Terverifikasi
                   </strong>
-                  <span className="text-purple-200/70 leading-snug">
+                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
                     Semua Talent melalui verifikasi identitas 18+ dan standar etika komunikasi.
                   </span>
                 </div>
