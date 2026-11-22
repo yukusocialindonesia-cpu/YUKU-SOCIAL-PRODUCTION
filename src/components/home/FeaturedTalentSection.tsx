@@ -137,7 +137,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </button>
           <div
             ref={scrollRef}
-            className="grid grid-cols-2 gap-3 pb-4 sm:pb-5 pt-1 -mx-4 px-4 sm:mx-0 sm:grid-cols-none sm:flex sm:gap-4 sm:overflow-x-auto sm:snap-x sm:snap-mandatory sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="grid grid-cols-2 gap-2 pb-4 sm:pb-5 pt-1 -mx-4 px-2 sm:mx-0 sm:grid-cols-none sm:flex sm:gap-4 sm:overflow-x-auto sm:snap-x sm:snap-mandatory sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleTalents.map((talent, i) => (
               <motion.div
