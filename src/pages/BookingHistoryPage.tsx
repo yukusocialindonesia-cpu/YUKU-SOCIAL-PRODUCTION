@@ -849,9 +849,11 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                     <div className="text-lg font-black text-[#1E0938] tabular-nums tracking-tight">
                       {formatRupiah(item.gross_amount)}
                     </div>
-                    <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block font-semibold">
-                      Proteksi Escrow YUKU
-                    </span>
+{['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(item.status) && (
+                      <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block font-semibold">
+                        Dana terlindungi di Escrow
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -973,7 +975,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                       <Clock className="w-3.5 h-3.5 shrink-0" />
                       <span>
                         {item.status === 'pending_payment'
-                          ? 'Slot waktu dikunci. Selesaikan pembayaran sebelum reservasi 15 menit kedaluwarsa.'
+                          ? 'Slot waktu dikunci sementara. Selesaikan pembayaran sebelum batas waktu yang ditampilkan pada informasi pembayaran.'
                           : 'Pembatalan mengikuti kebijakan refund YUKU berdasarkan waktu sebelum sesi. Sisa dana tertentu dapat ditahan untuk peninjauan Admin.'}
                       </span>
                     </div>
