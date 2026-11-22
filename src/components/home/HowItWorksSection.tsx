@@ -62,7 +62,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
           </div>
 
           {/* Keamanan & Kepercayaan */}
-          <div className="lg:col-span-4 lg:border-l lg:border-purple-100 lg:pl-10">
+          <div className="hidden lg:block lg:col-span-4 lg:border-l lg:border-purple-100 lg:pl-10">
             <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase block">
               Privasi & Keamanan
             </span>
