@@ -154,37 +154,36 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   return (
     <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-2 sm:py-8">
       <div className="mx-auto max-w-7xl space-y-2.5 px-3 sm:space-y-5 sm:px-6 lg:px-8">
-        {/* Search is intentionally the first content row under the existing global YUKU header. */}
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-700" />
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Cari teman, aktivitas..."
-            aria-label="Cari teman atau aktivitas"
-            className="h-10 w-full rounded-full border border-purple-100 bg-white pl-10 pr-4 text-[13px] text-slate-800 shadow-[0_4px_16px_rgba(76,29,149,0.07)] outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100 sm:h-12 sm:text-sm"
-          />
-        </div>
-
-        {/* Compact discovery tabs. Online/offline use the existing marketplace filters. */}
-        <div className="flex items-center justify-between gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {[
-            { id: 'all', label: 'Hot', icon: <Flame className="h-4 w-4" /> },
-            { id: 'online', label: 'Online', icon: <Wifi className="h-4 w-4" /> },
-            { id: 'offline', label: 'Offline', icon: <MapPin className="h-4 w-4" /> },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setSelectedMode(tab.id)}
-              aria-pressed={selectedMode === tab.id}
-              className={`inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-full px-4 text-[12px] font-bold transition ${selectedMode === tab.id ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-200' : 'text-slate-600 hover:bg-purple-50'}`}
-            >
-              {tab.icon}{tab.label}
-            </button>
-          ))}
-          <span className="ml-auto shrink-0 pr-1 text-[10px] font-semibold text-slate-400">{filteredTalents.length} talent</span>
+        {/* Search sits beside Offline so the top banner appears higher on the first screen. */}
+        <div className="flex items-center gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {[
+              { id: 'all', label: 'Hot', icon: <Flame className="h-4 w-4" /> },
+              { id: 'online', label: 'Online', icon: <Wifi className="h-4 w-4" /> },
+              { id: 'offline', label: 'Offline', icon: <MapPin className="h-4 w-4" /> },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSelectedMode(tab.id)}
+                aria-pressed={selectedMode === tab.id}
+                className={`inline-flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-full px-2.5 text-[11px] font-bold transition ${selectedMode === tab.id ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-200' : 'text-slate-600 hover:bg-purple-50'}`}
+              >
+                {tab.icon}{tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="relative w-[min(42%,164px)] shrink-0">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-purple-700" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Cari..."
+              aria-label="Cari teman atau aktivitas"
+              className="h-9 w-full rounded-full border border-purple-100 bg-white pl-8 pr-2 text-[11px] text-slate-800 shadow-[0_4px_16px_rgba(76,29,149,0.07)] outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
+            />
+          </div>
         </div>
 
         {/* Small filter row; advanced controls stay tucked away until requested. */}
