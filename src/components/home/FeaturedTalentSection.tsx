@@ -83,12 +83,12 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
     <section className="relative py-4 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-3 md:mb-7 gap-3 md:gap-4">
+        <div className="flex items-end justify-between mb-2 md:mb-7 gap-2 md:gap-4">
           <div>
-            <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
+            <span className="text-[10.5px] sm:text-xs font-bold text-purple-700 tracking-wider uppercase mb-0.5 sm:mb-1 block">
               Temukan teman untuk aktivitasmu
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Talent Pilihan YUKU
             </h2>
           </div>
