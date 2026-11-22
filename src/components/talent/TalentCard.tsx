@@ -61,8 +61,17 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
   return (
     <article
+      role="link"
+      tabIndex={0}
+      aria-label={`Lihat profil ${talent.name}`}
       onClick={() => onSelect(talent.id)}
-      className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          onSelect(talent.id);
+        }
+      }}
+      className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
     >
       {/* Media */}
       <div className="relative aspect-[4/5] sm:aspect-[4/3] w-full overflow-hidden">
@@ -195,13 +204,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               </div>
             </div>
 
-            <button
-              type="button"
+            <span
+              aria-hidden="true"
               className="inline-flex min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 text-[10px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all shrink-0"
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+            </span>
           </div>
         </div>
       </div>
