@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Star, MapPin, ArrowRight, Mic, Video, Image as ImageIcon, Heart } from 'lucide-react';
+import { Star, MapPin, ArrowRight, Mic, Video, Image as ImageIcon } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 import { TalentProfile } from '../../types/talent';
 import { formatRupiah } from '../../utils/formatters';
@@ -11,8 +11,6 @@ interface TalentCardProps {
   mediaTypes?: string[];
   priceMode?: 'online' | 'offline' | 'all';
   showPrice?: boolean;
-  isFavorite?: boolean;
-  onToggleFavorite?: (talentId: string) => void;
 }
 
 // Foto stok bawaan lama dianggap "belum ada foto", supaya kartu tidak terlihat kembar.
@@ -38,7 +36,7 @@ function initialsOf(name: string): string {
   return letters.toUpperCase();
 }
 
-export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true, isFavorite = false, onToggleFavorite }) => {
+export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true) => {
   const [imageFailed, setImageFailed] = useState(false);
 
   const hasVoice = mediaTypes.includes('voice');
@@ -96,18 +94,6 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
-
-        {onToggleFavorite && (
-          <button
-            type="button"
-            aria-label={isFavorite ? `Hapus ${talent.name} dari favorit` : `Tambahkan ${talent.name} ke favorit`}
-            aria-pressed={isFavorite}
-            onClick={(event) => { event.stopPropagation(); onToggleFavorite(talent.id); }}
-            className="absolute left-2.5 top-2.5 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-purple-700 shadow-sm backdrop-blur-sm transition hover:scale-105 sm:left-3 sm:top-3 sm:h-9 sm:w-9"
-          >
-            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-rose-500 text-rose-500' : ''}`} />
-          </button>
-        )}
 
         {/* Badge BARU tetap di atas; status ketersediaan dipindah ke bawah foto. */}
         {isNew && (
