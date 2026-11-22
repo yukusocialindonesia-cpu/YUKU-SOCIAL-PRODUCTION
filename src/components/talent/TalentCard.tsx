@@ -210,17 +210,17 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
                 {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
                 {displayedRate ? (
-                  <span className="text-xs font-medium text-slate-500">{displayedRateLabel}</span>
+                  <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
                 ) : null}
               </div>
             </div>
 
             <button
               type="button"
-              className="inline-flex min-h-10 items-center gap-1 px-3 py-2.5 sm:gap-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all shrink-0"
+              className="inline-flex min-h-10 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 text-[10px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all shrink-0"
             >
               Lihat Profil
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
         </div>
