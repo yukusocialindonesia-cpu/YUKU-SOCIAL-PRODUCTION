@@ -259,11 +259,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
           <p className="md:hidden flex items-center gap-1.5 mb-1.5 text-[10.5px] font-bold uppercase tracking-wider text-purple-700">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-            <span>Platform Teman Aktivitas Berbayar</span>
+            <span>Social Experience & Paid Companionship</span>
           </p>
           <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-purple-200/80 rounded-full text-purple-900 text-xs font-semibold mb-5">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-purple-700" />
-            <span className="truncate">Platform Teman Aktivitas Berbayar</span>
+            <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
           <h1 className="text-[1.7rem] leading-[1.08] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-2 md:mb-4">
