@@ -526,6 +526,8 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                           alt={`Foto profil ${talent.name}`}
                           className="h-full w-full"
                           imageClassName="h-full w-full object-cover object-[50%_25%]"
+                          referrerPolicy="no-referrer"
+                          onError={() => setAvatarFailed(true)}
                         />
                       ) : (
                         <div className={`w-full h-full bg-gradient-to-br ${avatarGradient(talent.id)} flex items-center justify-center`}>
@@ -685,6 +687,8 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       alt={`Foto profil ${talent.name}`}
                       className="h-full w-full"
                       imageClassName="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                      onError={() => setAvatarFailed(true)}
                     />
                   ) : (
                     <div className={`w-full h-full bg-gradient-to-br ${avatarGradient(talent.id)} flex items-center justify-center`}>
