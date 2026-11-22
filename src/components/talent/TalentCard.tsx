@@ -203,8 +203,8 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-2 pt-3 max-sm:pt-1">
-          <div className="pt-3 max-sm:pt-1.5 border-t border-purple-100 flex items-center justify-between gap-3">
+        <div className="mt-2 pt-3 max-sm:mt-1 max-sm:pt-0">
+          <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
             <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
               <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
