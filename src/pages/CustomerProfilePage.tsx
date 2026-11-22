@@ -16,6 +16,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 import { GenderType } from '../types/database';
+import { PhotoLightbox } from '../components/common/PhotoLightbox';
 import { PhotoCropEditor } from '../components/common/PhotoCropEditor';
 
 interface CustomerProfilePageProps {
@@ -250,7 +251,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
             <div className="relative shrink-0">
               <div className="w-24 h-24 rounded-full bg-purple-100 border-[5px] border-white shadow-[0_12px_28px_rgba(76,29,149,0.24)] ring-1 ring-violet-200 overflow-hidden flex items-center justify-center">
                 {currentAvatar ? (
-                  <img src={currentAvatar} alt="Foto profil Customer" className="w-full h-full object-cover" />
+                  <PhotoLightbox src={currentAvatar} alt="Foto profil Customer" className="h-full w-full" imageClassName="h-full w-full object-cover" />
                 ) : (
                   <UserRound className="w-10 h-10 text-purple-500" />
                 )}
