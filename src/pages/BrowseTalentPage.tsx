@@ -188,7 +188,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen pb-28 sm:pb-10 pt-5 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen pb-28 sm:pb-10 pt-2 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search & quick filters — mobile-first marketplace layout */}
         <section className="mb-5 sm:mb-7 space-y-3">
