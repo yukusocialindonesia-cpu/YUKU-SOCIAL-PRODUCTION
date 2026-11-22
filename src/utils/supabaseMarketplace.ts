@@ -130,7 +130,7 @@ export async function fetchTalentByIdFromSupabase(talentId: string): Promise<Tal
   const { data, error } = await supabase
     .from('talent_profiles')
     .select(
-      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests'
+      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved'
     )
     .eq('id', talentId)
     .maybeSingle();
