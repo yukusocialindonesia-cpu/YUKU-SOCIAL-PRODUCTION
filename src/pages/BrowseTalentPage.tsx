@@ -263,10 +263,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Main talent directory */}
-        <section className="mb-3 sm:mb-4" aria-labelledby="browse-talent-heading">
+        <section className="mb-2 sm:mb-4" aria-labelledby="browse-talent-heading">
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
-              <h2 id="browse-talent-heading" className="text-lg font-bold tracking-tight text-slate-900">
+              <h2 id="browse-talent-heading" className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
                 Jelajahi Aktivitas
               </h2>
               <p className="hidden sm:block mt-0.5 text-sm text-slate-500">
