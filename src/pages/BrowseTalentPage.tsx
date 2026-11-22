@@ -279,7 +279,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Results Grid */}
         {loading ? (
-          <div className="grid grid-cols-[repeat(2,minmax(0,171px))] justify-start gap-2.5 md:grid-cols-3 md:gap-4 xl:grid-cols-4 xl:gap-5">
+          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 md:gap-4 xl:grid-cols-4 xl:gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-64 sm:h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
             ))}
@@ -299,7 +299,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </button>
           </div>
         ) : displayedTalents.length > 0 ? (
-          <div className="grid grid-cols-[repeat(2,minmax(0,171px))] justify-start gap-2.5 md:grid-cols-3 md:gap-4 xl:grid-cols-4 xl:gap-5">
+          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 md:gap-4 xl:grid-cols-4 xl:gap-5">
             {displayedTalents.map((talent) => (
               <TalentCard
                 key={talent.id}
