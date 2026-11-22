@@ -160,7 +160,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     <div className="min-h-screen pb-28 sm:pb-10 pt-3 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search, tabs, and quick activity filters */}
-        <section className="mb-3 space-y-2.5 sm:mb-5 sm:space-y-3">
+        <section className="mb-3 space-y-3 sm:mb-5 sm:space-y-3">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
