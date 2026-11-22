@@ -2510,7 +2510,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                       Tampilkan kepribadian, hobi, dan sapaan suara Anda agar profil lebih menarik saat dilihat Customer.
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-600 sm:flex-nowrap">
                     <span className="px-2.5 py-1 rounded-lg bg-slate-100">Foto {photoItems.length}/8</span>
                     <span className="px-2.5 py-1 rounded-lg bg-slate-100">Video {videoItems.length}/3</span>
                     <span className="px-2.5 py-1 rounded-lg bg-slate-100">Voice {voiceItems.length}/2</span>
