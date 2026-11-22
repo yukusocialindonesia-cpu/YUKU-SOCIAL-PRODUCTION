@@ -3,8 +3,10 @@ import { Search, Users, RotateCcw, AlertCircle, RefreshCw } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
+import { PromoCarousel } from '../components/home/PromoCarousel';
 import { AppRoute } from '../types/navigation';
-import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
+import { PromotionRow } from '../types/database';
+import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 
 interface BrowseTalentPageProps {
@@ -22,6 +24,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 }) => {
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
+  const [promotions, setPromotions] = useState<PromotionRow[]>([]);
+  const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -50,6 +54,22 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
   useEffect(() => {
     loadMarketplaceData();
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadPromotions() {
+      try {
+        const data = await fetchPromotionsFromSupabase();
+        if (isMounted) setPromotions(data);
+      } catch {
+        if (isMounted) setPromotions([]);
+      } finally {
+        if (isMounted) setIsLoadingPromotions(false);
+      }
+    }
+    loadPromotions();
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
@@ -213,6 +233,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
           </div>
         </section>
+
+        <div className="mb-5 sm:mb-8">
+          <PromoCarousel
+            promotions={promotions}
+            isLoading={isLoadingPromotions}
+            onNavigate={onNavigate}
+          />
+        </div>
 
         {/* Results Grid */}
         {loading ? (
