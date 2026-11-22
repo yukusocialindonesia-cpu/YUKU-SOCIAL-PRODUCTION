@@ -253,7 +253,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </section>
 
         {/* Promo banner follows search, tabs, and quick filters on Jelajahi. */}
-        <div className="mb-3 sm:mb-5">
+        <div className="mb-2 sm:mb-5">
           <PromoCarousel
             compact
             promotions={promotions}
