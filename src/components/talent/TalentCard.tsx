@@ -45,7 +45,6 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   const isOnlineOnly = talent.serviceMode === 'Online Only';
   const showOnlineRate = priceMode === 'online' || (priceMode === 'all' && isOnlineOnly);
   const displayedRate = showOnlineRate ? talent.onlineChatRate : talent.hourlyRate;
-  const displayedRateLabel = showOnlineRate ? ' / jam online' : ' / jam offline';
 
   const hasRealPhoto =
     Boolean(talent.avatarUrl) &&
