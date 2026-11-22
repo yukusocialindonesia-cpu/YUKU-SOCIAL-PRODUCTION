@@ -235,7 +235,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {loading ? (
           <div className="grid grid-cols-2 gap-2">
-            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(132px,19vh,164px)] animate-pulse rounded-[18px] bg-purple-100" />)}
+            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(200px,28vh,240px)] animate-pulse rounded-[18px] bg-purple-100" />)}
           </div>
         ) : errorMsg ? (
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-5 text-center text-sm text-rose-800">
