@@ -147,7 +147,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-4 pt-3 max-sm:p-1.5 max-sm:pt-1 flex flex-col flex-1">
+      <div className="p-4 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 sm:gap-3">
           <h3 className="font-extrabold text-[#1E0938] text-[13px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
@@ -184,8 +184,8 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-1">
-          <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
+        <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-2">
+          <div className="pt-3 max-sm:pt-2 border-t border-purple-100 flex items-center justify-between gap-2">
             {showPrice && <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
               <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
