@@ -164,7 +164,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
-            <VerifiedBadge className="ml-1.5 -mt-0.5" />
+            {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
           </h3>
           {!isNew && talent.rating !== undefined && (
             <div className="shrink-0 inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-xs font-bold px-2 py-1 rounded-full tabular-nums">

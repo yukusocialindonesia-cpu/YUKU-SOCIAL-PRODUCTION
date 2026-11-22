@@ -34,6 +34,8 @@ export interface TalentProfile {
   interests?: string[];
   serviceMode?: 'Offline & Online' | 'Offline Only' | 'Online Only' | string;
   isDemo?: boolean;
+  /** True only when YUKU admin has approved the talent after identity verification. */
+  isVerified?: boolean;
 }
 
 export interface Testimonial {
