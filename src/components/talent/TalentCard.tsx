@@ -184,11 +184,11 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-1">
-          <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
-            {showPrice && <div>
+        <div className="mt-auto pt-3 max-sm:pt-2">
+          <div className="pt-3 max-sm:pt-2 border-t border-purple-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+            {showPrice && <div className="min-w-0">
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
-              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
+              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight break-words">
                 {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
                 {displayedRate ? (
                   <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
@@ -198,7 +198,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
             <button
               type="button"
-              className={`inline-flex min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 ${showPrice ? "text-[10px] sm:text-xs shrink-0" : "w-full justify-center text-xs"} font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
+              className={`inline-flex w-full sm:w-auto min-h-10 sm:min-h-11 items-center justify-center gap-1 px-3 sm:gap-1.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
