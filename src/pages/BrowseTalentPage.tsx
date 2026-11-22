@@ -32,7 +32,7 @@ const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNa
   const isInternal = link.startsWith('/');
 
   const fallback = (
-    <div className="flex h-[52px] items-center justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5] px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)]">
+    <div className="flex h-[112px] items-center justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5] px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)]">
       <div className="min-w-0">
         <p className="text-[12px] font-extrabold leading-tight sm:text-sm">{promotion?.title || title}</p>
         <p className="mt-1 text-[10px] text-white/85">Jelajahi teman online dan offline</p>
@@ -47,7 +47,7 @@ const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNa
     <img
       src={promotion.image_url}
       alt={promotion.title || 'Promosi YUKU'}
-      className="h-[52px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[68px]"
+      className="h-[112px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[136px]"
       loading="eager"
       decoding="async"
       referrerPolicy="no-referrer"
