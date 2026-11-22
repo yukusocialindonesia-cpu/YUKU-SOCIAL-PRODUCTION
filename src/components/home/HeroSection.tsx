@@ -275,7 +275,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </h1>
 
           <p className="text-[13px] sm:text-base md:text-lg text-slate-800 leading-relaxed">
-            Temukan teman pendamping aktivitas (Talent) untuk ngopi, nonton, jalan-jalan, atau ngobrol online. Pilih layanan dan lihat tarif sebelum booking.
+            Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
           </p>
         </div>
 
