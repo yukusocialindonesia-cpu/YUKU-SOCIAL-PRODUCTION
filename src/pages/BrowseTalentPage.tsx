@@ -257,14 +257,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
           </div>
         ) : errorMsg ? (
-          <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-center justify-between gap-4">
+          <div className="p-4 sm:p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               onClick={loadMarketplaceData}
-              className="px-3 py-1.5 bg-rose-600 text-white rounded-lg font-bold flex items-center gap-1 hover:bg-rose-700 cursor-pointer"
+              className="min-h-11 px-3 py-2 bg-rose-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 hover:bg-rose-700 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Coba Lagi</span>
@@ -281,7 +281,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-8 backdrop-blur-xl">
+          <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-800 text-base mb-1">
               Tidak Ada Talent yang Sesuai Filter
@@ -291,7 +291,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </p>
             <button
               onClick={handleResetFilters}
-              className="px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800 transition-colors"
+              className="min-h-11 px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800 transition-colors"
             >
               Reset Semua Filter
             </button>
