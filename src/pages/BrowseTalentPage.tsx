@@ -276,6 +276,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <TalentCard
                 key={talent.id}
                 talent={talent}
+                priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
                 onSelect={(id) => onNavigate('/talent/:id', { id })}
               />
             ))}
