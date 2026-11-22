@@ -10,12 +10,14 @@ import { doesTalentCityMatchFilter } from '../utils/cities';
 interface BrowseTalentPageProps {
   initialActivity?: string;
   initialCity?: string;
+  initialMode?: string;
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
 }
 
 export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   initialActivity = 'all',
   initialCity = 'Semua Kota',
+  initialMode = 'all',
   onNavigate,
 }) => {
   const [talents, setTalents] = useState<TalentProfile[]>([]);
@@ -27,7 +29,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedActivity, setSelectedActivity] = useState<string>(initialActivity);
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
-  const [selectedMode, setSelectedMode] = useState<string>('all');
+  const [selectedMode, setSelectedMode] = useState<string>(initialMode);
 
   const loadMarketplaceData = async () => {
     setLoading(true);
@@ -53,7 +55,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   useEffect(() => {
     setSelectedActivity(initialActivity);
     setSelectedCity(initialCity);
-  }, [initialActivity, initialCity]);
+    setSelectedMode(initialMode);
+  }, [initialActivity, initialCity, initialMode]);
 
   const talentCities = useMemo(() => talents.map((t) => t.city), [talents]);
 
@@ -224,8 +227,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
                 {[
                   { id: 'all', label: 'Semua' },
-                  { id: 'offline', label: 'Tatap Muka' },
-                  { id: 'online', label: 'Online Chat' },
+                  { id: 'offline', label: 'Offline' },
+                  { id: 'online', label: 'Online' },
                 ].map((mode) => (
                   <button
                     key={mode.id}
