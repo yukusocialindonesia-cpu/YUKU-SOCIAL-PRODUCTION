@@ -187,15 +187,15 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {talent.bio && (
-          <p className="mt-2 max-sm:mt-0.5 text-xs text-slate-600 line-clamp-2 leading-relaxed">{talent.bio}</p>
+          <p className="mt-2 max-sm:mt-0.5 text-xs text-slate-600 line-clamp-2 leading-snug">{talent.bio}</p>
         )}
 
         {talent.interests && talent.interests.length > 0 && (
-          <div className="mt-2.5 max-sm:mt-1 flex flex-wrap gap-1.5">
+          <div className="mt-2.5 max-sm:mt-1 flex flex-wrap gap-1 max-sm:gap-1">
             {talent.interests.slice(0, 3).map((item) => (
               <span
                 key={item}
-                className="text-[11px] font-medium text-purple-800 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full"
+                className="text-[11px] max-sm:text-[10.5px] font-medium text-purple-800 bg-purple-50 border border-purple-100 px-2 max-sm:px-1.5 py-0.5 rounded-full"
               >
                 {item}
               </span>
