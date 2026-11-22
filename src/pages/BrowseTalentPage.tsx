@@ -265,6 +265,20 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           />
         </div>
 
+        {/* Main talent directory */}
+        <section className="mb-3 sm:mb-5" aria-labelledby="browse-talent-heading">
+          <div className="flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <h2 id="browse-talent-heading" className="text-lg sm:text-2xl font-extrabold tracking-tight text-slate-900">
+                Temukan Temanmu
+              </h2>
+              <p className="mt-0.5 text-[11px] sm:text-sm text-slate-500">
+                Kenali talent dan pilih teman untuk aktivitasmu.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Results Grid */}
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
