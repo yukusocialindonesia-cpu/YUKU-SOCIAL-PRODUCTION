@@ -1214,8 +1214,8 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="text-xl font-black text-[#1E0938] tabular-nums truncate">
-              {talent.hourlyRate ? formatRupiah(talent.hourlyRate) : 'Disesuaikan'}
-              {talent.hourlyRate ? <span className="text-sm font-normal text-slate-500"> / jam</span> : null}
+              {selectedHourlyRate ? formatRupiah(selectedHourlyRate) : 'Disesuaikan'}
+              {selectedHourlyRate ? <span className="text-sm font-normal text-slate-500"> / jam {bookingMode === 'online' ? 'online' : 'offline'}</span> : null}
             </div>
           </div>
           <button
