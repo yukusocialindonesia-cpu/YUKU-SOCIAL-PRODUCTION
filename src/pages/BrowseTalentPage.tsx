@@ -143,7 +143,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     <div className="min-h-screen pb-28 sm:pb-10 pt-2 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Banner promosi ditampilkan di bagian atas halaman Jelajahi. */}
-        <div className="mb-3 sm:mb-5">
+        <div className="mb-2 sm:mb-5">
           <PromoCarousel
             compact
             promotions={promotions}
@@ -152,8 +152,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           />
         </div>
         {/* Search & quick filters — mobile-first marketplace layout */}
-        <section className="mb-2 sm:mb-5 space-y-2 sm:space-y-3">
-          <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)] sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-center gap-1.5 sm:gap-2">
+        <section className="mb-1.5 sm:mb-5 space-y-1.5 sm:space-y-3">
+          <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)] sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-center gap-1 sm:gap-2">
             <div className="relative min-w-0">
               <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute left-3 sm:left-4 top-1/2 -translate-y-1/2" />
               <input
@@ -193,7 +193,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
             </div>
           </div>
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1.5 sm:flex sm:items-center">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1 sm:flex sm:items-center">
             <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
               <span className="text-[11px] font-semibold text-slate-500">Gender</span>
               <select
@@ -224,7 +224,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </button>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
               onClick={() => setSelectedActivity('all')}
@@ -256,13 +256,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </section>
 
         {/* Main talent directory */}
-        <section className="mb-1.5 sm:mb-4" aria-labelledby="browse-talent-heading">
+        <section className="mb-1 sm:mb-4" aria-labelledby="browse-talent-heading">
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
-              <h2 id="browse-talent-heading" className="text-base sm:text-2xl font-extrabold tracking-tight text-slate-900">
+              <h2 id="browse-talent-heading" className="text-sm sm:text-2xl font-extrabold tracking-tight text-slate-900">
                 Temukan Temanmu
               </h2>
-              <p className="mt-0.5 text-[11px] sm:text-sm text-slate-500">
+              <p className="mt-0 text-[10px] sm:text-sm text-slate-500">
                 Kenali talent dan pilih teman untuk aktivitasmu.
               </p>
             </div>
@@ -271,7 +271,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Results Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-64 sm:h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
             ))}
