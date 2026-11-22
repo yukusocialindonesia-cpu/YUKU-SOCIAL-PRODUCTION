@@ -116,13 +116,17 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         {/* Breadcrumb / Title */}
         <div className="mb-7 sm:mb-8">
           <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-3 shadow-sm backdrop-blur-md">
-            Katalog Sahabat Aktivitas
+            {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
-            Jelajahi Talent YUKU
+            {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
           </h1>
           <p className="text-sm text-slate-600 mt-1">
-            Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.
+            {selectedMode === 'offline'
+              ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
+              : selectedMode === 'online'
+                ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
+                : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
           </p>
         </div>
 
