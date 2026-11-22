@@ -144,15 +144,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   return (
     <div className="min-h-screen pb-28 sm:pb-10 pt-1 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Banner promosi ditampilkan di bagian atas halaman Jelajahi. */}
-        <div className="mb-1 sm:mb-5">
-          <PromoCarousel
-            compact
-            promotions={promotions}
-            isLoading={isLoadingPromotions}
-            onNavigate={onNavigate}
-          />
-        </div>
         {/* Search, tabs, and quick activity filters */}
         <section className="mb-3 space-y-2.5 sm:mb-5 sm:space-y-3">
           <div className="relative">
@@ -245,6 +236,16 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
+        {/* Promo banner follows search, tabs, and quick filters on Jelajahi. */}
+        <div className="mb-3 sm:mb-5">
+          <PromoCarousel
+            compact
+            promotions={promotions}
+            isLoading={isLoadingPromotions}
+            onNavigate={onNavigate}
+          />
+        </div>
+
         {/* Main talent directory */}
         <section className="mb-2 sm:mb-4" aria-labelledby="browse-talent-heading">
           <div className="flex items-end justify-between gap-3">
@@ -262,7 +263,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Results Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-5">
+          <div className="grid grid-cols-[repeat(2,minmax(0,171px))] justify-start gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4 xl:gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-64 sm:h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
             ))}
