@@ -78,7 +78,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
     <section aria-label="Ruang Promosi YUKU" className={compact ? 'relative py-0 bg-transparent' : 'relative py-2.5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]'}>
       <div className={compact ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}>
         {isLoading ? (
-          <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80" />
+          <div className={`w-full h-[140px] sm:h-auto sm:aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80 ${compact ? '' : 'sm:aspect-[16/9]'}`} />
         ) : totalSlides === 0 ? (
           <div className="relative h-[140px] w-full overflow-hidden rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-900 via-purple-700 to-fuchsia-600 px-4 py-3.5 sm:h-auto sm:aspect-[21/6] sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="relative z-10 flex items-start gap-3 sm:gap-4 max-w-[65%]">
@@ -87,7 +87,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm sm:text-base font-bold text-white">
-                  Etalase Poster Promosi Resmi
+                  Teman Baru, Cerita Baru
                 </h3>
                 <p className="text-[11px] sm:text-sm text-white/85 leading-relaxed">
                   Yuk ngopi bareng minggu ini.
@@ -98,7 +98,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('/talent')}
-              className="w-full sm:w-auto px-4 py-2.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-xl transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="min-h-8 w-auto px-3.5 py-1.5 bg-white hover:bg-purple-50 text-purple-800 text-[11px] font-bold rounded-full transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               Lihat Aktivitas
             </button>
