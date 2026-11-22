@@ -63,7 +63,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   return (
     <article
       onClick={() => onSelect(talent.id)}
-      className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
+      className="group relative h-full bg-white/95 rounded-xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
       <div className="relative aspect-[4/5] w-full overflow-hidden">
@@ -99,7 +99,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {/* Lokasi & mode (bawah foto) */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-medium">
+        <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 flex items-center justify-between text-white text-[10px] sm:text-xs font-medium">
           {talent.city ? (
             <span className="inline-flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
@@ -109,7 +109,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             <span />
           )}
           {talent.serviceMode && (
-            <span className="text-[11px] bg-white/20 backdrop-blur-sm border border-white/30 px-2 py-0.5 rounded-full">
+            <span className="text-[9px] sm:text-[11px] bg-white/20 backdrop-blur-sm border border-white/30 px-1.5 sm:px-2 py-0.5 rounded-full">
               {priceMode === 'online' ? 'Jasa Online' : priceMode === 'offline' ? 'Jasa Offline' : talent.serviceMode}
             </span>
           )}
@@ -149,7 +149,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       {/* Isi */}
       <div className="p-4 pt-3 max-sm:p-1.5 max-sm:pt-1 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 sm:gap-3">
-          <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
+          <h3 className="font-extrabold text-[#1E0938] text-[13px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
             {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
@@ -164,11 +164,11 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         </div>
 
         {talent.headline && (
-          <p className="mt-1 max-sm:mt-0.5 text-[13px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
+          <p className="mt-1 max-sm:mt-0.5 text-[11px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
         )}
 
         {talent.bio && (
-          <p className="mt-1.5 max-sm:mt-0.5 text-xs text-slate-600 line-clamp-2 leading-snug">{talent.bio}</p>
+          <p className="mt-1.5 max-sm:mt-0.5 text-[11px] sm:text-xs text-slate-600 line-clamp-2 leading-snug">{talent.bio}</p>
         )}
 
         {talent.interests && talent.interests.length > 0 && (
@@ -176,7 +176,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             {talent.interests.slice(0, 3).map((item) => (
               <span
                 key={item}
-                className="text-[11px] max-sm:text-[10.5px] font-medium text-purple-800 bg-purple-50 border border-purple-100 px-2 max-sm:px-1.5 py-0.5 rounded-full"
+                className="text-[10px] max-sm:text-[10px] font-medium text-purple-800 bg-purple-50 border border-purple-100 px-2 max-sm:px-1.5 py-0.5 rounded-full"
               >
                 {item}
               </span>
