@@ -72,3 +72,33 @@ body {
     scroll-behavior: auto;
   }
 }
+
+
+/* One-time, gentle entrance for the homepage hero slogan. */
+@keyframes hero-slogan-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-slogan-enter {
+  display: inline-block;
+  animation: hero-slogan-fade-up 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-slogan-enter-delay {
+  animation-delay: 180ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slogan-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
