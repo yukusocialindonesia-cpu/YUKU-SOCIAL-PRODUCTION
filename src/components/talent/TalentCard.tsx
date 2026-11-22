@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Star, MapPin, ArrowRight, Mic, Video, Image as ImageIcon } from 'lucide-react';
+import { Star, MapPin, ArrowRight, Mic, Video, Image as ImageIcon, Heart } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 import { TalentProfile } from '../../types/talent';
 import { formatRupiah } from '../../utils/formatters';
@@ -11,6 +11,8 @@ interface TalentCardProps {
   mediaTypes?: string[];
   priceMode?: 'online' | 'offline' | 'all';
   showPrice?: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: (talentId: string) => void;
 }
 
 // Foto stok bawaan lama dianggap "belum ada foto", supaya kartu tidak terlihat kembar.
@@ -36,7 +38,7 @@ function initialsOf(name: string): string {
   return letters.toUpperCase();
 }
 
-export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true }) => {
+export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true, isFavorite = false, onToggleFavorite }) => {
   const [imageFailed, setImageFailed] = useState(false);
 
   const hasVoice = mediaTypes.includes('voice');
@@ -87,6 +89,21 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
+
+        {onToggleFavorite && (
+          <button
+            type="button"
+            aria-label={isFavorite ? `Hapus ${talent.name} dari favorit` : `Simpan ${talent.name} ke favorit`}
+            aria-pressed={isFavorite}
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleFavorite(talent.id);
+            }}
+            className="absolute top-3 left-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-slate-950/45 text-white shadow-lg backdrop-blur-md transition hover:scale-105 hover:bg-slate-950/65"
+          >
+            <Heart className={`h-4.5 w-4.5 ${isFavorite ? 'fill-rose-500 text-rose-500' : 'text-white'}`} />
+          </button>
+        )}
 
         {/* Badge BARU tetap di atas; status ketersediaan dipindah ke bawah foto. */}
         {isNew && (
