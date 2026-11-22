@@ -159,7 +159,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                           }
                         }}
                         onError={() => setBrokenImageIds((prev) => ({ ...prev, [promo.id]: true }))}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     )}
 
