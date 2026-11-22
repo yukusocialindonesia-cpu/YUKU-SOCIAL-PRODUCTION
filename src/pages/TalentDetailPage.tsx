@@ -1192,7 +1192,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 className="w-full py-3.5 px-4 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calendar className="w-4 h-4" />
-                <span>Ajukan Booking</span>
+                <span>{{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}}</span>
               </button>
 
               <p className="text-[11px] text-slate-400 text-center leading-tight">
@@ -1218,7 +1218,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             className="px-5 py-3.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Calendar className="w-4 h-4" />
-            <span>Ajukan Booking</span>
+            <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}</span>
           </button>
         </div>
       </div>
