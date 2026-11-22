@@ -143,7 +143,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     <div className="min-h-screen pb-28 sm:pb-10 pt-2 sm:pt-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search & quick filters — mobile-first marketplace layout */}
-        <section className="mb-3 sm:mb-5 space-y-2.5 sm:space-y-3">
+        <section className="mb-2 sm:mb-5 space-y-2 sm:space-y-3">
           <div className="relative">
             <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
@@ -152,11 +152,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Cari talent dan aktivitas"
-              className="w-full h-12 sm:h-14 pl-12 pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-sm sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
+              className="w-full h-11 sm:h-14 pl-12 pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-sm sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-purple-50/80 p-1.5 border border-purple-100">
+          <div className="grid grid-cols-3 gap-1 rounded-xl bg-purple-50/80 p-1 border border-purple-100">
             {[
               { id: 'offline', label: 'Teman Aktivitas', icon: <Users className="w-3.5 h-3.5" /> },
               { id: 'nearby', label: 'Terdekat', icon: <MapPin className="w-3.5 h-3.5" /> },
@@ -170,7 +170,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   setSelectedMode('all');
                 }}
                 aria-pressed={activeTab === tab.id}
-                className={`flex min-h-[54px] sm:min-h-10 flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 rounded-xl px-1 sm:px-2 text-[10px] leading-tight text-center sm:text-sm font-bold whitespace-normal sm:whitespace-nowrap transition-all ${
+                className={`flex min-h-10 flex-row items-center justify-center gap-1 rounded-lg px-1 text-[10px] sm:text-sm font-bold whitespace-nowrap transition-all ${
                   activeTab === tab.id
                     ? 'bg-white text-purple-800 shadow-sm ring-1 ring-purple-100'
                     : 'text-slate-600 hover:bg-white/70'
@@ -181,20 +181,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               </button>
             ))}
           </div>
-          <div className="flex items-center justify-between gap-2 px-1">
-            <span className="text-[11px] text-slate-500">
-              {activeTab === 'nearby' && selectedCity === 'Semua Kota'
-                ? 'Pilih kota untuk melihat talent di sekitar.'
-                : activeTab === 'offline'
-                  ? 'Temukan teman untuk bertemu dan melakukan aktivitas bersama.'
-                  : 'Talent yang menyediakan layanan online.'}
-            </span>
-            <span className="shrink-0 text-[11px] sm:text-xs font-semibold text-slate-500 tabular-nums">
-              {displayedTalents.length} talent
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1.5 sm:flex sm:items-center">
             <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
               <span className="text-[11px] font-semibold text-slate-500">Gender</span>
               <select
@@ -218,7 +205,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="col-span-2 sm:col-span-1 sm:ml-auto min-h-9 px-3 rounded-full bg-white/90 border border-purple-100 text-xs font-semibold text-slate-600 hover:text-purple-800 shadow-sm inline-flex items-center justify-center gap-1.5"
+              className="min-h-9 px-2 sm:px-3 rounded-full bg-white/90 border border-purple-100 text-[11px] sm:text-xs font-semibold text-slate-600 hover:text-purple-800 shadow-sm inline-flex items-center justify-center gap-1"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset
@@ -257,10 +244,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </section>
 
         {/* Main talent directory */}
-        <section className="mb-2 sm:mb-4" aria-labelledby="browse-talent-heading">
+        <section className="mb-1.5 sm:mb-4" aria-labelledby="browse-talent-heading">
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
-              <h2 id="browse-talent-heading" className="text-lg sm:text-2xl font-extrabold tracking-tight text-slate-900">
+              <h2 id="browse-talent-heading" className="text-base sm:text-2xl font-extrabold tracking-tight text-slate-900">
                 Temukan Temanmu
               </h2>
               <p className="mt-0.5 text-[11px] sm:text-sm text-slate-500">
