@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HeroSection } from '../components/home/HeroSection';
+import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
 import { ActivityCategories } from '../components/home/ActivityCategories';
 import { FeaturedTalentSection } from '../components/home/FeaturedTalentSection';
@@ -71,7 +72,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
       />
 
-      {/* 5. Kategori Aktivitas */}
+      {/* Pilihan layanan utama: offline dan online */}
+      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+
+      {/* Kategori Aktivitas */}
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
       {/* 6. Talent Pilihan dari profil publik Supabase */}
