@@ -45,7 +45,7 @@ export const SafetySection: React.FC = () => {
           {/* Card 2: 18+ & ID Verification */}
           <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-3 md:p-6 rounded-2xl bg-purple-950/40 border border-purple-800/50 backdrop-blur-xs flex flex-col justify-between">
             <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-3 md:mb-4">
+              <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-3 md:mb-4">
                 <FileCheck className="w-6 h-6" />
               </div>
               <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
@@ -64,7 +64,7 @@ export const SafetySection: React.FC = () => {
           {/* Card 3: Public Spaces Only */}
           <div className="snap-start shrink-0 w-[82vw] sm:w-[60vw] md:w-auto p-3 md:p-6 rounded-2xl bg-purple-950/40 border border-purple-800/50 backdrop-blur-xs flex flex-col justify-between">
             <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3 md:mb-4">
+              <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3 md:mb-4">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
