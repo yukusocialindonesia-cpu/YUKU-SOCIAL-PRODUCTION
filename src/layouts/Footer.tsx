@@ -69,7 +69,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('/daftar-talent')}
-                  className="inline-flex min-h-11 items-center inline-flex min-h-8 items-center rounded-lg px-2 -ml-2 bg-amber-400/10 !text-amber-200 font-semibold hover:bg-amber-400/15 hover:!text-amber-100 transition-all cursor-pointer"
+                  className="inline-flex min-h-11 items-center rounded-lg px-2 -ml-2 bg-amber-400/10 !text-amber-200 font-semibold hover:bg-amber-400/15 hover:!text-amber-100 transition-all cursor-pointer"
                 >
                   Daftar Jadi Talent
                 </button>
