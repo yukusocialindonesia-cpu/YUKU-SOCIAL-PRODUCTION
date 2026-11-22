@@ -69,7 +69,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
     !talent.avatarUrl!.includes(PLACEHOLDER_PHOTO_MARKER) &&
     !imageFailed;
 
-  const isNew = !talent.reviewCount || talent.reviewCount === 0;
+  // Label BARU hanya untuk talent yang mendaftar dalam 7 hari terakhir.
+  const registeredAt = talent.createdAt ? Date.parse(talent.createdAt) : Number.NaN;
+  const ageSinceRegistration = Date.now() - registeredAt;
+  const isNew =
+    Number.isFinite(registeredAt) &&
+    ageSinceRegistration >= 0 &&
+    ageSinceRegistration < 7 * 24 * 60 * 60 * 1000;
 
   return (
     <article
@@ -166,7 +172,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
             {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
           </h3>
-          {!isNew && talent.rating !== undefined && (
+          {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
             <div className="shrink-0 inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-xs font-bold px-2 py-1 rounded-full tabular-nums">
               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               {talent.rating.toFixed(1)}
