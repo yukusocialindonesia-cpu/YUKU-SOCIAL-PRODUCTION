@@ -82,8 +82,15 @@ export async function fetchTalentsFromSupabase(limit?: number): Promise<TalentPr
     .from('talent_profiles')
     .select(
       'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved, created_at'
-    );
-  
+    )
+    // Prioritaskan status verifikasi, bukti ulasan, kualitas rating, dan pengalaman.
+    // Tanggal pendaftaran menjadi penentu terakhir agar urutan tetap konsisten.
+    .order('is_approved', { ascending: false })
+    .order('review_count', { ascending: false })
+    .order('rating_average', { ascending: false })
+    .order('completed_hours', { ascending: false })
+    .order('created_at', { ascending: false });
+
   if (limit) {
     query = query.limit(limit);
   }
