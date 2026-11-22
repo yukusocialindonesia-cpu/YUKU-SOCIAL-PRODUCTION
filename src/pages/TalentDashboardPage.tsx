@@ -1409,9 +1409,6 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
   if (isCheckingAuth) {
     return (
-    <>
-      {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
-      {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}
       <div className="py-24 text-center space-y-3">
         <Loader2 className="w-8 h-8 animate-spin text-purple-700 mx-auto" />
         <p className="text-xs text-slate-500 font-medium">Memverifikasi sesi akun Talent...</p>
@@ -2902,6 +2899,10 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             .reduce((sum, rw) => sum + Number(rw.reward_amount || 0), 0);
 
           return (
+    <>
+      {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
+      {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}
+
             <div className="space-y-6">
               {/* Referral Hero & Code Share */}
               <div className="bg-gradient-to-br from-purple-950 via-purple-900 to-[#2D1052] text-white p-6 rounded-2xl border border-purple-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
