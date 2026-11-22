@@ -273,7 +273,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 Kenali talent dan pilih teman untuk aktivitasmu.
               </p>
             </div>
-            <button type="button" onClick={() => { setSelectedActivity('all'); setSelectedCity('Semua Kota'); setActiveTab('offline'); }} className="shrink-0 text-xs font-bold text-purple-700 hover:text-purple-900">Lihat Semua</button>
+            <button type="button" onClick={() => { setSelectedActivity('all'); setSelectedCity('Semua Kota'); setActiveTab('hot'); }} className="shrink-0 text-xs font-bold text-purple-700 hover:text-purple-900">Lihat Semua</button>
           </div>
         </section>
 
