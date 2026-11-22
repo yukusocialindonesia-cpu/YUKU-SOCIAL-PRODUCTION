@@ -45,10 +45,10 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white block font-semibold text-sm">
+                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Bebas Pilih Lokasi Publik
                   </strong>
-                  <span className="text-purple-200/70">
+                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
                     Bertemu nyaman di kafe, mall, bioskop, atau pilih sesi obrolan online.
                   </span>
                 </div>
@@ -57,10 +57,10 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               <div className="flex items-start gap-2.5">
                 <Clock className="w-4 h-4 text-fuchsia-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white block font-semibold text-sm">
+                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Tarif Transparan per Jam
                   </strong>
-                  <span className="text-purple-200/70">
+                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
                     Lihat tarif per jam langsung di profil sebelum mengajukan jadwal booking.
                   </span>
                 </div>
@@ -69,10 +69,10 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               <div className="flex items-start gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white block font-semibold text-sm">
+                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Dana Aman di Escrow
                   </strong>
-                  <span className="text-purple-200/70">
+                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
                     Pembayaran ditahan aman dan hanya diteruskan setelah sesi selesai.
                   </span>
                 </div>
