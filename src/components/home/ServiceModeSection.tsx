@@ -47,9 +47,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
           <button
             type="button"
             onClick={() => onSelectMode('online')}
-            className="group min-w-0 rounded-2xl sm:rounded-3xl border border-purple-100 bg-gradient-to-br from-white via-purple-50 to-indigo-50 p-3 sm:p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+            className="group min-w-0 rounded-2xl sm:rounded-3xl border border-purple-100 bg-gradient-to-br from-white via-purple-50 to-indigo-50 p-2.5 sm:p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
           >
-            <span className="mb-2.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-sm">
+            <span className="mb-2 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-sm">
               <span className="relative flex items-center justify-center" aria-hidden="true">
                 <Video className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
                 <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-indigo-700">
