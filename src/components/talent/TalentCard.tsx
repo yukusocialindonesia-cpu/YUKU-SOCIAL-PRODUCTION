@@ -173,10 +173,11 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       {/* Isi */}
       <div className="p-3 pt-3 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
         {showPrice && (
-          <div className="mb-1 flex items-center justify-between gap-2">
+          <div className="mb-1 flex min-w-0 flex-col items-start gap-1">
             <span className="text-[10px] sm:text-xs text-slate-500">Tarif mulai</span>
-            <span className="shrink-0 rounded-full bg-purple-50 px-2.5 py-1 text-[10px] sm:text-xs font-extrabold text-purple-800">
-              {displayedRate ? `${formatRupiah(displayedRate)} ${showOnlineRate ? '/jam online' : '/jam offline'}` : 'Hubungi talent'}
+            <span className="inline-flex max-w-full min-w-0 flex-col rounded-xl bg-purple-50 px-2.5 py-1.5 text-[11px] sm:text-xs font-extrabold leading-tight text-purple-800">
+              <span className="max-w-full break-words">{displayedRate ? formatRupiah(displayedRate) : 'Hubungi talent'}</span>
+              {displayedRate && <span className="mt-0.5 text-[9px] sm:text-[10px] font-semibold text-purple-600">{showOnlineRate ? '/jam online' : '/jam offline'}</span>}
             </span>
           </div>
         )}
