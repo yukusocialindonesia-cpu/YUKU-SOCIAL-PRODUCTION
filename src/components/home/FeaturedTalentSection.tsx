@@ -10,6 +10,7 @@ import {
   useAvailableTodayIds,
 } from '../talent/TalentQuickFilter';
 import { fetchTalentsFromSupabase } from '../../utils/supabaseMarketplace';
+import { supabase } from '../../lib/supabase';
 
 interface FeaturedTalentSectionProps {
   onSelectTalent: (talentId: string) => void;
@@ -21,6 +22,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   onViewAllClick,
 }) => {
   const [talents, setTalents] = useState<TalentProfile[]>([]);
+  const [mediaTypesByTalent, setMediaTypesByTalent] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
@@ -39,6 +41,31 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
     try {
       const data = await fetchTalentsFromSupabase(10);
       setTalents(data);
+
+      // Ambil jenis media semua Talent sekaligus, bukan satu query per kartu.
+      const talentIds = data.map((talent) => talent.id);
+      if (talentIds.length > 0) {
+        try {
+          const { data: mediaRows, error } = await supabase
+            .from('talent_media')
+            .select('talent_id, media_type')
+            .in('talent_id', talentIds);
+          if (error) throw error;
+
+          const grouped: Record<string, string[]> = {};
+          (mediaRows ?? []).forEach((media: { talent_id: string; media_type: string }) => {
+            const types = grouped[media.talent_id] ?? [];
+            if (!types.includes(String(media.media_type))) types.push(String(media.media_type));
+            grouped[media.talent_id] = types;
+          });
+          setMediaTypesByTalent(grouped);
+        } catch {
+          // Informasi media hanya indikator tambahan; kartu tetap tampil jika query gagal.
+          setMediaTypesByTalent({});
+        }
+      } else {
+        setMediaTypesByTalent({});
+      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal memuat data Talent dari Supabase.');
     } finally {
@@ -152,6 +179,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
                   talent={talent}
                   onSelect={onSelectTalent}
                   availableToday={availableTodayIds.has(talent.id)}
+                  mediaTypes={mediaTypesByTalent[talent.id] ?? []}
                 />
               </motion.div>
             ))}
