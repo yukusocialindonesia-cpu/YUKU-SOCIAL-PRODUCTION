@@ -611,10 +611,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   }, [isCheckingAuth, currentUserId, loadDashboardData]);
 
   useEffect(() => {
-    return (
-    <>
-      {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
-      {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}) => {
+    return () => {
       if (voiceTimerRef.current !== null) {
         window.clearInterval(voiceTimerRef.current);
       }
@@ -1412,6 +1409,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
   if (isCheckingAuth) {
     return (
+    <>
+      {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
+      {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}
       <div className="py-24 text-center space-y-3">
         <Loader2 className="w-8 h-8 animate-spin text-purple-700 mx-auto" />
         <p className="text-xs text-slate-500 font-medium">Memverifikasi sesi akun Talent...</p>
