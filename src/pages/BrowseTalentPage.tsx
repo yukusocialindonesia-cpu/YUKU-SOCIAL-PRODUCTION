@@ -153,19 +153,20 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
         {/* Search & quick filters — mobile-first marketplace layout */}
         <section className="mb-2 sm:mb-5 space-y-2 sm:space-y-3">
-          <div className="relative">
-            <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Cari teman, aktivitas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Cari talent dan aktivitas"
-              className="w-full h-11 sm:h-14 pl-12 pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-sm sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
-            />
-          </div>
+          <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)] sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-center gap-1.5 sm:gap-2">
+            <div className="relative min-w-0">
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute left-3 sm:left-4 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari teman..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Cari talent dan aktivitas"
+                className="w-full h-10 sm:h-14 pl-9 sm:pl-12 pr-2 sm:pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-xs sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
+              />
+            </div>
 
-          <div className="grid grid-cols-3 gap-1 rounded-xl bg-purple-50/80 p-1 border border-purple-100">
+            <div className="min-w-0 grid grid-cols-3 gap-0.5 sm:gap-1 rounded-xl bg-purple-50/80 p-1 border border-purple-100">
             {[
               { id: 'offline', label: 'Teman Aktivitas', icon: <Users className="w-3.5 h-3.5" /> },
               { id: 'nearby', label: 'Terdekat', icon: <MapPin className="w-3.5 h-3.5" /> },
@@ -179,16 +180,18 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   setSelectedMode('all');
                 }}
                 aria-pressed={activeTab === tab.id}
-                className={`flex min-h-10 flex-row items-center justify-center gap-1 rounded-lg px-1 text-[10px] sm:text-sm font-bold whitespace-nowrap transition-all ${
+                className={`flex min-h-9 sm:min-h-10 flex-row items-center justify-center gap-0.5 sm:gap-1 rounded-lg px-0.5 sm:px-1 text-[9px] sm:text-sm font-bold whitespace-nowrap transition-all ${
                   activeTab === tab.id
                     ? 'bg-white text-purple-800 shadow-sm ring-1 ring-purple-100'
                     : 'text-slate-600 hover:bg-white/70'
                 }`}
               >
                 {tab.icon}
-                {tab.label}
+                <span className="sm:hidden">{tab.id === 'offline' ? 'Aktivitas' : tab.label}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
               </button>
             ))}
+            </div>
           </div>
           <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1.5 sm:flex sm:items-center">
             <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
