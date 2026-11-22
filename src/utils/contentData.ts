@@ -17,7 +17,7 @@ export const HOW_IT_WORKS_STEPS = [
   {
     step: '04',
     title: 'Konfirmasi & Selesai',
-    description: 'Setelah sesi berakhir, beri ulasan positif. Dana booking diteruskan ke Talent secara adil dan transparan.',
+    description: 'Setelah sesi berakhir, konfirmasi penyelesaian dan beri ulasan untuk membantu menjaga kualitas komunitas.'
   },
 ];
 
