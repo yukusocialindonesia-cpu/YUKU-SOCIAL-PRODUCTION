@@ -151,7 +151,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const topPromotion = promotions[0];
 
   return (
-    <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-0 sm:py-5">
+    <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-3 sm:py-5">
       <div className="mx-auto max-w-7xl space-y-2 px-3 sm:space-y-4 sm:px-6 lg:px-8">
         {/* Search sits beside Offline so the top banner appears higher on the first screen. */}
         <div className="flex items-center gap-1.5">
