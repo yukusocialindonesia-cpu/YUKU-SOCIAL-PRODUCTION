@@ -4,6 +4,7 @@ import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
 import { ActivityCategories } from '../components/home/ActivityCategories';
 import { FeaturedTalentSection } from '../components/home/FeaturedTalentSection';
+import { CommunityPreviewSection } from '../components/home/CommunityPreviewSection';
 import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { SafetySection } from '../components/home/SafetySection';
 import { TalentCtaSection } from '../components/home/TalentCtaSection';
@@ -58,13 +59,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   const handleSelectTalent = (talentId: string) => {
-    onNavigate(`/talent/:id`, { id: talentId });
+    onNavigate('/talent/:id', { id: talentId });
   };
 
   return (
-    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
-      {/* 2. Hero Section with Tagline ("Real Friends. Real Moments.") & 3. Tombol Jelajahi Talent */}
-      {/* 4. Pencarian berdasarkan aktivitas dan lokasi */}
+    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-[#FCFBFE]">
       <HeroSection
         onExploreClick={() => onNavigate('/talent')}
         onSearch={handleSearch}
@@ -72,39 +71,35 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
       />
 
-      {/* Pilihan layanan utama: offline dan online */}
       <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
 
-      {/* Kategori Aktivitas */}
-      <ActivityCategories onSelectCategory={handleSelectCategory} />
-
-      {/* Talent Pilihan dari profil publik Supabase */}
+      {/* Talent menjadi fokus utama setelah pengunjung memilih cara layanan. */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Ruang Promosi Poster Berjalan */}
+      <ActivityCategories onSelectCategory={handleSelectCategory} />
+
+      {/* Akses Komunitas ditampilkan langsung di Beranda, tanpa mengubah sistem posting. */}
+      <CommunityPreviewSection onOpenCommunity={() => onNavigate('/komunitas')} />
+
       <PromoCarousel
         promotions={promotions}
         isLoading={isLoadingPromotions}
         onNavigate={onNavigate}
       />
 
-      {/* Cara kerja setelah pengunjung melihat pilihan Talent dan promosi */}
       <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
 
-      {/* Keamanan dan Verifikasi */}
       <SafetySection />
 
-      {/* 10. Ajakan Customer & Tautan Talent */}
       <TalentCtaSection
         onExploreClick={() => onNavigate('/talent')}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onRegisterClick={() => onNavigate('/daftar-talent')}
       />
 
-      {/* 11. FAQ */}
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
     </div>
   );
