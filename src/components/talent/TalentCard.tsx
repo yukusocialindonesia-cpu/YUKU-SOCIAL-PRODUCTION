@@ -74,7 +74,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   return (
     <article
       onClick={() => onSelect(talent.id)}
-      className="group relative bg-white/95 rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
+      className="group relative bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
       <div className="relative aspect-[4/5] sm:aspect-[4/3] w-full overflow-hidden">
@@ -139,7 +139,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
       {/* Ikon media: di bawah foto, tidak menimpa gambar */}
       {(hasVoice || hasVideo || hasPhoto) && (
-        <div className="px-5 pt-3 flex flex-wrap gap-1.5">
+        <div className="px-3 pt-3 sm:px-5 flex flex-wrap gap-1.5">
           {hasVoice && (
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-fuchsia-800 bg-fuchsia-50 border border-fuchsia-100 px-2 py-0.5 rounded-full">
               <Mic className="w-3 h-3" /> Voice
@@ -159,9 +159,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-5 pt-3 max-sm:p-4 max-sm:pt-2 flex-1 flex flex-col">
+      <div className="p-5 pt-3 max-sm:p-3 max-sm:pt-2 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-extrabold text-[#1E0938] text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
+          <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
             <VerifiedBadge className="ml-1.5 -mt-0.5" />
@@ -176,7 +176,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         </div>
 
         {talent.headline && (
-          <p className="mt-1.5 max-sm:mt-1 text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
+          <p className="mt-1.5 max-sm:mt-1 text-[13px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
         )}
 
         {talent.bio && (
@@ -200,7 +200,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <div className="pt-3 max-sm:pt-2 border-t border-purple-100 flex items-center justify-between gap-3">
             <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
-              <div className="text-base font-black text-[#1E0938] tabular-nums leading-tight">
+              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
                 {talent.hourlyRate ? formatRupiah(talent.hourlyRate) : 'Hubungi Talent'}
                 {talent.hourlyRate ? (
                   <span className="text-xs font-medium text-slate-500"> / jam</span>
@@ -210,7 +210,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all shrink-0"
+              className="inline-flex min-h-10 items-center gap-1 px-3 py-2.5 sm:gap-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all shrink-0"
             >
               Lihat Profil
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
