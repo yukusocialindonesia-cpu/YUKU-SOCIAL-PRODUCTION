@@ -201,37 +201,3 @@ export async function fetchHeroSlidesFromSupabase(): Promise<HeroSlideRow[]> {
   return (data as HeroSlideRow[]) || [];
 }
 
-
-/** Load the signed-in user's saved talent IDs. Requires the user_favorite_talents migration. */
-export async function fetchFavoriteTalentIds(userId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('user_favorite_talents')
-    .select('talent_id')
-    .eq('user_id', userId);
-  if (error) {
-    throw new Error(`Gagal memuat talent favorit: ${error.message} (${error.code || 'UNKNOWN'})`);
-  }
-  return (data || []).map((row: { talent_id: string }) => row.talent_id);
-}
-
-/** Save a talent to the signed-in user's favorites. RLS verifies ownership. */
-export async function addFavoriteTalent(userId: string, talentId: string): Promise<void> {
-  const { error } = await supabase
-    .from('user_favorite_talents')
-    .insert({ user_id: userId, talent_id: talentId });
-  if (error && error.code !== '23505') {
-    throw new Error(`Gagal menyimpan favorit: ${error.message} (${error.code || 'UNKNOWN'})`);
-  }
-}
-
-/** Remove a talent from the signed-in user's favorites. RLS verifies ownership. */
-export async function removeFavoriteTalent(userId: string, talentId: string): Promise<void> {
-  const { error } = await supabase
-    .from('user_favorite_talents')
-    .delete()
-    .eq('user_id', userId)
-    .eq('talent_id', talentId);
-  if (error) {
-    throw new Error(`Gagal menghapus favorit: ${error.message} (${error.code || 'UNKNOWN'})`);
-  }
-}
