@@ -322,6 +322,18 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
   }
 
   return (
+    <div className="space-y-3">
+      {submission?.status === 'rejected' && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-900">
+          <div className="font-bold">Bukti pembayaran perlu diperbaiki</div>
+          <p className="mt-1">Admin belum dapat memverifikasi bukti sebelumnya. Silakan periksa catatan Admin, lalu kirim bukti yang sesuai.</p>
+          {submission.admin_notes && (
+            <p className="mt-2 rounded-lg bg-white/80 p-2 text-rose-900">
+              <strong>Catatan Admin:</strong> {submission.admin_notes}
+            </p>
+          )}
+        </div>
+      )}
     <div className="mt-4 space-y-4 rounded-[1.5rem] border border-white/80 bg-white/85 p-4 shadow-[0_18px_45px_-24px_rgba(76,29,149,0.35)] ring-1 ring-violet-100/80 backdrop-blur-xl sm:p-5">
       {left !== null && (
         <div className={`rounded-xl px-3 py-2 text-center text-xs font-bold ${
@@ -431,6 +443,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
       <p className="text-[10px] leading-relaxed text-slate-500">
         Unggahan tidak otomatis mengesahkan pembayaran. Admin harus mencocokkan dana masuk pada akun merchant.
       </p>
+    </div>
     </div>
   );
 };
