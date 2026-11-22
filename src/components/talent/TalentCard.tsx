@@ -76,7 +76,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         aria-label={`Lihat profil ${talent.name}`}
         className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.12)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
       >
-        <div className="relative h-[clamp(132px,19vh,164px)] w-full overflow-hidden bg-purple-100">
+        <div className="relative h-[clamp(200px,28vh,240px)] w-full overflow-hidden bg-purple-100">
           {hasRealPhoto ? (
             <img
               src={talent.avatarUrl}
