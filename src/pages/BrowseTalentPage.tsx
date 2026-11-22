@@ -230,6 +230,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </div>
 
+        </div>
+
         {/* First promotional banner: active content from the existing promotions table. */}
         <ExploreBanner promotion={topPromotion} position="top" onNavigate={onNavigate} />
 
