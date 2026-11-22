@@ -37,6 +37,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
   const [activeTab, setActiveTab] = useState<'hot' | 'nearby' | 'online' | 'favorites'>('hot');
   const [favoriteTalentIds, setFavoriteTalentIds] = useState<string[]>([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
   const [favoriteError, setFavoriteError] = useState<string | null>(null);
   const { user } = useAuth();
 
@@ -87,13 +88,21 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     let isMounted = true;
     if (!user) {
       setFavoriteTalentIds([]);
+      setFavoriteError(null);
+      setFavoritesLoading(false);
       return () => { isMounted = false; };
     }
+    setFavoritesLoading(true);
+    setFavoriteError(null);
     fetchFavoriteTalentIds(user.id)
       .then((ids) => { if (isMounted) setFavoriteTalentIds(ids); })
       .catch((err) => {
-        if (isMounted) setFavoriteError(err.message || 'Gagal memuat favorit.');
-      });
+        if (isMounted) {
+          setFavoriteTalentIds([]);
+          setFavoriteError(err.message || 'Gagal memuat favorit.');
+        }
+      })
+      .finally(() => { if (isMounted) setFavoritesLoading(false); });
     return () => { isMounted = false; };
   }, [user?.id]);
 
@@ -325,7 +334,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         )}
 
         {/* Results Grid */}
-        {loading ? (
+        {loading || (activeTab === 'favorites' && favoritesLoading) ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
@@ -362,10 +371,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-800 text-base mb-1">
-              {activeTab === 'favorites' ? 'Belum Ada Talent Favorit' : activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih Kota Terlebih Dahulu' : 'Tidak Ada Talent yang Sesuai Filter'}
+              {activeTab === 'favorites' && favoriteError ? 'Favorit Belum Bisa Dimuat' : activeTab === 'favorites' ? 'Belum Ada Talent Favorit' : activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih Kota Terlebih Dahulu' : 'Tidak Ada Talent yang Sesuai Filter'}
             </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
-              {activeTab === 'favorites' ? 'Tekan ikon hati pada kartu talent untuk menyimpannya ke daftar favorit.' : activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih kota pada filter lokasi. Untuk saat ini, pencarian terdekat menggunakan kota, bukan GPS.' : 'Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.'}
+              {activeTab === 'favorites' && favoriteError ? 'Penyimpanan favorit membutuhkan tabel database yang belum tersedia. Database Production tidak diubah; fitur ini perlu diuji melalui migrasi terpisah.' : activeTab === 'favorites' ? 'Tekan ikon hati pada kartu talent untuk menyimpannya ke daftar favorit.' : activeTab === 'nearby' && selectedCity === 'Semua Kota' ? 'Pilih kota pada filter lokasi. Untuk saat ini, pencarian terdekat menggunakan kota, bukan GPS.' : 'Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.'}
             </p>
             <button
               onClick={handleResetFilters}
