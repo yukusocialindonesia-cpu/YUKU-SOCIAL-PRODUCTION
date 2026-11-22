@@ -153,6 +153,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   return (
     <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-3 sm:py-5">
       <div className="mx-auto max-w-7xl space-y-2 px-3 sm:space-y-4 sm:px-6 lg:px-8">
+        {/* Jelajah controls stay visible while the banner and talent cards scroll underneath. */}
+        <div className="-mx-3 sticky top-0 z-30 space-y-2 border-b border-purple-100/80 bg-[#FBF9FE]/95 px-3 py-2 shadow-[0_4px_14px_rgba(49,19,79,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
         {/* Search sits beside Offline so the top banner appears higher on the first screen. */}
         <div className="flex items-center gap-1.5">
           <div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -226,6 +228,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               </div>
             )}
           </div>
+        </div>
         </div>
 
         {/* First promotional banner: active content from the existing promotions table. */}
