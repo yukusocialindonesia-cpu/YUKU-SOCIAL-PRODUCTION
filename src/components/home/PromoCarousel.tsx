@@ -211,15 +211,14 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
               {/* Kontrol: titik di atas gambar (seperti Hero), panah hanya di layar lebar */}
               {totalSlides > 1 && (
                 <div className="absolute z-20 bottom-2 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-4 md:right-5 flex items-center gap-2">
-                  <div role="tablist" aria-label="Pilih poster promosi" className="flex items-center mr-1">
+                  <div role="group" aria-label="Pilih poster promosi" className="flex items-center mr-1">
                     {promotions.map((promo, index) => {
                       const isCurrent = index === activeIndex;
                       return (
                         <button
                           key={promo.id}
                           type="button"
-                          role="tab"
-                          aria-selected={isCurrent}
+                          aria-pressed={isCurrent}
                           aria-label={`Tampilkan poster ${index + 1}: ${promo.title}`}
                           onClick={() => setActiveIndex(index)}
                           className="min-w-[28px] min-h-[40px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700 rounded-lg"
