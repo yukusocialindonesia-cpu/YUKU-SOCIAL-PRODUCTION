@@ -249,8 +249,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </span>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="shrink-0 inline-flex items-center gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+            <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
               <span className="text-[11px] font-semibold text-slate-500">Gender</span>
               <select
                 value={selectedGender}
@@ -263,7 +263,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 <option value="Pria">Pria</option>
               </select>
             </div>
-            <div className="shrink-0 min-w-[150px] rounded-full bg-white/90 border border-purple-100 px-3 py-1.5 shadow-sm">
+            <div className="min-w-0 w-full rounded-full bg-white/90 border border-purple-100 px-2 py-1.5 shadow-sm">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
@@ -273,7 +273,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="shrink-0 min-h-10 px-3 rounded-full bg-white/90 border border-purple-100 text-xs font-semibold text-slate-600 hover:text-purple-800 shadow-sm inline-flex items-center gap-1.5"
+              className="col-span-2 sm:col-span-1 sm:ml-auto min-h-9 px-3 rounded-full bg-white/90 border border-purple-100 text-xs font-semibold text-slate-600 hover:text-purple-800 shadow-sm inline-flex items-center justify-center gap-1.5"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset
@@ -313,6 +313,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         <div className="mb-5 sm:mb-8">
           <PromoCarousel
+            compact
             promotions={promotions}
             isLoading={isLoadingPromotions}
             onNavigate={onNavigate}
@@ -344,7 +345,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <span>Coba Lagi</span>
             </button>
           </div>
-        ) : filteredTalents.length > 0 ? (
+        ) : displayedTalents.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {displayedTalents.map((talent) => (
               <TalentCard
