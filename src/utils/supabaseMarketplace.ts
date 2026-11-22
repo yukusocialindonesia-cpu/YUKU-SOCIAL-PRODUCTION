@@ -14,6 +14,7 @@ export function mapSupabaseTalent(row: any, servicesCategoryIds: string[] = []):
   return {
     id: row.id,
     name: row.display_name ?? '',
+    createdAt: row.created_at ?? undefined,
     city: row.city ?? '',
     gender: row.gender === 'Pria' ? 'Pria' : row.gender === 'Wanita' ? 'Wanita' : undefined,
     headline: row.headline ?? '',
@@ -80,7 +81,7 @@ export async function fetchTalentsFromSupabase(limit?: number): Promise<TalentPr
   let query = supabase
     .from('talent_profiles')
     .select(
-      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved'
+      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved, created_at'
     );
   
   if (limit) {
@@ -130,7 +131,7 @@ export async function fetchTalentByIdFromSupabase(talentId: string): Promise<Tal
   const { data, error } = await supabase
     .from('talent_profiles')
     .select(
-      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved'
+      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved, created_at'
     )
     .eq('id', talentId)
     .maybeSingle();
