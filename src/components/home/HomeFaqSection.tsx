@@ -14,31 +14,31 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
   };
 
   return (
-    <section className="py-5 md:py-20 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
+    <section className="border-t border-slate-200 bg-white py-7 sm:py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-4 md:mb-12">
-          <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
+        <div className="mb-5 max-w-2xl sm:mb-7">
+          <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-purple-700">
             Pertanyaan Umum
           </span>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E0938] tracking-tight mb-2 md:mb-3">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
             Sering Ditanyakan Seputar YUKU
           </h2>
-          <p className="max-w-2xl mx-auto text-slate-600 text-sm leading-relaxed">
+          <p className="mt-1 text-sm leading-relaxed text-slate-600">
             Jawaban transparan mengenai konsep pertemanan berbayar, keamanan, dan aturan platform.
           </p>
         </div>
 
-        <div className="space-y-2.5 sm:space-y-3">
+        <div className="max-w-4xl space-y-2.5 sm:space-y-3">
           {FAQ_ITEMS.slice(0, 5).map((item, idx) => (
             <div
               key={item.q}
-              className={`border border-purple-100/80 rounded-2xl overflow-hidden bg-white shadow-[0_6px_20px_rgba(76,29,149,0.06)] transition-all duration-200 ${idx >= 4 ? 'hidden md:block' : ''}`}
+              className={`overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors duration-200 ${idx >= 4 ? 'hidden md:block' : ''}`}
             >
               <button
                 type="button"
                 onClick={() => toggleItem(idx)}
                 aria-expanded={openIndex === idx}
-                className="w-full min-h-[52px] py-3 sm:py-4 px-4 sm:px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-white hover:bg-purple-50/40"
+                className="flex min-h-[52px] w-full items-center justify-between gap-4 bg-white px-4 py-3 text-left font-semibold text-slate-900 transition-colors hover:bg-slate-50 hover:text-purple-700 sm:px-5 sm:py-4"
               >
                 <span className="text-sm sm:text-base leading-snug">{item.q}</span>
                 <ChevronDown
@@ -49,7 +49,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
               </button>
 
               {openIndex === idx && (
-                <div className="px-4 sm:px-5 py-3 sm:py-4 text-sm text-slate-600 leading-relaxed border-t border-purple-50 bg-[#FEFDFF]">
+                <div className="border-t border-slate-100 bg-white px-4 py-3 text-sm leading-relaxed text-slate-600 sm:px-5 sm:py-4">
                   {item.a}
                 </div>
               )}
@@ -57,10 +57,10 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
           ))}
         </div>
 
-        <div className="mt-4 sm:mt-8 text-center">
+        <div className="mt-4 max-w-4xl sm:mt-6">
           <button
             onClick={onViewAllFaqClick}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold text-purple-700 hover:text-purple-900 hover:bg-purple-50 transition-colors cursor-pointer"
+            className="inline-flex min-h-10 items-center justify-center gap-2 text-sm font-semibold text-purple-700 transition-colors hover:text-purple-900"
           >
             <span>Buka Pusat Bantuan & FAQ Lengkap</span>
             <ArrowRight className="w-4 h-4" />
