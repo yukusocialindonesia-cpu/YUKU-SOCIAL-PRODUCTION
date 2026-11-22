@@ -17,7 +17,7 @@ interface HowItWorksSectionProps {
 
 export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMoreClick }) => {
   return (
-    <section className="py-7 md:py-16 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section className="py-5 md:py-16 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
           {/* Cara Kerja */}
@@ -25,7 +25,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
             <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase block">
               Alur Mudah & Transparan
             </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E0938] tracking-tight mb-5">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E0938] tracking-tight mb-3 sm:mb-5">
               Cara Kerja YUKU
             </h2>
 
@@ -54,7 +54,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
 
             <button
               onClick={onLearnMoreClick}
-              className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors cursor-pointer"
+              className="mt-3 sm:mt-5 inline-flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors cursor-pointer"
             >
               <span>Pelajari Pedoman Etika & Panduan Lengkap</span>
               <ArrowRight className="w-4 h-4" />
