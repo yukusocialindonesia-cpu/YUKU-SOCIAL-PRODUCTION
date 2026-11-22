@@ -155,9 +155,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       <div className="mx-auto max-w-7xl space-y-2 px-3 sm:space-y-4 sm:px-6 lg:px-8">
         {/* Jelajah controls stay visible while the banner and talent cards scroll underneath. */}
         <div className="-mx-3 sticky top-0 z-30 space-y-2 border-b border-purple-100/80 bg-[#FBF9FE]/95 px-3 py-2 shadow-[0_4px_14px_rgba(49,19,79,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
-        {/* Search sits beside Offline so the top banner appears higher on the first screen. */}
-        <div className="flex items-center gap-1.5">
-          <div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* Mode tabs and Filter share one compact row. */}
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {[
               { id: 'all', label: 'Hot', icon: <Flame className="h-4 w-4" /> },
               { id: 'online', label: 'Online', icon: <Wifi className="h-4 w-4" /> },
@@ -173,24 +173,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 {tab.icon}{tab.label}
               </button>
             ))}
-          </div>
-          <div className="relative w-[min(42%,164px)] shrink-0">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-purple-700" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Cari..."
-              aria-label="Cari teman atau aktivitas"
-              className="h-9 w-full rounded-full border border-purple-100 bg-white pl-8 pr-2 text-[11px] text-slate-800 shadow-[0_4px_16px_rgba(76,29,149,0.07)] outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
-            />
-          </div>
-        </div>
-
-        {/* Small filter row; advanced controls stay tucked away until requested. */}
-        <div className="flex items-center gap-1.5">
-          <div className="min-w-0 flex-1">
-            <LocationFilter selectedCity={selectedCity} talentCities={talentCities} onChangeCity={setSelectedCity} />
           </div>
           <div className="relative shrink-0">
             <button
@@ -229,6 +211,23 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             )}
           </div>
         </div>
+
+        {/* Location and search share the second compact row. */}
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <LocationFilter selectedCity={selectedCity} talentCities={talentCities} onChangeCity={setSelectedCity} />
+          </div>
+          <div className="relative w-[min(42%,164px)] shrink-0">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-purple-700" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Cari..."
+              aria-label="Cari teman atau aktivitas"
+              className="h-9 w-full rounded-full border border-purple-100 bg-white pl-8 pr-2 text-[11px] text-slate-800 shadow-[0_4px_16px_rgba(76,29,149,0.07)] outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
+            />
+          </div>
         </div>
 
         {/* First promotional banner: active content from the existing promotions table. */}
