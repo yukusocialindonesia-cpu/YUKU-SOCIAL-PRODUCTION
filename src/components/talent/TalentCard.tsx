@@ -186,7 +186,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         {showPrice && (
           <div className="mb-1 flex min-w-0 flex-col items-start gap-1">
             <span className="text-[10px] sm:text-xs text-slate-500">Tarif mulai</span>
-            <span className="inline-flex max-w-full min-w-0 flex-col rounded-xl bg-purple-50 px-2.5 py-1.5 text-[11px] sm:text-xs font-extrabold leading-tight text-purple-800">
+            <span className="inline-flex max-w-full min-w-0 flex-col rounded-xl bg-purple-50 px-2.5 py-1.5 text-xs sm:text-xs font-extrabold leading-tight text-purple-800">
               <span className="max-w-full break-words">{displayedRate ? formatRupiah(displayedRate) : 'Hubungi talent'}</span>
               {displayedRate && <span className="mt-0.5 text-[9px] sm:text-[10px] font-semibold text-purple-600">{showOnlineRate ? '/jam online' : '/jam offline'}</span>}
             </span>
@@ -222,7 +222,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 event.stopPropagation();
                 onSelect(talent.id);
               }}
-              className={`inline-flex w-full sm:w-auto min-h-7 sm:min-h-11 items-center justify-center gap-1 px-2.5 sm:gap-1.5 sm:px-4 py-1 sm:py-2.5 text-[10px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
+              className={`inline-flex w-full sm:w-auto min-h-10 sm:min-h-11 items-center justify-center gap-1 px-2.5 sm:gap-1.5 sm:px-4 py-1 sm:py-2.5 text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
