@@ -1156,14 +1156,16 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               <div className="border-b border-slate-100 pb-4">
                 <span className="text-xs text-slate-500 block font-medium">Tarif Layanan</span>
                 <div className="text-2xl font-black text-[#1E0938] tabular-nums mt-0.5">
-                  {talent.hourlyRate ? formatRupiah(talent.hourlyRate) : 'Disesuaikan'}
-                  {talent.hourlyRate ? <span className="text-xs font-normal text-slate-500"> / jam offline</span> : null}
+                  {selectedHourlyRate ? formatRupiah(selectedHourlyRate) : 'Disesuaikan'}
+                  {selectedHourlyRate ? (
+                    <span className="text-xs font-normal text-slate-500">
+                      {' '}/ jam {bookingMode === 'online' ? 'online' : 'offline'}
+                    </span>
+                  ) : null}
                 </div>
-                {talent.onlineChatRate && (
-                  <div className="text-xs text-purple-700 font-semibold mt-1">
-                    {formatRupiah(talent.onlineChatRate)} / jam teman online chat
-                  </div>
-                )}
+                <div className="text-xs text-slate-500 mt-1">
+                  Tarif mengikuti aktivitas dan mode layanan yang dipilih.
+                </div>
               </div>
 
               <div className="space-y-3 text-xs text-slate-600">
