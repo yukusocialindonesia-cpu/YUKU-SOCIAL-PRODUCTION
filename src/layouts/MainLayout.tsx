@@ -35,8 +35,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
         showBottomNav ? 'pb-[calc(92px+env(safe-area-inset-bottom))] md:pb-0' : ''
       }`}
     >
-      {/* Satu-satunya <header> aplikasi */}
-      <Navbar currentPath={currentPath} onNavigate={onNavigate} />
+      {/* Navbar disembunyikan khusus di halaman Jelajah agar banner dan talent lebih leluasa terlihat. */}
+      {currentPath !== '/talent' && (
+        <Navbar currentPath={currentPath} onNavigate={onNavigate} />
+      )}
 
       <main className="flex-1">{children}</main>
 
