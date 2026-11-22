@@ -32,7 +32,7 @@ const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNa
   const isInternal = link.startsWith('/');
 
   const fallback = (
-    <div className={`flex h-[60px] items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)] ${position === 'top' ? 'bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5]' : 'bg-gradient-to-r from-[#32134F] via-[#6331A8] to-[#A43CC1]'}`}>
+    <div className={`flex h-[52px] items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 text-white shadow-[0_8px_22px_rgba(76,29,149,0.16)] ${position === 'top' ? 'bg-gradient-to-r from-[#42136B] via-[#7829C9] to-[#C04AD5]' : 'bg-gradient-to-r from-[#32134F] via-[#6331A8] to-[#A43CC1]'}`}>
       <div className="min-w-0">
         <p className="text-[12px] font-extrabold leading-tight sm:text-sm">{promotion?.title || title}</p>
         <p className="mt-1 text-[10px] text-white/85">{position === 'top' ? 'Jelajahi teman online dan offline' : 'Buka profil dan temukan aktivitas yang cocok'}</p>
@@ -47,7 +47,7 @@ const ExploreBanner: React.FC<ExploreBannerProps> = ({ promotion, position, onNa
     <img
       src={promotion.image_url}
       alt={promotion.title || 'Promosi YUKU'}
-      className="h-[60px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[76px]"
+      className="h-[52px] w-full rounded-2xl bg-purple-950 object-cover shadow-[0_8px_22px_rgba(76,29,149,0.16)] sm:h-[68px]"
       loading={position === 'top' ? 'eager' : 'lazy'}
       decoding="async"
       referrerPolicy="no-referrer"
@@ -152,8 +152,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const bottomPromotion = promotions[1];
 
   return (
-    <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-2 sm:py-8">
-      <div className="mx-auto max-w-7xl space-y-2.5 px-3 sm:space-y-5 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#FBF9FE] pb-3 pt-0 sm:py-5">
+      <div className="mx-auto max-w-7xl space-y-2 px-3 sm:space-y-4 sm:px-6 lg:px-8">
         {/* Search sits beside Offline so the top banner appears higher on the first screen. */}
         <div className="flex items-center gap-1.5">
           <div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -187,7 +187,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Small filter row; advanced controls stay tucked away until requested. */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <div className="min-w-0 flex-1">
             <LocationFilter selectedCity={selectedCity} talentCities={talentCities} onChangeCity={setSelectedCity} />
           </div>
@@ -197,7 +197,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               onClick={() => setShowFilters((value) => !value)}
               aria-expanded={showFilters}
               aria-label="Buka filter lanjutan"
-              className={`inline-flex h-[46px] items-center gap-2 rounded-2xl border px-3 text-xs font-bold shadow-sm transition ${showFilters || selectedActivity !== 'all' || selectedGender !== 'Semua' ? 'border-purple-300 bg-purple-50 text-purple-800' : 'border-slate-200 bg-white text-slate-700'}`}
+              className={`inline-flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-bold shadow-sm transition ${showFilters || selectedActivity !== 'all' || selectedGender !== 'Semua' ? 'border-purple-300 bg-purple-50 text-purple-800' : 'border-slate-200 bg-white text-slate-700'}`}
             >
               <SlidersHorizontal className="h-4 w-4" /> Filter
             </button>
@@ -234,7 +234,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {loading ? (
           <div className="grid grid-cols-2 gap-2">
-            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(200px,28vh,240px)] animate-pulse rounded-[18px] bg-purple-100" />)}
+            {[1, 2, 3, 4].map((item) => <div key={item} className="h-[clamp(168px,22vh,190px)] animate-pulse rounded-[18px] bg-purple-100" />)}
           </div>
         ) : errorMsg ? (
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-5 text-center text-sm text-rose-800">
