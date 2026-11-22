@@ -7,6 +7,7 @@ interface PromoCarouselProps {
   promotions: PromotionRow[];
   isLoading?: boolean;
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
+  compact?: boolean;
 }
 
 // Sama dengan banner Hero di atasnya.
@@ -17,6 +18,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   promotions,
   isLoading = false,
   onNavigate,
+  compact = false,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -73,8 +75,8 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="relative py-2.5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section aria-label="Ruang Promosi YUKU" className={compact ? 'relative py-0 bg-transparent' : 'relative py-2.5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]'}>
+      <div className={compact ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}>
         {isLoading ? (
           <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80" />
         ) : totalSlides === 0 ? (
