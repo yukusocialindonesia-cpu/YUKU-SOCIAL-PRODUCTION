@@ -200,4 +200,3 @@ export async function fetchHeroSlidesFromSupabase(): Promise<HeroSlideRow[]> {
   if (error) return [];
   return (data as HeroSlideRow[]) || [];
 }
-
