@@ -72,12 +72,12 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
-      <div className="relative aspect-[4/3] sm:aspect-[4/5] w-full overflow-hidden">
+      <div className="relative aspect-[4/5] w-full overflow-hidden">
         {hasRealPhoto ? (
           <img
             src={talent.avatarUrl}
             alt={`Foto profil ${talent.name}`}
-            className="w-full h-full object-cover object-[50%_25%] group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"
