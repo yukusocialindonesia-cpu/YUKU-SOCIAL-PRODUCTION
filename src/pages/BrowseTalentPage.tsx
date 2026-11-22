@@ -170,7 +170,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   setSelectedMode('all');
                 }}
                 aria-pressed={activeTab === tab.id}
-                className={`flex min-h-10 items-center justify-center gap-1 rounded-xl px-1.5 text-[11px] sm:text-sm font-bold whitespace-nowrap transition-all ${
+                className={`flex min-h-[54px] sm:min-h-10 flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 rounded-xl px-1 sm:px-2 text-[10px] leading-tight text-center sm:text-sm font-bold whitespace-normal sm:whitespace-nowrap transition-all ${
                   activeTab === tab.id
                     ? 'bg-white text-purple-800 shadow-sm ring-1 ring-purple-100'
                     : 'text-slate-600 hover:bg-white/70'
@@ -281,9 +281,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Results Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
+              <div key={i} className="h-64 sm:h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
             ))}
           </div>
         ) : errorMsg ? (
