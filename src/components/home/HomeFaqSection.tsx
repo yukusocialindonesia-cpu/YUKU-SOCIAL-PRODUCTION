@@ -14,9 +14,9 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
   };
 
   return (
-    <section className="py-5 md:py-20 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
+    <section className="py-4 md:py-20 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-3 md:mb-12">
+        <div className="text-center mb-2 md:mb-12">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
             Pertanyaan Umum
           </span>
@@ -37,7 +37,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
               <button
                 type="button"
                 onClick={() => toggleItem(idx)}
-                className="w-full py-3 sm:py-4 px-4 sm:px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-white/70 hover:bg-white"
+                className="w-full py-2.5 sm:py-4 px-4 sm:px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-white/70 hover:bg-white"
               >
                 <span className="text-sm sm:text-base">{item.q}</span>
                 <ChevronDown
@@ -48,7 +48,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
               </button>
 
               {openIndex === idx && (
-                <div className="px-4 sm:px-5 py-2.5 sm:py-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-white">
+                <div className="px-4 sm:px-5 py-2 sm:py-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-white">
                   {item.a}
                 </div>
               )}
