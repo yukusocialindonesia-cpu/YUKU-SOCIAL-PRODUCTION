@@ -104,11 +104,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        {/* Identitas talent, lokasi, rating, dan harga di atas foto */}
+        {/* Identitas talent, usia, lokasi, dan rating di atas foto */}
         <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-3 sm:right-3 flex items-end justify-between gap-1.5 sm:gap-2 text-white">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[13px] sm:text-base font-extrabold leading-tight drop-shadow line-clamp-1">{talent.name}</span>
+              <span className="text-[13px] sm:text-base font-extrabold leading-tight drop-shadow line-clamp-1">
+                {talent.name}{talent.age ? `, ${talent.age}` : ''}
+              </span>
               {talent.isVerified === true && <VerifiedBadge className="shrink-0" />}
             </div>
             <div className="mt-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-medium">
