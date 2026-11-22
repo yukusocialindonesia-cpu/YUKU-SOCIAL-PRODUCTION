@@ -50,7 +50,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   };
 
   /* HP: 2 kolom x 3 baris. PC (lg): 3 kolom x 2 baris. */
-  const gridClass = 'flex gap-3 overflow-x-auto snap-x pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
+  const gridClass = 'grid grid-cols-3 gap-2 sm:flex sm:gap-3 sm:overflow-x-auto sm:snap-x sm:pb-2 sm:-mx-4 sm:px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
 
   return (
     <section className="relative py-4 sm:py-12 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
@@ -110,7 +110,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group snap-start shrink-0 w-[78px] sm:w-[104px] lg:w-auto flex flex-col items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-3 sm:py-4 rounded-[22px] border border-white/90 bg-white/85 backdrop-blur-xl shadow-[0_10px_28px_rgba(76,29,149,0.09),inset_0_1px_0_rgba(255,255,255,0.9)] ring-1 ring-purple-100/80 hover:border-purple-200 hover:shadow-[0_18px_36px_rgba(76,29,149,0.16)] hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 sm:py-4 min-h-[84px] rounded-[22px] border border-white/90 bg-white/85 backdrop-blur-xl shadow-[0_10px_28px_rgba(76,29,149,0.09),inset_0_1px_0_rgba(255,255,255,0.9)] ring-1 ring-purple-100/80 hover:border-purple-200 hover:shadow-[0_18px_36px_rgba(76,29,149,0.16)] hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
                 >
                   <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-inner ${tones[idx % tones.length]} group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-300`}>
                     {getIcon(cat.iconName)}
