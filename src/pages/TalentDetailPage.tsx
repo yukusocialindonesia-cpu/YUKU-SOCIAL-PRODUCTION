@@ -542,9 +542,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       >
                         <Share2 className="w-5 h-5" />
                       </button>
-                      <span className="absolute left-4 bottom-10 inline-flex items-center gap-1.5 rounded-full bg-purple-950/80 backdrop-blur text-white px-3 py-1.5 text-xs font-bold">
-                        <ShieldCheck className="w-4 h-4" /> Terverifikasi 18+
-                      </span>
+                      {talent.isVerified === true && (
+                        <span className="absolute left-4 bottom-10 inline-flex items-center gap-1.5 rounded-full bg-purple-950/80 text-white px-3 py-1.5 text-xs font-bold">
+                          <ShieldCheck className="w-4 h-4" /> Identitas terverifikasi
+                        </span>
+                      )}
                       {photoMedia.length > 0 && (
                         <span className="absolute right-4 bottom-10 rounded-full bg-purple-950/80 backdrop-blur text-white px-3 py-1 text-xs font-semibold tabular-nums">
                           1 / {photoMedia.length}
@@ -718,9 +720,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   </div>
 
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Terverifikasi 18+
-                    </span>
+                    {talent.isVerified === true && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Identitas terverifikasi
+                      </span>
+                    )}
                     {!(reviews.length > 0 || (talent.reviewCount ?? 0) > 0) && (
                       <span className="inline-flex items-center rounded-full bg-purple-50 border border-purple-200 px-2.5 py-0.5 text-[11px] font-bold text-purple-700">Talent Baru</span>
                     )}
@@ -814,7 +818,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
             {/* Galeri Foto & Video Card */}
             {(photoMedia.length > 0 || videoMedia.length > 0) && (
-              <div className="sm:bg-white/85 sm:rounded-[28px] sm:border sm:border-white/90 sm:p-6 md:p-8 sm:shadow-[0_16px_40px_rgba(76,29,149,0.08)] sm:ring-1 sm:ring-purple-100/70 sm:backdrop-blur-xl space-y-2 sm:space-y-6">
+              <div className="rounded-2xl bg-white border border-slate-100 p-3 sm:rounded-[28px] sm:border-white/90 sm:p-6 md:p-8 sm:shadow-[0_16px_40px_rgba(76,29,149,0.08)] sm:ring-1 sm:ring-purple-100/70 space-y-4 sm:space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="w-5 h-5 text-purple-700" />
@@ -822,16 +826,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       Galeri Foto &amp; Video
                     </h2>
                   </div>
-                  {photoMedia.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setLightboxIndex(0)}
-                      className="sm:hidden inline-flex items-center gap-1 rounded-full bg-purple-50 border border-purple-100 px-3 py-1.5 text-xs font-bold text-purple-800 cursor-pointer"
-                    >
-                      Lihat Semua &rsaquo;
-                    </button>
-                  )}
-                  <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-medium">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
                     {photoMedia.length > 0 && <span>{photoMedia.length} Foto</span>}
                     {photoMedia.length > 0 && videoMedia.length > 0 && <span aria-hidden="true">·</span>}
                     {videoMedia.length > 0 && <span>{videoMedia.length} Video</span>}
@@ -839,13 +834,13 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </div>
 
                 {photoMedia.length > 0 && (
-                  <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:grid sm:grid-cols-3 sm:gap-3">
+                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
                     {photoMedia.map((photo, idx) => (
                       <button
                         key={photo.id}
                         type="button"
                         onClick={() => setLightboxIndex(idx)}
-                        className="group relative shrink-0 snap-start w-28 h-36 sm:w-auto sm:h-auto sm:aspect-[4/3] rounded-2xl sm:rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-sm text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        className="group relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600"
                       >
                         <img
                           src={photo.media_url}
