@@ -80,10 +80,10 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds));
 
   return (
-    <section className="relative py-4 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
+    <section className="relative py-3 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-2 md:mb-7 gap-2 md:gap-4">
+        <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
           <div>
             <span className="text-[10.5px] sm:text-xs font-bold text-purple-700 tracking-wider uppercase mb-0.5 sm:mb-1 block">
               Temukan teman untuk aktivitasmu
@@ -103,7 +103,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         </div>
 
         {!loading && !errorMsg && talents.length > 0 && (
-          <div className="mb-2 md:mb-6">
+          <div className="mb-1.5 md:mb-6">
             <TalentQuickFilter value={quickFilter} onChange={setQuickFilter} showToday={todayReady} />
           </div>
         )}
