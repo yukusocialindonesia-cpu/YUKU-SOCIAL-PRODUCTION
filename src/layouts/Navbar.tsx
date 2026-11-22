@@ -130,8 +130,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             })}
           </nav>
 
-          {/* Zone 3: Primary Action & Auth Links */}
-          <div className="hidden xl:flex items-center gap-3 shrink-0">
+          {/* Zone 3: Shared notification + responsive account actions */}
+          <div className="flex items-center gap-2 xl:gap-3 shrink-0">
+            {currentUser && (
+              <NotificationBell
+                userId={currentUser.id}
+                userRole={userRole}
+                onNavigate={handleLinkClick}
+              />
+            )}
+            <div className="hidden xl:flex items-center gap-3">
             {currentUser ? (
               <div className="flex items-center gap-2.5">
                 {userRole === 'admin' && (
@@ -291,17 +299,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 </button>
               </>
             )}
-          </div>
+            </div>
 
-          {/* Mobile Menu Button */}
-          <div className="xl:hidden flex items-center gap-2">
-            {currentUser ? (
-              <NotificationBell
-                userId={currentUser.id}
-                userRole={userRole}
-                onNavigate={handleLinkClick}
-              />
-            ) : null}
+            {/* Mobile Menu Button */}
+            <div className="xl:hidden flex items-center gap-2">
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
@@ -312,6 +313,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
+            </div>
           </div>
         </div>
       </div>
@@ -425,7 +427,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 key={link.href}
                 onClick={() => handleLinkClick(link.href)}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${
-                  currentPath === link.href
+                  currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
                     ? 'bg-purple-50 text-purple-900 font-bold'
                     : 'text-slate-700 hover:bg-slate-50'
                 }`}
