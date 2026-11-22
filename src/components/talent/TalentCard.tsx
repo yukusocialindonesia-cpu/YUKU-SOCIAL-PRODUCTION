@@ -47,6 +47,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   const isOnlineOnly = talent.serviceMode === 'Online Only';
   const showOnlineRate = priceMode === 'online' || (priceMode === 'all' && isOnlineOnly);
   const displayedRate = showOnlineRate ? talent.onlineChatRate : talent.hourlyRate;
+  const serviceModeLabel = talent.serviceMode === 'Online Only'
+    ? 'Online'
+    : talent.serviceMode === 'Offline Only'
+      ? 'Offline'
+      : talent.serviceMode === 'Offline & Online'
+        ? 'Online & Offline'
+        : '';
 
   const hasRealPhoto =
     Boolean(talent.avatarUrl) &&
@@ -131,7 +138,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
                 <span className="inline-flex items-center gap-1 shrink-0">
                   <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                  {talent.rating.toFixed(1)}
+                  {talent.rating.toFixed(1)} <span className="text-white/80">({talent.reviewCount})</span>
                 </span>
               )}
             </div>
@@ -141,8 +148,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       </div>
 
       {/* Status ketersediaan dan ikon media: di bawah foto, tidak menimpa gambar */}
-      {(availableToday || hasVoice || hasVideo || hasPhoto) && (
+      {(availableToday || serviceModeLabel || hasVoice || hasVideo || hasPhoto) && (
         <div className="px-2.5 pt-1 sm:px-4 sm:pt-3 flex flex-wrap gap-1.5">
+          {serviceModeLabel && (
+            <span className="inline-flex items-center h-6 rounded-full bg-emerald-50 border border-emerald-100 px-2.5 text-[10.5px] font-semibold text-emerald-800">
+              {serviceModeLabel}
+            </span>
+          )}
           {availableToday && (
             <span className="inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-50 border border-purple-100 text-purple-800 text-[10.5px] font-semibold">
               <span className="relative flex shrink-0 w-1.5 h-1.5">
@@ -207,6 +219,10 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <div className="pt-3 max-sm:pt-2 border-t border-purple-100">
             <button
               type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onSelect(talent.id);
+              }}
               className={`inline-flex w-full sm:w-auto min-h-10 sm:min-h-11 items-center justify-center gap-1 px-3 sm:gap-1.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
             >
               Lihat Profil
