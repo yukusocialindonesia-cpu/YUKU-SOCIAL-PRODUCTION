@@ -87,7 +87,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/70 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
 
         {/* Badge BARU tetap di atas; status ketersediaan dipindah ke bawah foto. */}
         {isNew && (
@@ -98,20 +98,37 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        {/* Lokasi & mode (bawah foto) */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-medium">
-          {talent.city ? (
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-              {talent.city}
-            </span>
-          ) : (
-            <span />
-          )}
-          {talent.serviceMode && (
-            <span className="text-[11px] bg-white/20 backdrop-blur-sm border border-white/30 px-2 py-0.5 rounded-full">
-              {priceMode === 'online' ? 'Jasa Online' : priceMode === 'offline' ? 'Jasa Offline' : talent.serviceMode}
-            </span>
+        {/* Identitas talent, lokasi, rating, dan harga di atas foto */}
+        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2 text-white">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-sm sm:text-base font-extrabold leading-tight drop-shadow truncate">{talent.name}</span>
+              {talent.isVerified === true && <VerifiedBadge className="shrink-0" />}
+            </div>
+            <div className="mt-1 flex items-center gap-2 text-[10px] sm:text-xs font-medium">
+              {talent.city && (
+                <span className="inline-flex items-center gap-1 min-w-0">
+                  <MapPin className="w-3 h-3 text-amber-300 shrink-0" />
+                  <span className="truncate">{talent.city}</span>
+                </span>
+              )}
+              {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
+                <span className="inline-flex items-center gap-1 shrink-0">
+                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                  {talent.rating.toFixed(1)}
+                </span>
+              )}
+            </div>
+          </div>
+          {showPrice && (
+            <div className="shrink-0 max-w-[44%] rounded-xl bg-gradient-to-br from-purple-700 to-fuchsia-600 px-2.5 py-2 text-center shadow-lg shadow-purple-950/25">
+              <span className="block text-[10px] sm:text-xs font-extrabold leading-tight">
+                {displayedRate ? formatRupiah(displayedRate) : 'Hubungi'}
+              </span>
+              <span className="block text-[9px] sm:text-[10px] font-semibold text-white/85">
+                {displayedRate ? (showOnlineRate ? '/jam online' : '/jam offline') : 'Talent'}
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -148,20 +165,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
       {/* Isi */}
       <div className="p-3 pt-3 sm:p-4 sm:pt-3 xl:p-5 xl:pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
-        <div className="flex items-start justify-between gap-2 sm:gap-3">
-          <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
-            {talent.name}
-            {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
-            {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
-          </h3>
-          {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
-            <div className="shrink-0 inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-xs font-bold px-2 py-1 rounded-full tabular-nums">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              {talent.rating.toFixed(1)}
-              <span className="font-normal text-amber-700/70">({talent.reviewCount})</span>
-            </div>
-          )}
-        </div>
+
 
         {talent.headline && (
           <p className="mt-1.5 max-sm:mt-1 text-[13px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
@@ -185,17 +189,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         <div className="mt-auto pt-3 max-sm:pt-2">
-          <div className="pt-3 max-sm:pt-2 border-t border-purple-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
-            {showPrice && <div className="min-w-0">
-              <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
-              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight break-words">
-                {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
-                {displayedRate ? (
-                  <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
-                ) : null}
-              </div>
-            </div>}
-
+          <div className="pt-3 max-sm:pt-2 border-t border-purple-100">
             <button
               type="button"
               className={`inline-flex w-full sm:w-auto min-h-10 sm:min-h-11 items-center justify-center gap-1 px-3 sm:gap-1.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
