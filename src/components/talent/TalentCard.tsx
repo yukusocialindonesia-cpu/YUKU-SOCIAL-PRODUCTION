@@ -180,7 +180,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {talent.bio && (
-          <p className="mt-2 max-sm:mt-1 text-xs text-slate-600 line-clamp-1 sm:line-clamp-2 leading-relaxed">{talent.bio}</p>
+          <p className="mt-2 max-sm:mt-1 text-xs text-slate-600 line-clamp-2 leading-relaxed">{talent.bio}</p>
         )}
 
         {talent.interests && talent.interests.length > 0 && (
