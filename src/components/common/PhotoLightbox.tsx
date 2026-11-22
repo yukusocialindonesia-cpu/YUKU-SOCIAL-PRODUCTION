@@ -7,6 +7,8 @@ interface PhotoLightboxProps {
   alt: string;
   className?: string;
   imageClassName?: string;
+  onError?: React.ReactEventHandler<HTMLImageElement>;
+  referrerPolicy?: React.HTMLAttributeReferrerPolicy;
 }
 
 export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
@@ -14,6 +16,8 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
   alt,
   className = '',
   imageClassName = '',
+  onError,
+  referrerPolicy,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -34,7 +38,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
         aria-label={`Lihat foto: ${alt}`}
         className={`block cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 ${className}`}
       >
-        <img src={src} alt={alt} className={imageClassName} />
+        <img src={src} alt={alt} className={imageClassName} onError={onError} referrerPolicy={referrerPolicy} />
       </button>
       {isOpen && createPortal(
         <div
