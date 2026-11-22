@@ -69,9 +69,9 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gradient-to-br from-white via-white to-purple-50/70 p-3 md:p-4 rounded-[22px] shadow-[0_12px_30px_rgba(76,29,149,0.10)] border border-purple-100 max-w-4xl mx-auto"
+      className="bg-gradient-to-br from-white via-white to-purple-50/70 p-2.5 md:p-4 rounded-[22px] shadow-[0_12px_30px_rgba(76,29,149,0.10)] border border-purple-100 max-w-4xl mx-auto"
     >
-      <div className="grid grid-cols-2 md:grid-cols-12 gap-2 md:gap-3 items-center">
+      <div className="grid grid-cols-2 md:grid-cols-12 gap-1.5 md:gap-3 items-center">
         {/* Aktivitas Selector */}
         <div className="min-w-0 md:col-span-5 flex items-center gap-3 px-2.5 md:px-3 py-2.5 md:py-3 bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
           <Coffee className="hidden md:block w-5 h-5 text-purple-700 shrink-0" />
