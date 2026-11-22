@@ -118,7 +118,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
       {/* Status ketersediaan dan ikon media: di bawah foto, tidak menimpa gambar */}
       {(availableToday || hasVoice || hasVideo || hasPhoto) && (
-        <div className="px-3 pt-1 sm:px-5 sm:pt-3 flex flex-wrap gap-1.5">
+        <div className="px-2.5 pt-1 sm:px-5 sm:pt-3 flex flex-wrap gap-1.5">
           {availableToday && (
             <span className="inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-50 border border-purple-100 text-purple-800 text-[10.5px] font-semibold">
               <span className="relative flex shrink-0 w-1.5 h-1.5">
@@ -147,8 +147,8 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-5 pt-3 max-sm:p-3 max-sm:pt-2 flex flex-col flex-1">
-        <div className="flex items-start justify-between gap-3">
+      <div className="p-5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
           <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
