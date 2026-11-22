@@ -235,7 +235,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           <div id="browse-advanced-filters" className={`${filtersOpen ? 'grid' : 'hidden'} sm:grid grid-cols-1 gap-2 sm:gap-3`}>
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1 sm:flex sm:items-center">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:items-center">
               <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
                 <span className="text-[11px] font-semibold text-slate-500">Gender</span>
                 <select value={selectedGender} onChange={(e) => setSelectedGender(e.target.value as GenderType)} aria-label="Filter gender" className="max-w-[92px] bg-transparent text-xs font-bold text-purple-900 outline-none">
