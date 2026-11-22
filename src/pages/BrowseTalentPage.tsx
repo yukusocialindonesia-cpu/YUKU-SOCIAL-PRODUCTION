@@ -111,14 +111,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen py-5 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb / Title */}
-        <div className="mb-7 sm:mb-8">
+        <div className="mb-5 sm:mb-8">
           <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-3 shadow-sm backdrop-blur-md">
             {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
           </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
             {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
           </h1>
           <p className="text-sm text-slate-600 mt-1">
@@ -131,7 +131,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-4 sm:p-5 rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-8 space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/85 p-3 sm:p-5 rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-5 sm:mb-8 space-y-3 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
             {/* Search Input */}
@@ -169,7 +169,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-4 border-t border-purple-100/80">
+          <div className="pt-3 sm:pt-4 border-t border-purple-100/80">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
               Kategori Aktivitas:
             </span>
@@ -203,7 +203,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
+          <div className="pt-3 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
             {/* Gender Segmented */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Gender:</span>
