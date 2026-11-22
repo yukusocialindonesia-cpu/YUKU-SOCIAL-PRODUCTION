@@ -202,12 +202,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </>
                 )}
 
-                <NotificationBell
-                  userId={currentUser.id}
-                  userRole={userRole}
-                  onNavigate={handleLinkClick}
-                />
-
                 <div className="relative" ref={accountMenuRef}>
                   <button
                     type="button"
