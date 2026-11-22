@@ -113,7 +113,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               onChangeCity('Semua Kota');
             }}
             aria-label="Hapus filter kota"
-            className="absolute right-8 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 rounded-md cursor-pointer"
+            className="absolute right-7 top-1/2 -translate-y-1/2 w-9 h-9 inline-flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-md cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -149,7 +149,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                   type="button"
                   onClick={() => setCitySearch('')}
                   aria-label="Bersihkan pencarian kota"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 inline-flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
