@@ -115,13 +115,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {/* Identitas talent, lokasi, rating, dan harga di atas foto */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2 text-white">
+        <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-3 sm:right-3 flex items-end justify-between gap-1.5 sm:gap-2 text-white">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-sm sm:text-base font-extrabold leading-tight drop-shadow truncate">{talent.name}</span>
+              <span className="text-[13px] sm:text-base font-extrabold leading-tight drop-shadow line-clamp-1 break-all">{talent.name}</span>
               {talent.isVerified === true && <VerifiedBadge className="shrink-0" />}
             </div>
-            <div className="mt-1 flex items-center gap-2 text-[10px] sm:text-xs font-medium">
+            <div className="mt-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-medium">
               {talent.city && (
                 <span className="inline-flex items-center gap-1 min-w-0">
                   <MapPin className="w-3 h-3 text-amber-300 shrink-0" />
@@ -137,11 +137,11 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             </div>
           </div>
           {showPrice && (
-            <div className="shrink-0 max-w-[44%] rounded-xl bg-gradient-to-br from-purple-700 to-fuchsia-600 px-2.5 py-2 text-center shadow-lg shadow-purple-950/25">
-              <span className="block text-[10px] sm:text-xs font-extrabold leading-tight">
+            <div className="shrink-0 max-w-[40%] rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-700 to-fuchsia-600 px-1.5 py-1.5 sm:px-2.5 sm:py-2 text-center shadow-lg shadow-purple-950/25">
+              <span className="block text-[9px] sm:text-xs font-extrabold leading-tight whitespace-nowrap">
                 {displayedRate ? formatRupiah(displayedRate) : 'Hubungi'}
               </span>
-              <span className="block text-[9px] sm:text-[10px] font-semibold text-white/85">
+              <span className="block text-[8px] sm:text-[10px] font-semibold text-white/85">
                 {displayedRate ? (showOnlineRate ? '/jam online' : '/jam offline') : 'Talent'}
               </span>
             </div>
