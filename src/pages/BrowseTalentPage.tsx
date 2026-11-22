@@ -169,11 +169,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Cari aktivitas, kota, atau teman"
-              className="h-12 w-full rounded-full border border-purple-100 bg-slate-100/90 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-purple-300 focus:bg-white focus:ring-2 focus:ring-purple-100"
+              className="h-11 w-full rounded-full border border-purple-100 bg-slate-100/90 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-purple-300 focus:bg-white focus:ring-2 focus:ring-purple-100"
             />
           </div>
 
-          <div role="tablist" aria-label="Mode pencarian" className="flex h-9 items-stretch gap-6 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div role="tablist" aria-label="Mode pencarian" className="flex h-8 items-stretch gap-4 sm:h-9 sm:gap-6 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {[
               { id: 'hot', label: 'Hot' },
               { id: 'nearby', label: 'Terdekat' },
@@ -189,7 +189,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   setActiveTab(tab.id as typeof activeTab);
                   setSelectedMode('all');
                 }}
-                className={`relative h-9 shrink-0 px-0.5 text-xs font-bold transition-colors ${activeTab === tab.id ? 'text-purple-800' : 'text-slate-500 hover:text-purple-700'}`}
+                className={`relative h-8 sm:h-9 shrink-0 px-0.5 text-xs font-bold transition-colors ${activeTab === tab.id ? 'text-purple-800' : 'text-slate-500 hover:text-purple-700'}`}
               >
                 {tab.label}
                 {activeTab === tab.id && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-purple-700" />}
@@ -197,7 +197,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
           </div>
 
-          <div className="flex h-8 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex h-7 sm:h-8 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {['Semua', 'Jakarta', 'Ngopi', 'Jalan Sore', 'Mabar'].map((label) => {
               const category = categories.find((item) => item.title.toLowerCase() === label.toLowerCase());
               const isActive = label === 'Semua'
@@ -222,13 +222,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                       setSearchQuery(label);
                     }
                   }}
-                  className={`h-8 shrink-0 rounded-full px-3.5 text-[11px] font-semibold transition-colors ${isActive ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-600 hover:border-purple-200 hover:text-purple-800'}`}
+                  className={`h-7 sm:h-8 shrink-0 rounded-full px-3.5 text-[11px] font-semibold transition-colors ${isActive ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-600 hover:border-purple-200 hover:text-purple-800'}`}
                 >
                   {label}
                 </button>
               );
             })}
-            <button type="button" onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} aria-controls="browse-advanced-filters" className="ml-auto inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-purple-100 bg-white px-3 text-[11px] font-semibold text-purple-800 sm:hidden">
+            <button type="button" onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} aria-controls="browse-advanced-filters" className="ml-auto inline-flex h-7 sm:h-8 shrink-0 items-center gap-1 rounded-full border border-purple-100 bg-white px-3 text-[11px] font-semibold text-purple-800 sm:hidden">
               <SlidersHorizontal className="h-3.5 w-3.5" /> Filter
               <ChevronDown className={`h-3.5 w-3.5 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
             </button>
