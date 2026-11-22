@@ -152,61 +152,80 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             onNavigate={onNavigate}
           />
         </div>
-        {/* Search & quick filters — mobile-first marketplace layout */}
-        <section className="mb-1 sm:mb-5 space-y-1 sm:space-y-3">
-          <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)] sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-center gap-1 sm:gap-2">
-            <div className="relative min-w-0">
-              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute left-3 sm:left-4 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Cari teman..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Cari talent dan aktivitas"
-                className="w-full h-9 sm:h-14 pl-9 sm:pl-12 pr-2 sm:pr-4 rounded-full bg-white/90 border border-purple-100 shadow-[0_8px_24px_rgba(76,29,149,0.09)] text-xs sm:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300"
-              />
-            </div>
+        {/* Search, tabs, and quick activity filters */}
+        <section className="mb-3 space-y-2.5 sm:mb-5 sm:space-y-3">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari aktivitas, kota, atau teman..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Cari aktivitas, kota, atau teman"
+              className="h-12 w-full rounded-full border border-purple-100 bg-slate-100/90 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-purple-300 focus:bg-white focus:ring-2 focus:ring-purple-100"
+            />
+          </div>
 
-            <div className="min-w-0 grid grid-cols-3 gap-0.5 sm:gap-1 rounded-xl bg-purple-50/80 p-1 border border-purple-100">
+          <div role="tablist" aria-label="Mode pencarian" className="flex h-9 items-stretch gap-6 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {[
-              { id: 'offline', label: 'Teman Aktivitas', icon: <Users className="w-3.5 h-3.5" /> },
-              { id: 'nearby', label: 'Terdekat', icon: <MapPin className="w-3.5 h-3.5" /> },
-              { id: 'online', label: 'Online', icon: <Wifi className="w-3.5 h-3.5" /> },
+              { id: 'nearby', label: 'Terdekat' },
+              { id: 'offline', label: 'Teman Offline' },
+              { id: 'online', label: 'Teman Online' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
                 onClick={() => {
                   setActiveTab(tab.id as typeof activeTab);
                   setSelectedMode('all');
                 }}
-                aria-pressed={activeTab === tab.id}
-                className={`flex min-h-8 sm:min-h-10 flex-row items-center justify-center gap-0.5 sm:gap-1 rounded-lg px-0.5 sm:px-1 text-[9px] sm:text-sm font-bold whitespace-nowrap transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-white text-purple-800 shadow-sm ring-1 ring-purple-100'
-                    : 'text-slate-600 hover:bg-white/70'
-                }`}
+                className={`relative h-9 shrink-0 px-0.5 text-xs font-bold transition-colors ${activeTab === tab.id ? 'text-purple-800' : 'text-slate-500 hover:text-purple-700'}`}
               >
-                {tab.icon}
-                <span className="sm:hidden">{tab.id === 'offline' ? 'Aktivitas' : tab.label}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.label}
+                {activeTab === tab.id && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-purple-700" />}
               </button>
             ))}
-            </div>
           </div>
-          <div className="flex items-center justify-end sm:hidden">
-            <button
-              type="button"
-              onClick={() => setFiltersOpen((open) => !open)}
-              aria-expanded={filtersOpen}
-              aria-controls="browse-advanced-filters"
-              className="min-h-7 inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/90 px-3 text-[11px] font-semibold text-purple-800 shadow-sm"
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              Filter
+
+          <div className="flex h-8 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {['Semua', 'Jakarta', 'Ngopi', 'Jalan Sore', 'Mabar'].map((label) => {
+              const category = categories.find((item) => item.title.toLowerCase() === label.toLowerCase());
+              const isActive = label === 'Semua'
+                ? selectedActivity === 'all' && selectedCity === 'Semua Kota'
+                : label === 'Jakarta'
+                  ? selectedCity.toLowerCase() === 'jakarta'
+                  : Boolean(category && selectedActivity === category.id);
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => {
+                    if (label === 'Semua') {
+                      setSelectedActivity('all');
+                      setSelectedCity('Semua Kota');
+                    } else if (label === 'Jakarta') {
+                      setSelectedCity('Jakarta');
+                    } else if (category) {
+                      setSelectedActivity(category.id);
+                    } else {
+                      setSearchQuery(label);
+                    }
+                  }}
+                  className={`h-8 shrink-0 rounded-full px-3.5 text-[11px] font-semibold transition-colors ${isActive ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-600 hover:border-purple-200 hover:text-purple-800'}`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+            <button type="button" onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} aria-controls="browse-advanced-filters" className="ml-auto inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-purple-100 bg-white px-3 text-[11px] font-semibold text-purple-800 sm:hidden">
+              <SlidersHorizontal className="h-3.5 w-3.5" /> Filter
               <ChevronDown className={`h-3.5 w-3.5 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>
+
           <div id="browse-advanced-filters" className={`${filtersOpen ? 'grid' : 'hidden'} sm:grid grid-cols-1 gap-2 sm:gap-3`}>
             <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-1 sm:flex sm:items-center">
               <div className="min-w-0 w-full inline-flex items-center justify-between gap-2 rounded-full bg-white/90 border border-purple-100 px-3 py-2 shadow-sm">
@@ -222,28 +241,21 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 <RotateCcw className="w-3.5 h-3.5" /> Reset
               </button>
             </div>
-            <div className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <button type="button" onClick={() => setSelectedActivity('all')} aria-pressed={selectedActivity === 'all'} className={`shrink-0 min-h-8 px-3 sm:min-h-9 sm:px-4 rounded-full text-[10px] sm:text-xs font-bold whitespace-nowrap ${selectedActivity === 'all' ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200' : 'bg-white/80 text-slate-600 border border-slate-200'}`}>Semua Kategori</button>
-              {categories.map((cat) => (
-                <button key={cat.id} type="button" onClick={() => setSelectedActivity(cat.id)} aria-pressed={selectedActivity === cat.id} className={`shrink-0 min-h-8 px-3 sm:min-h-9 sm:px-4 rounded-full text-[10px] sm:text-xs font-semibold whitespace-nowrap ${selectedActivity === cat.id ? 'bg-purple-100 text-purple-900 ring-1 ring-purple-200' : 'bg-white/80 text-slate-600 border border-slate-200'}`}>
-                  {cat.title}
-                </button>
-              ))}
-            </div>
           </div>
         </section>
 
         {/* Main talent directory */}
-        <section className="mb-0.5 sm:mb-4" aria-labelledby="browse-talent-heading">
+        <section className="mb-2 sm:mb-4" aria-labelledby="browse-talent-heading">
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
-              <h2 id="browse-talent-heading" className="text-sm sm:text-2xl font-extrabold tracking-tight text-slate-900">
-                Temukan Temanmu
+              <h2 id="browse-talent-heading" className="text-lg font-bold tracking-tight text-slate-900">
+                Jelajahi Aktivitas
               </h2>
               <p className="hidden sm:block mt-0.5 text-sm text-slate-500">
                 Kenali talent dan pilih teman untuk aktivitasmu.
               </p>
             </div>
+            <button type="button" onClick={() => { setSelectedActivity('all'); setSelectedCity('Semua Kota'); setActiveTab('offline'); }} className="shrink-0 text-xs font-bold text-purple-700 hover:text-purple-900">Lihat Semua</button>
           </div>
         </section>
 
@@ -269,7 +281,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </button>
           </div>
         ) : displayedTalents.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {displayedTalents.map((talent) => (
               <TalentCard
                 key={talent.id}
