@@ -182,6 +182,20 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
           : { data: [] },
       ]);
 
+      const relatedQueryErrors = [
+        { label: 'profil Talent', error: 'error' in talentsRes ? talentsRes.error : null },
+        { label: 'profil Customer', error: 'error' in customersRes ? customersRes.error : null },
+        { label: 'kategori aktivitas', error: 'error' in categoriesRes ? categoriesRes.error : null },
+        { label: 'ulasan', error: 'error' in reviewsRes ? reviewsRes.error : null },
+        { label: 'laporan', error: 'error' in reportsRes ? reportsRes.error : null },
+        { label: 'refund', error: 'error' in refundsRes ? refundsRes.error : null },
+      ].filter((item) => item.error);
+
+      if (relatedQueryErrors.length > 0) {
+        const firstError = relatedQueryErrors[0];
+        throw new Error(`Gagal memuat data ${firstError.label}: ${firstError.error?.message}`);
+      }
+
       const talentMap = new Map<string, any>();
       talentsRes.data?.forEach((t) => talentMap.set(t.id, t));
 

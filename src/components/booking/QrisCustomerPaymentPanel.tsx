@@ -87,6 +87,8 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
   const [now, setNow] = useState(Date.now());
   const [settings, setSettings] = useState<any>(null);
   const [submission, setSubmission] = useState<any>(null);
+  const [isLoadingPaymentData, setIsLoadingPaymentData] = useState(true);
+  const [paymentDataError, setPaymentDataError] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [reference, setReference] = useState('');
   const [busy, setBusy] = useState(false);
@@ -115,23 +117,39 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
     const load = async () => {
       const db = supabase as any;
 
-      const [{ data: config }, { data: proof }] = await Promise.all([
-        db.from('qris_payment_settings')
-          .select('is_active,image_path,merchant_name,instructions')
-          .eq('id', true)
-          .maybeSingle(),
+      try {
+        const [configRes, proofRes] = await Promise.all([
+          db.from('qris_payment_settings')
+            .select('is_active,image_path,merchant_name,instructions')
+            .eq('id', true)
+            .maybeSingle(),
 
-        db.from('qris_payment_submissions')
-          .select('status,admin_notes,created_at')
-          .eq('booking_id', bookingId)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-      ]);
+          db.from('qris_payment_submissions')
+            .select('status,admin_notes,created_at')
+            .eq('booking_id', bookingId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+        ]);
 
-      if (alive) {
-        setSettings(config);
-        setSubmission(proof);
+        if (configRes.error) {
+          throw new Error(`Gagal memuat pengaturan QRIS: ${configRes.error.message}`);
+        }
+        if (proofRes.error) {
+          throw new Error(`Gagal memuat status bukti pembayaran: ${proofRes.error.message}`);
+        }
+
+        if (alive) {
+          setSettings(configRes.data);
+          setSubmission(proofRes.data);
+          setPaymentDataError('');
+        }
+      } catch (err: any) {
+        if (alive) {
+          setPaymentDataError(err?.message || 'Status pembayaran QRIS tidak dapat dimuat. Coba muat ulang halaman.');
+        }
+      } finally {
+        if (alive) setIsLoadingPaymentData(false);
       }
     };
 
@@ -250,6 +268,23 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
 
   if (bookingStatus !== 'pending_payment') return null;
   if (paymentRoute === 'xendit') return null;
+
+  if (isLoadingPaymentData) {
+    return (
+      <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+        Memuat informasi pembayaran QRIS...
+      </div>
+    );
+  }
+
+  if (paymentDataError) {
+    return (
+      <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800">
+        <AlertCircle className="mr-1 inline h-4 w-4" />
+        {paymentDataError} Muat ulang halaman sebelum mengirim bukti agar status pembayaran sebelumnya tidak terlewat.
+      </div>
+    );
+  }
 
   if (submission?.status === 'pending_review') {
     return (
