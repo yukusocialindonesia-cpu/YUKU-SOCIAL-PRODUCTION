@@ -109,7 +109,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           )}
           {talent.serviceMode && (
             <span className="text-[11px] bg-white/20 backdrop-blur-sm border border-white/30 px-2 py-0.5 rounded-full">
-              {talent.serviceMode}
+              {priceMode === 'online' ? 'Jasa Online' : priceMode === 'offline' ? 'Jasa Offline' : talent.serviceMode}
             </span>
           )}
         </div>
