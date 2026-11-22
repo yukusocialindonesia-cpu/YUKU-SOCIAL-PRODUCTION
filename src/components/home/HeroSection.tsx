@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-4 mt-1 h-[180px] sm:h-[260px] rounded-3xl overflow-hidden border border-white/90 shadow-[0_18px_42px_rgba(76,29,149,0.18),0_4px_12px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-4 mt-1 h-[180px] sm:h-[260px] rounded-[26px] overflow-hidden border border-white shadow-[0_16px_36px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.06)] ring-1 ring-purple-100/80 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
@@ -253,11 +253,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Konten tetap di depan slide */}
       <div
-        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-1 md:pt-16 md:pb-16"
+        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-1.5 md:pt-16 md:pb-16"
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1.5 text-[10.5px] font-bold uppercase tracking-wider text-purple-700">
+          <p className="md:hidden flex items-center gap-1.5 mb-2 text-[10px] font-extrabold uppercase tracking-[0.13em] text-purple-700">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Social Experience & Paid Companionship</span>
           </p>
@@ -266,7 +266,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[1.7rem] leading-[1.08] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-2 md:mb-4">
+          <h1 className="text-[1.75rem] leading-[1.06] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-2 md:mb-4">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
             <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
@@ -274,7 +274,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </span>
           </h1>
 
-          <p className="text-[13px] sm:text-base md:text-lg text-slate-800 leading-relaxed">
+          <p className="max-w-2xl text-[13px] sm:text-base md:text-lg text-slate-700 leading-relaxed">
             Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
           </p>
         </div>
