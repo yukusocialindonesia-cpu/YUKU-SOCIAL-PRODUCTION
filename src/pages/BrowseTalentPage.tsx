@@ -111,17 +111,17 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen pt-3 pb-28 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen pt-2 pb-24 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb / Title */}
-        <div className="mb-3 sm:mb-8">
-          <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-3 shadow-sm backdrop-blur-md">
+        <div className="mb-2 sm:mb-8">
+          <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2 shadow-sm backdrop-blur-md">
             {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
           </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
+          <h1 className="text-[26px] leading-[1.15] sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
             {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
             {selectedMode === 'offline'
               ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
               : selectedMode === 'online'
@@ -131,11 +131,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-2.5 sm:p-5 rounded-[22px] sm:rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-3 sm:mb-8 space-y-2.5 sm:space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/85 p-2 sm:p-5 rounded-[18px] sm:rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-2.5 sm:mb-8 space-y-2 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="md:col-span-5 relative">
+            <div className="col-span-2 md:col-span-5 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -147,7 +147,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Dynamic Regional Location Filter */}
-            <div className="md:col-span-4">
+            <div className="col-span-2 md:col-span-4">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
@@ -156,11 +156,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Reset Button */}
-            <div className="md:col-span-3 flex items-center justify-end">
+            <div className="col-span-2 md:col-span-3 flex items-center justify-end">
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="w-full md:w-auto min-h-11 sm:min-h-0 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-purple-800 bg-white/80 hover:bg-white border border-purple-100 shadow-sm hover:shadow rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full md:w-auto min-h-9 sm:min-h-0 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-purple-800 bg-white/80 hover:bg-white border border-purple-100 shadow-sm hover:shadow rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset Filter</span>
@@ -169,7 +169,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-2 sm:pt-4 border-t border-purple-100/80">
+          <div className="pt-1.5 sm:pt-4 border-t border-purple-100/80">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
               Kategori Aktivitas:
             </span>
@@ -177,7 +177,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedActivity('all')}
-                className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                className={`min-h-8 sm:min-h-0 px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   selectedActivity === 'all'
                     ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
                     : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
@@ -190,7 +190,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedActivity(cat.id)}
-                  className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`min-h-8 sm:min-h-0 px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                     selectedActivity === cat.id
                       ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
                       : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
@@ -203,7 +203,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-2 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
+          <div className="pt-1.5 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
             {/* Gender Segmented */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Gender:</span>
@@ -213,7 +213,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     key={gender}
                     type="button"
                     onClick={() => setSelectedGender(gender)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+                    className={`min-h-8 sm:min-h-0 px-3 py-1 rounded-full font-medium transition-all cursor-pointer ${
                       selectedGender === gender
                         ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
@@ -238,7 +238,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     key={mode.id}
                     type="button"
                     onClick={() => setSelectedMode(mode.id)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+                    className={`min-h-8 sm:min-h-0 px-3 py-1 rounded-full font-medium transition-all cursor-pointer ${
                       selectedMode === mode.id
                         ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
