@@ -549,11 +549,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       >
                         <Share2 className="w-5 h-5" />
                       </button>
-                      {talent.isVerified === true && (
-                        <span className="absolute left-4 bottom-10 inline-flex items-center gap-1.5 rounded-full bg-purple-950/80 text-white px-3 py-1.5 text-xs font-bold">
-                          <ShieldCheck className="w-4 h-4" /> Identitas terverifikasi
-                        </span>
-                      )}
                       {photoMedia.length > 0 && (
                         <span className="absolute right-4 bottom-10 rounded-full bg-purple-950/80 backdrop-blur text-white px-3 py-1 text-xs font-semibold tabular-nums">
                           1 / {photoMedia.length}
@@ -703,8 +698,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 <div className="flex-1 w-full text-center sm:text-left">
                   <div className="flex flex-wrap items-center justify-center sm:justify-between gap-2 mb-1">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 inline-flex items-center gap-2">
-                      <span>{talent.name}{talent.age ? `, ${talent.age}` : ''}</span>
+                      <span>{talent.name}</span>
                       {talent.isVerified === true && <VerifiedBadge size="md" />}
+                      {talent.age && <span className="text-lg sm:text-xl font-semibold text-slate-500">, {talent.age} tahun</span>}
                     </h1>
                     {(() => {
                       const effectiveReviewCount =
@@ -727,11 +723,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   </div>
 
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-3">
-                    {talent.isVerified === true && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-                        <ShieldCheck className="w-3.5 h-3.5" /> Identitas terverifikasi
-                      </span>
-                    )}
                     {!(reviews.length > 0 || (talent.reviewCount ?? 0) > 0) && (
                       <span className="inline-flex items-center rounded-full bg-purple-50 border border-purple-200 px-2.5 py-0.5 text-[11px] font-bold text-purple-700">Talent Baru</span>
                     )}
