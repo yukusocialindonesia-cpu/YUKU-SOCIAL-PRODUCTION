@@ -596,8 +596,8 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
 
   if (!currentUser) {
     return (
-      <div className="py-16 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.38),_transparent_55%),linear-gradient(180deg,#FAF8FC_0%,#F5F1FA_100%)] min-h-[60vh]">
-        <div className="max-w-md mx-auto px-4 text-center bg-white/85 backdrop-blur-xl p-8 rounded-[2rem] border border-white shadow-[0_18px_55px_-28px_rgba(76,29,149,0.28)] ring-1 ring-purple-100/70 space-y-4">
+      <div className="py-16 bg-[#F8F8F7] min-h-[60vh]">
+        <div className="max-w-md mx-auto px-4 text-center bg-white p-8 rounded-3xl border border-slate-200 shadow-[0_2px_12px_rgba(15,23,42,0.04)] space-y-4">
           <div className="w-14 h-14 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center mx-auto">
             <ShoppingBag className="w-7 h-7" />
           </div>
@@ -627,10 +627,10 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
   }
 
   return (
-    <div className="py-8 sm:py-10 bg-[#F7F7FA] min-h-screen">
+    <div className="py-8 sm:py-10 bg-[#F8F8F7] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-slate-200 bg-white shadow-sm p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_6px_rgba(15,23,42,0.035)] p-5 sm:p-6">
           <div>
             <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
               Manajemen Reservasi & Transaksi
@@ -774,7 +774,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             {filteredBookings.map((item) => (
               <div
                 key={item.id}
-                className="relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-slate-300 hover:shadow-md transition-shadow duration-200 p-4 sm:p-6 space-y-4"
+                className="relative bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_10px_rgba(15,23,42,0.035)] hover:border-slate-300 hover:shadow-[0_4px_14px_rgba(15,23,42,0.055)] transition-shadow duration-200 p-4 sm:p-6 space-y-4"
               >
                 {/* Top Row: Code, Date created, Status */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
