@@ -32,7 +32,7 @@ export const SafetySection: React.FC = () => {
               <h3 className="text-base md:text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
                 Bukan Layanan Kencan & Bukan Prostitusi
               </h3>
-              <p className="text-[11px] md:text-xs text-purple-200/70 leading-relaxed mb-2 md:mb-4">
+              <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
                 YUKU secara tegas melarang segala bentuk permintaan bernuansa asmara, rayuan sensual, atau layanan seksual. Pelanggaran terhadap aturan ini berakibat sanksi blokir permanen dan tindakan hukum.
               </p>
             </div>
@@ -51,7 +51,7 @@ export const SafetySection: React.FC = () => {
               <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
                 Verifikasi Usia Wajib 18+ (KTP)
               </h3>
-              <p className="text-[11px] md:text-xs text-purple-200/70 leading-relaxed mb-2 md:mb-4">
+              <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
                 Baik Customer maupun Talent wajib melalui proses validasi identitas resmi. Kami menjamin tidak ada pengguna di bawah umur demi menjaga keamanan hukum dan etika sosial.
               </p>
             </div>
@@ -70,7 +70,7 @@ export const SafetySection: React.FC = () => {
               <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
                 Zona Publik & Pusat Bantuan
               </h3>
-              <p className="text-[11px] md:text-xs text-purple-200/70 leading-relaxed mb-2 md:mb-4">
+              <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
                 Pertemuan langsung hanya diizinkan di fasilitas umum beramai-ramai seperti kafe, restoran, mall, atau gedung pertemuan. Dilarang keras bertemu di kamar hotel atau kediaman pribadi tertutup.
               </p>
             </div>
@@ -80,6 +80,9 @@ export const SafetySection: React.FC = () => {
             </div>
           </div>
         </div>
+        <p className="md:hidden text-[11px] text-purple-300/80 text-center mt-1">
+          Geser kartu ke samping untuk melihat semua aturan keamanan.
+        </p>
       </div>
     </section>
   );
