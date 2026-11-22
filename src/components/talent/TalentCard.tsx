@@ -139,7 +139,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
       {/* Ikon media: di bawah foto, tidak menimpa gambar */}
       {(hasVoice || hasVideo || hasPhoto) && (
-        <div className="px-3 pt-3 sm:px-5 flex flex-wrap gap-1.5">
+        <div className="px-3 pt-2 sm:px-5 sm:pt-3 flex flex-wrap gap-1.5">
           {hasVoice && (
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-fuchsia-800 bg-fuchsia-50 border border-fuchsia-100 px-2 py-0.5 rounded-full">
               <Mic className="w-3 h-3" /> Voice
@@ -159,7 +159,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-5 pt-3 max-sm:p-3 max-sm:pt-2 flex-1 flex flex-col">
+      <div className="p-5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
@@ -180,11 +180,11 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {talent.bio && (
-          <p className="mt-2 max-sm:mt-1.5 text-xs text-slate-600 line-clamp-2 leading-relaxed">{talent.bio}</p>
+          <p className="mt-2 max-sm:mt-1 text-xs text-slate-600 line-clamp-1 sm:line-clamp-2 leading-relaxed">{talent.bio}</p>
         )}
 
         {talent.interests && talent.interests.length > 0 && (
-          <div className="mt-2.5 max-sm:mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2.5 max-sm:mt-1.5 flex flex-wrap gap-1.5">
             {talent.interests.slice(0, 3).map((item) => (
               <span
                 key={item}
@@ -196,7 +196,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-auto pt-3 max-sm:pt-2">
+        <div className="mt-auto pt-3 max-sm:pt-1.5">
           <div className="pt-3 max-sm:pt-2 border-t border-purple-100 flex items-center justify-between gap-3">
             <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
