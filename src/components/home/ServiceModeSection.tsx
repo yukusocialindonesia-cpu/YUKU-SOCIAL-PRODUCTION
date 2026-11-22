@@ -27,11 +27,11 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             onClick={() => onSelectMode('offline')}
             className="group min-w-0 rounded-2xl sm:rounded-3xl border border-fuchsia-100 bg-gradient-to-br from-white via-fuchsia-50 to-purple-50 p-3 sm:p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
           >
-            <span className="mb-3 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border border-fuchsia-200/70 bg-gradient-to-br from-fuchsia-500 via-purple-600 to-purple-800 text-white shadow-lg shadow-purple-200/70">
-              <span className="relative flex h-9 w-9 items-center justify-center" aria-hidden="true">
-                <UsersRound className="h-7 w-7" strokeWidth={2} />
-                <span className="absolute -right-2 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white bg-white text-fuchsia-700 shadow-sm">
-                  <MapPin className="h-3.5 w-3.5" strokeWidth={2.7} />
+            <span className="mb-2.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-700 text-white shadow-sm">
+              <span className="relative flex items-center justify-center" aria-hidden="true">
+                <UsersRound className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
+                <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-fuchsia-700">
+                  <MapPin className="h-2.5 w-2.5" strokeWidth={2.7} />
                 </span>
               </span>
             </span>
@@ -49,11 +49,11 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             onClick={() => onSelectMode('online')}
             className="group min-w-0 rounded-2xl sm:rounded-3xl border border-purple-100 bg-gradient-to-br from-white via-purple-50 to-indigo-50 p-3 sm:p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
           >
-            <span className="mb-3 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border border-purple-200/70 bg-gradient-to-br from-purple-600 via-indigo-600 to-indigo-800 text-white shadow-lg shadow-indigo-200/70">
-              <span className="relative flex h-9 w-9 items-center justify-center" aria-hidden="true">
-                <Video className="h-7 w-7" strokeWidth={2} />
-                <span className="absolute -right-2 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white bg-white text-indigo-700 shadow-sm">
-                  <MessageCircle className="h-3.5 w-3.5" strokeWidth={2.7} />
+            <span className="mb-2.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-sm">
+              <span className="relative flex items-center justify-center" aria-hidden="true">
+                <Video className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
+                <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-indigo-700">
+                  <MessageCircle className="h-2.5 w-2.5" strokeWidth={2.7} />
                 </span>
               </span>
             </span>
