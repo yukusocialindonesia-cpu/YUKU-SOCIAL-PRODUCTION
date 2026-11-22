@@ -119,14 +119,18 @@ export const TalentQuickFilter: React.FC<TalentQuickFilterProps> = ({ value, onC
   ];
 
   return (
-    <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter talent">
+    <div
+      className="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 sm:flex-wrap sm:overflow-visible sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      role="group"
+      aria-label="Filter talent"
+    >
       {options.map((opt) => (
         <button
           key={opt.id}
           type="button"
           onClick={() => onChange(opt.id)}
           aria-pressed={value === opt.id}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors cursor-pointer ${
+          className={`inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors cursor-pointer ${
             value === opt.id
               ? 'bg-purple-100 text-purple-800 border-purple-300'
               : 'bg-white text-slate-700 border-slate-200 hover:border-purple-300'
