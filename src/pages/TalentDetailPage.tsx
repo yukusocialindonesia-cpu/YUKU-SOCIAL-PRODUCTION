@@ -511,7 +511,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-2 sm:mx-0 rounded-[30px] sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-[0_24px_56px_rgba(28,12,48,0.24),0_4px_14px_rgba(76,29,149,0.12)] ring-1 ring-white/90">
+                    <div className="relative mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-md">
                       {heroUrl && !avatarFailed ? (
                         <img
                           src={heroUrl}
@@ -554,7 +554,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       )}
                     </div>
 
-                    <div className="relative -mt-8 mx-2 rounded-[28px] border border-white/90 bg-white/90 px-4 pt-5 pb-4 shadow-[0_20px_48px_rgba(76,29,149,0.14),0_3px_12px_rgba(76,29,149,0.05)] ring-1 ring-purple-100/70 backdrop-blur-2xl space-y-3">
+                    <div className="relative -mt-6 mx-2 rounded-2xl border border-slate-200 bg-white px-4 pt-5 pb-4 shadow-sm space-y-3">
                       {/* Nama + rating */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
@@ -594,7 +594,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         {talent.age && (
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
                             <UserIcon className="w-3.5 h-3.5 text-purple-700" />
-                            Usia {talent.age}+
+                            Usia {talent.age} tahun
                           </span>
                         )}
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
@@ -1144,7 +1144,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
           {/* Right Column: Booking Widget Card */}
           <div className="lg:col-span-4 lg:sticky lg:top-24">
-            <div className="relative overflow-hidden bg-white/90 rounded-[28px] border border-white/90 shadow-[0_22px_54px_rgba(76,29,149,0.13),0_4px_14px_rgba(76,29,149,0.05)] ring-1 ring-purple-100/80 backdrop-blur-2xl p-6 space-y-5">
+            <div className="relative overflow-hidden bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
               <div className="border-b border-slate-100 pb-4">
                 <span className="text-xs text-slate-500 block font-medium">Tarif Layanan</span>
                 <div className="text-2xl font-black text-[#1E0938] tabular-nums mt-0.5">
@@ -1189,7 +1189,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               <button
                 type="button"
                 onClick={() => setIsBookingModalOpen(true)}
-                className="w-full py-3.5 px-4 bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 px-4 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Ajukan Booking</span>
@@ -1204,7 +1204,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-6px_20px_rgba(15,23,42,0.08)]">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="text-xl font-black text-[#1E0938] tabular-nums truncate">
@@ -1215,7 +1215,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
-            className="px-6 py-3.5 bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 text-white font-bold text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+            className="px-5 py-3.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Calendar className="w-4 h-4" />
             <span>Ajukan Booking</span>
@@ -1660,4 +1660,3 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     </div>
   );
 };
-
