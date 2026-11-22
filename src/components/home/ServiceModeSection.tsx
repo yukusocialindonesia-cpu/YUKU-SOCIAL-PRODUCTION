@@ -7,7 +7,7 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-5 sm:py-12 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section className="relative overflow-hidden py-4 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-3 sm:mb-6">
           <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase">
@@ -17,7 +17,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             Mau Teman Offline atau Online?
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
-            Pilih pengalaman yang sesuai dengan kebutuhanmu.
+            Pilih layanan yang sesuai dengan kebutuhanmu.
           </p>
         </div>
 
