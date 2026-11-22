@@ -46,7 +46,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                       </span>
                     </div>
                     <h3 className="text-[13px] font-bold text-[#1E0938] mb-1 leading-tight">{item.title}</h3>
-                    <p className="text-[11px] text-slate-600 leading-snug line-clamp-3">{item.description}</p>
+                    <p className="text-xs text-slate-600 leading-snug line-clamp-4">{item.description}</p>
                   </div>
                 );
               })}
@@ -70,13 +70,13 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
               Keamanan & Kepercayaan
             </h2>
             <p className="text-sm text-slate-500 mb-4 md:mb-5">Privasi dan keamananmu adalah prioritas kami.</p>
-            <div className="grid grid-cols-4 lg:grid-cols-2 gap-2.5 sm:gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-3">
               {TRUST_ITEMS.map(({ label, Icon }) => (
                 <div key={label} className="flex flex-col lg:flex-row items-center lg:gap-3 text-center lg:text-left">
                   <span className="w-12 h-12 shrink-0 rounded-2xl bg-white/90 border border-purple-100 text-purple-700 shadow-[0_8px_20px_rgba(76,29,149,0.08)] flex items-center justify-center">
                     <Icon className="w-6 h-6" />
                   </span>
-                  <span className="mt-1.5 lg:mt-0 text-[11px] lg:text-sm font-semibold text-slate-700 leading-tight">{label}</span>
+                  <span className="mt-1.5 lg:mt-0 text-xs lg:text-sm font-semibold text-slate-700 leading-tight">{label}</span>
                 </div>
               ))}
             </div>
