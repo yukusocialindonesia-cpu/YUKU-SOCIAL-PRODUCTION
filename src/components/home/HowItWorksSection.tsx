@@ -39,7 +39,11 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                   <span className="text-xs font-semibold text-slate-400">0{index + 1}</span>
                 </div>
                 <h3 className="text-sm font-bold leading-snug text-slate-900">{item.title}</h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-slate-600 sm:text-sm">{item.description}</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-600 sm:text-sm">
+                  {index === 3
+                    ? 'Setelah aktivitas selesai, bagikan pengalaman dan ulasan sesuai pengalamanmu.'
+                    : item.description}
+                </p>
               </div>
             );
           })}
