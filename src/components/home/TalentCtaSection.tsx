@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, CheckCircle2, Clock, ShieldCheck, Sparkles, MapPin, CalendarCheck } from 'lucide-react';
+import { ArrowRight, MapPin, Clock, MessageCircle } from 'lucide-react';
 
 interface TalentCtaSectionProps {
   onExploreClick: () => void;
@@ -13,135 +13,70 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
   onRegisterClick,
 }) => {
   return (
-    <section className="py-4 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-center">
-          {/* Left Content: Customer-First */}
-          <div className="lg:col-span-7">
-            <span className="text-xs font-bold text-amber-400 tracking-wider uppercase mb-2 block">
-              Mulai Pengalaman Sosial Baru
+    <section className="bg-[#211334] py-8 text-white sm:py-14">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-8">
+            <span className="text-xs font-semibold uppercase tracking-wide text-purple-200">
+              Mulai dari sini
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-1.5 md:mb-4">
-              Cari Teman Ngopi, Nonton, atau Partner Acara di Kotamu
+            <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-tight sm:text-4xl">
+              Temukan teman untuk aktivitas yang kamu suka
             </h2>
-            <p className="text-xs sm:text-base text-purple-200/90 leading-relaxed mb-2 md:mb-5">
-              Tidak perlu datang sendirian ke kafe baru, konser, atau kondangan. Pilih Talent terverifikasi sesuai hobi dan jadwalmu, lalu pesan dengan sistem pembayaran yang aman.
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-purple-100/80 sm:text-base">
+              Pilih teman online atau offline, jelajahi aktivitas, lalu lihat informasi dan tarif layanan di profil Talent sebelum mengajukan jadwal.
             </p>
 
-            {/* Customer Feature Highlights */}
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-4 mb-3 sm:mb-8 text-[10px] sm:text-xs">
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
-                    Profil Terkurasi & Terverifikasi
-                  </strong>
-                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Semua Talent melalui verifikasi identitas 18+ dan standar etika komunikasi.
-                  </span>
-                </div>
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-purple-200" />
+                <span className="text-sm leading-relaxed text-purple-100/90">Pilihan aktivitas online dan offline</span>
               </div>
-
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
-                    Bebas Pilih Lokasi Publik
-                  </strong>
-                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Bertemu nyaman di kafe, mall, bioskop, atau pilih sesi obrolan online.
-                  </span>
-                </div>
+                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-purple-200" />
+                <span className="text-sm leading-relaxed text-purple-100/90">Informasi jadwal dan tarif di profil</span>
               </div>
-
               <div className="flex items-start gap-2.5">
-                <Clock className="w-4 h-4 text-fuchsia-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
-                    Tarif Transparan per Jam
-                  </strong>
-                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Lihat tarif per jam langsung di profil sebelum mengajukan jadwal booking.
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
-                    Pembayaran Terlindungi
-                  </strong>
-                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Dana booking diamankan melalui sistem YUKU dan diteruskan setelah sesi selesai dikonfirmasi.
-                  </span>
-                </div>
+                <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-purple-200" />
+                <span className="text-sm leading-relaxed text-purple-100/90">Ruang untuk terhubung dan berinteraksi</span>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-3 sm:mt-0">
+            <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:items-center">
               <button
+                type="button"
                 onClick={onExploreClick}
-                className="min-h-11 px-6 py-3 md:px-7 md:py-3.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-pink-600 hover:from-amber-600 hover:to-pink-700 rounded-xl shadow-[0_8px_22px_rgba(234,88,12,0.22)] ring-1 ring-white/15 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-purple-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-purple-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#211334]"
               >
-                <span>Jelajahi Talent Sekarang</span>
-                <ArrowRight className="w-4 h-4" />
+                Jelajahi Talent
+                <ArrowRight className="h-4 w-4" />
               </button>
               <button
+                type="button"
                 onClick={onRegisterCustomerClick}
-                className="min-h-11 px-5 py-3 md:px-6 md:py-3.5 text-sm font-bold text-white bg-white/10 hover:bg-white/20 border border-white/25 rounded-xl shadow-[0_5px_16px_rgba(0,0,0,0.12)] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/25 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
-                <span>Daftar Akun Customer</span>
+                Daftar sebagai Customer
               </button>
             </div>
           </div>
 
-          {/* Right Visual Card: Customer Quick Steps + Subtle Talent Link */}
-          <div className="lg:col-span-5 space-y-3 sm:space-y-4">
-            <div className="hidden lg:block p-7 rounded-[30px] bg-white/[0.10] backdrop-blur-xl border border-white/20 shadow-[0_24px_60px_rgba(0,0,0,0.24)] ring-1 ring-white/10 text-white">
-              <div className="inline-block px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-amber-300 mb-5">
-                Langkah Mulai untuk Customer
-              </div>
-
-              <div className="space-y-3.5 text-xs text-purple-100">
-                <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                  <span>1. Daftar akun Customer dan lengkapi verifikasi e-KTP 18+.</span>
-                </div>
-                <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <MapPin className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <span>2. Pilih aktivitas, kota, dan Talent yang cocok dengan minatmu.</span>
-                </div>
-                <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <CalendarCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span>3. Tentukan jam pertemuan di ruang publik atau sesi online.</span>
-                </div>
-                <div className="flex items-start gap-3 pt-1">
-                  <ShieldCheck className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
-                  <span>4. Nikmati momen pertemanan positif dengan perlindungan tim YUKU.</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Secondary subtle Talent invitation */}
-            <div className="p-3.5 sm:p-4 rounded-[22px] bg-gradient-to-r from-white/[0.11] to-white/[0.06] backdrop-blur-xl border border-white/20 shadow-[0_10px_26px_rgba(0,0,0,0.16)] flex items-center justify-between gap-3">
-              <div className="text-xs">
-                <span className="font-bold text-white block">Ingin bergabung menjadi Talent?</span>
-                <span className="text-purple-200/75 text-[11px]">
-                  Atur jadwal sendiri dan temani aktivitas sosial positif.
-                </span>
-              </div>
-              <button
-                onClick={onRegisterClick}
-                className="shrink-0 min-h-10 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/25 text-xs font-bold text-amber-300 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
-              >
-                Daftar Talent →
-              </button>
-            </div>
+          <div className="rounded-2xl border border-white/15 bg-white/[0.06] p-4 sm:p-5 lg:col-span-4">
+            <p className="text-sm font-semibold text-white">Ingin bergabung sebagai Talent?</p>
+            <p className="mt-1 text-sm leading-relaxed text-purple-100/80">
+              Bagikan minat dan aktivitas yang ingin kamu temani melalui profil YUKU.
+            </p>
+            <button
+              type="button"
+              onClick={onRegisterClick}
+              className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-[#32164B] transition-colors hover:bg-purple-50"
+            >
+              Daftar Talent
+              <ArrowRight className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
     </section>
   );
 };
-
