@@ -112,7 +112,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   onClick={() => onSelectCategory(cat.id)}
                   className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-4 min-h-[76px] rounded-xl border border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50/40 transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
                 >
-                  <span className={`w-9 h-9 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
+                  <span className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-purple-50 text-purple-700 transition-colors group-hover:bg-purple-100">
                     {getIcon(cat.iconName)}
                   </span>
                   <h3 className="font-bold text-[11px] sm:text-[12px] leading-tight text-center text-slate-800 group-hover:text-purple-700 transition-colors">
