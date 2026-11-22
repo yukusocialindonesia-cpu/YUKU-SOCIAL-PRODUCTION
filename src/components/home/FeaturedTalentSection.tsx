@@ -61,7 +61,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
               Kurasi Pilihan Terverifikasi
             </span>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Talent Pilihan di Kotamu
             </h2>
           </div>
@@ -82,9 +82,9 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         )}
 
         {loading ? (
-          <div className="flex gap-4 overflow-hidden rounded-[30px] p-1">
+          <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-4 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-80 w-[70vw] sm:w-[260px] shrink-0 rounded-2xl bg-slate-200 animate-pulse" />
+              <div key={i} className="h-64 w-full sm:h-80 sm:w-[260px] shrink-0 rounded-2xl bg-slate-200 animate-pulse" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -137,12 +137,12 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </button>
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-5 pt-1 -mx-4 px-4 sm:mx-0 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="grid grid-cols-2 gap-3 pb-5 pt-1 -mx-4 px-4 sm:mx-0 sm:grid-cols-none sm:flex sm:gap-4 sm:overflow-x-auto sm:snap-x sm:snap-mandatory sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[68vw] sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[28px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-full sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
