@@ -73,10 +73,10 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="relative py-3 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section aria-label="Ruang Promosi YUKU" className="relative py-2.5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
-          <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-3xl bg-slate-100 animate-pulse border border-slate-200/80" />
+          <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80" />
         ) : totalSlides === 0 ? (
           <div className="w-full min-h-[112px] sm:aspect-[21/6] rounded-2xl border border-slate-200 bg-gradient-to-r from-[#FAF8FC] via-purple-50/60 to-amber-50/50 px-3.5 py-4 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-start gap-3 sm:gap-4 max-w-2xl">
@@ -126,7 +126,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
           >
             {/* Kotak mengikuti rasio asli poster yang sedang tampil (dibatasi 3:2 sampai 3:1), jadi poster tidak terpotong. */}
             <div
-              className="w-full rounded-[28px] overflow-hidden border border-white/80 bg-slate-900 relative shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y"
+              className="w-full rounded-[22px] sm:rounded-[28px] overflow-hidden border border-white/90 bg-slate-900 relative shadow-[0_12px_32px_rgba(76,29,149,0.13)] sm:shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y"
               style={{ aspectRatio: String(frameRatio) }}
             >
               {promotions.map((promo, index) => {
@@ -164,7 +164,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                     )}
 
                     {(isInternal || isExternal) && (
-                      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 px-3.5 py-2 rounded-xl bg-slate-950/80 text-white text-xs font-bold inline-flex items-center gap-1.5 backdrop-blur-xs">
+                      <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl bg-slate-950/80 text-white text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-xs">
                         <span>Lihat Promo</span>
                         <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
                       </div>
