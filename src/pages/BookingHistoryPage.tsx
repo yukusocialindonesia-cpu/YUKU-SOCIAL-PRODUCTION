@@ -518,6 +518,20 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             <span>Selesai</span>
           </span>
         );
+      case 'disputed_hold':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+            <ShieldAlert className="w-3.5 h-3.5" />
+            <span>Dalam Penanganan Sengketa</span>
+          </span>
+        );
+      case 'refunded':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>Dana Dikembalikan</span>
+          </span>
+        );
       case 'cancelled_by_customer':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
@@ -536,7 +550,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200">
             <AlertCircle className="w-3.5 h-3.5" />
-            <span>Kedaluwarsa (15 Min)</span>
+            <span>Kedaluwarsa</span>
           </span>
         );
       default:
@@ -596,8 +610,8 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
 
   if (!currentUser) {
     return (
-      <div className="py-16 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.38),_transparent_55%),linear-gradient(180deg,#FAF8FC_0%,#F5F1FA_100%)] min-h-[60vh]">
-        <div className="max-w-md mx-auto px-4 text-center bg-white/85 backdrop-blur-xl p-8 rounded-[2rem] border border-white shadow-[0_18px_55px_-28px_rgba(76,29,149,0.28)] ring-1 ring-purple-100/70 space-y-4">
+      <div className="py-16 bg-[#F8F8F7] min-h-[60vh]">
+        <div className="max-w-md mx-auto px-4 text-center bg-white p-8 rounded-3xl border border-slate-200 shadow-[0_2px_12px_rgba(15,23,42,0.04)] space-y-4">
           <div className="w-14 h-14 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center mx-auto">
             <ShoppingBag className="w-7 h-7" />
           </div>
@@ -627,10 +641,10 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
   }
 
   return (
-    <div className="py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.34),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F6F3FA_100%)] min-h-screen">
+    <div className="py-8 sm:py-10 bg-[#F8F8F7] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-[1.75rem] border border-white/90 bg-white/65 backdrop-blur-xl shadow-[0_14px_40px_-28px_rgba(76,29,149,0.25)] ring-1 ring-purple-100/60 p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_6px_rgba(15,23,42,0.035)] p-5 sm:p-6">
           <div>
             <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
               Manajemen Reservasi & Transaksi
@@ -656,7 +670,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
         {/* Role Selector Tabs (shown only if user also has bookings as Talent) */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           {bookings.some((b) => b.talent_id === currentUser?.id) ? (
-            <div className="flex w-full flex-wrap items-center gap-2 p-1.5 bg-white/65 backdrop-blur-lg border border-white rounded-2xl shadow-[0_10px_28px_-18px_rgba(76,29,149,0.25)] ring-1 ring-purple-100/70 text-xs font-bold sm:w-auto">
+            <div className="flex w-full flex-wrap items-center gap-2 p-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold sm:w-auto">
               <button
                 type="button"
                 onClick={() => setRoleFilter('customer')}
@@ -692,7 +706,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="p-2.5 bg-white/90 border border-white rounded-2xl text-xs font-semibold text-slate-700 shadow-[0_8px_22px_-14px_rgba(76,29,149,0.25)] ring-1 ring-purple-100/80 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
+              className="p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
             >
               <option value="all">Semua Status</option>
               <option value="pending_payment">Menunggu Pembayaran</option>
@@ -700,6 +714,8 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
               <option value="confirmed_by_talent">Terkonfirmasi Talent</option>
               <option value="in_progress">Aktivitas Berlangsung</option>
               <option value="completed">Selesai</option>
+              <option value="disputed_hold">Dalam Penanganan Sengketa</option>
+              <option value="refunded">Dana Dikembalikan</option>
               <option value="cancelled_by_customer">Dibatalkan Customer</option>
               <option value="cancelled_by_talent">Dibatalkan Talent</option>
               <option value="expired">Kedaluwarsa</option>
@@ -747,7 +763,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             <div className="h-32 bg-slate-200 animate-pulse rounded-2xl" />
           </div>
         ) : filteredBookings.length === 0 ? (
-          <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] border border-white shadow-[0_18px_50px_-30px_rgba(76,29,149,0.24)] ring-1 ring-purple-100/70 p-8 sm:p-12 text-center space-y-4">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 sm:p-12 text-center space-y-4">
             <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
               <CalendarCheck className="w-8 h-8" />
             </div>
@@ -774,7 +790,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             {filteredBookings.map((item) => (
               <div
                 key={item.id}
-                className="relative bg-white/90 backdrop-blur-2xl rounded-[28px] border border-white shadow-[0_18px_46px_-26px_rgba(49,24,86,0.30)] ring-1 ring-purple-100/80 hover:-translate-y-0.5 hover:shadow-[0_24px_52px_-26px_rgba(49,24,86,0.34)] transition-all duration-300 p-4 sm:p-6 space-y-4"
+                className="relative bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_10px_rgba(15,23,42,0.035)] hover:border-slate-300 hover:shadow-[0_4px_14px_rgba(15,23,42,0.055)] transition-shadow duration-200 p-4 sm:p-6 space-y-4"
               >
                 {/* Top Row: Code, Date created, Status */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -794,7 +810,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
                   {/* Partner Profile (Talent or Customer) */}
                   <div className="md:col-span-4 flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-white overflow-hidden shrink-0 border-2 border-white shadow-[0_8px_20px_-8px_rgba(49,24,86,0.35)] ring-1 ring-purple-100 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200 flex items-center justify-center">
                       {(roleFilter === 'customer' ? item.talentAvatar : item.customerAvatar) ? (
                         <img
                           src={roleFilter === 'customer' ? item.talentAvatar : item.customerAvatar}
@@ -842,16 +858,18 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                   </div>
 
                   {/* Pricing & Escrow */}
-                  <div className="md:col-span-3 text-right sm:text-right space-y-1">
+                  <div className="md:col-span-3 text-left md:text-right space-y-1 rounded-xl bg-slate-50 border border-slate-100 p-3 md:bg-transparent md:border-0 md:p-0">
                     <span className="text-[11px] text-slate-400 font-medium block">
                       Total Biaya Sesi
                     </span>
                     <div className="text-lg font-black text-[#1E0938] tabular-nums tracking-tight">
                       {formatRupiah(item.gross_amount)}
                     </div>
-                    <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block font-semibold">
-                      Proteksi Escrow YUKU
-                    </span>
+{['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(item.status) && (
+                      <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block font-semibold">
+                        Pembayaran diproses melalui escrow YUKU
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -947,7 +965,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 )}
 
                 {roleFilter === 'customer' && item.status === 'in_progress' && (
-                  <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
                     {item.customer_completed_at ? (
                       <span className="text-amber-700 font-semibold">Konfirmasi Anda tercatat. Menunggu Talent mengonfirmasi sesi selesai.</span>
                     ) : (
@@ -969,11 +987,11 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 {/* Bottom Row: Actions & Expiration Notice */}
                 {roleFilter === 'customer' && ['pending_payment', 'paid_held_in_escrow', 'confirmed_by_talent'].includes(item.status) && new Date(item.start_time).getTime() > Date.now() && (
                   <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2 text-amber-800 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 text-[11px]">
+                    <div className="flex items-start gap-2 text-amber-800 bg-amber-50 px-3 py-2.5 rounded-lg border border-amber-200 text-[11px] leading-relaxed">
                       <Clock className="w-3.5 h-3.5 shrink-0" />
                       <span>
                         {item.status === 'pending_payment'
-                          ? 'Slot waktu dikunci. Selesaikan pembayaran sebelum reservasi 15 menit kedaluwarsa.'
+                          ? 'Slot waktu dikunci sementara. Selesaikan pembayaran sebelum batas waktu yang ditampilkan pada informasi pembayaran.'
                           : 'Pembatalan mengikuti kebijakan refund YUKU berdasarkan waktu sebelum sesi. Sisa dana tertentu dapat ditahan untuk peninjauan Admin.'}
                       </span>
                     </div>
@@ -981,7 +999,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                     <button
                         onClick={() => handleCancelBooking(item.id)}
                         disabled={actionInProgressId === item.id}
-                        className="px-3.5 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 rounded-lg font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                        className="w-full sm:w-auto px-3.5 py-2 bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 rounded-lg font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
                       >
                         {actionInProgressId === item.id ? 'Membatalkan...' : 'Batalkan Reservasi'}
                     </button>

@@ -281,6 +281,13 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     e.preventDefault();
     setBookingError(null);
 
+    // Keep the submit handler protected even if it is triggered outside the disabled UI.
+    if (!isPaymentCheckoutEnabled) {
+      setBookingError('Booking berbayar YUKU belum tersedia saat ini.');
+      return;
+    }
+    if (isSubmittingBooking) return;
+
     if (!talent) return;
 
     // 1. Auth Guard
@@ -511,7 +518,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-2 sm:mx-0 rounded-[30px] sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-[0_24px_56px_rgba(28,12,48,0.24),0_4px_14px_rgba(76,29,149,0.12)] ring-1 ring-white/90">
+                    <div className="relative mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-md">
                       {heroUrl && !avatarFailed ? (
                         <img
                           src={heroUrl}
@@ -542,9 +549,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       >
                         <Share2 className="w-5 h-5" />
                       </button>
-                      <span className="absolute left-4 bottom-10 inline-flex items-center gap-1.5 rounded-full bg-purple-950/80 backdrop-blur text-white px-3 py-1.5 text-xs font-bold">
-                        <ShieldCheck className="w-4 h-4" /> Terverifikasi 18+
-                      </span>
                       {photoMedia.length > 0 && (
                         <span className="absolute right-4 bottom-10 rounded-full bg-purple-950/80 backdrop-blur text-white px-3 py-1 text-xs font-semibold tabular-nums">
                           1 / {photoMedia.length}
@@ -552,7 +556,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       )}
                     </div>
 
-                    <div className="relative -mt-8 mx-2 rounded-[28px] border border-white/90 bg-white/90 px-4 pt-5 pb-4 shadow-[0_20px_48px_rgba(76,29,149,0.14),0_3px_12px_rgba(76,29,149,0.05)] ring-1 ring-purple-100/70 backdrop-blur-2xl space-y-3">
+                    <div className="relative -mt-6 mx-2 rounded-2xl border border-slate-200 bg-white px-4 pt-5 pb-4 shadow-sm space-y-3">
                       {/* Nama + rating */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
@@ -592,7 +596,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         {talent.age && (
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
                             <UserIcon className="w-3.5 h-3.5 text-purple-700" />
-                            Usia {talent.age}+
+                            Usia {talent.age} tahun
                           </span>
                         )}
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
@@ -694,8 +698,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 <div className="flex-1 w-full text-center sm:text-left">
                   <div className="flex flex-wrap items-center justify-center sm:justify-between gap-2 mb-1">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 inline-flex items-center gap-2">
-                      <span>{talent.name}{talent.age ? `, ${talent.age}` : ''}</span>
+                      <span>{talent.name}</span>
                       {talent.isVerified === true && <VerifiedBadge size="md" />}
+                      {talent.age && <span className="text-lg sm:text-xl font-semibold text-slate-500">, {talent.age} tahun</span>}
                     </h1>
                     {(() => {
                       const effectiveReviewCount =
@@ -718,9 +723,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   </div>
 
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Terverifikasi 18+
-                    </span>
                     {!(reviews.length > 0 || (talent.reviewCount ?? 0) > 0) && (
                       <span className="inline-flex items-center rounded-full bg-purple-50 border border-purple-200 px-2.5 py-0.5 text-[11px] font-bold text-purple-700">Talent Baru</span>
                     )}
@@ -814,7 +816,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
             {/* Galeri Foto & Video Card */}
             {(photoMedia.length > 0 || videoMedia.length > 0) && (
-              <div className="sm:bg-white/85 sm:rounded-[28px] sm:border sm:border-white/90 sm:p-6 md:p-8 sm:shadow-[0_16px_40px_rgba(76,29,149,0.08)] sm:ring-1 sm:ring-purple-100/70 sm:backdrop-blur-xl space-y-2 sm:space-y-6">
+              <div className="rounded-2xl bg-white border border-slate-100 p-3 sm:rounded-[28px] sm:border-white/90 sm:p-6 md:p-8 sm:shadow-[0_16px_40px_rgba(76,29,149,0.08)] sm:ring-1 sm:ring-purple-100/70 space-y-4 sm:space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="w-5 h-5 text-purple-700" />
@@ -822,16 +824,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       Galeri Foto &amp; Video
                     </h2>
                   </div>
-                  {photoMedia.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setLightboxIndex(0)}
-                      className="sm:hidden inline-flex items-center gap-1 rounded-full bg-purple-50 border border-purple-100 px-3 py-1.5 text-xs font-bold text-purple-800 cursor-pointer"
-                    >
-                      Lihat Semua &rsaquo;
-                    </button>
-                  )}
-                  <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-medium">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
                     {photoMedia.length > 0 && <span>{photoMedia.length} Foto</span>}
                     {photoMedia.length > 0 && videoMedia.length > 0 && <span aria-hidden="true">·</span>}
                     {videoMedia.length > 0 && <span>{videoMedia.length} Video</span>}
@@ -839,13 +832,13 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </div>
 
                 {photoMedia.length > 0 && (
-                  <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:grid sm:grid-cols-3 sm:gap-3">
+                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
                     {photoMedia.map((photo, idx) => (
                       <button
                         key={photo.id}
                         type="button"
                         onClick={() => setLightboxIndex(idx)}
-                        className="group relative shrink-0 snap-start w-28 h-36 sm:w-auto sm:h-auto sm:aspect-[4/3] rounded-2xl sm:rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-sm text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        className="group relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600"
                       >
                         <img
                           src={photo.media_url}
@@ -903,7 +896,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             )}
 
             {/* About & Bio Card */}
-            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl">
+            <div className="rounded-2xl bg-white border border-slate-100 p-4 sm:rounded-[24px] sm:p-6">
               <h2 className="flex items-center gap-2 text-base sm:text-lg font-bold text-slate-900 mb-2">
                 <UserIcon className="w-5 h-5 text-purple-700 lg:hidden" />
                 <span className="lg:hidden">Tentang Talent</span>
@@ -920,14 +913,14 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               {/* Interests */}
               {talent.interests && talent.interests.length > 0 && (
                 <>
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Minat & Hobi Favorit
+                  <h3 className="text-sm font-semibold text-slate-800 mb-2">
+                    Minat &amp; Hobi
                   </h3>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-6">
                     {talent.interests.map((interest) => (
                       <span
                         key={interest}
-                        className="px-3 py-1 bg-purple-50 text-purple-900 text-xs font-medium rounded-full border border-purple-100"
+                        className="px-3 py-1.5 bg-slate-50 text-slate-700 text-xs font-medium rounded-lg border border-slate-200"
                       >
                         {interest}
                       </span>
@@ -938,23 +931,20 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
               {/* Supported Activities */}
               {talent.activities && talent.activities.length > 0 && (
-                <div className="hidden lg:block">
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Aktivitas yang Didukung
+                <div className="mt-4">
+                  <h3 className="text-sm font-semibold text-slate-800 mb-2">
+                    Aktivitas yang Ditawarkan
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {talent.activities.map((actId) => {
                       const cat = categories.find((c) => c.id === actId);
                       if (!cat) return null;
                       return (
                         <div
                           key={actId}
-                          className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-xs"
+                          className="min-w-0 px-3 py-2.5 rounded-xl bg-purple-50/70 border border-purple-100 text-xs font-semibold text-purple-900"
                         >
-                          <strong className="text-slate-900 block font-semibold mb-0.5">
-                            {cat.title}
-                          </strong>
-                          <span className="text-slate-500 line-clamp-1">{cat.description}</span>
+                          {cat.title}
                         </div>
                       );
                     })}
@@ -965,7 +955,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             </div>
 
             {/* Talent Availability Schedule Card */}
-            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl space-y-3 sm:space-y-4">
+            <div className="rounded-2xl bg-white border border-slate-100 p-4 sm:rounded-[24px] sm:p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-purple-700" />
                 <h2 className="text-base sm:text-lg font-bold text-slate-900">
@@ -998,7 +988,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                               return (
                                 <div
                                   key={dayOpt.value}
-                                  className="px-3 py-2 sm:p-3 rounded-xl bg-purple-50/60 border border-purple-100 flex items-center justify-between gap-2"
+                                  className="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2"
                                 >
                                   <span className="font-bold text-slate-800">{dayOpt.label}</span>
                                   <span className="font-mono text-purple-900 font-semibold">
@@ -1057,7 +1047,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </span>
               </div>
             ) : (
-            <div className="bg-white/85 rounded-[26px] border border-white/90 p-3 sm:p-6 md:p-8 shadow-[0_16px_40px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 backdrop-blur-xl space-y-3 sm:space-y-5">
+            <div className="rounded-2xl bg-white border border-slate-100 p-4 sm:rounded-[24px] sm:p-6 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-purple-700" />
@@ -1083,7 +1073,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   {reviews.map((rev) => (
                     <div
                       key={rev.id}
-                      className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 space-y-2"
+                      className="p-4 rounded-xl bg-white border border-slate-200 space-y-2"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -1152,7 +1142,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
           {/* Right Column: Booking Widget Card */}
           <div className="lg:col-span-4 lg:sticky lg:top-24">
-            <div className="relative overflow-hidden bg-white/90 rounded-[28px] border border-white/90 shadow-[0_22px_54px_rgba(76,29,149,0.13),0_4px_14px_rgba(76,29,149,0.05)] ring-1 ring-purple-100/80 backdrop-blur-2xl p-6 space-y-5">
+            <div className="relative overflow-hidden bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
               <div className="border-b border-slate-100 pb-4">
                 <span className="text-xs text-slate-500 block font-medium">Tarif Layanan</span>
                 <div className="text-2xl font-black text-[#1E0938] tabular-nums mt-0.5">
@@ -1181,7 +1171,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <ShieldCheck className="w-4 h-4 text-emerald-600" />
                     <span>Perlindungan Escrow:</span>
                   </span>
-                  <span className="font-semibold text-emerald-700">Diproses melalui sistem escrow</span>
+                  <span className="font-semibold text-slate-600">{isPaymentCheckoutEnabled ? 'Diproses melalui sistem escrow' : 'Aktif saat booking berbayar tersedia'}</span>
                 </div>
                 {talent.isVerified === true && (
                   <div className="flex items-center justify-between">
@@ -1197,14 +1187,14 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               <button
                 type="button"
                 onClick={() => setIsBookingModalOpen(true)}
-                className="w-full py-3.5 px-4 bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 px-4 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calendar className="w-4 h-4" />
-                <span>Ajukan Booking</span>
+                <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}</span>
               </button>
 
               <p className="text-[11px] text-slate-400 text-center leading-tight">
-                *Seluruh transaksi dilindungi oleh Sistem Escrow & Komitmen Keamanan YUKU.
+                {isPaymentCheckoutEnabled ? '*Pembayaran booking diproses melalui sistem escrow YUKU.' : '*Booking berbayar belum tersedia. Sistem escrow digunakan saat fitur booking aktif.'}
               </p>
             </div>
           </div>
@@ -1212,7 +1202,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-6px_20px_rgba(15,23,42,0.08)]">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="text-xl font-black text-[#1E0938] tabular-nums truncate">
@@ -1223,10 +1213,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
-            className="px-6 py-3.5 bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 text-white font-bold text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+            className="px-5 py-3.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Calendar className="w-4 h-4" />
-            <span>Ajukan Booking</span>
+            <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}</span>
           </button>
         </div>
       </div>
@@ -1542,7 +1532,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               <CheckCircle className="w-8 h-8" />
             </div>
             <h4 className="text-lg font-bold text-slate-900">
-              Reservasi Booking Berhasil Tersimpan di Supabase!
+              Permintaan Booking Berhasil Dibuat
             </h4>
             
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left space-y-2 max-w-md mx-auto">
@@ -1573,7 +1563,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             </div>
 
             <p className="text-slate-600 max-w-sm mx-auto leading-relaxed text-[11px]">
-              Slot Anda diamankan selama <strong>15 menit</strong>. Langkah berikutnya: ketuk <strong>Bayar Sekarang</strong>, scan QRIS, lalu unggah bukti pembayaran. Booking baru aktif setelah pembayaran diverifikasi Admin.
+              Permintaan ini belum berarti booking sudah aktif. Slot diamankan selama <strong>15 menit</strong>. Lanjutkan ke halaman riwayat booking untuk melihat instruksi pembayaran QRIS dan unggah bukti pembayaran. Booking baru aktif setelah pembayaran diverifikasi Admin.
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
@@ -1668,4 +1658,3 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     </div>
   );
 };
-
