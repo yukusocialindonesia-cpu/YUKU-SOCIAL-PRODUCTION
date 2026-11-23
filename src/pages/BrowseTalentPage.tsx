@@ -244,10 +244,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Cari nama, hobi (kopi, lari, seni), minat..."
+                placeholder="Cari nama atau hobi..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-9 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-2 sm:py-2.5 text-xs sm:text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
+                className="w-full min-h-10 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-2 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
               />
             </div>
 
@@ -277,10 +277,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             type="button"
             onClick={() => setShowMoreFilters((open) => !open)}
             aria-expanded={showMoreFilters}
-            className="md:hidden ml-auto flex min-h-8 w-auto items-center justify-between gap-3 rounded-lg border border-purple-100 bg-purple-50/70 px-3 text-[11px] font-bold text-purple-800"
+            className="md:hidden ml-auto flex min-h-8 w-auto items-center justify-between gap-3 rounded-full border border-purple-200 bg-purple-50 px-3.5 text-[11px] font-bold text-purple-800 active:bg-purple-100"
           >
-            <span>Filter</span>
-            <span>{showMoreFilters ? "Tutup −" : "Buka +"}</span>
+            <span>{showMoreFilters ? "Tutup filter" : "Filter lainnya"}</span>
+            <span aria-hidden="true">{showMoreFilters ? "−" : "+"}</span>
           </button>
           <div className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
           {/* Row 2: Activity Categories Buttons */}
