@@ -4,7 +4,8 @@ import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
 import { AppRoute } from '../types/navigation';
-import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
+import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
+import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 
 interface BrowseTalentPageProps {
@@ -22,6 +23,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 }) => {
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
+  const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -50,6 +52,22 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
   useEffect(() => {
     loadMarketplaceData();
+  }, []);
+
+  // Promosi dimuat terpisah agar gangguan tabel promosi tidak menghambat katalog Talent.
+  useEffect(() => {
+    let isMounted = true;
+    fetchPromotionsFromSupabase()
+      .then((items) => {
+        if (isMounted) setPromotions(items);
+      })
+      .catch((error) => {
+        console.warn('Promosi Jelajah tidak dapat dimuat:', error);
+        if (isMounted) setPromotions([]);
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -136,6 +154,48 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </p>
           </div>
         </section>
+
+        {/* Banner promosi aktif; katalog tetap tampil jika tidak ada promosi. */}
+        {promotions.length > 0 && (
+          <section aria-label="Promosi YUKU" className="mb-4 sm:mb-7">
+            <div className="mb-2 flex items-center justify-between px-1">
+              <h2 className="text-xs font-extrabold uppercase tracking-[0.14em] text-purple-800">Info & Promosi</h2>
+              <span className="text-[10px] font-medium text-slate-500">Pilihan dari YUKU</span>
+            </div>
+            <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">
+              {promotions.map((promotion) => (
+                <article
+                  key={promotion.id}
+                  className="relative min-w-[82%] snap-start overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-[0_8px_24px_rgba(76,29,149,0.08)] sm:min-w-[48%] lg:min-w-[36%]"
+                >
+                  <div className="relative aspect-[16/7] bg-purple-50">
+                    <img
+                      src={promotion.image_url}
+                      alt={promotion.title || 'Promosi YUKU'}
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none';
+                      }}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/75 to-transparent px-4 pb-3 pt-9">
+                      <h3 className="line-clamp-2 text-sm font-bold text-white drop-shadow sm:text-base">
+                        {promotion.title}
+                      </h3>
+                    </div>
+                  </div>
+                  {promotion.link_url && /^(https?:\/\/|\/(?!\/)|#)/i.test(promotion.link_url.trim()) && (
+                    <a
+                      href={promotion.link_url.trim()}
+                      aria-label={`Lihat promosi: ${promotion.title}`}
+                      className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-500"
+                    />
+                  )}
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Filter Bar Controls */}
         <div className="relative bg-white/85 p-3 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-4 sm:mb-8 space-y-3 sm:space-y-4 backdrop-blur-xl">
