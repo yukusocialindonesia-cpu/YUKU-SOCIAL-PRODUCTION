@@ -3,6 +3,7 @@
  */
 
 export type AppRoute =
+  | '/prototype-beranda'
   | '/'
   | '/talent'
   | '/komunitas'
