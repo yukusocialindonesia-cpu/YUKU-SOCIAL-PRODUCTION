@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from './layouts/MainLayout';
 import { HomePage } from './pages/HomePage';
+import { MobileHomePrototypePage } from './pages/MobileHomePrototypePage';
 import { CommunityPage } from './pages/CommunityPage';
 import { BrowseTalentPage } from './pages/BrowseTalentPage';
 import { TalentDetailPage } from './pages/TalentDetailPage';
@@ -35,6 +36,7 @@ export default function App() {
     const pathname = window.location.pathname;
     const inviteParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     if (pathname === '/aktivasi-admin' || inviteParams.get('type') === 'invite') return '/aktivasi-admin';
+    if (pathname === '/prototype-beranda') return '/prototype-beranda';
     if (pathname === '/talent') return '/talent';
     if (pathname === '/komunitas') return '/komunitas';
     if (pathname.startsWith('/talent/')) return '/talent/:id';
@@ -185,6 +187,8 @@ export default function App() {
   // Render appropriate page view
   const renderCurrentPage = () => {
     switch (currentPath) {
+      case '/prototype-beranda':
+        return <MobileHomePrototypePage />;
       case '/':
         return <HomePage onNavigate={handleNavigate} />;
       case '/komunitas':
@@ -250,6 +254,8 @@ export default function App() {
         return <HomePage onNavigate={handleNavigate} />;
     }
   };
+
+  if (currentPath === '/prototype-beranda') return renderCurrentPage();
 
   return (
     <MainLayout currentPath={currentPath} onNavigate={handleNavigate}>
