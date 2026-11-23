@@ -187,16 +187,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                       onError={(event) => {
                         event.currentTarget.style.display = 'none';
                       }}
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-contain"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
-                    {promotion.title && (
-                      <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4 pt-10 sm:px-6 sm:pb-5">
-                        <h2 className="line-clamp-2 text-sm font-extrabold text-white drop-shadow sm:text-lg">
-                          {promotion.title}
-                        </h2>
-                      </div>
-                    )}
                     {canNavigate && (
                       <a
                         href={safeLink}
