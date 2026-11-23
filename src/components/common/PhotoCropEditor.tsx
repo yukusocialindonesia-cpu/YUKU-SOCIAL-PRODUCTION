@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Check, Minus, Plus, RotateCcw, X } from 'lucide-react';
 
 interface PhotoCropEditorProps {
@@ -110,9 +111,9 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-3 sm:p-5" role="dialog" aria-modal="true" aria-label={title}>
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/70 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:items-center sm:p-5" role="dialog" aria-modal="true" aria-label={title}>
+      <div className="my-auto max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-2rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
           <div><h2 className="text-sm font-bold text-slate-900">{title}</h2><p className="text-[11px] text-slate-500">Geser foto untuk mengatur posisi.</p></div>
           <button type="button" onClick={onCancel} disabled={busy} className="rounded-full p-2 text-slate-500 hover:bg-slate-100 disabled:opacity-50" aria-label="Tutup"><X className="h-5 w-5" /></button>
@@ -136,6 +137,7 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
           <button type="button" onClick={applyCrop} disabled={busy || !imageUrl} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-purple-700 px-4 text-sm font-bold text-white disabled:opacity-60">{busy ? 'Memproses...' : <><Check className="h-4 w-4" /> Gunakan Foto</>}</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
