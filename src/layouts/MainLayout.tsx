@@ -36,7 +36,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
       }`}
     >
       {/* Satu-satunya <header> aplikasi */}
-      <Navbar currentPath={currentPath} onNavigate={onNavigate} />
+      <div className={currentPath === '/talent' ? 'hidden md:block' : ''}>
+        <Navbar currentPath={currentPath} onNavigate={onNavigate} />
+      </div>
 
       <main className="flex-1">{children}</main>
 

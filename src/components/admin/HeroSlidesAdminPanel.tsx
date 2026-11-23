@@ -169,17 +169,16 @@ export const HeroSlidesAdminPanel: React.FC = () => {
       <form onSubmit={handleAdd} className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
         <div>
           <h3 className="font-extrabold text-slate-900 flex items-center gap-2">
-            <ImagePlus className="w-4 h-4 text-purple-700" /> Tambah Slide Hero
+            <ImagePlus className="w-4 h-4 text-purple-700" /> Upload Banner Beranda
           </h3>
           <p className="text-xs text-slate-500">
-            Gambar tampil di bagian paling atas Beranda dan berganti otomatis. Taruh objek utama di sisi kanan
-            gambar, karena sisi kiri tertutup teks &quot;Real Friends. Real Moments.&quot; dan kolom pencarian.
+            Khusus untuk halaman Beranda. Banner Beranda memakai pengaturan dan penyimpanan terpisah dari Banner Jelajah. Anda bisa unggah gambar desktop besar dan gambar mobile tersendiri; slide berganti otomatis. Taruh objek utama di sisi kanan gambar desktop karena sisi kiri tertutup teks dan kolom pencarian.
           </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-xs font-bold text-slate-700 space-y-1">
-            Gambar desktop (wajib) — disarankan 1920×800 px
+            Gambar Beranda desktop (wajib) — disarankan 1920×800 px
             <input
               type="file"
               accept="image/png,image/jpeg,image/webp"
@@ -188,7 +187,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
             />
           </label>
           <label className="block text-xs font-bold text-slate-700 space-y-1">
-            Gambar mobile (opsional) — disarankan 1200×750 px (16:10), wajah di tengah
+            Gambar Beranda mobile (opsional) — disarankan 1200×750 px (16:10), wajah di tengah
             <input
               type="file"
               accept="image/png,image/jpeg,image/webp"
@@ -245,7 +244,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
         <h3 className="font-extrabold text-slate-900">
-          Slide Saat Ini ({slides.filter((s) => s.is_active).length} aktif dari {slides.length})
+          Banner Beranda saat ini ({slides.filter((s) => s.is_active).length} aktif dari {slides.length})
         </h3>
         {loading ? (
           <p className="text-xs text-slate-500">Memuat…</p>
