@@ -133,6 +133,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     });
   }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
 
+  const hasAdvancedFilters = selectedActivity !== 'all' || selectedGender !== 'Semua' || selectedMode !== 'all';
+
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedActivity('all');
@@ -177,7 +179,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               const canNavigate = /^(https?:\/\/|\/(?!\/)|#)/i.test(safeLink);
               return (
                 <div className="relative w-full overflow-hidden rounded-2xl border border-purple-100 bg-purple-950 shadow-[0_10px_28px_rgba(76,29,149,0.14)]">
-                  <div className="relative aspect-[16/3] sm:aspect-[16/5] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700">
+                  <div className="relative aspect-[16/4] sm:aspect-[16/5] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700">
                     <img
                       key={promotion.id}
                       src={promotion.image_url}
@@ -240,11 +242,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="col-span-6 md:col-span-5 relative">
+            <div className="col-span-5 md:col-span-5 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Cari nama atau hobi..."
+                placeholder="Cari talent..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full min-h-10 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-2 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
@@ -252,7 +254,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Dynamic Regional Location Filter */}
-            <div className="col-span-4 md:col-span-4">
+            <div className="col-span-5 md:col-span-4">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
@@ -264,11 +266,12 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               type="button"
               onClick={() => setShowMoreFilters((open) => !open)}
               aria-expanded={showMoreFilters}
-              aria-label={showMoreFilters ? "Tutup filter lainnya" : "Buka filter lainnya"}
+              aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
               className="col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-xl border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
+              {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
             </button>
 
             {/* Reset Button */}
