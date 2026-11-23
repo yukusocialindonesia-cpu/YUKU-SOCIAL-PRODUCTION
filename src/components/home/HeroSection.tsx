@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-3 mt-1 h-[clamp(118px,34vw,140px)] sm:mx-4 sm:h-[220px] rounded-[20px] sm:rounded-[26px] overflow-hidden border border-white shadow-[0_16px_36px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.06)] ring-1 ring-purple-100/80 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-3 mt-1 h-[clamp(108px,29vw,128px)] sm:mx-4 sm:h-[220px] rounded-[20px] sm:rounded-[26px] overflow-hidden border border-white shadow-[0_16px_36px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.06)] ring-1 ring-purple-100/80 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
@@ -253,11 +253,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Konten tetap di depan slide */}
       <div
-        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-2 md:pt-16 md:pb-16"
+        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0.5 pb-1.5 md:pt-16 md:pb-16"
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1.5 text-[9px] font-extrabold uppercase tracking-[0.11em] text-purple-700">
+          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[9px] font-extrabold uppercase tracking-[0.11em] text-purple-700">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Social Experience & Paid Companionship</span>
           </p>
@@ -266,7 +266,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[1.55rem] leading-[1.04] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-1.5 md:mb-4">
+          <h1 className="text-[1.42rem] leading-[1.02] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
             <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
@@ -274,23 +274,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </span>
           </h1>
 
-          <p className="max-w-2xl text-[12px] leading-snug sm:text-base md:text-lg text-slate-700 leading-relaxed">
+          <p className="max-w-2xl text-[11.5px] leading-snug sm:text-base md:text-lg text-slate-700 leading-relaxed">
             Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
           </p>
         </div>
 
-        <div className="mt-2 md:mt-8 md:max-w-3xl pointer-events-auto">
+        <div className="mt-1.5 md:mt-8 md:max-w-3xl pointer-events-auto">
           <SearchActivityWidget onSearch={onSearch} />
           {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
-          <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[10px] leading-tight text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[9.5px] leading-tight text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Ruang publik & aman</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
             <button
               type="button"
               onClick={onRegisterCustomerClick}
-              className="basis-full mt-1 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2 md:py-1.5 rounded-full border border-purple-300 bg-white/90 hover:bg-white font-bold text-purple-800 hover:text-purple-950 shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="basis-full mt-0.5 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-1.5 md:py-1.5 rounded-full border border-purple-300 bg-white/90 hover:bg-white font-bold text-purple-800 hover:text-purple-950 shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
             >
               Daftar gratis
             </button>
