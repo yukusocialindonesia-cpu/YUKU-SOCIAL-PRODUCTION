@@ -100,6 +100,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
       case 'drawing':
         return <Palette {...iconProps} />;
       case 'heart':
+      case 'hearthandshake':
       case 'heartshake':
       case 'heartshakinghands':
       case 'companion':
