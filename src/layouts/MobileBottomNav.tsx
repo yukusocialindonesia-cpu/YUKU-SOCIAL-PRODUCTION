@@ -52,10 +52,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   ];
 
   const navShell =
-    'md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+6px)] z-40 mx-auto w-[calc(100%-20px)] max-w-[520px] rounded-[20px] border border-white/85 bg-white/90 px-1.5 py-1 shadow-[0_10px_28px_rgba(48,15,92,0.16)] backdrop-blur-2xl';
+    'md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+6px)] z-40 mx-auto w-[calc(100%-20px)] max-w-[520px] rounded-[20px] border border-white/85 bg-white/90 px-1.5 py-0.5 shadow-[0_10px_28px_rgba(48,15,92,0.16)] backdrop-blur-2xl';
 
   if (isAuthLoading) {
-    return <nav aria-hidden="true" className={navShell}><div className="grid h-[54px] grid-cols-5" /></nav>;
+    return <nav aria-hidden="true" className={navShell}><div className="grid h-[50px] grid-cols-5" /></nav>;
   }
 
   return (
@@ -72,11 +72,11 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
                 type="button"
                 onClick={item.onPress}
                 aria-current={active ? 'page' : undefined}
-                className={`group relative flex h-[54px] w-full flex-col items-center justify-center gap-1 rounded-[15px] px-0.5 text-[10px] font-semibold transition-colors active:scale-95 ${
+                className={`group relative flex h-[50px] w-full flex-col items-center justify-center gap-0.5 rounded-[15px] px-0.5 text-[9.5px] font-semibold transition-colors active:scale-95 ${
                   active ? 'bg-purple-50 text-purple-800' : 'text-slate-500 hover:bg-purple-50/70 hover:text-purple-700'
                 }`}
               >
-                <span className={`flex h-6 items-center justify-center ${active ? 'text-purple-700' : 'text-slate-500 group-hover:text-purple-700'}`}>
+                <span className={`flex h-5 items-center justify-center ${active ? 'text-purple-700' : 'text-slate-500 group-hover:text-purple-700'}`}>
                   {item.icon}
                 </span>
                 <span className="max-w-full truncate leading-none">{item.label}</span>
