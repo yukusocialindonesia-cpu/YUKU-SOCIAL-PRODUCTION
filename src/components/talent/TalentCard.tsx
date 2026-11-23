@@ -132,7 +132,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       className="group relative h-full min-w-0 bg-white/95 rounded-xl sm:rounded-[26px] overflow-hidden border border-white shadow-[0_8px_24px_rgba(76,29,149,0.09)] hover:shadow-[0_18px_38px_rgba(76,29,149,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100">
+      <div className="relative aspect-[5/4] sm:aspect-[4/5] w-full overflow-hidden bg-slate-100">
         {hasRealPhoto ? (
           <img
             src={talent.avatarUrl}
@@ -213,7 +213,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-3.5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
+      <div className="p-3.5 pt-3 max-sm:p-2 max-sm:pt-1.5 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 sm:gap-3">
           <h3 className="font-extrabold text-[#1E0938] text-[13px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
@@ -234,7 +234,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {talent.bio && (
-          <p className="mt-2 max-sm:mt-1 text-xs text-slate-600 line-clamp-2 leading-snug">{talent.bio}</p>
+          <p className="mt-2 max-sm:mt-0.5 text-xs text-slate-600 line-clamp-2 leading-snug">{talent.bio}</p>
         )}
 
         {talent.interests && talent.interests.length > 0 && (
@@ -250,7 +250,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           </div>
         )}
 
-        <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-1">
+        <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-0.5">
           <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
             {showPrice && <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
