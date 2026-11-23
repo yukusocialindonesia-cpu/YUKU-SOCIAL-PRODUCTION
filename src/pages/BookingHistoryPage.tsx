@@ -867,7 +867,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                     </div>
 {['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(item.status) && (
                       <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block font-semibold">
-                        Dana terlindungi di Escrow
+                        Pembayaran diproses melalui escrow YUKU
                       </span>
                     )}
                   </div>
