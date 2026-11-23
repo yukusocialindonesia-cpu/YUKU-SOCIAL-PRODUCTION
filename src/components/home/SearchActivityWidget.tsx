@@ -127,7 +127,7 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
           <button
             type="submit"
             disabled={loading}
-            className="w-full min-h-10 py-2 px-5 bg-gradient-to-r from-purple-800 via-purple-700 to-fuchsia-600 hover:from-purple-900 hover:to-fuchsia-700 text-white font-bold text-sm rounded-xl shadow-[0_8px_18px_rgba(109,40,217,0.24)] hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full min-h-10 md:min-h-11 py-2 md:py-3 px-5 bg-gradient-to-r from-purple-800 via-purple-700 to-fuchsia-600 hover:from-purple-900 hover:to-fuchsia-700 text-white font-bold text-sm rounded-xl shadow-[0_8px_18px_rgba(109,40,217,0.24)] hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <Search className="w-4 h-4" />
             <span>Cari Talent</span>
