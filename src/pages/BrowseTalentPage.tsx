@@ -24,6 +24,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
+  const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -69,6 +70,17 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (promotions.length < 2) {
+      setActivePromotionIndex(0);
+      return;
+    }
+    const timer = setInterval(() => {
+      setActivePromotionIndex((current) => (current + 1) % promotions.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [promotions.length]);
 
   useEffect(() => {
     setSelectedActivity(initialActivity);
@@ -155,45 +167,78 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
-        {/* Banner promosi aktif; katalog tetap tampil jika tidak ada promosi. */}
+        {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
           <section aria-label="Promosi YUKU" className="mb-4 sm:mb-7">
-            <div className="mb-2 flex items-center justify-between px-1">
-              <h2 className="text-xs font-extrabold uppercase tracking-[0.14em] text-purple-800">Info & Promosi</h2>
-              <span className="text-[10px] font-medium text-slate-500">Pilihan dari YUKU</span>
-            </div>
-            <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">
-              {promotions.map((promotion) => (
-                <article
-                  key={promotion.id}
-                  className="relative min-w-[82%] snap-start overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-[0_8px_24px_rgba(76,29,149,0.08)] sm:min-w-[48%] lg:min-w-[36%]"
-                >
-                  <div className="relative aspect-[16/7] bg-purple-50">
+            {(() => {
+              const promotion = promotions[activePromotionIndex] || promotions[0];
+              const safeLink = promotion.link_url?.trim() || '';
+              const canNavigate = /^(https?:\/\/|\/(?!\/)|#)/i.test(safeLink);
+              return (
+                <div className="relative w-full overflow-hidden rounded-2xl border border-purple-100 bg-purple-950 shadow-[0_10px_28px_rgba(76,29,149,0.14)]">
+                  <div className="relative aspect-[16/7] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700 sm:aspect-[16/5]">
                     <img
+                      key={promotion.id}
                       src={promotion.image_url}
                       alt={promotion.title || 'Promosi YUKU'}
-                      loading="lazy"
+                      loading="eager"
+                      decoding="async"
                       onError={(event) => {
                         event.currentTarget.style.display = 'none';
                       }}
-                      className="h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/75 to-transparent px-4 pb-3 pt-9">
-                      <h3 className="line-clamp-2 text-sm font-bold text-white drop-shadow sm:text-base">
-                        {promotion.title}
-                      </h3>
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
+                    {promotion.title && (
+                      <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4 pt-10 sm:px-6 sm:pb-5">
+                        <h2 className="line-clamp-2 text-sm font-extrabold text-white drop-shadow sm:text-lg">
+                          {promotion.title}
+                        </h2>
+                      </div>
+                    )}
+                    {canNavigate && (
+                      <a
+                        href={safeLink}
+                        aria-label={`Lihat promosi: ${promotion.title || 'YUKU'}`}
+                        className="absolute inset-0 z-[5] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
+                      />
+                    )}
+                    {promotions.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setActivePromotionIndex((current) => (current - 1 + promotions.length) % promotions.length)}
+                          aria-label="Promosi sebelumnya"
+                          className="absolute left-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:left-3 sm:h-10 sm:w-10"
+                        >
+                          ‹
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActivePromotionIndex((current) => (current + 1) % promotions.length)}
+                          aria-label="Promosi berikutnya"
+                          className="absolute right-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:right-3 sm:h-10 sm:w-10"
+                        >
+                          ›
+                        </button>
+                        <div className="absolute bottom-2 right-3 z-20 flex items-center gap-1.5 sm:bottom-3 sm:right-5">
+                          {promotions.map((item, index) => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => setActivePromotionIndex(index)}
+                              aria-label={`Tampilkan promosi ${index + 1}`}
+                              aria-current={index === activePromotionIndex ? 'true' : undefined}
+                              className={`h-1.5 rounded-full transition-all ${index === activePromotionIndex ? 'w-5 bg-white' : 'w-1.5 bg-white/60 hover:bg-white'}`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
-                  {promotion.link_url && /^(https?:\/\/|\/(?!\/)|#)/i.test(promotion.link_url.trim()) && (
-                    <a
-                      href={promotion.link_url.trim()}
-                      aria-label={`Lihat promosi: ${promotion.title}`}
-                      className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-500"
-                    />
-                  )}
-                </article>
-              ))}
-            </div>
+                </div>
+              );
+            })()}
           </section>
         )}
 
