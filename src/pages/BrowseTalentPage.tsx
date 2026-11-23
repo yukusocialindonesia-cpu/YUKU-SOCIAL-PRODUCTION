@@ -110,6 +110,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setSelectedMode('all');
   };
 
+  // Empat Talent pertama mendapat kartu foto ringkas; daftar berikutnya tetap memakai kartu standar.
+  const firstFourTalents = filteredTalents.slice(0, 4);
+  const remainingTalents = filteredTalents.slice(4);
+
   return (
     <div className="min-h-screen py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -281,16 +285,38 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </button>
           </div>
         ) : filteredTalents.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
-            {filteredTalents.map((talent) => (
-              <TalentCard
-                key={talent.id}
-                talent={talent}
-                priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
-                onSelect={(id) => onNavigate('/talent/:id', { id })}
-              />
-            ))}
-          </div>
+          <>
+            <section aria-label="Empat Talent pilihan pertama" className="space-y-2">
+              <div className="grid grid-cols-2 gap-2 sm:gap-5">
+                {firstFourTalents.map((talent) => (
+                  <TalentCard
+                    key={talent.id}
+                    talent={talent}
+                    compact
+                    showPrice={false}
+                    priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
+                    onSelect={(id) => onNavigate('/talent/:id', { id })}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {remainingTalents.length > 0 && (
+              <section aria-label="Talent lainnya" className="mt-5 space-y-3">
+                <h2 className="text-sm font-extrabold text-[#32134F] sm:text-lg">Temukan lebih banyak teman</h2>
+                <div className="grid grid-cols-2 gap-2 sm:gap-6 lg:grid-cols-3">
+                  {remainingTalents.map((talent) => (
+                    <TalentCard
+                      key={talent.id}
+                      talent={talent}
+                      priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
+                      onSelect={(id) => onNavigate('/talent/:id', { id })}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         ) : (
           <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
