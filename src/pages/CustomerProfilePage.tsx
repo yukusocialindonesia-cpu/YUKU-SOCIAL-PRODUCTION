@@ -16,6 +16,8 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 import { GenderType } from '../types/database';
+import { PhotoLightbox } from '../components/common/PhotoLightbox';
+import { PhotoCropEditor } from '../components/common/PhotoCropEditor';
 
 interface CustomerProfilePageProps {
   onNavigate: (path: AppRoute) => void;
@@ -48,6 +50,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   const [bio, setBio] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -132,7 +135,8 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
       event.target.value = '';
       return;
     }
-    setAvatarFile(file);
+    setPendingAvatarFile(file);
+    event.target.value = '';
   };
 
   const handleSave = async (event: React.FormEvent) => {
@@ -229,6 +233,8 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   const currentAvatar = avatarPreview || profile.avatar_url;
 
   return (
+    <>
+    {pendingAvatarFile && <PhotoCropEditor file={pendingAvatarFile} title="Atur Foto Profil" onCancel={() => setPendingAvatarFile(null)} onApply={(cropped) => { setAvatarFile(cropped); setPendingAvatarFile(null); }} />}
     <div className="min-h-[65vh] bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.72),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)] px-4 py-8 sm:py-12">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
@@ -245,7 +251,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
             <div className="relative shrink-0">
               <div className="w-24 h-24 rounded-full bg-purple-100 border-[5px] border-white shadow-[0_12px_28px_rgba(76,29,149,0.24)] ring-1 ring-violet-200 overflow-hidden flex items-center justify-center">
                 {currentAvatar ? (
-                  <img src={currentAvatar} alt="Foto profil Customer" className="w-full h-full object-cover" />
+                  <PhotoLightbox src={currentAvatar} alt="Foto profil Customer" className="h-full w-full" imageClassName="h-full w-full object-cover" />
                 ) : (
                   <UserRound className="w-10 h-10 text-purple-500" />
                 )}
@@ -329,5 +335,6 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
         </form>
       </div>
     </div>
+    </>
   );
 };
