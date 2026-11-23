@@ -58,7 +58,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               </span>
             </span>
             <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Teman Online</span>
-            <span className="mt-0.5 block min-h-7 text-[10.5px] sm:text-sm leading-relaxed text-slate-600">
+            <span className="mt-0.5 block min-h-7 sm:min-h-9 text-[10.5px] sm:text-sm leading-relaxed text-slate-600">
               Teman ngobrol dan berinteraksi dari mana saja.
             </span>
             <span className="mt-1.5 inline-flex items-center gap-1 text-[10.5px] sm:mt-3 sm:text-sm font-bold text-purple-700">
