@@ -31,7 +31,13 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
       onNavigate('/login');
       return;
     }
-    window.dispatchEvent(new CustomEvent('yuku:open-menu'));
+    if (role === 'admin') {
+      onNavigate('/admin');
+    } else if (role === 'talent') {
+      onNavigate('/dashboard-talent');
+    } else {
+      onNavigate('/profil-saya');
+    }
   };
 
   const items: NavEntry[] = [
