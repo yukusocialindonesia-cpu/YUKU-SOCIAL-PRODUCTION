@@ -12,16 +12,18 @@ import { AppRoute } from '../types/navigation';
 import { ActivityCategoryId } from '../types/talent';
 import { PromotionRow } from '../types/database';
 import { fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
+import { isDemoMode, demoPromotions } from '../utils/demoMode';
 
 interface HomePageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
-  const [promotions, setPromotions] = useState<PromotionRow[]>([]);
-  const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
+  const [promotions, setPromotions] = useState<PromotionRow[]>(isDemoMode ? demoPromotions : []);
+  const [isLoadingPromotions, setIsLoadingPromotions] = useState(!isDemoMode);
 
   useEffect(() => {
+    if (isDemoMode) return;
     let isMounted = true;
 
     async function loadPromotions() {
