@@ -231,7 +231,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (canAccess('booking')) tabs.push('bookings');
     if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
     if (canAccess('support')) tabs.push('customer_ktp', 'reports', 'community_moderation');
-    if (isSuperAdmin) tabs.push('overview', 'promos', 'hero', 'branding', 'admin_management');
+    if (isSuperAdmin) tabs.push('overview', 'hero', 'promos', 'branding', 'admin_management');
     return tabs;
   }, [adminAccess]);
 
@@ -1382,7 +1382,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             }`}
           >
             <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'hero' ? 'text-white' : 'text-fuchsia-600'}`} />
-            <span>Slide Hero</span>
+            <span>Banner Beranda</span>
           </button>
           )}
           {canAccess('finance') && (
@@ -2417,7 +2417,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               <span className="font-mono tabular-nums">Urutan: {poster.sort_order}</span>
                               <span aria-hidden="true">·</span>
                               <span className={poster.is_active ? 'text-emerald-700 font-semibold' : 'text-slate-500 font-semibold'}>
-                                {poster.is_active ? 'Tayang di Beranda' : 'Disembunyikan'}
+                                {poster.is_active ? 'Tayang di Jelajah' : 'Disembunyikan'}
                               </span>
                               {poster.link_url && (
                                 <>
