@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Coffee, ShoppingBag, Film, Sparkles, Users, MessageCircle, RefreshCw, AlertCircle } from 'lucide-react';
+import { Coffee, ShoppingBag, Film, Sparkles, Users, MessageCircle, Utensils, Gamepad2, Music2, Dumbbell, BookOpen, Camera, Plane, Footprints, Palette, HeartHandshake, RefreshCw, AlertCircle } from 'lucide-react';
 import { ActivityCategory, ActivityCategoryId } from '../../types/talent';
 import { fetchCategoriesFromSupabase } from '../../utils/supabaseMarketplace';
 
@@ -30,22 +30,83 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   }, []);
 
   const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Coffee':
+    // Normalize Supabase icon names so casing and separators do not affect matching.
+    const normalized = iconName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const iconClass = 'w-5 h-5';
+    const iconProps = { className: iconClass, strokeWidth: 2 };
+
+    switch (normalized) {
+      case 'coffee':
+      case 'cafe':
+      case 'kopi':
+        return <Coffee {...iconProps} />;
       case 'utensils':
-        return <Coffee className="w-5 h-5" />;
-      case 'ShoppingBag':
-        return <ShoppingBag className="w-5 h-5" />;
-      case 'Film':
-        return <Film className="w-5 h-5" />;
-      case 'Sparkles':
-        return <Sparkles className="w-5 h-5" />;
-      case 'Users':
-        return <Users className="w-5 h-5" />;
-      case 'MessageCircle':
-        return <MessageCircle className="w-5 h-5" />;
+      case 'food':
+      case 'restaurant':
+      case 'makan':
+      case 'kuliner':
+        return <Utensils {...iconProps} />;
+      case 'shoppingbag':
+      case 'shopping':
+      case 'belanja':
+        return <ShoppingBag {...iconProps} />;
+      case 'film':
+      case 'movie':
+      case 'cinema':
+      case 'nonton':
+        return <Film {...iconProps} />;
+      case 'users':
+      case 'friends':
+      case 'teman':
+      case 'sosial':
+        return <Users {...iconProps} />;
+      case 'messagecircle':
+      case 'chat':
+      case 'obrolan':
+        return <MessageCircle {...iconProps} />;
+      case 'gamepad':
+      case 'gamepad2':
+      case 'gaming':
+      case 'game':
+        return <Gamepad2 {...iconProps} />;
+      case 'music':
+      case 'music2':
+      case 'karaoke':
+        return <Music2 {...iconProps} />;
+      case 'dumbbell':
+      case 'fitness':
+      case 'sport':
+      case 'olahraga':
+        return <Dumbbell {...iconProps} />;
+      case 'book':
+      case 'bookopen':
+      case 'reading':
+      case 'belajar':
+        return <BookOpen {...iconProps} />;
+      case 'camera':
+      case 'photo':
+      case 'photography':
+        return <Camera {...iconProps} />;
+      case 'plane':
+      case 'travel':
+      case 'wisata':
+        return <Plane {...iconProps} />;
+      case 'footprints':
+      case 'walk':
+      case 'jalan':
+        return <Footprints {...iconProps} />;
+      case 'palette':
+      case 'art':
+      case 'drawing':
+        return <Palette {...iconProps} />;
+      case 'heart':
+      case 'heartshake':
+      case 'heartshakinghands':
+      case 'companion':
+        return <HeartHandshake {...iconProps} />;
+      case 'sparkles':
       default:
-        return <Coffee className="w-5 h-5" />;
+        return <Sparkles {...iconProps} />;
     }
   };
 
