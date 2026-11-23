@@ -3674,6 +3674,5 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         />
       )}
     </div>
-    </>
   );
 };
