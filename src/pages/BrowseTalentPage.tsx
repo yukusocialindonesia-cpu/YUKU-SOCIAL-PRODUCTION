@@ -25,6 +25,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -145,19 +146,19 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const remainingTalents = filteredTalents.slice(4);
 
   return (
-    <div className="min-h-screen py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen py-2 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
-        <section className="relative mb-4 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-4 py-4 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
+        <section className="relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
           <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-purple-200/30 blur-3xl" />
           <div className="relative max-w-3xl">
-            <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2.5 shadow-sm">
+            <span className="hidden sm:inline-flex items-center rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2.5 shadow-sm">
               {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
             </span>
-            <h1 className="text-[27px] leading-[1.12] sm:text-4xl font-extrabold text-[#1E0938] tracking-tight">
+            <h1 className="text-lg leading-tight sm:text-4xl font-extrabold text-[#1E0938] tracking-tight">
               {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="hidden sm:block mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
               {selectedMode === 'offline'
                 ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
                 : selectedMode === 'online'
@@ -169,14 +170,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
-          <section aria-label="Promosi YUKU" className="mb-4 sm:mb-7">
+          <section aria-label="Promosi YUKU" className="mb-2 sm:mb-7">
             {(() => {
               const promotion = promotions[activePromotionIndex] || promotions[0];
               const safeLink = promotion.link_url?.trim() || '';
               const canNavigate = /^(https?:\/\/|\/(?!\/)|#)/i.test(safeLink);
               return (
                 <div className="relative w-full overflow-hidden rounded-2xl border border-purple-100 bg-purple-950 shadow-[0_10px_28px_rgba(76,29,149,0.14)]">
-                  <div className="relative aspect-[16/7] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700 sm:aspect-[16/5]">
+                  <div className="relative aspect-[16/4] sm:aspect-[16/5] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700">
                     <img
                       key={promotion.id}
                       src={promotion.image_url}
@@ -243,9 +244,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         )}
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-3 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-4 sm:mb-8 space-y-3 sm:space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/85 p-2 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-3 sm:mb-8 space-y-2 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 sm:gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
             <div className="md:col-span-5 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -254,7 +255,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 placeholder="Cari nama, hobi (kopi, lari, seni), minat..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-11 sm:min-h-0 pl-9 pr-4 py-2.5 text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
+                className="w-full min-h-9 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-2 sm:py-2.5 text-xs sm:text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
               />
             </div>
 
@@ -268,7 +269,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Reset Button */}
-            <div className="md:col-span-3 flex items-center justify-end">
+            <div className="hidden md:flex md:col-span-3 items-center justify-end">
               <button
                 type="button"
                 onClick={handleResetFilters}
@@ -280,6 +281,16 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
           </div>
 
+          <button
+            type="button"
+            onClick={() => setShowMoreFilters((open) => !open)}
+            aria-expanded={showMoreFilters}
+            className="md:hidden flex min-h-9 w-full items-center justify-between rounded-xl border border-purple-100 bg-purple-50/70 px-3 text-[11px] font-bold text-purple-800"
+          >
+            <span>Filter aktivitas & lainnya</span>
+            <span>{showMoreFilters ? "Tutup −" : "Buka +"}</span>
+          </button>
+          <div className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
           {/* Row 2: Activity Categories Buttons */}
           <div className="pt-3 sm:pt-4 border-t border-purple-100/80">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
@@ -365,6 +376,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <div className="text-slate-500 font-medium tabular-nums">
               Menampilkan <strong>{filteredTalents.length}</strong> Talent
             </div>
+          </div>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="md:hidden min-h-9 w-full rounded-xl border border-purple-100 bg-white px-3 text-[11px] font-semibold text-slate-600"
+            >
+              Reset semua filter
+            </button>
           </div>
         </div>
 
