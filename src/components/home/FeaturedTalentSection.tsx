@@ -81,15 +81,15 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section className="relative py-3 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
+    <section className="relative py-2 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
+        <div className="flex items-end justify-between mb-1 md:mb-7 gap-2 md:gap-4">
           <div>
             <span className="text-[10.5px] sm:text-xs font-bold text-purple-700 tracking-wider uppercase mb-0.5 sm:mb-1 block">
               Temukan teman untuk aktivitasmu
             </span>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-[19px] sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Talent Pilihan YUKU
             </h2>
           </div>
@@ -112,7 +112,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {loading ? (
           <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[420px] w-[76vw] max-w-[300px] shrink-0 rounded-2xl bg-slate-200 animate-pulse sm:h-80 sm:w-[260px]" />
+              <div key={i} className="h-[360px] w-[72vw] max-w-[270px] shrink-0 rounded-2xl bg-slate-200 animate-pulse sm:h-80 sm:w-[260px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -170,7 +170,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[76vw] max-w-[300px] sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[72vw] max-w-[270px] sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
