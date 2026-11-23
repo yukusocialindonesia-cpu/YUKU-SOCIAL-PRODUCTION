@@ -170,6 +170,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
+        <div className="sticky top-0 z-40 -mx-4 bg-[#FAF8FC]/95 px-4 pb-2 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
           <section aria-label="Promosi YUKU" className="mb-2 sm:mb-7">
@@ -379,6 +380,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               Reset semua filter
             </button>
           </div>
+        </div>
+
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
