@@ -184,7 +184,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                       </h3>
                     </div>
                   </div>
-                  {promotion.link_url && /^(https?:\\/\\/|\\/(?!\\/)|#)/i.test(promotion.link_url.trim()) && (
+                  {promotion.link_url && /^(https?:\/\/|\/(?!\/)|#)/i.test(promotion.link_url.trim()) && (
                     <a
                       href={promotion.link_url.trim()}
                       aria-label={`Lihat promosi: ${promotion.title}`}
