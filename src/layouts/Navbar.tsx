@@ -80,9 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-8 h-16 xl:h-18">
+          <div className="flex items-center justify-between gap-8 h-[52px] sm:h-16 xl:h-18">
             <div className="shrink-0 flex items-center">
-              <BrandLogo size="md" showTagline={false} className="[&>img]:h-11 xl:[&>img]:h-14" onClick={() => onNavigate('/')} />
+              <BrandLogo size="md" showTagline={false} className="[&>img]:h-8 md:[&>img]:h-11 xl:[&>img]:h-14" onClick={() => onNavigate('/')} />
             </div>
           </div>
         </div>
@@ -94,13 +94,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     <header className="sticky top-0 xl:top-3 z-40 bg-white/95 xl:bg-white/80 backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
-        <div className="flex items-center justify-between gap-8 h-16 xl:h-18">
+        <div className="flex items-center justify-between gap-8 h-[52px] sm:h-16 xl:h-18">
           {/* Zone 1: Single Brand Element */}
           <div className="shrink-0 flex items-center">
             <BrandLogo
               size="md"
               showTagline={false}
-              className="[&>img]:h-11 xl:[&>img]:h-14"
+              className="[&>img]:h-8 md:[&>img]:h-11 xl:[&>img]:h-14"
               onClick={() => handleLinkClick('/')}
             />
           </div>
@@ -300,12 +300,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className="p-2.5 rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
+              className="p-1.5 sm:p-2.5 rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="yuku-mobile-navigation"
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
             </div>
           </div>
@@ -316,7 +316,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
       {isMobileMenuOpen && (
         <div
           id="yuku-mobile-navigation"
-          className="xl:hidden border-t border-purple-100/70 bg-white/90 backdrop-blur-2xl px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-4.5rem-4rem)] md:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
+          className="xl:hidden border-t border-purple-100/70 bg-white/90 backdrop-blur-2xl px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem)] md:max-h-[calc(100dvh-3.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
         >
           {currentUser && (
             <div className="mb-4 p-3.5 bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 rounded-2xl flex items-center justify-between border border-purple-100/80 shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]">
