@@ -7,6 +7,7 @@ import { AppRoute } from '../types/navigation';
 import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
 import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
+import { demoCategories, demoPromotions, demoTalents, isDemoMode } from '../utils/demoMode';
 
 interface BrowseTalentPageProps {
   initialActivity?: string;
@@ -21,14 +22,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   initialMode = 'all',
   onNavigate,
 }) => {
-  const [talents, setTalents] = useState<TalentProfile[]>([]);
-  const [categories, setCategories] = useState<ActivityCategory[]>([]);
-  const [promotions, setPromotions] = useState<PromotionRow[]>([]);
+  const [talents, setTalents] = useState<TalentProfile[]>(isDemoMode ? demoTalents : []);
+  const [categories, setCategories] = useState<ActivityCategory[]>(isDemoMode ? demoCategories : []);
+  const [promotions, setPromotions] = useState<PromotionRow[]>(isDemoMode ? demoPromotions : []);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [mobilePinnedHeight, setMobilePinnedHeight] = useState(0);
   const mobilePinnedRef = useRef<HTMLDivElement | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isDemoMode);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +39,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
 
   const loadMarketplaceData = async () => {
+    if (isDemoMode) { setTalents(demoTalents); setCategories(demoCategories); setLoading(false); return; }
     setLoading(true);
     setErrorMsg(null);
     try {
@@ -55,6 +57,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   useEffect(() => {
+    if (isDemoMode) return;
     loadMarketplaceData();
   }, []);
 
@@ -75,6 +78,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
   // Promosi dimuat terpisah agar gangguan tabel promosi tidak menghambat katalog Talent.
   useEffect(() => {
+    if (isDemoMode) return;
     let isMounted = true;
     fetchPromotionsFromSupabase()
       .then((items) => {
