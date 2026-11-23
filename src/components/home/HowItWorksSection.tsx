@@ -17,7 +17,7 @@ interface HowItWorksSectionProps {
 
 export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMoreClick }) => {
   return (
-    <section className="py-4 md:py-16 bg-[#F7F5FA]">
+    <section className="py-4 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10">
           {/* Cara Kerja */}
