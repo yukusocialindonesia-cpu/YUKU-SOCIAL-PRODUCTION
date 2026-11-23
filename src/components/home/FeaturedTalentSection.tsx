@@ -11,6 +11,7 @@ import {
 } from '../talent/TalentQuickFilter';
 import { fetchTalentsFromSupabase } from '../../utils/supabaseMarketplace';
 import { supabase } from '../../lib/supabase';
+import { demoTalents, isDemoMode } from '../../utils/demoMode';
 
 interface FeaturedTalentSectionProps {
   onSelectTalent: (talentId: string) => void;
@@ -21,9 +22,9 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   onSelectTalent,
   onViewAllClick,
 }) => {
-  const [talents, setTalents] = useState<TalentProfile[]>([]);
+  const [talents, setTalents] = useState<TalentProfile[]>(isDemoMode ? demoTalents : []);
   const [mediaTypesByTalent, setMediaTypesByTalent] = useState<Record<string, string[]>>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isDemoMode);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const reduceMotion = useReducedMotion();
@@ -36,6 +37,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const { availableTodayIds, todayReady } = useAvailableTodayIds(talents);
 
   const loadFeaturedTalents = async () => {
+    if (isDemoMode) { setTalents(demoTalents); setMediaTypesByTalent({}); setLoading(false); return; }
     setLoading(true);
     setErrorMsg(null);
     try {
@@ -74,6 +76,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   };
 
   useEffect(() => {
+    if (isDemoMode) return;
     loadFeaturedTalents();
   }, []);
 
