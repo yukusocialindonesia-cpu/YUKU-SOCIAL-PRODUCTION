@@ -113,27 +113,30 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   return (
     <div className="min-h-screen py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb / Title */}
-        <div className="mb-7 sm:mb-8">
-          <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/75 px-3 py-1 text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-3 shadow-sm backdrop-blur-md">
-            {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1E0938] tracking-tight drop-shadow-[0_2px_12px_rgba(76,29,149,0.08)]">
-            {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
-          </h1>
-          <p className="text-sm text-slate-600 mt-1">
-            {selectedMode === 'offline'
-              ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
-              : selectedMode === 'online'
-                ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
-                : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
-          </p>
-        </div>
+        {/* Header Jelajah */}
+        <section className="relative mb-4 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-4 py-4 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
+          <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-purple-200/30 blur-3xl" />
+          <div className="relative max-w-3xl">
+            <span className="inline-flex items-center rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2.5 shadow-sm">
+              {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
+            </span>
+            <h1 className="text-[27px] leading-[1.12] sm:text-4xl font-extrabold text-[#1E0938] tracking-tight">
+              {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
+            </h1>
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {selectedMode === 'offline'
+                ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
+                : selectedMode === 'online'
+                  ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
+                  : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
+            </p>
+          </div>
+        </section>
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-4 sm:p-5 rounded-[26px] border border-white/90 shadow-[0_16px_42px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 mb-8 space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/85 p-3 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-4 sm:mb-8 space-y-3 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 sm:gap-3">
             {/* Search Input */}
             <div className="md:col-span-5 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -142,7 +145,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 placeholder="Cari nama, hobi (kopi, lari, seni), minat..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-11 sm:min-h-0 pl-9 pr-4 py-2.5 text-base sm:text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
+                className="w-full min-h-11 sm:min-h-0 pl-9 pr-4 py-2.5 text-sm bg-white/85 border border-white rounded-xl shadow-inner ring-1 ring-purple-100/80 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all"
               />
             </div>
 
@@ -169,7 +172,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-4 border-t border-purple-100/80">
+          <div className="pt-3 sm:pt-4 border-t border-purple-100/80">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
               Kategori Aktivitas:
             </span>
@@ -203,7 +206,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
+          <div className="pt-3 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
             {/* Gender Segmented */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Gender:</span>
@@ -251,7 +254,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             <div className="text-slate-500 font-medium tabular-nums">
-              Menampilkan <strong>{filteredTalents.length}</strong> Talent terverifikasi
+              Menampilkan <strong>{filteredTalents.length}</strong> Talent
             </div>
           </div>
         </div>
