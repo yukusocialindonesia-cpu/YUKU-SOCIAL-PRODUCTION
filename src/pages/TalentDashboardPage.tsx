@@ -48,6 +48,7 @@ import { formatRupiah } from '../utils/formatters';
 import { YUKU_BUSINESS_RULES } from '../utils/businessRules';
 import { INDONESIA_CITIES } from '../utils/cities';
 import { Modal } from '../components/common/Modal';
+import { PhotoCropEditor } from '../components/common/PhotoCropEditor';
 import { BookingChatModal } from '../components/chat/BookingChatModal';
 import { ReportCategory, TalentAvailabilityRow, TalentMediaRow, TalentMediaType } from '../types/database';
 import {
@@ -272,6 +273,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [profileAvatarFile, setProfileAvatarFile] = useState<File | null>(null);
+  const [pendingProfileAvatarFile, setPendingProfileAvatarFile] = useState<File | null>(null);
+  const [pendingGalleryPhotoFile, setPendingGalleryPhotoFile] = useState<File | null>(null);
   const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
   // Incident Report Modal States
@@ -1489,6 +1492,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
   return (
     <div className="relative isolate py-4 sm:py-8 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.34),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F6F3FA_100%)] min-h-screen overflow-x-hidden">
+      {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
+      {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-4 sm:space-y-6 min-w-0">
         {/* Top Notification Alerts */}
         {errorMessage && (
@@ -2630,7 +2635,12 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                         }
                         onChange={(e) => {
                           const selected = e.target.files?.[0] ?? null;
-                          setMediaFile(selected);
+                          if (selected && mediaType === 'photo') {
+                            setPendingGalleryPhotoFile(selected);
+                            e.target.value = '';
+                          } else {
+                            setMediaFile(selected);
+                          }
                           if (selected && mediaType === 'voice') {
                             handleClearRecordedVoice();
                           }
@@ -3421,7 +3431,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              onChange={(e) => setProfileAvatarFile(e.target.files?.[0] || null)}
+              onChange={(e) => { const selected = e.target.files?.[0] || null; if (selected) setPendingProfileAvatarFile(selected); e.target.value = ''; }}
               className="w-full min-w-0 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
             />
             {profileAvatarFile && (
