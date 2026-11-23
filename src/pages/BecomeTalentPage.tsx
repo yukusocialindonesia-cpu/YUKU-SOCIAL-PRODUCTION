@@ -26,6 +26,7 @@ import { fetchCategoriesFromSupabase } from '../utils/supabaseMarketplace';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { INDONESIA_CITIES } from '../utils/cities';
+import { PhotoCropEditor } from '../components/common/PhotoCropEditor';
 
 interface BecomeTalentPageProps {
   onNavigate: (path: AppRoute) => void;
@@ -59,6 +60,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
 
   const [ktpFile, setKtpFile] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -441,6 +443,8 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
   };
 
   return (
+    <>
+      {pendingAvatarFile && <PhotoCropEditor file={pendingAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingAvatarFile(null)} onApply={(cropped) => { setAvatarFile(cropped); setPendingAvatarFile(null); }} />}
     <div className="relative isolate overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100 via-[#FAF8FC] to-fuchsia-50 py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -812,7 +816,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
                         <input
                           type="file"
                           accept="image/jpeg,image/png,image/webp"
-                          onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
+                          onChange={(e) => { const selected = e.target.files?.[0] || null; if (selected) setPendingAvatarFile(selected); e.target.value = ''; }}
                           className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
                         />
                       </div>
@@ -1033,5 +1037,6 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
         </div>
       </div>
     </div>
+    </>
   );
 };
