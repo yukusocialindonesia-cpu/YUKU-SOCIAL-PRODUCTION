@@ -99,10 +99,10 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
             {categories.map((cat, idx) => {
               const tones = [
                 'bg-purple-100 text-[#7138C8]',
-                'bg-purple-100 text-[#7138C8]',
-                'bg-purple-100 text-[#7138C8]',
-                'bg-purple-100 text-[#7138C8]',
-                'bg-purple-100 text-[#7138C8]',
+                'bg-rose-50 text-[#B83E72]',
+                'bg-amber-50 text-[#8A6426]',
+                'bg-violet-100 text-[#5E3A91]',
+                'bg-slate-100 text-[#514366]',
                 'bg-purple-100 text-[#7138C8]',
               ];
               return (
