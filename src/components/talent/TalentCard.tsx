@@ -11,6 +11,7 @@ interface TalentCardProps {
   mediaTypes?: string[];
   priceMode?: 'online' | 'offline' | 'all';
   showPrice?: boolean;
+  compact?: boolean;
 }
 
 // Foto stok bawaan lama dianggap "belum ada foto", supaya kartu tidak terlihat kembar.
@@ -36,7 +37,7 @@ function initialsOf(name: string): string {
   return letters.toUpperCase();
 }
 
-export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true }) => {
+export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availableToday, mediaTypes = [], priceMode = 'all', showPrice = true, compact = false }) => {
   const [imageFailed, setImageFailed] = useState(false);
 
   const hasVoice = mediaTypes.includes('voice');
@@ -59,6 +60,72 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
     Number.isFinite(registeredAt) &&
     ageSinceRegistration >= 0 &&
     ageSinceRegistration < 7 * 24 * 60 * 60 * 1000;
+
+  if (compact) {
+    return (
+      <article
+        onClick={() => onSelect(talent.id)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onSelect(talent.id);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={`Lihat profil ${talent.name}`}
+        className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.12)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+      >
+        <div className="relative h-[clamp(210px,30vh,240px)] w-full overflow-hidden bg-purple-100">
+          {hasRealPhoto ? (
+            <img
+              src={talent.avatarUrl}
+              alt={`Foto profil ${talent.name}`}
+              className="h-full w-full object-cover object-[50%_25%] transition-transform duration-300 group-hover:scale-[1.03]"
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${pickGradient(talent.id)}`}>
+              <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
+            </div>
+          )}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+          {isNew && (
+            <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2 py-1 text-[9px] font-extrabold text-amber-950 shadow">
+              BARU
+            </span>
+          )}
+          {talent.isVerified === true && (
+            <span className="absolute right-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[9px] font-bold text-purple-800 shadow">
+              <VerifiedBadge />
+            </span>
+          )}
+          <div className="absolute inset-x-2 bottom-2 text-white">
+            <div className="flex items-center justify-between gap-1">
+              <h3 className="min-w-0 truncate text-[12px] font-extrabold leading-tight drop-shadow">
+                {talent.name}{talent.age ? `, ${talent.age}` : ''}
+              </h3>
+              {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
+                <span className="inline-flex shrink-0 items-center gap-0.5 text-[10px] font-bold drop-shadow">
+                  <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
+                  {talent.rating.toFixed(1)}
+                </span>
+              )}
+            </div>
+            {talent.city && (
+              <p className="mt-1 flex items-center gap-1 truncate text-[10px] font-medium text-white/90">
+                <MapPin className="h-3 w-3 shrink-0" />
+                {talent.city}
+              </p>
+            )}
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article
