@@ -104,7 +104,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               <h3 className="min-w-0 truncate text-[12px] font-extrabold leading-tight drop-shadow">
                 {talent.name}
               </h3>
-              {talent.isVerified === true && <VerifiedBadge className="ring-2 ring-white/90" />}
+              {talent.isVerified === true && <VerifiedBadge />}
               {talent.age && <span className="shrink-0 text-[10px] font-semibold text-white/90">, {talent.age}</span>}
             </div>
               {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
