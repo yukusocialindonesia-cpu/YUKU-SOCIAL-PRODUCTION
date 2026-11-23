@@ -17,7 +17,7 @@ export const SafetySection: React.FC = () => {
             Keamanan, Privasi & Batasan Etika yang Tegas
           </h2>
           <p className="text-purple-200/80 text-xs sm:text-base leading-relaxed">
-            YUKU didesain sejak awal dengan perlindungan ganda. Kami menciptakan ruang aman di mana setiap orang dapat memperluas pergaulan sosial tanpa rasa khawatir.
+            YUKU menggabungkan verifikasi identitas, aturan layanan, dan fitur pelaporan untuk membantu menjaga pengalaman sosial yang bertanggung jawab.
           </p>
         </div>
 
@@ -30,15 +30,15 @@ export const SafetySection: React.FC = () => {
                 <Ban className="w-6 h-6" />
               </div>
               <h3 className="text-base md:text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
-                Bukan Layanan Kencan & Bukan Prostitusi
+                Layanan Pertemanan Non-Dating
               </h3>
               <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
-                YUKU secara tegas melarang segala bentuk permintaan bernuansa asmara, rayuan sensual, atau layanan seksual. Pelanggaran terhadap aturan ini berakibat sanksi blokir permanen dan tindakan hukum.
+                YUKU bukan layanan kencan atau seksual. Permintaan bernuansa seksual, pelecehan, dan aktivitas yang melanggar hukum dilarang. Pelanggaran dapat ditindak sesuai kebijakan komunitas, termasuk pembatasan atau pemblokiran akun.
               </p>
             </div>
             <div className="text-[11px] font-semibold text-pink-300 flex items-center gap-1.5 pt-3 border-t border-purple-900/60">
               <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>Zero-Tolerance Policy</span>
+              <span>Aturan komunitas berlaku</span>
             </div>
           </div>
 
@@ -49,15 +49,15 @@ export const SafetySection: React.FC = () => {
                 <FileCheck className="w-6 h-6" />
               </div>
               <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
-                Verifikasi Usia Wajib 18+ (KTP)
+                Verifikasi Identitas & Usia 18+
               </h3>
               <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
-                Baik Customer maupun Talent wajib melalui proses validasi identitas resmi. Kami menjamin tidak ada pengguna di bawah umur demi menjaga keamanan hukum dan etika sosial.
+                Customer wajib menyelesaikan verifikasi e-KTP dan usia sebelum dapat melakukan booking. Talent yang tampil juga harus lolos verifikasi identitas, usia, dan persetujuan YUKU.
               </p>
             </div>
             <div className="text-[11px] font-semibold text-amber-300 flex items-center gap-1.5 pt-3 border-t border-purple-900/60">
               <Lock className="w-4 h-4 shrink-0" />
-              <span>Data Identitas Terenkripsi</span>
+              <span>Enkripsi data saat tersimpan & dikirim</span>
             </div>
           </div>
 
@@ -68,15 +68,15 @@ export const SafetySection: React.FC = () => {
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h3 className="text-base md:text-lg font-bold text-white mb-1.5 md:mb-2">
-                Zona Publik & Pusat Bantuan
+                Pertemuan Offline di Ruang Publik
               </h3>
               <p className="text-xs md:text-xs text-purple-200/80 leading-relaxed mb-2 md:mb-4">
-                Pertemuan langsung hanya diizinkan di fasilitas umum beramai-ramai seperti kafe, restoran, mall, atau gedung pertemuan. Dilarang keras bertemu di kamar hotel atau kediaman pribadi tertutup.
+                Untuk aktivitas offline, pilih tempat umum yang ramai seperti kafe, restoran, mall, atau gedung pertemuan. Hindari pertemuan di ruang privat dan laporkan kendala melalui riwayat booking.
               </p>
             </div>
             <div className="text-[11px] font-semibold text-emerald-300 flex items-center gap-1.5 pt-3 border-t border-purple-900/60">
               <PhoneCall className="w-4 h-4 shrink-0" />
-              <span>Dukungan Laporan Insiden Cepat</span>
+              <span>Fitur pelaporan tersedia di riwayat booking</span>
             </div>
           </div>
         </div>
