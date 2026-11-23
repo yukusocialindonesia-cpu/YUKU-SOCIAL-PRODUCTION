@@ -1211,6 +1211,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-4 justify-items-center gap-x-2 gap-y-3 rounded-[28px] border border-white/90 bg-white/70 p-3 shadow-[0_18px_42px_-24px_rgba(76,29,149,0.24)] ring-1 ring-violet-100/80 backdrop-blur-2xl sm:grid-cols-5 sm:gap-3 sm:p-4">
           {isSuperAdmin && (
           <button
+            onClick={() => setActiveTab('promos')}
+            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+              activeTab === 'promos' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
+            }`}
+          >
+            <Megaphone className={`w-3.5 h-3.5 ${activeTab === 'promos' ? 'text-white' : 'text-amber-600'}`} />
+            <span>Banner Jelajah ({promoPosters.filter((p) => p.is_active).length})</span>
+          </button>
+          )}
+          {isSuperAdmin && (
+          <button
             onClick={() => setActiveTab('overview')}
             className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'overview' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
           >
@@ -1313,17 +1324,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           >
             <CreditCard className={`w-3.5 h-3.5 ${activeTab === 'qris' ? 'text-white' : 'text-emerald-600'}`} />
             <span>QRIS & Verifikasi</span>
-          </button>
-          )}
-          {isSuperAdmin && (
-          <button
-            onClick={() => setActiveTab('promos')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
-              activeTab === 'promos' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
-            }`}
-          >
-            <Megaphone className={`w-3.5 h-3.5 ${activeTab === 'promos' ? 'text-white' : 'text-amber-600'}`} />
-            <span>Banner Jelajah ({promoPosters.filter((p) => p.is_active).length})</span>
           </button>
           )}
           {isSuperAdmin && (
