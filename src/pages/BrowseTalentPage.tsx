@@ -150,7 +150,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     });
   }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
 
-  const hasAdvancedFilters = selectedActivity !== 'all' || selectedGender !== 'Semua' || selectedMode !== 'all';
+  const hasAdvancedFilters = selectedActivity !== 'all' || selectedCity !== 'Semua Kota' || selectedGender !== 'Semua' || selectedMode !== 'all' || searchQuery.trim().length > 0;
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -262,11 +262,12 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="col-span-5 md:col-span-5 relative">
+            <div className="col-span-5 md:col-span-5 relative min-w-0">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Cari talent..."
+                aria-label="Cari talent berdasarkan nama atau minat"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full min-h-10 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-2 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
@@ -274,7 +275,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Dynamic Regional Location Filter */}
-            <div className="col-span-5 md:col-span-4">
+            <div className="col-span-5 md:col-span-4 min-w-0">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
@@ -286,6 +287,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               type="button"
               onClick={() => setShowMoreFilters((open) => !open)}
               aria-expanded={showMoreFilters}
+              aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
               className="relative col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-xl border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
@@ -307,9 +309,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
           </div>
 
-          <div className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
+          <div id="jelajah-advanced-filters" className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
           {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-3 sm:pt-4 border-t border-purple-100/80">
+          <div className="pt-2 sm:pt-4 border-t border-purple-100/80">
             <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
               <button
                 type="button"
@@ -340,7 +342,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-3 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs">
+          <div className="pt-2 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-xs">
             {/* Gender Segmented */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Gender:</span>
@@ -405,7 +407,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-2 flex items-center justify-between">
+        <div className="sm:hidden mb-3 flex items-center justify-between">
           <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Jelajahi Talent</h2>
           <span className="text-[10px] font-medium text-slate-500">{filteredTalents.length} tersedia</span>
         </div>
