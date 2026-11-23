@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { isDemoMode } from '../utils/demoMode';
 
 export type UserRole = 'admin' | 'talent' | 'customer';
 export type AdminPermission = 'talent' | 'booking' | 'finance' | 'support';
@@ -128,6 +129,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
+    if (isDemoMode) {
+      setUser(null);
+      setRole(null);
+      setAdminAccess(null);
+      setIsAuthLoading(false);
+      return;
+    }
+
     let isMounted = true;
 
     // Pemulihan awal dari localStorage.
@@ -174,11 +183,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [applySession]);
 
   const signOut = useCallback(async () => {
+    if (isDemoMode) return;
     await supabase.auth.signOut();
     await applySession(null);
   }, [applySession]);
 
   const refreshRole = useCallback(async () => {
+    if (isDemoMode) return;
     const { data: { session } } = await supabase.auth.getSession();
     await applySession(session?.user ?? null, true);
   }, [applySession]);
