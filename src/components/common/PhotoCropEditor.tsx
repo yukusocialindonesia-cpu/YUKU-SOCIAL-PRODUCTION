@@ -112,8 +112,8 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/70 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:items-center sm:p-5" role="dialog" aria-modal="true" aria-label={title}>
-      <div className="my-auto max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-2rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white shadow-2xl">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/70 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[calc(env(safe-area-inset-bottom)+6rem)] sm:items-center sm:p-5" role="dialog" aria-modal="true" aria-label={title}>
+      <div className="my-auto max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-7rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
           <div><h2 className="text-sm font-bold text-slate-900">{title}</h2><p className="text-[11px] text-slate-500">Geser foto untuk mengatur posisi.</p></div>
           <button type="button" onClick={onCancel} disabled={busy} className="rounded-full p-2 text-slate-500 hover:bg-slate-100 disabled:opacity-50" aria-label="Tutup"><X className="h-5 w-5" /></button>
@@ -132,7 +132,7 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
           <p className="mt-2 text-center text-[11px] text-slate-300">Zoom {Math.round(zoom * 100)}% · Geser dengan jari atau mouse</p>
           {error && <p role="alert" className="mx-auto mt-3 max-w-[320px] text-center text-xs text-rose-300">{error}</p>}
         </div>
-        <div className="flex gap-2 p-4">
+        <div className="sticky bottom-0 z-10 flex gap-2 border-t border-slate-100 bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-8px_18px_rgba(15,23,42,0.06)]">
           <button type="button" onClick={onCancel} disabled={busy} className="min-h-11 flex-1 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 disabled:opacity-60">Batal</button>
           <button type="button" onClick={applyCrop} disabled={busy || !imageUrl} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-purple-700 px-4 text-sm font-bold text-white disabled:opacity-60">{busy ? 'Memproses...' : <><Check className="h-4 w-4" /> Gunakan Foto</>}</button>
         </div>
