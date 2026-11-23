@@ -192,7 +192,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
-          <section aria-label="Promosi YUKU" className="mb-2 sm:mb-7">
+          <section aria-label="Promosi YUKU" className="mb-1 sm:mb-7">
             {(() => {
               const promotion = promotions[activePromotionIndex] || promotions[0];
               const safeLink = promotion.link_url?.trim() || '';
@@ -258,7 +258,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         )}
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-2 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-3 sm:mb-8 space-y-2 sm:space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/85 p-1.5 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-3 sm:mb-8 space-y-2 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
