@@ -1,0 +1,48 @@
+name: Homepage preview deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.*"
+      - "wrangler.toml"
+      - ".github/workflows/homepage-preview-deploy.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yuku-homepage-preview
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    if: github.event.pull_request.head.ref == 'prototype/homepage-mobile-sticky-header'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out prototype branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build website
+        run: npm run build
+      - name: Deploy isolated Cloudflare preview Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --name yuku-friends-preview
