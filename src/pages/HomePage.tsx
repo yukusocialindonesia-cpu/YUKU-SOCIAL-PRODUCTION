@@ -62,7 +62,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
+    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F7F5FA]">
       {/* 2. Hero Section with Tagline ("Real Friends. Real Moments.") & 3. Tombol Jelajahi Talent */}
       {/* 4. Pencarian berdasarkan aktivitas dan lokasi */}
       <HeroSection
