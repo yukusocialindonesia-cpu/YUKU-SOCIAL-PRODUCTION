@@ -80,9 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-8 h-16 sm:h-16 xl:h-18">
+          <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-[60px] min-[431px]:h-16 lg:h-[72px] min-[1440px]:h-[76px]">
             <div className="shrink-0 flex items-center">
-              <BrandLogo size="md" showTagline={false} className="[&>img]:h-14 md:[&>img]:h-14 xl:[&>img]:h-16" onClick={() => onNavigate('/')} />
+              <BrandLogo size="md" showTagline={false} className="[&>img]:h-10 min-[376px]:[&>img]:h-11 min-[431px]:[&>img]:h-12 lg:[&>img]:h-14 min-[1440px]:[&>img]:h-[60px]" onClick={() => onNavigate('/')} />
             </div>
           </div>
         </div>
@@ -94,13 +94,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     <header className="sticky top-0 xl:top-3 z-40 bg-white/95 xl:bg-white/80 backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
-        <div className="flex items-center justify-between gap-8 h-16 sm:h-16 xl:h-18">
+        <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-[60px] min-[431px]:h-16 lg:h-[72px] min-[1440px]:h-[76px]">
           {/* Zone 1: Single Brand Element */}
           <div className="shrink-0 flex items-center">
             <BrandLogo
               size="md"
               showTagline={false}
-              className="[&>img]:h-14 md:[&>img]:h-14 xl:[&>img]:h-16"
+              className="[&>img]:h-10 min-[376px]:[&>img]:h-11 min-[431px]:[&>img]:h-12 lg:[&>img]:h-14 min-[1440px]:[&>img]:h-[60px]"
               onClick={() => handleLinkClick('/')}
             />
           </div>
