@@ -33,6 +33,7 @@ import { isDemoMode } from './utils/demoMode';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<AppRoute>(() => {
+    if (isDemoMode) return window.location.pathname === '/talent' ? '/talent' : '/';
     const pathname = window.location.pathname;
     const inviteParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     if (pathname === '/aktivasi-admin' || inviteParams.get('type') === 'invite') return '/aktivasi-admin';
@@ -66,6 +67,11 @@ export default function App() {
 
   // Parse path and params from current location
   const parseCurrentLocation = useCallback(() => {
+    if (isDemoMode) {
+      setCurrentPath(window.location.pathname === '/talent' ? '/talent' : '/');
+      setActiveTalentId('');
+      return;
+    }
     const pathname = window.location.pathname;
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     const searchParams = new URLSearchParams(window.location.search);
@@ -159,6 +165,10 @@ export default function App() {
 
   // Navigate handler with browser history synchronization
   const handleNavigate = (path: AppRoute, params?: Record<string, string>) => {
+    if (isDemoMode && path !== '/' && path !== '/talent') {
+      window.alert('Mode demo YUKU: hanya Beranda dan Jelajahi yang aktif. Login, profil, booking, dan pembayaran dinonaktifkan.');
+      return;
+    }
     let targetUrl = path as string;
 
     if (path === '/talent/:id') {
