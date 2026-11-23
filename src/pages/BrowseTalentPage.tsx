@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
@@ -238,9 +238,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         {/* Filter Bar Controls */}
         <div className="relative bg-white/85 p-2 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-3 sm:mb-8 space-y-2 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-2 md:grid-cols-12 gap-2 sm:gap-3">
+          <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="md:col-span-5 relative">
+            <div className="col-span-6 md:col-span-5 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -252,13 +252,24 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Dynamic Regional Location Filter */}
-            <div className="md:col-span-4">
+            <div className="col-span-4 md:col-span-4">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
                 onChangeCity={setSelectedCity}
               />
             </div>
+
+            <button
+              type="button"
+              onClick={() => setShowMoreFilters((open) => !open)}
+              aria-expanded={showMoreFilters}
+              aria-label={showMoreFilters ? "Tutup filter lainnya" : "Buka filter lainnya"}
+              title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
+              className="col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-xl border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </button>
 
             {/* Reset Button */}
             <div className="hidden md:flex md:col-span-3 items-center justify-end">
@@ -273,15 +284,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowMoreFilters((open) => !open)}
-            aria-expanded={showMoreFilters}
-            className="md:hidden ml-auto flex min-h-8 w-auto items-center justify-between gap-3 rounded-full border border-purple-200 bg-purple-50 px-3.5 text-[11px] font-bold text-purple-800 active:bg-purple-100"
-          >
-            <span>{showMoreFilters ? "Tutup filter" : "Filter lainnya"}</span>
-            <span aria-hidden="true">{showMoreFilters ? "−" : "+"}</span>
-          </button>
           <div className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
           {/* Row 2: Activity Categories Buttons */}
           <div className="pt-3 sm:pt-4 border-t border-purple-100/80">
@@ -374,6 +376,12 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               Reset semua filter
             </button>
           </div>
+        </div>
+
+        {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
+        <div className="sm:hidden mb-2 flex items-center justify-between">
+          <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Jelajahi Talent</h2>
+          <span className="text-[10px] font-medium text-slate-500">{filteredTalents.length} tersedia</span>
         </div>
 
         {/* Results Grid */}
