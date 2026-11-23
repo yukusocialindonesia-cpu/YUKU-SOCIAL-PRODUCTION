@@ -146,10 +146,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const remainingTalents = filteredTalents.slice(4);
 
   return (
-    <div className="min-h-screen py-2 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
-        <section className="relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
+        <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
           <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-purple-200/30 blur-3xl" />
           <div className="relative max-w-3xl">
             <span className="hidden sm:inline-flex items-center rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2.5 shadow-sm">
@@ -285,17 +285,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             type="button"
             onClick={() => setShowMoreFilters((open) => !open)}
             aria-expanded={showMoreFilters}
-            className="md:hidden flex min-h-9 w-full items-center justify-between rounded-xl border border-purple-100 bg-purple-50/70 px-3 text-[11px] font-bold text-purple-800"
+            className="md:hidden ml-auto flex min-h-8 w-auto items-center justify-between gap-3 rounded-lg border border-purple-100 bg-purple-50/70 px-3 text-[11px] font-bold text-purple-800"
           >
-            <span>Filter aktivitas & lainnya</span>
+            <span>Filter</span>
             <span>{showMoreFilters ? "Tutup −" : "Buka +"}</span>
           </button>
           <div className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
           {/* Row 2: Activity Categories Buttons */}
           <div className="pt-3 sm:pt-4 border-t border-purple-100/80">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-              Kategori Aktivitas:
-            </span>
             <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
               <button
                 type="button"
