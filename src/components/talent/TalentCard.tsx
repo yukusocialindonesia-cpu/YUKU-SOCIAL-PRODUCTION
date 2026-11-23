@@ -63,15 +63,15 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   return (
     <article
       onClick={() => onSelect(talent.id)}
-      className="group relative h-full bg-white/95 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white shadow-[0_12px_34px_rgba(76,29,149,0.10),0_3px_10px_rgba(76,29,149,0.05)] hover:shadow-[0_20px_44px_rgba(76,29,149,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
+      className="group relative h-full min-w-0 bg-white/95 rounded-xl sm:rounded-[26px] overflow-hidden border border-white shadow-[0_8px_24px_rgba(76,29,149,0.09)] hover:shadow-[0_18px_38px_rgba(76,29,149,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
     >
       {/* Media */}
-      <div className="relative aspect-[4/5] sm:aspect-[4/3] w-full overflow-hidden">
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100">
         {hasRealPhoto ? (
           <img
             src={talent.avatarUrl}
             alt={`Foto profil ${talent.name}`}
-            className="w-full h-full object-cover object-[50%_25%] group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover object-[50%_22%] group-hover:scale-[1.03] transition-transform duration-500"
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"
@@ -99,7 +99,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         {/* Lokasi & mode (bawah foto) */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-medium">
+        <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 flex items-center justify-between text-white text-[10px] sm:text-xs font-medium">
           {talent.city ? (
             <span className="inline-flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
@@ -147,9 +147,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       )}
 
       {/* Isi */}
-      <div className="p-5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
+      <div className="p-3.5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 sm:gap-3">
-          <h3 className="font-extrabold text-[#1E0938] text-sm sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
+          <h3 className="font-extrabold text-[#1E0938] text-[13px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
             {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
