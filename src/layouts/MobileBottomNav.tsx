@@ -15,14 +15,11 @@ type NavEntry = {
   onPress: () => void;
 };
 
-/**
- * Navigasi floating khusus HP.
- * Tujuan menu dan hak akses tetap mengikuti role yang sudah ada.
- */
+/** Navigasi HP ringkas; route dan hak akses tetap mengikuti role yang ada. */
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, onNavigate }) => {
   const { user, role, isAuthLoading } = useAuth();
   const loggedIn = Boolean(user);
-  const icon = 'w-[21px] h-[21px]';
+  const icon = 'w-5 h-5';
   const ordersRoute: AppRoute | null =
     role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : role === 'customer' ? '/riwayat-booking' : null;
 
@@ -31,16 +28,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
       onNavigate('/login');
       return;
     }
-    if (role === 'admin') {
-      onNavigate('/admin');
-    } else if (role === 'talent') {
-      onNavigate('/dashboard-talent');
-    } else if (role === 'customer') {
-      onNavigate('/profil-saya');
-    } else {
-      // Sesi aktif tetapi role belum diketahui: jangan menganggap akun sebagai Customer.
-      window.dispatchEvent(new CustomEvent('yuku:open-menu'));
-    }
+    if (role === 'admin') onNavigate('/admin');
+    else if (role === 'talent') onNavigate('/dashboard-talent');
+    else if (role === 'customer') onNavigate('/profil-saya');
+    else window.dispatchEvent(new CustomEvent('yuku:open-menu'));
   };
 
   const items: NavEntry[] = [
@@ -52,37 +43,28 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
       route: ordersRoute,
       icon: <Bookmark className={icon} strokeWidth={2.1} />,
       onPress: () => {
-        if (!loggedIn) {
-          onNavigate('/login');
-        } else if (ordersRoute) {
-          onNavigate(ordersRoute);
-        } else {
-          window.dispatchEvent(new CustomEvent('yuku:open-menu'));
-        }
+        if (!loggedIn) onNavigate('/login');
+        else if (ordersRoute) onNavigate(ordersRoute);
+        else window.dispatchEvent(new CustomEvent('yuku:open-menu'));
       },
     },
     { label: 'Profil', route: null, icon: <User className={icon} strokeWidth={2.1} />, onPress: openProfile },
   ];
 
   const navShell =
-    'md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+10px)] z-40 mx-auto w-[calc(100%-24px)] max-w-[520px] rounded-[24px] border border-white/80 bg-white/85 px-2 py-1.5 shadow-[0_14px_38px_rgba(48,15,92,0.18),0_3px_10px_rgba(48,15,92,0.08)] backdrop-blur-2xl';
+    'md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+6px)] z-40 mx-auto w-[calc(100%-20px)] max-w-[520px] rounded-[20px] border border-white/85 bg-white/90 px-1.5 py-1 shadow-[0_10px_28px_rgba(48,15,92,0.16)] backdrop-blur-2xl';
 
   if (isAuthLoading) {
-    return (
-      <nav aria-hidden="true" className={navShell}>
-        <div className="grid min-h-[62px] grid-cols-5" />
-      </nav>
-    );
+    return <nav aria-hidden="true" className={navShell}><div className="grid h-[54px] grid-cols-5" /></nav>;
   }
 
   return (
     <nav aria-label="Menu utama HP" className={navShell}>
-      <ul className="grid grid-cols-5 gap-1">
+      <ul className="grid grid-cols-5 gap-0.5">
         {items.map((item) => {
           const active =
             item.route !== null &&
-            (currentPath === item.route ||
-              (item.route !== '/' && currentPath.startsWith(item.route)));
+            (currentPath === item.route || (item.route !== '/' && currentPath.startsWith(item.route)));
 
           return (
             <li key={item.label} className="min-w-0">
@@ -90,23 +72,15 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
                 type="button"
                 onClick={item.onPress}
                 aria-current={active ? 'page' : undefined}
-                className={`group relative flex min-h-[62px] w-full flex-col items-center justify-center gap-1 rounded-[18px] px-1 py-2 text-[10px] font-semibold transition-all duration-200 active:scale-95 ${
-                  active
-                    ? 'bg-gradient-to-b from-purple-100/95 to-fuchsia-50 text-purple-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_3px_10px_rgba(109,40,217,0.10)]'
-                    : 'text-slate-500 hover:bg-purple-50/70 hover:text-purple-700'
+                className={`group relative flex h-[54px] w-full flex-col items-center justify-center gap-1 rounded-[15px] px-0.5 text-[10px] font-semibold transition-colors active:scale-95 ${
+                  active ? 'bg-purple-50 text-purple-800' : 'text-slate-500 hover:bg-purple-50/70 hover:text-purple-700'
                 }`}
               >
-                <span className={`flex h-8 w-9 items-center justify-center rounded-xl transition-all duration-200 ${
-                  active
-                    ? 'bg-white/90 text-purple-700 shadow-[0_3px_10px_rgba(76,29,149,0.12)]'
-                    : 'text-slate-500 group-hover:text-purple-700'
-                }`}>
+                <span className={`flex h-6 items-center justify-center ${active ? 'text-purple-700' : 'text-slate-500 group-hover:text-purple-700'}`}>
                   {item.icon}
                 </span>
                 <span className="max-w-full truncate leading-none">{item.label}</span>
-                {active && (
-                  <span className="absolute -bottom-0.5 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-gradient-to-r from-purple-700 to-fuchsia-500" />
-                )}
+                {active && <span className="absolute bottom-0 h-1 w-5 rounded-full bg-gradient-to-r from-purple-700 to-fuchsia-500" />}
               </button>
             </li>
           );
