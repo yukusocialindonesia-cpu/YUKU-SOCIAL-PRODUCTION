@@ -210,7 +210,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [promoTitle, setPromoTitle] = useState('');
   const [promoTargetLink, setPromoTargetLink] = useState('');
   const [promoSortOrder, setPromoSortOrder] = useState('0');
-  const [promoImageUrlInput, setPromoImageUrlInput] = useState('');
   const [isUploadingPromo, setIsUploadingPromo] = useState(false);
   const [confirmDeletePromoId, setConfirmDeletePromoId] = useState<string | null>(null);
 
@@ -896,63 +895,63 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   // Actions: Promo Posters Management
-  const handlePromoFileChange = (file: File | null) => {
-    if (promoPreviewUrl && promoPreviewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(promoPreviewUrl);
-    }
+  const handlePromoFileChange = async (file: File | null) => {
+    if (promoPreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(promoPreviewUrl);
+    setPromoFile(null);
+    setPromoPreviewUrl(null);
+    if (!file) return;
 
-    if (!file) {
-      setPromoFile(null);
-      setPromoPreviewUrl(promoImageUrlInput.trim() || null);
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setErrorMessage('Format banner harus JPG, PNG, atau WebP.');
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
-      setErrorMessage('Ukuran file poster maksimal 5 MB.');
+      setErrorMessage('Ukuran file banner maksimal 5 MB.');
       return;
     }
 
-    setErrorMessage(null);
-    setPromoFile(file);
-    setPromoPreviewUrl(URL.createObjectURL(file));
+    const previewUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.src = previewUrl;
+    try {
+      await image.decode();
+      const ratio = image.naturalWidth / image.naturalHeight;
+      if (image.naturalWidth < 1200 || Math.abs(ratio - 3.2) > 0.04) {
+        URL.revokeObjectURL(previewUrl);
+        setErrorMessage(`Ukuran gambar belum sesuai. Gunakan rasio 16:5 (contoh 1600 × 500 px), minimal lebar 1200 px. File ini ${image.naturalWidth} × ${image.naturalHeight} px.`);
+        return;
+      }
+      setErrorMessage(null);
+      setPromoFile(file);
+      setPromoPreviewUrl(previewUrl);
+    } catch {
+      URL.revokeObjectURL(previewUrl);
+      setErrorMessage('Gambar tidak dapat dibaca. Coba pilih file JPG, PNG, atau WebP lain.');
+    }
   };
 
   const handleUploadPromoPoster = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
-
-    const trimmedUrl = promoImageUrlInput.trim();
-    if (!promoFile && !trimmedUrl) {
-      setErrorMessage('Pilih file gambar poster atau masukkan URL gambar terlebih dahulu.');
+    if (!promoFile) {
+      setErrorMessage('Pilih file banner Jelajah terlebih dahulu.');
       return;
     }
+    const file = promoFile;
 
     setIsUploadingPromo(true);
     setErrorMessage(null);
     setSuccessMessage(null);
 
     try {
-      let finalImageUrl = trimmedUrl;
-      let storagePath: string | null = null;
-
-      if (promoFile) {
-        const cleanExt = (promoFile.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-        storagePath = `posters/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${cleanExt}`;
-
-        const { error: uploadErr } = await supabase.storage
-          .from('promotions')
-          .upload(storagePath, promoFile, { upsert: false, contentType: promoFile.type });
-
-        if (uploadErr) {
-          throw new Error(`Gagal mengunggah gambar ke bucket promotions: ${uploadErr.message}`);
-        }
-
-        const { data: publicUrlData } = supabase.storage
-          .from('promotions')
-          .getPublicUrl(storagePath);
-
-        finalImageUrl = publicUrlData.publicUrl;
-      }
+      const cleanExt = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+      const storagePath = `jelajah-banners/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${cleanExt}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('promotions')
+        .upload(storagePath, file, { upsert: false, contentType: file.type });
+      if (uploadErr) throw new Error(`Gagal mengunggah banner Jelajah: ${uploadErr.message}`);
+      const { data: publicUrlData } = await supabase.storage.from('promotions').getPublicUrl(storagePath);
+      const finalImageUrl = publicUrlData.publicUrl;
 
       const parsedOrder = parseInt(promoSortOrder, 10);
       const { error: insertErr } = await supabase.from('promotions').insert({
@@ -965,26 +964,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         created_by: currentUser.id,
       });
 
-      if (insertErr) {
-        throw new Error(insertErr.message);
-      }
-
-      if (promoPreviewUrl && promoPreviewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(promoPreviewUrl);
-      }
-
+      if (insertErr) throw new Error(insertErr.message);
+      if (promoPreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(promoPreviewUrl);
       setPromoFile(null);
       setPromoPreviewUrl(null);
       setPromoTitle('');
       setPromoTargetLink('');
       setPromoSortOrder('0');
-      setPromoImageUrlInput('');
-      setSuccessMessage('Poster promosi baru berhasil diterbitkan ke ruang poster berjalan di Beranda!');
+      setSuccessMessage('Banner baru berhasil diterbitkan ke halaman Jelajah!');
       await loadAdminData();
     } catch (err: any) {
-      setErrorMessage(
-        `Gagal menerbitkan poster promosi: ${err?.message}. Pastikan migrasi 15_promotions.sql sudah dijalankan di Supabase.`
-      );
+      setErrorMessage(`Gagal menerbitkan banner Jelajah: ${err?.message}. Pastikan migrasi 15_promotions.sql sudah dijalankan di Supabase.`);
     } finally {
       setIsUploadingPromo(false);
     }
@@ -1003,8 +993,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       if (error) throw error;
       setSuccessMessage(
         !poster.is_active
-          ? `Poster "${poster.title}" sekarang tayang di Beranda.`
-          : `Poster "${poster.title}" disembunyikan dari Beranda.`
+          ? `Banner "${poster.title}" sekarang tayang di Jelajah.`
+          : `Banner "${poster.title}" disembunyikan dari Jelajah.`
       );
       await loadAdminData();
     } catch (err: any) {
@@ -1381,7 +1371,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             }`}
           >
             <Megaphone className={`w-3.5 h-3.5 ${activeTab === 'promos' ? 'text-white' : 'text-amber-600'}`} />
-            <span>Poster Promo ({promoPosters.filter((p) => p.is_active).length})</span>
+            <span>Banner Jelajah ({promoPosters.filter((p) => p.is_active).length})</span>
           </button>
           )}
           {isSuperAdmin && (
@@ -1524,7 +1514,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <div className="flex items-start gap-3 min-w-0">
                         <div className="w-14 h-14 rounded-xl overflow-hidden bg-purple-50 border border-purple-200 shrink-0 relative flex items-center justify-center">
                           {t.avatar_url ? (
-                            <img src={t.avatar_url} alt={t.display_name} className="w-full h-full object-cover" />
+                            <img src={t.avatar_url} alt={t.display_name} className="w-full h-full object-contain" />
                           ) : (
                             <User className="w-8 h-8 text-purple-400" />
                           )}
@@ -2246,41 +2236,41 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
         {activeTab === 'community_moderation' && <CommunityModerationPanel />}
 
-        {/* TAB 6: HOMEPAGE PROMO POSTERS */}
+        {/* TAB 6: BANNER PROMOSI HALAMAN JELAJAH */}
         {activeTab === 'promos' && (
           <div className="space-y-6">
             {promoMigrationMissing && (
               <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-xs flex items-start gap-2.5">
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <strong>Tabel &amp; Bucket Promosi Belum Aktif di Supabase:</strong> Jalankan file migrasi{' '}
+                  <strong>Pengelolaan Banner Jelajah belum aktif di Supabase:</strong> Jalankan file migrasi{' '}
                   <code className="bg-amber-100 px-1.5 py-0.5 rounded font-mono">
                     supabase/migrations/15_promotions.sql
                   </code>{' '}
-                  di SQL Editor Supabase untuk mengaktifkan unggahan poster promosi beranda.
+                  di SQL Editor Supabase untuk mengaktifkan unggahan banner Jelajah.
                 </div>
               </div>
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Upload New Promo Poster Form */}
+              {/* Upload khusus Banner Jelajah */}
               <form
                 onSubmit={handleUploadPromoPoster}
                 className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4 text-xs"
               >
                 <div>
                   <h3 className="text-base font-bold text-slate-900">
-                    Pasang Poster Promosi Baru
+                    Upload Banner Jelajah
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Unggah gambar poster promosi (disarankan 1920×1080 px, rasio 16:9). Kotak poster di Beranda mengikuti ukuran gambar, jadi poster tampil utuh tanpa terpotong. Poster aktif langsung tampil berjalan di Beranda.
+                    Upload khusus banner halaman Jelajah. Gunakan rasio 16:5 (disarankan 1600 × 500 px, minimal lebar 1200 px). Sistem memeriksa ukuran gambar sebelum upload agar banner konsisten di HP dan desktop tanpa terpotong.
                   </p>
                 </div>
 
                 {/* Image File Picker + Live Preview */}
                 <div className="space-y-2">
                   <label htmlFor="promo-file-upload" className="block font-bold text-slate-700">
-                    Pilih Gambar Poster (JPG / PNG / WebP, maks. 5 MB) *
+                    Pilih Gambar Banner (JPG / PNG / WebP, maks. 5 MB) *
                   </label>
                   <label
                     htmlFor="promo-file-upload"
@@ -2291,7 +2281,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       {promoFile ? promoFile.name : 'Klik untuk memilih gambar dari perangkat'}
                     </span>
                     <span className="text-[11px] text-slate-500 block mt-0.5">
-                      Rekomendasi lebar minimal 1200px agar tajam di desktop
+                      Rasio wajib 16:5 · contoh 1600 × 500 px · minimal lebar 1200 px
                     </span>
                   </label>
                   <input
@@ -2303,40 +2293,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   />
                 </div>
 
-                {(promoPreviewUrl || promoImageUrlInput.trim()) && (
+                {promoPreviewUrl && (
                   <div className="space-y-1.5">
                     <span className="text-[11px] font-semibold text-slate-500 block">
-                      Pratinjau Tampilan di Beranda
+                      Preview Banner Jelajah (rasio 16:5)
                     </span>
-                    <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
+                    <div className="w-full aspect-[16/5] rounded-xl overflow-hidden border border-slate-200 bg-purple-950">
                       <img
-                        src={promoPreviewUrl || promoImageUrlInput.trim()}
+                        src={promoPreviewUrl}
                         alt="Pratinjau poster promosi"
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     </div>
                   </div>
                 )}
 
-                <div>
-                  <label htmlFor="promo-image-url" className="block font-bold text-slate-700 mb-1">
-                    Atau Tempel URL Gambar (Opsional jika tidak unggah file)
-                  </label>
-                  <input
-                    id="promo-image-url"
-                    type="url"
-                    placeholder="https://..."
-                    value={promoImageUrlInput}
-                    onChange={(e) => {
-                      setPromoImageUrlInput(e.target.value);
-                      if (!promoFile) {
-                        setPromoPreviewUrl(e.target.value.trim() || null);
-                      }
-                    }}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600"
-                  />
-                </div>
 
                 <div>
                   <label htmlFor="promo-title" className="block font-bold text-slate-700 mb-1">
@@ -2384,18 +2356,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                 <button
                   type="submit"
-                  disabled={isUploadingPromo || (!promoFile && !promoImageUrlInput.trim())}
+                  disabled={isUploadingPromo || !promoFile}
                   className="w-full py-2.5 px-4 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl shadow-xs transition-colors inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isUploadingPromo ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Mengunggah Poster...</span>
+                      <span>Mengunggah Banner...</span>
                     </>
                   ) : (
                     <>
                       <ImageIcon className="w-4 h-4" />
-                      <span>Terbitkan Poster ke Beranda</span>
+                      <span>Terbitkan Banner ke Jelajah</span>
                     </>
                   )}
                 </button>
@@ -2406,10 +2378,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
-                      Daftar Poster Promosi ({promoPosters.length})
+                      Daftar Banner Jelajah ({promoPosters.length})
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Atur urutan tampil, sembunyikan sementara, atau hapus poster yang sudah berakhir.
+                      Atur urutan slide, sembunyikan sementara, atau hapus banner Jelajah.
                     </p>
                   </div>
                 </div>
@@ -2417,9 +2389,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {promoPosters.length === 0 ? (
                   <div className="py-12 px-4 rounded-xl bg-slate-50 border border-slate-200/70 text-center space-y-1.5">
                     <Megaphone className="w-8 h-8 text-slate-300 mx-auto" />
-                    <p className="text-sm font-bold text-slate-700">Belum Ada Poster Promosi</p>
+                    <p className="text-sm font-bold text-slate-700">Belum Ada Banner Jelajah</p>
                     <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                      Unggah gambar poster promosi pertama di formulir sebelah kiri untuk menampilkannya di beranda utama YUKU.
+                      Upload banner pertama melalui formulir khusus di sebelah kiri untuk menampilkannya di halaman Jelajah.
                     </p>
                   </div>
                 ) : (
@@ -2429,12 +2401,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         key={poster.id}
                         className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/70 space-y-3"
                       >
-                        <div className="w-full aspect-[16/9] rounded-lg overflow-hidden border border-slate-200 bg-slate-900">
+                        <div className="w-full aspect-[16/5] rounded-lg overflow-hidden border border-slate-200 bg-purple-950">
                           <img
                             src={poster.image_url}
                             alt={poster.title}
                             referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                         </div>
 
