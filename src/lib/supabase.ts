@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // Never connect to a baked-in project. Configure these values in the deployment
 // environment (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY).
+const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+
 const rawEnvUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const rawEnvKey = (
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
@@ -19,13 +21,13 @@ const normalizedEnvUrl = (() => {
   }
 })();
 
-export const isSupabaseConfigured = Boolean(normalizedEnvUrl && rawEnvKey);
+export const isSupabaseConfigured = !isDemoMode && Boolean(normalizedEnvUrl && rawEnvKey);
 
 // Supabase JS requires a syntactically valid URL/key at construction time.
 // These inert placeholders deliberately point to the reserved .invalid domain;
 // they cannot silently connect this build to a real YUKU or third-party project.
-const supabaseUrl = normalizedEnvUrl || 'https://supabase-configuration-required.invalid';
-const supabaseKey = rawEnvKey || 'configuration-required-placeholder-key';
+const supabaseUrl = isDemoMode ? 'https://yuku-demo-no-network.invalid' : normalizedEnvUrl || 'https://supabase-configuration-required.invalid';
+const supabaseKey = isDemoMode ? 'demo-mode-no-network-placeholder-key' : rawEnvKey || 'configuration-required-placeholder-key';
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
@@ -43,6 +45,10 @@ export async function checkSupabaseConnection(): Promise<{
   table?: string;
   rowCount?: number;
 }> {
+  if (isDemoMode) {
+    return { connected: false, status: 'CONFIG_ERROR', message: 'Mode demo aktif: koneksi Supabase dinonaktifkan.' };
+  }
+
   if (!isSupabaseConfigured) {
     return {
       connected: false,
