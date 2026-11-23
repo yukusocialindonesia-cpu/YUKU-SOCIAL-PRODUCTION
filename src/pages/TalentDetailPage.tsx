@@ -519,7 +519,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-md">
+                    <div className="relative mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-[calc(100%-1rem)] sm:w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-md">
                       {heroUrl && !avatarFailed ? (
                         <PhotoLightbox
                           src={heroUrl}
