@@ -7,7 +7,7 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-3 sm:py-12 bg-[#F7F5FA]">
+    <section className="relative overflow-hidden py-3 sm:py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-2 sm:mb-6">
           <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase">
