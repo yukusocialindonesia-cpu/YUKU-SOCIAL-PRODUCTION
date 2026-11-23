@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import { SearchActivityWidget } from './SearchActivityWidget';
 import { HeroSlideRow } from '../../types/database';
 import { fetchHeroSlidesFromSupabase } from '../../utils/supabaseMarketplace';
+import { demoHeroSlides, isDemoMode } from '../../utils/demoMode';
 
 interface HeroSectionProps {
   onExploreClick: () => void;
@@ -46,7 +47,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onRegisterCustomerClick,
   onSlideLinkClick,
 }) => {
-  const [slides, setSlides] = useState<HeroSlideRow[]>(() => readCachedSlides());
+  const [slides, setSlides] = useState<HeroSlideRow[]>(() => isDemoMode ? demoHeroSlides : readCachedSlides());
   const [slidesLoaded, setSlidesLoaded] = useState(false);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -56,6 +57,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   useEffect(() => {
+    if (isDemoMode) { setSlides(demoHeroSlides); setSlidesLoaded(true); return; }
     let mounted = true;
     fetchHeroSlidesFromSupabase().then((rows) => {
       if (!mounted) return;
