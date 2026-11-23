@@ -11,11 +11,11 @@ export const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({ size = 'sm', class
   <span
     role="img"
     aria-label="Terverifikasi"
-    title="Terverifikasi"
-    className={`inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white align-middle shadow-sm ${
-      size === 'md' ? 'w-6 h-6' : 'w-5 h-5'
+    title="Identitas terverifikasi"
+    className={`inline-flex shrink-0 items-center justify-center rounded-full bg-[#6D45D9] text-white align-middle shadow-none ${
+      size === 'md' ? 'w-5 h-5' : 'w-[18px] h-[18px]'
     } ${className}`}
   >
-    <Check className={size === 'md' ? 'w-4 h-4' : 'w-3 h-3'} strokeWidth={3} />
+    <Check className={size === 'md' ? 'w-3 h-3' : 'w-2.5 h-2.5'} strokeWidth={3} />
   </span>
 );
