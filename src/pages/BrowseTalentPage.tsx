@@ -177,7 +177,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               const canNavigate = /^(https?:\/\/|\/(?!\/)|#)/i.test(safeLink);
               return (
                 <div className="relative w-full overflow-hidden rounded-2xl border border-purple-100 bg-purple-950 shadow-[0_10px_28px_rgba(76,29,149,0.14)]">
-                  <div className="relative aspect-[16/4] sm:aspect-[16/5] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700">
+                  <div className="relative aspect-[16/3] sm:aspect-[16/5] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700">
                     <img
                       key={promotion.id}
                       src={promotion.image_url}
