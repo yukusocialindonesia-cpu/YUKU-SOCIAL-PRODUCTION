@@ -5,7 +5,7 @@ import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
 import { AppRoute } from '../types/navigation';
 import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
-import { PromotionRow } from '../types/database';
+import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 
 interface BrowseTalentPageProps {
@@ -173,6 +173,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                       src={promotion.image_url}
                       alt={promotion.title || 'Promosi YUKU'}
                       loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none';
+                      }}
                       className="h-full w-full object-cover"
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/75 to-transparent px-4 pb-3 pt-9">
@@ -181,9 +184,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                       </h3>
                     </div>
                   </div>
-                  {promotion.link_url && (
+                  {promotion.link_url && /^(https?:\\/\\/|\\/(?!\\/)|#)/i.test(promotion.link_url.trim()) && (
                     <a
-                      href={promotion.link_url}
+                      href={promotion.link_url.trim()}
                       aria-label={`Lihat promosi: ${promotion.title}`}
                       className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-500"
                     />
