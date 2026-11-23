@@ -32,7 +32,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-transparent text-slate-800"
+      className={`min-h-screen flex flex-col bg-transparent text-slate-800 ${
+        showBottomNav ? 'pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0' : ''
+      }`}
     >
       {/* Satu-satunya <header> aplikasi */}
       <div
@@ -46,7 +48,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
       {isHomePage && <div className="h-[52px] sm:h-16 shrink-0 md:hidden" aria-hidden="true" />}
 
       <main className={`flex-1 ${
-        showBottomNav ? 'pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-0' : ''
+        showBottomNav ? 'pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0' : ''
       }`}>{children}</main>
 
       {currentPath !== '/' && <SafetyPledgeBanner />}
