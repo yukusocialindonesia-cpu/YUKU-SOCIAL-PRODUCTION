@@ -100,7 +100,7 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
         </div>
 
         {/* Kota Selector */}
-        <div className="min-w-0 md:col-span-4 flex items-center gap-3 px-2.5 md:px-3 py-2.5 md:py-3 bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
+        <div className="min-w-0 md:col-span-4 flex items-center gap-3 px-2.5 md:px-3 py-2 md:py-3 bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
           <MapPin className="hidden md:block w-5 h-5 text-amber-600 shrink-0" />
           <div className="flex-1 min-w-0 text-left">
             <label htmlFor="search-city" className="block text-[10px] md:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
