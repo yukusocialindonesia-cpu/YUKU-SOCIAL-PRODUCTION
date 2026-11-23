@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
@@ -26,6 +26,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [mobilePinnedHeight, setMobilePinnedHeight] = useState(0);
+  const mobilePinnedRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -54,6 +56,21 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
   useEffect(() => {
     loadMarketplaceData();
+  }, []);
+
+  // Pin the Jelajah controls to the viewport on mobile; reserve their measured height in the document flow.
+  useEffect(() => {
+    const element = mobilePinnedRef.current;
+    if (!element) return;
+    const updateHeight = () => setMobilePinnedHeight(element.getBoundingClientRect().height);
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(element);
+    window.addEventListener('resize', updateHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
   }, []);
 
   // Promosi dimuat terpisah agar gangguan tabel promosi tidak menghambat katalog Talent.
@@ -170,7 +187,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
-        <div className="sticky top-0 z-40 -mx-4 bg-[#FAF8FC]/95 px-4 pb-2 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
+        <div aria-hidden="true" className="sm:hidden" style={{ height: mobilePinnedHeight }} />
+        <div ref={mobilePinnedRef} className="fixed inset-x-0 top-0 z-50 w-full bg-[#FAF8FC]/95 px-4 pb-2 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
+        <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
           <section aria-label="Promosi YUKU" className="mb-2 sm:mb-7">
@@ -382,6 +401,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </div>
 
+        </div>
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
