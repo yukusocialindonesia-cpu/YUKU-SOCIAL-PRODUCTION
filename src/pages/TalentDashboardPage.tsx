@@ -1492,6 +1492,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
   return (
     <div className="relative isolate py-4 sm:py-8 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.34),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F6F3FA_100%)] min-h-screen overflow-x-hidden">
+      {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
+      {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-4 sm:space-y-6 min-w-0">
         {/* Top Notification Alerts */}
         {errorMessage && (
@@ -2899,10 +2901,6 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             .reduce((sum, rw) => sum + Number(rw.reward_amount || 0), 0);
 
           return (
-    <>
-      {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
-      {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}
-
             <div className="space-y-6">
               {/* Referral Hero & Code Share */}
               <div className="bg-gradient-to-br from-purple-950 via-purple-900 to-[#2D1052] text-white p-6 rounded-2xl border border-purple-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
