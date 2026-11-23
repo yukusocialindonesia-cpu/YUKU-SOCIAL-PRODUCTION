@@ -31,7 +31,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             {/* Customer Feature Highlights */}
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-4 mb-3 sm:mb-8 text-[10px] sm:text-xs">
               <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Profil Terkurasi & Terverifikasi
@@ -43,7 +43,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
 
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-[#D6AE62] shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Bebas Pilih Lokasi Publik
@@ -55,7 +55,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
 
               <div className="flex items-start gap-2.5">
-                <Clock className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
+                <Clock className="w-4 h-4 text-[#E98AB0] shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Tarif Transparan per Jam
@@ -105,15 +105,15 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
               <div className="space-y-3.5 text-xs text-purple-100">
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <Sparkles className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
+                  <Sparkles className="w-4 h-4 text-[#D6AE62] shrink-0 mt-0.5" />
                   <span>1. Daftar akun Customer dan lengkapi verifikasi e-KTP 18+.</span>
                 </div>
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <MapPin className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-[#E98AB0] shrink-0 mt-0.5" />
                   <span>2. Pilih aktivitas, kota, dan Talent yang cocok dengan minatmu.</span>
                 </div>
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <CalendarCheck className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
+                  <CalendarCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <span>3. Tentukan jam pertemuan di ruang publik atau sesi online.</span>
                 </div>
                 <div className="flex items-start gap-3 pt-1">
