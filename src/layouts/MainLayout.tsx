@@ -4,6 +4,7 @@ import { Footer } from './Footer';
 import { MobileBottomNav } from './MobileBottomNav';
 import { SafetyPledgeBanner } from '../components/common/SafetyPledgeBanner';
 import { AppRoute } from '../types/navigation';
+import { isDemoMode } from '../utils/demoMode';
 
 interface MainLayoutProps {
   currentPath: string;
@@ -46,6 +47,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
       </div>
       {/* Ruang pengganti tinggi header yang fixed khusus Beranda HP. */}
       {isHomePage && <div className="h-[52px] sm:h-16 shrink-0 md:hidden" aria-hidden="true" />}
+      {isDemoMode && (
+        <div className="relative z-30 border-y border-amber-200 bg-amber-50 px-4 py-1.5 text-center text-[10px] font-bold tracking-wide text-amber-900 sm:text-xs">
+          MODE PRATINJAU — DATA DUMMY · LOGIN, BOOKING, DAN PEMBAYARAN NONAKTIF
+        </div>
+      )}
 
       <main className="flex-1">{children}</main>
 
