@@ -17,7 +17,7 @@ interface HowItWorksSectionProps {
 
 export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMoreClick }) => {
   return (
-    <section className="py-4 md:py-16 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section className="py-4 md:py-16 bg-[#F7F5FA]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10">
           {/* Cara Kerja */}
@@ -35,10 +35,10 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                 return (
                   <div
                     key={item.step}
-                    className="flex flex-col items-center text-center bg-gradient-to-b from-white to-purple-50/60 backdrop-blur-xl border border-purple-100/80 rounded-[20px] sm:rounded-[22px] p-2.5 sm:p-4 shadow-[0_7px_18px_rgba(76,29,149,0.06)] ring-1 ring-white/90 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.12)] transition-all duration-300"
+                    className="flex flex-col items-center text-center bg-white backdrop-blur-xl border border-purple-100/80 rounded-[20px] sm:rounded-[22px] p-2.5 sm:p-4 shadow-[0_7px_18px_rgba(76,29,149,0.06)] ring-1 ring-white/90 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.12)] transition-all duration-300"
                   >
                     <div className="relative mb-2">
-                      <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] sm:rounded-2xl bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center shadow-[0_5px_12px_rgba(126,34,206,0.22)] ring-2 ring-white">
+                      <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] sm:rounded-2xl bg-[#7138C8] text-white flex items-center justify-center shadow-[0_5px_12px_rgba(126,34,206,0.22)] ring-2 ring-white">
                         <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                       </span>
                       <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-amber-950 text-[11px] font-black flex items-center justify-center ring-2 ring-white">
