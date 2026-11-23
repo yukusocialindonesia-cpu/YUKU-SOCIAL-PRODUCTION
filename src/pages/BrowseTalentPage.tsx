@@ -179,7 +179,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               const canNavigate = /^(https?:\/\/|\/(?!\/)|#)/i.test(safeLink);
               return (
                 <div className="relative w-full overflow-hidden rounded-2xl border border-purple-100 bg-purple-950 shadow-[0_10px_28px_rgba(76,29,149,0.14)]">
-                  <div className="relative aspect-[16/4] sm:aspect-[16/5] w-full bg-gradient-to-r from-purple-900 to-fuchsia-700">
+                  <div className="relative w-full bg-purple-950">
                     <img
                       key={promotion.id}
                       src={promotion.image_url}
@@ -189,7 +189,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                       onError={(event) => {
                         event.currentTarget.style.display = 'none';
                       }}
-                      className="absolute inset-0 h-full w-full object-contain"
+                      className="block h-auto w-full"
                     />
                     {canNavigate && (
                       <a
@@ -268,7 +268,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-expanded={showMoreFilters}
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-xl border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-xl border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
               {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
