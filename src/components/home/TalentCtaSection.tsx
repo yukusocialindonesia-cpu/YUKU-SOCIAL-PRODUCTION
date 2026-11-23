@@ -13,7 +13,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
   onRegisterClick,
 }) => {
   return (
-    <section className="py-4 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
+    <section className="py-4 md:py-20 bg-[#24113D] text-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-center">
           {/* Left Content: Customer-First */}
@@ -31,7 +31,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             {/* Customer Feature Highlights */}
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-4 mb-3 sm:mb-8 text-[10px] sm:text-xs">
               <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Profil Terkurasi & Terverifikasi
@@ -43,7 +43,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
 
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Bebas Pilih Lokasi Publik
@@ -55,7 +55,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
 
               <div className="flex items-start gap-2.5">
-                <Clock className="w-4 h-4 text-fuchsia-400 shrink-0 mt-0.5" />
+                <Clock className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Tarif Transparan per Jam
@@ -67,7 +67,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
 
               <div className="flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                <ShieldCheck className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Pembayaran Terlindungi
@@ -82,7 +82,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-3 sm:mt-0">
               <button
                 onClick={onExploreClick}
-                className="min-h-11 px-6 py-3 md:px-7 md:py-3.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-pink-600 hover:from-amber-600 hover:to-pink-700 rounded-xl shadow-[0_8px_22px_rgba(234,88,12,0.22)] ring-1 ring-white/15 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="min-h-11 px-6 py-3 md:px-7 md:py-3.5 text-sm font-bold text-white bg-[#7138C8] hover:bg-[#5E2EAA] rounded-xl shadow-[0_8px_22px_rgba(113,56,200,0.24)] ring-1 ring-white/15 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Jelajahi Talent Sekarang</span>
                 <ArrowRight className="w-4 h-4" />
@@ -105,19 +105,19 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
               <div className="space-y-3.5 text-xs text-purple-100">
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <Sparkles className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                   <span>1. Daftar akun Customer dan lengkapi verifikasi e-KTP 18+.</span>
                 </div>
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <MapPin className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                   <span>2. Pilih aktivitas, kota, dan Talent yang cocok dengan minatmu.</span>
                 </div>
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <CalendarCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <CalendarCheck className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                   <span>3. Tentukan jam pertemuan di ruang publik atau sesi online.</span>
                 </div>
                 <div className="flex items-start gap-3 pt-1">
-                  <ShieldCheck className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
+                  <ShieldCheck className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
                   <span>4. Nikmati momen pertemanan positif dengan perlindungan tim YUKU.</span>
                 </div>
               </div>
