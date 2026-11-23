@@ -80,9 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-8 h-14 sm:h-16 xl:h-18">
+          <div className="flex items-center justify-between gap-8 h-[52px] sm:h-16 xl:h-18">
             <div className="shrink-0 flex items-center">
-              <BrandLogo size="md" showTagline={false} className="[&>img]:h-9 sm:[&>img]:h-10 xl:[&>img]:h-14" onClick={() => onNavigate('/')} />
+              <BrandLogo size="md" showTagline={false} className="[&>img]:h-8 sm:[&>img]:h-10 xl:[&>img]:h-14" onClick={() => onNavigate('/')} />
             </div>
           </div>
         </div>
@@ -94,13 +94,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     <header className="sticky top-0 xl:top-3 z-40 bg-white/95 xl:bg-white/80 backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
-        <div className="flex items-center justify-between gap-8 h-14 sm:h-16 xl:h-18">
+        <div className="flex items-center justify-between gap-8 h-[52px] sm:h-16 xl:h-18">
           {/* Zone 1: Single Brand Element */}
           <div className="shrink-0 flex items-center">
             <BrandLogo
               size="md"
               showTagline={false}
-              className="[&>img]:h-9 sm:[&>img]:h-10 xl:[&>img]:h-14"
+              className="[&>img]:h-8 sm:[&>img]:h-10 xl:[&>img]:h-14"
               onClick={() => handleLinkClick('/')}
             />
           </div>
@@ -300,7 +300,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className="p-2 sm:p-2.5 rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
+              className="p-1.5 sm:p-2.5 rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="yuku-mobile-navigation"
