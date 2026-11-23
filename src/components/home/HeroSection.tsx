@@ -259,11 +259,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
           <p className="md:hidden flex items-center gap-1.5 mb-2 text-[10px] font-extrabold uppercase tracking-[0.13em] text-purple-700">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-            <span>Social Experience & Paid Companionship</span>
+            <span>Platform Sosial & Marketplace Aktivitas</span>
           </p>
           <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-purple-200/80 rounded-full text-purple-900 text-xs font-semibold mb-5">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-purple-700" />
-            <span className="truncate">Social Experience & Paid Companionship</span>
+            <span className="truncate">Platform Sosial & Marketplace Aktivitas</span>
           </div>
 
           <h1 className="text-[1.75rem] leading-[1.06] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-2 md:mb-4">
@@ -275,7 +275,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </h1>
 
           <p className="max-w-2xl text-[13px] sm:text-base md:text-lg text-slate-700 leading-relaxed">
-            Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
+            Temukan dan pesan teman untuk ngopi, nonton, jalan-jalan, atau ngobrol — online maupun offline.
           </p>
         </div>
 
