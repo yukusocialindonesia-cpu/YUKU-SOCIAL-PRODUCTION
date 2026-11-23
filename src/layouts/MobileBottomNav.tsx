@@ -24,7 +24,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   const loggedIn = Boolean(user);
   const icon = 'w-[21px] h-[21px]';
   const ordersRoute: AppRoute =
-    role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : '/riwayat-booking';
+    role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : role === 'customer' ? '/riwayat-booking' : '/';
 
   const openProfile = () => {
     if (!loggedIn) {
@@ -35,8 +35,11 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
       onNavigate('/admin');
     } else if (role === 'talent') {
       onNavigate('/dashboard-talent');
-    } else {
+    } else if (role === 'customer') {
       onNavigate('/profil-saya');
+    } else {
+      // Sesi aktif tetapi role belum diketahui: jangan menganggap akun sebagai Customer.
+      window.dispatchEvent(new CustomEvent('yuku:open-menu'));
     }
   };
 

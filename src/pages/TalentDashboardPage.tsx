@@ -202,7 +202,9 @@ type BookingStatusFilter =
   | 'expired';
 
 export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavigate }) => {
-  const { user: currentUser, isAuthLoading: isCheckingAuth } = useAuth();
+  const { user: currentUser, role, isAuthLoading: isCheckingAuth } = useAuth();
+  const onNavigateRef = useRef(onNavigate);
+  onNavigateRef.current = onNavigate;
 
   // Profile & Verification
   const [profile, setProfile] = useState<TalentProfileData | null>(null);
@@ -600,15 +602,23 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   }, []);
 
   const currentUserId = currentUser?.id ?? null;
+
+  // Pastikan akun yang masuk ke dashboard sesuai dengan role-nya.
+  useEffect(() => {
+    if (isCheckingAuth || !currentUserId) return;
+    if (role === 'customer') onNavigateRef.current('/profil-saya');
+    else if (role === 'admin') onNavigateRef.current('/admin');
+  }, [isCheckingAuth, currentUserId, role]);
+
   useEffect(() => {
     if (isCheckingAuth) return;
-    if (currentUserId) {
+    if (currentUserId && role === 'talent') {
       void loadDashboardData(currentUserId);
     } else {
       setIsLoadingProfile(false);
       setIsLoadingData(false);
     }
-  }, [isCheckingAuth, currentUserId, loadDashboardData]);
+  }, [isCheckingAuth, currentUserId, role, loadDashboardData]);
 
   useEffect(() => {
     return () => {
@@ -1444,6 +1454,34 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
               Belum Menjadi Talent? Daftar di Sini
             </button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Akun dengan role selain Talent tidak boleh memuat dashboard Talent.
+  if (role !== 'talent') {
+    return (
+      <div className="py-20 bg-[#FAF8FC]">
+        <div className="max-w-md mx-auto px-4 text-center space-y-5 bg-white p-8 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto">
+            <ShieldCheck className="w-7 h-7" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">Akses Dashboard Talent Terbatas</h1>
+            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              {role === null
+                ? 'Peran akun belum dapat diverifikasi. Silakan kembali ke Beranda atau hubungi Bantuan YUKU.'
+                : 'Halaman ini hanya tersedia untuk akun dengan peran Talent.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate(role === 'admin' ? '/admin' : role === 'customer' ? '/profil-saya' : '/')}
+            className="w-full py-3 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer transition-colors"
+          >
+            {role === 'admin' ? 'Buka Admin' : role === 'customer' ? 'Buka Profil Saya' : 'Kembali ke Beranda'}
+          </button>
         </div>
       </div>
     );
