@@ -45,7 +45,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
         <Navbar currentPath={currentPath} onNavigate={onNavigate} />
       </div>
       {/* Ruang pengganti tinggi header yang fixed khusus Beranda HP. */}
-      {isHomePage && <div className="h-16 shrink-0 md:hidden" aria-hidden="true" />}
+      {isHomePage && <div className="h-14 shrink-0 md:hidden" aria-hidden="true" />}
 
       <main className="flex-1">{children}</main>
 
