@@ -29,6 +29,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { AdminInviteSetupPage } from './pages/AdminInviteSetupPage';
 import { AppRoute } from './types/navigation';
 import { supabase } from './lib/supabase';
+import { isDemoMode } from './utils/demoMode';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<AppRoute>(() => {
@@ -133,6 +134,11 @@ export default function App() {
     const handlePopState = () => {
       parseCurrentLocation();
     };
+
+    if (isDemoMode) {
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+    }
 
     const {
       data: { subscription },
