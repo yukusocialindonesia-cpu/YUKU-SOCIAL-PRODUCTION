@@ -24,7 +24,7 @@ const talents = [
 
 export const MobileHomePrototypePage: React.FC = () => (
   <div className="min-h-screen bg-[#faf8ff] text-slate-900 pb-24">
-    <div className="mx-auto max-w-[480px] overflow-hidden bg-white min-h-screen shadow-xl">
+    <div className="mx-auto max-w-[480px] bg-white min-h-screen shadow-xl">
       <header className="sticky top-0 z-50 px-5 pt-4 pb-3 flex items-center justify-between bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90 border-b border-slate-100">
         <div><div className="text-[26px] font-black tracking-tight text-violet-700">YUKU<span className="text-pink-500">.</span></div><div className="text-[10px] -mt-1 tracking-[.18em] text-slate-400 font-semibold">REAL FRIENDS. REAL MOMENTS.</div></div>
         <button aria-label="Notifikasi" className="relative h-10 w-10 rounded-full bg-violet-50 grid place-items-center text-violet-700"><Bell size={19}/><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-pink-500 ring-2 ring-white"/></button>
