@@ -25,7 +25,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               Cari Teman Ngopi, Nonton, atau Partner Acara di Kotamu
             </h2>
             <p className="text-xs sm:text-base text-purple-200/90 leading-relaxed mb-2 md:mb-5">
-              Tidak perlu datang sendirian ke kafe baru, konser, atau kondangan. Pilih Talent terverifikasi sesuai hobi dan jadwalmu, lalu pesan dengan sistem pembayaran yang aman.
+              Tidak perlu datang sendirian ke kafe baru, konser, atau kondangan. Pilih Talent terverifikasi sesuai hobi dan jadwalmu. Sebelum booking, Customer perlu menyelesaikan verifikasi e-KTP dan usia 18+.
             </p>
 
             {/* Customer Feature Highlights */}
@@ -73,7 +73,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                     Pembayaran Terlindungi
                   </strong>
                   <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Dana booking diamankan melalui sistem YUKU dan diteruskan setelah sesi selesai dikonfirmasi.
+                    Pembayaran booking dicatat melalui sistem YUKU. Dana diteruskan ke Talent setelah Customer dan Talent sama-sama mengonfirmasi sesi selesai.
                   </span>
                 </div>
               </div>
@@ -118,7 +118,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                 </div>
                 <div className="flex items-start gap-3 pt-1">
                   <ShieldCheck className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
-                  <span>4. Nikmati momen pertemanan positif dengan perlindungan tim YUKU.</span>
+                  <span>4. Jika ada kendala, ajukan laporan dari riwayat booking agar tim YUKU dapat meninjau.</span>
                 </div>
               </div>
             </div>
