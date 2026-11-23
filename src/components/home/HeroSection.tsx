@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-gradient-to-br from-[#F8F4FF] via-white to-[#FFF8F1] md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
+      className="relative overflow-hidden bg-[#F7F5FA]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
               >
                 {broken[slide.id] ? (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400" />
+                  <div className="w-full h-full bg-[#7138C8]" />
                 ) : (
                   <picture>
                     {slide.mobile_image_url && (
@@ -179,7 +179,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             />
           </div>
         ) : (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400 opacity-90 md:rounded-l-[8rem]" />
+          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-[#7138C8] opacity-90 md:rounded-l-[8rem]" />
         )}
 
         {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}
@@ -269,7 +269,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <h1 className="text-[1.75rem] leading-[1.06] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-2 md:mb-4">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
-            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
+            <span className="hero-slogan-enter hero-slogan-enter-delay text-[#7138C8]">
               Real Moments.
             </span>
           </h1>
