@@ -98,16 +98,15 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               BARU
             </span>
           )}
-          {talent.isVerified === true && (
-            <span className="absolute right-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[9px] font-bold text-purple-800 shadow">
-              <VerifiedBadge />
-            </span>
-          )}
           <div className="absolute inset-x-2 bottom-2 text-white">
             <div className="flex items-center justify-between gap-1">
+            <div className="flex min-w-0 items-center gap-1">
               <h3 className="min-w-0 truncate text-[12px] font-extrabold leading-tight drop-shadow">
-                {talent.name}{talent.age ? `, ${talent.age}` : ''}
+                {talent.name}
               </h3>
+              {talent.isVerified === true && <VerifiedBadge className="ring-2 ring-white/90" />}
+              {talent.age && <span className="shrink-0 text-[10px] font-semibold text-white/90">, {talent.age}</span>}
+            </div>
               {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
                 <span className="inline-flex shrink-0 items-center gap-0.5 text-[10px] font-bold drop-shadow">
                   <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
@@ -218,8 +217,8 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         <div className="flex items-start justify-between gap-2 sm:gap-3">
           <h3 className="font-extrabold text-[#1E0938] text-[13px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
-            {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
             {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
+            {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
           </h3>
           {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
             <div className="shrink-0 inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-xs font-bold px-2 py-1 rounded-full tabular-nums">
