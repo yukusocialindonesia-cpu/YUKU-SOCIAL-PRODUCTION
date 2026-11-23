@@ -2,17 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Coffee, ShoppingBag, Film, Sparkles, Users, MessageCircle, RefreshCw, AlertCircle } from 'lucide-react';
 import { ActivityCategory, ActivityCategoryId } from '../../types/talent';
 import { fetchCategoriesFromSupabase } from '../../utils/supabaseMarketplace';
+import { demoCategories, isDemoMode } from '../../utils/demoMode';
 
 interface ActivityCategoriesProps {
   onSelectCategory: (categoryId: ActivityCategoryId) => void;
 }
 
 export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelectCategory }) => {
-  const [categories, setCategories] = useState<ActivityCategory[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<ActivityCategory[]>(isDemoMode ? demoCategories : []);
+  const [loading, setLoading] = useState(!isDemoMode);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const loadCategories = async () => {
+    if (isDemoMode) { setCategories(demoCategories); setLoading(false); return; }
     setLoading(true);
     setErrorMsg(null);
     try {
@@ -26,6 +28,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   };
 
   useEffect(() => {
+    if (isDemoMode) return;
     loadCategories();
   }, []);
 
