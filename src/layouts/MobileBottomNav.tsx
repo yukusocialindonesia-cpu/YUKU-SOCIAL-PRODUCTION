@@ -23,8 +23,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   const { user, role, isAuthLoading } = useAuth();
   const loggedIn = Boolean(user);
   const icon = 'w-[21px] h-[21px]';
-  const ordersRoute: AppRoute =
-    role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : role === 'customer' ? '/riwayat-booking' : '/';
+  const ordersRoute: AppRoute | null =
+    role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : role === 'customer' ? '/riwayat-booking' : null;
 
   const openProfile = () => {
     if (!loggedIn) {
@@ -48,10 +48,18 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     { label: 'Jelajahi', route: '/talent', icon: <Search className={icon} strokeWidth={2.1} />, onPress: () => onNavigate('/talent') },
     { label: 'Komunitas', route: '/komunitas', icon: <Users className={icon} strokeWidth={2.1} />, onPress: () => onNavigate('/komunitas') },
     {
-      label: role === 'admin' ? 'Admin' : role === 'talent' ? 'Dashboard' : 'Pesanan',
+      label: role === 'admin' ? 'Admin' : role === 'talent' ? 'Dashboard' : role === 'customer' ? 'Pesanan' : 'Menu',
       route: ordersRoute,
       icon: <Bookmark className={icon} strokeWidth={2.1} />,
-      onPress: () => onNavigate(loggedIn ? ordersRoute : '/login'),
+      onPress: () => {
+        if (!loggedIn) {
+          onNavigate('/login');
+        } else if (ordersRoute) {
+          onNavigate(ordersRoute);
+        } else {
+          window.dispatchEvent(new CustomEvent('yuku:open-menu'));
+        }
+      },
     },
     { label: 'Profil', route: null, icon: <User className={icon} strokeWidth={2.1} />, onPress: openProfile },
   ];
