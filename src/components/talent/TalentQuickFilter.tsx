@@ -3,6 +3,7 @@ import { CalendarCheck, MapPin, MessageCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { TalentProfile } from '../../types/talent';
 import { TalentAvailabilityRow } from '../../types/database';
+import { isDemoMode } from '../../utils/demoMode';
 
 export type QuickFilter = 'all' | 'today' | 'offline' | 'online';
 
@@ -42,7 +43,7 @@ export function useAvailableTodayIds(talents: TalentProfile[]) {
   const idsKey = talents.map((t) => t.id).join(',');
 
   useEffect(() => {
-    if (talents.length === 0) {
+    if (isDemoMode || talents.length === 0) {
       setAvailableTodayIds(new Set());
       setTodayReady(false);
       return;
