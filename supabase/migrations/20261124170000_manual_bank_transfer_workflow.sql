@@ -143,6 +143,12 @@ BEGIN
     OR NULLIF(trim(COALESCE(p_account_number,'')),'') IS NULL
     OR NULLIF(trim(COALESCE(p_account_holder,'')),'') IS NULL
   ) THEN RAISE EXCEPTION 'Nama bank, nomor rekening, dan nama pemilik wajib diisi.'; END IF;
+  IF length(trim(COALESCE(p_bank_name,''))) > 100
+     OR length(trim(COALESCE(p_account_number,''))) > 80
+     OR length(trim(COALESCE(p_account_holder,''))) > 120
+     OR length(trim(COALESCE(p_instructions,''))) > 500 THEN
+    RAISE EXCEPTION 'Data rekening melebihi batas karakter yang diizinkan.';
+  END IF;
   SELECT to_jsonb(s) INTO v_old FROM public.bank_transfer_settings s WHERE id = TRUE;
   INSERT INTO public.bank_transfer_settings(id,is_active,bank_name,account_number,account_holder,instructions,updated_by,updated_at)
   VALUES(TRUE,COALESCE(p_is_active,FALSE),trim(COALESCE(p_bank_name,'')),trim(COALESCE(p_account_number,'')),trim(COALESCE(p_account_holder,'')),COALESCE(NULLIF(trim(COALESCE(p_instructions,'')),''),'Transfer tepat sesuai nominal booking, lalu unggah bukti pembayaran.'),auth.uid(),NOW())
