@@ -69,9 +69,10 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'Alamat aktivasi Admin tidak valid.' }, 400);
     }
 
-    const permissions = Array.isArray(body?.permissions)
-      ? [...new Set(body.permissions.filter((item: unknown): item is string => typeof item === 'string'))]
-      : [];
+    const permissionValues: unknown[] = Array.isArray(body?.permissions) ? body.permissions : [];
+    const permissions: string[] = [...new Set(
+      permissionValues.filter((item): item is string => typeof item === 'string'),
+    )];
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: 'Alamat email tidak valid.' }, 400);
