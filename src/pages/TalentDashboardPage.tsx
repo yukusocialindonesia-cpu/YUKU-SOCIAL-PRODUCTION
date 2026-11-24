@@ -594,7 +594,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           .eq('talent_id', userId)
           .order('sort_order', { ascending: true })
           .order('created_at', { ascending: false });
-        mediaRows = legacyMediaResult.data;
+        mediaRows = (legacyMediaResult.data || []).map((row) => ({ ...row, moderation_status: 'approved' as const, moderation_reason: null }));
         mediaErr = legacyMediaResult.error;
       }
 
