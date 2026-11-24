@@ -78,7 +78,11 @@ export const AccountManagementPanel: React.FC = () => {
       setMessage(data.message || 'Status akun berhasil diperbarui.');
       await load();
     } catch (err: any) {
-      setError(err?.message || 'Gagal memperbarui status akun.');
+      const actionError = err?.message || 'Gagal memperbarui status akun.';
+      // Status mungkin sudah berubah walaupun pencatatan audit mengalami kegagalan.
+      // Muat ulang agar tombol dan label tidak menampilkan status lama.
+      await load();
+      setError(actionError);
     } finally {
       setBusyId(null);
     }
