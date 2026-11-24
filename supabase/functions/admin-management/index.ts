@@ -41,6 +41,15 @@ Deno.serve(async (req: Request) => {
     const { data: authData, error: authError } = await userClient.auth.getUser(token);
     if (authError || !authData.user) return json({ error: 'Sesi login tidak valid.' }, 401);
 
+    const { data: actor, error: actorError } = await serviceClient
+      .from('users')
+      .select('account_status')
+      .eq('id', authData.user.id)
+      .maybeSingle();
+    if (actorError || actor?.account_status !== 'active') {
+      return json({ error: 'Akun Admin tidak aktif. Undangan Admin ditolak.' }, 403);
+    }
+
     const { data: access, error: accessError } = await userClient.rpc('get_admin_access');
     if (accessError || access?.is_super_admin !== true) {
       return json({ error: 'Hanya Super Admin yang dapat mengundang Admin baru.' }, 403);
