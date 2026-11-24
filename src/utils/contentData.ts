@@ -1,23 +1,23 @@
 export const HOW_IT_WORKS_STEPS = [
   {
     step: '01',
-    title: 'Pilih Aktivitas & Talent',
-    description: 'Jelajahi profil Talent berdasarkan aktivitas sosial yang kamu inginkan, lokasi kota, minat hobi, serta tarif per jam yang transparan.',
+    title: 'Cari Talent',
+    description: 'Pilih Talent dan aktivitas yang kamu inginkan. Bandingkan profil, minat, lokasi, serta tarif yang tersedia.',
   },
   {
     step: '02',
-    title: 'Tentukan Waktu & Jadwal',
-    description: 'Sepakati waktu pertemuan di tempat umum yang aman (seperti kafe, mall, bioskop, atau tempat acara) atau jadwalkan sesi online.',
+    title: 'Tentukan Jadwal',
+    description: 'Pilih layanan, waktu, dan lokasi pertemuan di tempat publik yang aman atau tentukan kanal untuk sesi online.',
   },
   {
     step: '03',
-    title: 'Nikmati Momen Berkesan',
-    description: 'Jalani aktivitas sosial bersama teman baru dengan suasana santai, saling menghormati batas etika sosial, dan tanpa tekanan kencan.',
+    title: 'Ajukan Booking',
+    description: 'Periksa kembali detail permintaan, lalu ajukan booking melalui platform YUKU.',
   },
   {
     step: '04',
-    title: 'Konfirmasi & Selesai',
-    description: 'Setelah sesi berakhir, beri ulasan positif. Dana booking diteruskan ke Talent secara adil dan transparan.',
+    title: 'Sesi & Ulasan',
+    description: 'Setelah aktivitas selesai, konfirmasi penyelesaian dan bagikan ulasan pengalamanmu.',
   },
 ];
 
