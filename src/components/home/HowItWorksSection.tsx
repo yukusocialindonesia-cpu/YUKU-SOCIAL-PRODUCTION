@@ -52,6 +52,23 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
               })}
             </div>
 
+            {/* Penanda urutan alur di bawah kartu langkah */}
+            <div
+              className="mt-3 flex items-center justify-center gap-2 sm:gap-3"
+              aria-label="Urutan langkah: 01, 02, 03, 04"
+            >
+              {HOW_IT_WORKS_STEPS.map((item, index) => (
+                <React.Fragment key={item.step}>
+                  <span className="flex h-7 min-w-7 items-center justify-center rounded-full border border-purple-200 bg-white px-2 text-[11px] font-extrabold tabular-nums text-purple-700 shadow-sm">
+                    {item.step}
+                  </span>
+                  {index < HOW_IT_WORKS_STEPS.length - 1 && (
+                    <ArrowRight className="h-4 w-4 shrink-0 text-purple-400" aria-hidden="true" />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+
             <button
               onClick={onLearnMoreClick}
               className="mt-3 sm:mt-5 inline-flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors cursor-pointer"
