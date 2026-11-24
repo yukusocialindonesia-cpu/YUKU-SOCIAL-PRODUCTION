@@ -34,7 +34,7 @@ export const BankTransferAdminPanel: React.FC = () => {
     }
     const ids = Array.from(new Set((submissions || []).map((r: any) => r.booking_id)));
     if (ids.length) {
-      const { data, error: statusError } = await db.from('bookings').select('id,status').in('id', ids);
+      const { data, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
       if (statusError) throw statusError;
       const map: Record<string, string> = {};
       (data || []).forEach((b: any) => { map[b.id] = b.status; });
