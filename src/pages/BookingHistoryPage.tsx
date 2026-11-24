@@ -25,6 +25,7 @@ import { formatRupiah } from '../utils/formatters';
 import { Modal } from '../components/common/Modal';
 import { BookingChatModal } from '../components/chat/BookingChatModal';
 import { QrisCustomerPaymentPanel } from '../components/booking/QrisCustomerPaymentPanel';
+import { BankTransferCustomerPaymentPanel } from '../components/booking/BankTransferCustomerPaymentPanel';
 import { XenditCustomerPaymentPanel } from '../components/booking/XenditCustomerPaymentPanel';
 import { ReportCategory } from '../types/database';
 import {
@@ -54,7 +55,7 @@ interface BookingItem {
   talent_gross_share: number;
   status: string;
   payment_expires_at: string;
-  payment_route: 'xendit' | 'manual_qris' | null;
+  payment_route: 'xendit' | 'manual_qris' | 'manual_bank_transfer' | null;
   cancellation_reason: string | null;
   customer_completed_at: string | null;
   talent_completed_at: string | null;
@@ -874,25 +875,20 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 </div>
 
                 {roleFilter === 'customer' && item.status === 'pending_payment' && (
-                  <>
-                    {item.payment_route === 'xendit' && (
-                    <XenditCustomerPaymentPanel
-                      bookingId={item.id}
-                      amount={Number(item.gross_amount)}
-                      bookingStatus={item.status}
-                      paymentRoute={item.payment_route}
-                      onRouteClaimed={(route) => setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: route } : b))}
-                    />
+                  <div className="space-y-3">
+                    {item.payment_route === null && (
+                      <div className="rounded-2xl border border-purple-100 bg-white p-4 space-y-3">
+                        <div><h3 className="text-sm font-extrabold text-slate-900">Pilih Metode Pembayaran</h3><p className="mt-1 text-xs text-slate-500">Pilih salah satu. Setelah dipilih, metode pembayaran dikunci untuk booking ini.</p></div>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          <button type="button" onClick={async () => { const { error } = await (supabase as any).rpc('claim_booking_payment_route', { p_booking_id: item.id, p_route: 'manual_qris' }); if (error) setErrorMsg(error.message); else setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: 'manual_qris' } : b)); }} className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-left text-xs font-extrabold text-purple-900 hover:bg-purple-100">Bayar dengan QRIS</button>
+                          <button type="button" onClick={async () => { const { error } = await (supabase as any).rpc('claim_booking_payment_route', { p_booking_id: item.id, p_route: 'manual_bank_transfer' }); if (error) setErrorMsg(error.message); else setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: 'manual_bank_transfer' } : b)); }} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs font-extrabold text-slate-900 hover:bg-slate-100">Transfer Bank</button>
+                        </div>
+                      </div>
                     )}
-                    <QrisCustomerPaymentPanel
-                      bookingId={item.id}
-                      expiresAt={item.payment_expires_at}
-                      amount={Number(item.gross_amount)}
-                      bookingStatus={item.status}
-                      paymentRoute={item.payment_route}
-                      onRouteClaimed={(route) => setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: route } : b))}
-                    />
-                  </>
+                    {item.payment_route === 'xendit' && <XenditCustomerPaymentPanel bookingId={item.id} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} />}
+                    {item.payment_route === 'manual_qris' && <QrisCustomerPaymentPanel bookingId={item.id} expiresAt={item.payment_expires_at} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} />}
+                    {item.payment_route === 'manual_bank_transfer' && <BankTransferCustomerPaymentPanel bookingId={item.id} expiresAt={item.payment_expires_at} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} onRouteClaimed={(route) => setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: route } : b))} />}
+                  </div>
                 )}
 
                 {/* Bottom Row: Review Section for Completed Bookings */}
