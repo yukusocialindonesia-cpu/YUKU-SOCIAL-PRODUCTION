@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -244,17 +244,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
     if (!availableTabs.includes(activeTab)) setActiveTab(availableTabs[0]);
   }, [availableTabs, activeTab]);
-
-  const tabContentRef = useRef<HTMLDivElement>(null);
-  const previousActiveTabRef = useRef<AdminTab>(activeTab);
-
-  useEffect(() => {
-    if (previousActiveTabRef.current === activeTab) return;
-    previousActiveTabRef.current = activeTab;
-    window.requestAnimationFrame(() => {
-      tabContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }, [activeTab]);
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {
@@ -1220,7 +1209,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
         </section>
 
-        {/* Tab Navigation */}
+        {/* Menu utama: hanya tampil di Overview untuk Super Admin */}
+        {(!isSuperAdmin || activeTab === 'overview') && (
         <div className="grid grid-cols-4 justify-items-center gap-x-2 gap-y-3 rounded-[28px] border border-white/90 bg-white/70 p-3 shadow-[0_18px_42px_-24px_rgba(76,29,149,0.24)] ring-1 ring-violet-100/80 backdrop-blur-2xl sm:grid-cols-5 sm:gap-3 sm:p-4">
           {isSuperAdmin && (
           <button
@@ -1406,8 +1396,46 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </button>
           )}
         </div>
+        )}
 
-        <div ref={tabContentRef} id="admin-tab-content" className="scroll-mt-4" aria-live="polite" />
+        {isSuperAdmin && activeTab !== 'overview' && (
+          <section className="flex flex-col gap-3 rounded-2xl border border-purple-100 bg-white/90 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5" aria-live="polite">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setActiveTab('overview')}
+                className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-bold text-purple-800 transition hover:bg-purple-100"
+              >
+                <ArrowUp className="h-4 w-4 -rotate-90" />
+                Kembali ke Dashboard
+              </button>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-purple-600">Pusat Kendali YUKU</p>
+                <h2 className="text-base font-black text-slate-900 sm:text-lg">
+                  {({
+                    talents: 'Kurasi Talent',
+                    service_reviews: 'Review Talent',
+                    customer_ktp: 'Verifikasi KTP Customer',
+                    payouts: 'Pencairan Dana',
+                    refunds: 'Refund',
+                    bookings: 'Audit Booking & Escrow',
+                    reports: 'Laporan Insiden',
+                    promos: 'Banner Jelajah',
+                    qris: 'QRIS & Verifikasi',
+                    bank_transfer: 'Transfer Bank',
+                    branding: 'Logo & Branding',
+                    hero: 'Banner Beranda',
+                    affiliate: 'Affiliate',
+                    admin_management: 'Pengaturan Admin',
+                    account_management: 'Manajemen Akun',
+                    community_moderation: 'Moderasi Komunitas',
+                    overview: 'Dashboard',
+                  } as Record<AdminTab, string>)[activeTab]}
+                </h2>
+              </div>
+            </div>
+          </section>
+        )}
 
         {availableTabs.length === 0 && (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center text-sm text-amber-900">
