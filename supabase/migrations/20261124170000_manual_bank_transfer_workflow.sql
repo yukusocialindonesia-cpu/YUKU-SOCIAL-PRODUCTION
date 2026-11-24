@@ -388,3 +388,17 @@ END;
 $$;
 REVOKE ALL ON FUNCTION public.admin_review_qris_payment_finance(UUID,BOOLEAN,TEXT,TEXT) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.admin_review_qris_payment_finance(UUID,BOOLEAN,TEXT,TEXT) TO authenticated;
+
+DROP POLICY IF EXISTS qris_settings_read_active_or_admin ON public.qris_payment_settings;
+CREATE POLICY qris_settings_read_active_or_finance ON public.qris_payment_settings
+  FOR SELECT TO authenticated USING (is_active OR public.has_admin_permission('finance'));
+DROP POLICY IF EXISTS qris_proof_read_owner_or_admin ON storage.objects;
+CREATE POLICY qris_proof_read_owner_or_finance ON storage.objects
+  FOR SELECT TO authenticated USING (
+    bucket_id = 'qris-payment-proofs'
+    AND (
+      public.has_admin_permission('finance')
+      OR EXISTS (SELECT 1 FROM public.qris_payment_submissions s
+        WHERE s.proof_storage_path = name AND s.customer_id = auth.uid())
+    )
+  );
