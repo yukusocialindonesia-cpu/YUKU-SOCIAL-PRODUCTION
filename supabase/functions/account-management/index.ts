@@ -84,6 +84,7 @@ Deno.serve(async (req: Request) => {
           totalBookings, activeBookings, pendingPayments, pendingPayouts, pendingRefunds,
           activeReports, referralLinks, pendingRewards, affiliateEarnings, identityRows,
           qrisSubmissions, orders, cancellationCases, auditRecords, talentEarnings, outstandingTalentEarnings, reservedAllocations,
+          totalPayments, totalPayoutRequests, totalRefunds, totalReports, totalReferralRewards, totalAffiliateEarnings, totalPayoutAllocations,
         ] = await Promise.all([
           countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`)),
           countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`).in('status', activeBookingStatuses)),
@@ -102,6 +103,13 @@ Deno.serve(async (req: Request) => {
           isTalent ? countRows(serviceClient.from('talent_earnings').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId)) : Promise.resolve(0),
           isTalent ? countRows(serviceClient.from('talent_earnings').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId).in('status', activeEarningStatuses)) : Promise.resolve(0),
           isTalent ? countRows(serviceClient.from('payout_earnings_allocations').select('id,talent_earnings!inner(talent_id)', { count: 'exact', head: true }).eq('talent_earnings.talent_id', targetUserId).eq('status', 'reserved')) : Promise.resolve(0),
+          countRows(serviceClient.from('payments').select('id,bookings!inner(customer_id,talent_id)', { count: 'exact', head: true }).eq(isTalent ? 'bookings.talent_id' : 'bookings.customer_id', targetUserId)),
+          isTalent ? countRows(serviceClient.from('payout_requests').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId)) : Promise.resolve(0),
+          isTalent ? countRows(serviceClient.from('refunds').select('id,bookings!inner(talent_id)', { count: 'exact', head: true }).eq('bookings.talent_id', targetUserId)) : countRows(serviceClient.from('refunds').select('id', { count: 'exact', head: true }).eq('customer_id', targetUserId)),
+          countRows(serviceClient.from('reports_complaints').select('id', { count: 'exact', head: true }).or(`reporter_id.eq.${targetUserId},reported_user_id.eq.${targetUserId}`)),
+          countRows(serviceClient.from('referral_rewards').select('id', { count: 'exact', head: true }).eq('referrer_id', targetUserId)),
+          isTalent ? countRows(serviceClient.from('talent_affiliate_earnings').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId)) : Promise.resolve(0),
+          isTalent ? countRows(serviceClient.from('payout_earnings_allocations').select('id,talent_earnings!inner(talent_id)', { count: 'exact', head: true }).eq('talent_earnings.talent_id', targetUserId)) : Promise.resolve(0),
         ]);
 
         const checks = [
@@ -122,6 +130,13 @@ Deno.serve(async (req: Request) => {
           { key: 'total_bookings', label: 'Total riwayat booking', count: totalBookings, blocker: false, manualReview: totalBookings > 0 },
           { key: 'cancellation_cases', label: 'Riwayat kasus pembatalan', count: cancellationCases, blocker: false, manualReview: cancellationCases > 0 },
           { key: 'audit_records', label: 'Catatan audit terkait akun', count: auditRecords, blocker: false, manualReview: auditRecords > 0 },
+          { key: 'payment_history', label: 'Seluruh riwayat pembayaran', count: totalPayments, blocker: false, manualReview: totalPayments > 0 },
+          { key: 'payout_history', label: 'Seluruh riwayat payout', count: totalPayoutRequests, blocker: false, manualReview: totalPayoutRequests > 0 },
+          { key: 'refund_history', label: 'Seluruh riwayat refund', count: totalRefunds, blocker: false, manualReview: totalRefunds > 0 },
+          { key: 'report_history', label: 'Seluruh riwayat laporan', count: totalReports, blocker: false, manualReview: totalReports > 0 },
+          { key: 'referral_reward_history', label: 'Seluruh riwayat reward referral', count: totalReferralRewards, blocker: false, manualReview: totalReferralRewards > 0 },
+          { key: 'affiliate_earning_history', label: 'Seluruh riwayat earning affiliate', count: totalAffiliateEarnings, blocker: false, manualReview: totalAffiliateEarnings > 0 },
+          { key: 'payout_allocation_history', label: 'Seluruh riwayat alokasi payout', count: totalPayoutAllocations, blocker: false, manualReview: totalPayoutAllocations > 0 },
         ];
         const blockers = checks.filter((item) => item.blocker).length;
         const manualReviews = checks.filter((item) => item.manualReview).length;
@@ -162,20 +177,33 @@ Deno.serve(async (req: Request) => {
     if (target.account_status === nextStatus) return json({ error: 'Akun sudah memiliki status tersebut.' }, 409);
     if (target.account_status === 'banned') return json({ error: 'Akun yang diblokir permanen tidak dapat diaktifkan dari menu ini.' }, 403);
 
-    if (nextStatus === 'suspended') {
-      const { error } = await serviceClient.auth.admin.updateUserById(targetUserId, { ban_duration: '876000h' });
-      if (error) return json({ error: 'Sesi akun gagal diblokir. Status database tidak diubah.' }, 500);
-    }
-
-    const { error: updateError } = await serviceClient
+    // Update database status first with an optimistic status check.
+    // Auth and audit changes are compensated if a later step fails.
+    const { data: updatedRows, error: updateError } = await serviceClient
       .from('users')
       .update({ account_status: nextStatus, updated_at: new Date().toISOString() })
-      .eq('id', targetUserId);
-    if (updateError) return json({ error: 'Status database gagal diperbarui. Hubungi Super Admin untuk pemeriksaan sesi akun.' }, 500);
+      .eq('id', targetUserId)
+      .eq('account_status', target.account_status)
+      .select('id');
+    if (updateError) return json({ error: 'Status database gagal diperbarui.' }, 500);
+    if (!updatedRows?.length) return json({ error: 'Status akun berubah oleh proses lain. Muat ulang daftar akun.' }, 409);
 
-    if (nextStatus === 'active') {
-      const { error } = await serviceClient.auth.admin.updateUserById(targetUserId, { ban_duration: 'none' });
-      if (error) return json({ error: 'Status database sudah aktif, tetapi pemulihan sesi Auth gagal. Akun tetap tidak dapat login sampai diperiksa.' }, 500);
+    const nextBanDuration = nextStatus === 'suspended' ? '876000h' : 'none';
+    const previousBanDuration = target.account_status === 'suspended' ? '876000h' : 'none';
+    const { error: authUpdateError } = await serviceClient.auth.admin.updateUserById(targetUserId, {
+      ban_duration: nextBanDuration,
+    });
+    if (authUpdateError) {
+      const { error: rollbackError } = await serviceClient
+        .from('users')
+        .update({ account_status: target.account_status, updated_at: new Date().toISOString() })
+        .eq('id', targetUserId)
+        .eq('account_status', nextStatus);
+      return json({
+        error: rollbackError
+          ? 'Perubahan status Auth gagal dan pemulihan status database juga gagal. Akun perlu pemeriksaan manual segera.'
+          : 'Perubahan status Auth gagal. Status database telah dikembalikan ke kondisi sebelumnya.',
+      }, 500);
     }
 
     const { error: auditError } = await serviceClient.from('admin_audit_logs').insert({
@@ -187,7 +215,20 @@ Deno.serve(async (req: Request) => {
       new_data: { account_status: nextStatus, reason },
     });
     if (auditError) {
-      return json({ error: 'Status akun berubah, tetapi audit log gagal disimpan. Jangan ulangi tindakan; minta pemeriksaan Super Admin.' }, 500);
+      const [authRollback, dbRollback] = await Promise.all([
+        serviceClient.auth.admin.updateUserById(targetUserId, { ban_duration: previousBanDuration }),
+        serviceClient
+          .from('users')
+          .update({ account_status: target.account_status, updated_at: new Date().toISOString() })
+          .eq('id', targetUserId)
+          .eq('account_status', nextStatus),
+      ]);
+      const rollbackFailed = Boolean(authRollback.error || dbRollback.error);
+      return json({
+        error: rollbackFailed
+          ? 'Audit log gagal dan pemulihan status tidak lengkap. Akun perlu pemeriksaan manual segera.'
+          : 'Audit log gagal disimpan. Perubahan status dan Auth telah dikembalikan ke kondisi sebelumnya.',
+      }, 500);
     }
 
     return json({
