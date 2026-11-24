@@ -42,12 +42,17 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  -- Allow the initial profile row created during Auth signup.
-  IF TG_TABLE_SCHEMA = 'public'
-     AND TG_TABLE_NAME = 'users'
-     AND TG_OP = 'INSERT'
-     AND NEW.id = v_actor THEN
-    RETURN NEW;
+  -- Allow only the initial profile row for the current Auth user.
+  -- Keep NEW.id access inside the table/operation checks: other public tables
+  -- (for example community_likes and system_feature_flags) have no id column.
+  IF TG_TABLE_SCHEMA = 'public' THEN
+    IF TG_TABLE_NAME = 'users' THEN
+      IF TG_OP = 'INSERT' THEN
+        IF NEW.id = v_actor THEN
+          RETURN NEW;
+        END IF;
+      END IF;
+    END IF;
   END IF;
 
   SELECT u.account_status INTO v_status
@@ -74,13 +79,15 @@ DECLARE
   v_table record;
 BEGIN
   -- A BEFORE trigger also protects writes inside SECURITY DEFINER RPCs,
-  -- where ordinary RLS checks may be bypassed.
+  -- where ordinary RLS checks may be bypassed. Install on partition roots;
+  -- PostgreSQL propagates those triggers to their partitions.
   FOR v_table IN
     SELECT n.nspname AS schema_name, c.relname AS table_name, c.relrowsecurity
     FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public'
       AND c.relkind IN ('r', 'p')
+      AND NOT c.relispartition
   LOOP
     EXECUTE format(
       'DROP TRIGGER IF EXISTS trg_guard_active_account_write ON %I.%I',
