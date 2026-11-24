@@ -37,7 +37,7 @@ export const QrisAdminPanel: React.FC = () => {
         const { error: uploadError } = await supabase.storage.from('qris-payment-display').upload(path, file, { upsert: false, contentType: file.type });
         if (uploadError) throw uploadError;
       }
-      const { error: rpcError } = await (supabase as any).rpc('admin_update_qris_settings', { p_is_active: active, p_image_path: path, p_merchant_name: merchant, p_merchant_identifier: identifier, p_instructions: instructions });
+      const { error: rpcError } = await (supabase as any).rpc('admin_update_qris_settings_finance', { p_is_active: active, p_image_path: path, p_merchant_name: merchant, p_merchant_identifier: identifier, p_instructions: instructions });
       if (rpcError) throw rpcError;
       setMessage('Pengaturan QRIS berhasil disimpan. Gambar lama tetap tersimpan sebagai versi historis.'); setFile(null); await load();
     } catch (e: any) { setError(e?.message || 'Gagal menyimpan QRIS.'); } finally { setBusy(false); }
@@ -50,7 +50,7 @@ export const QrisAdminPanel: React.FC = () => {
     if (!dialogNotes.trim()) { setDialogError(approve ? 'Catatan verifikasi wajib diisi.' : 'Alasan penolakan wajib diisi.'); return; }
     if (approve && !dialogRef.trim()) { setDialogError('Referensi transaksi wajib diisi.'); return; }
     setBusy(true); setError(''); setMessage(''); setDialogError('');
-    const { error: rpcError } = await (supabase as any).rpc('admin_review_qris_payment', { p_submission_id: row.id, p_approve: approve, p_admin_notes: dialogNotes.trim(), p_transfer_reference: approve ? dialogRef.trim() : null });
+    const { error: rpcError } = await (supabase as any).rpc('admin_review_qris_payment_finance', { p_submission_id: row.id, p_approve: approve, p_admin_notes: dialogNotes.trim(), p_transfer_reference: approve ? dialogRef.trim() : null });
     if (rpcError) { setDialogError(rpcError.message); setBusy(false); return; }
     setDialog(null);
     setMessage(approve ? 'Pembayaran disahkan dan masuk escrow.' : 'Bukti ditolak; Customer dapat mengirim bukti baru.');
