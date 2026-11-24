@@ -63,7 +63,7 @@ export const AccountManagementPanel: React.FC = () => {
     const reason = window.prompt(`Alasan ${actionLabel} akun ${account.email}:`)?.trim();
     if (!reason) return;
     const confirmed = window.confirm(
-      `Yakin ${actionLabel} akun ${account.email}? Sesi login akun akan dicabut. Tindakan ini akan dicatat di audit log.`,
+      `Yakin ${actionLabel} akun ${account.email}? Login baru dan perpanjangan sesi akan diblokir. Access token yang sudah terbit tetap berlaku sampai kedaluwarsa. Tindakan ini akan dicatat di audit log.`,
     );
     if (!confirmed) return;
 
