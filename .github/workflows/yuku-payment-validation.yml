@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/manual-bank-transfer-no-xendit
+      - optimize/lazy-load-pages
   pull_request:
     branches:
       - main
