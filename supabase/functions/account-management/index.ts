@@ -59,14 +59,26 @@ Deno.serve(async (req: Request) => {
 
     const body = await req.json().catch(() => null);
     if (body?.action === 'list') {
-      const { data: accounts, error } = await serviceClient
+      const requestedPage = Number(body?.page);
+      const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+      const pageSize = 50;
+      const from = (page - 1) * pageSize;
+      if (!Number.isSafeInteger(from) || from > 2_000_000) {
+        return json({ error: 'Nomor halaman tidak valid.' }, 400);
+      }
+      const { data: accounts, error, count } = await serviceClient
         .from('users')
-        .select('id,email,full_name,phone_number,role,account_status,created_at')
+        .select('id,email,full_name,phone_number,role,account_status,created_at', { count: 'exact' })
         .in('role', ['customer', 'talent'])
         .order('created_at', { ascending: false })
-        .limit(250);
-      if (error) return json({ error: 'Daftar akun gagal dimuat.' }, 500);
-      return json({ success: true, accounts: accounts || [] });
+        .order('id', { ascending: true })
+        .range(from, from + pageSize - 1);
+      if (error || count === null) return json({ error: 'Daftar akun gagal dimuat.' }, 500);
+      return json({
+        success: true,
+        accounts: accounts || [],
+        pagination: { page, pageSize, total: count, totalPages: Math.ceil(count / pageSize) },
+      });
     }
 
     if (body?.action === 'preflight') {
