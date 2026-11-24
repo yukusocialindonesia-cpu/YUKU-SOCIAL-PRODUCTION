@@ -67,6 +67,16 @@ body {
   }
 }
 
+@media (max-width: 767px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  #root::before {
+    position: absolute;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
