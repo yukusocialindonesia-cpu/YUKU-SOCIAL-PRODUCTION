@@ -290,7 +290,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     }).sort((a, b) => {
       if (!customerLocation || !nearestTalentDistances) return 0;
       return (nearestTalentDistances[a.id] ?? Number.POSITIVE_INFINITY) - (nearestTalentDistances[b.id] ?? Number.POSITIVE_INFINITY);
-    });
+    }).map((talent) => ({
+      ...talent,
+      distanceKm: customerLocation && nearestTalentDistances ? nearestTalentDistances[talent.id] : undefined,
+    }));
   }, [talents, user?.id, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, customerLocation, nearestTalentDistances]);
 
   useEffect(() => {
