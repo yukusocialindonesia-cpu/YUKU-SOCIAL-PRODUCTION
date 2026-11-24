@@ -1426,16 +1426,10 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
       // Keep the legacy media_url field populated for compatibility; the bucket is
       // private and all actual rendering uses a short-lived signed URL.
       const { data: { publicUrl } } = supabase.storage.from('talent-media').getPublicUrl(storagePath);
-      const { data: signedData, error: signedError } = await supabase.storage
-        .from('talent-media')
-        .createSignedUrl(storagePath, 1800);
-      if (signedError || !signedData?.signedUrl) {
-        await supabase.storage.from('talent-media').remove([storagePath]);
-        throw signedError || new Error('Gagal membuat pratinjau media.');
-      }
-
       const cleanCaption = mediaCaption.trim() || null;
 
+      // Insert the media row first: the private Storage SELECT policy checks that
+      // this exact object is registered to its owning Talent before signing it.
       const { data: insertedRow, error: insertErr } = await supabase
         .from('talent_media')
         .insert({
@@ -1452,6 +1446,15 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
       if (insertErr) {
         await supabase.storage.from('talent-media').remove([storagePath]);
         throw insertErr;
+      }
+
+      const { data: signedData, error: signedError } = await supabase.storage
+        .from('talent-media')
+        .createSignedUrl(storagePath, 1800);
+      if (signedError || !signedData?.signedUrl) {
+        await supabase.from('talent_media').delete().eq('id', insertedRow.id).eq('talent_id', currentUser.id);
+        await supabase.storage.from('talent-media').remove([storagePath]);
+        throw signedError || new Error('Gagal membuat pratinjau media.');
       }
 
       setMediaItems((prev) => [{ ...(insertedRow as TalentMediaRow), media_url: signedData.signedUrl }, ...prev]);
