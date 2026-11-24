@@ -1,0 +1,44 @@
+name: Manual bank transfer branch validation
+
+on:
+  push:
+    branches:
+      - feature/manual-bank-transfer-no-xendit
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'supabase/migrations/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.*'
+      - 'tsconfig*.json'
+      - '.github/workflows/yuku-payment-validation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yuku-payment-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-frontend:
+    name: TypeScript and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Type-check
+        run: npm run lint
+      - name: Build production bundle
+        run: npm run build
