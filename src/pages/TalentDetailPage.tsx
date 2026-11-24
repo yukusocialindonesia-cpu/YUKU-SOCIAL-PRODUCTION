@@ -847,6 +847,8 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                           src={photo.media_url}
                           alt={photo.caption || `Foto ${talent.name}`}
                           className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
+                          loading={idx === 0 ? 'eager' : 'lazy'}
+                          decoding="async"
                           referrerPolicy="no-referrer"
                           onError={(e) => {
                             (e.currentTarget as HTMLImageElement).style.display = 'none';
