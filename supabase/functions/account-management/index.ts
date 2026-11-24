@@ -91,9 +91,6 @@ Deno.serve(async (req: Request) => {
     if (nextStatus === 'active') {
       const { error } = await serviceClient.auth.admin.updateUserById(targetUserId, { ban_duration: 'none' });
       if (error) return json({ error: 'Status database sudah aktif, tetapi pemulihan sesi Auth gagal. Akun tetap tidak dapat login sampai diperiksa.' }, 500);
-    } else {
-      const { error } = await serviceClient.auth.admin.signOut(targetUserId, 'global');
-      if (error) return json({ error: 'Akun sudah dinonaktifkan, tetapi pencabutan seluruh sesi gagal. Periksa sesi Auth secara manual.' }, 500);
     }
 
     const { error: auditError } = await serviceClient.from('admin_audit_logs').insert({
@@ -111,7 +108,7 @@ Deno.serve(async (req: Request) => {
     return json({
       success: true,
       message: nextStatus === 'suspended'
-        ? 'Akun dinonaktifkan dan seluruh sesi login dicabut.'
+        ? 'Akun dinonaktifkan dan login baru serta perpanjangan sesi diblokir. Sesi yang sedang aktif akan berakhir saat access token kedaluwarsa.'
         : 'Akun diaktifkan kembali. Pengguna dapat login lagi.',
     });
   } catch (_error) {
