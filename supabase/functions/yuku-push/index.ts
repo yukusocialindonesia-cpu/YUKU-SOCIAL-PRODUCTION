@@ -76,6 +76,19 @@ Deno.serve(async (request) => {
     if (userError || !userData.user) return json({ ok: false, message: "Session tidak valid. Silakan login kembali." }, 401, origin);
     const userId = userData.user.id;
 
+    // This function writes through service_role, so enforce the account state
+    // explicitly instead of relying on the caller's RLS policies.
+    if (action === "subscribe") {
+      const { data: account, error: accountError } = await admin
+        .from("users")
+        .select("account_status")
+        .eq("id", userId)
+        .maybeSingle();
+      if (accountError || !account || !["active", "pending_verification"].includes(account.account_status)) {
+        return json({ ok: false, message: "Akun sedang dinonaktifkan dan tidak dapat mendaftarkan perangkat." }, 403, origin);
+      }
+    }
+
     if (action === "subscribe") {
       const subscription = payload.subscription as {
         endpoint?: string;
