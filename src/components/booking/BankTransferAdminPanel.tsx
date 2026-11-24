@@ -48,13 +48,19 @@ export const BankTransferAdminPanel: React.FC = () => {
 
   const save = async () => {
     setBusy(true); setError(''); setMessage('');
-    const { error: rpcError } = await (supabase as any).rpc('admin_update_bank_transfer_settings', {
-      p_is_active: active, p_bank_name: bankName.trim(), p_account_number: accountNumber.trim(),
-      p_account_holder: accountHolder.trim(), p_instructions: instructions.trim(),
-    });
-    if (rpcError) setError(rpcError.message);
-    else { setMessage('Pengaturan rekening berhasil disimpan. Instruksi booking lama tetap memakai snapshot rekening sebelumnya.'); await load(); }
-    setBusy(false);
+    try {
+      const { error: rpcError } = await (supabase as any).rpc('admin_update_bank_transfer_settings', {
+        p_is_active: active, p_bank_name: bankName.trim(), p_account_number: accountNumber.trim(),
+        p_account_holder: accountHolder.trim(), p_instructions: instructions.trim(),
+      });
+      if (rpcError) throw rpcError;
+      setMessage('Pengaturan rekening berhasil disimpan. Instruksi booking lama tetap memakai snapshot rekening sebelumnya.');
+      await load();
+    } catch (e: any) {
+      setError(e?.message || 'Gagal menyimpan pengaturan rekening.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   const review = async () => {
@@ -62,13 +68,20 @@ export const BankTransferAdminPanel: React.FC = () => {
     if (!notes.trim()) { setError('Catatan pemeriksaan wajib diisi.'); return; }
     if (dialog.approve && !reference.trim()) { setError('Referensi transaksi bank wajib diisi.'); return; }
     setBusy(true); setError('');
-    const { error: rpcError } = await (supabase as any).rpc('admin_review_bank_transfer_payment', {
-      p_submission_id: dialog.row.id, p_approve: dialog.approve,
-      p_admin_notes: notes.trim(), p_transfer_reference: dialog.approve ? reference.trim() : null,
-    });
-    if (rpcError) setError(rpcError.message);
-    else { setDialog(null); setNotes(''); setReference(''); setMessage(dialog.approve ? 'Pembayaran disahkan dan masuk escrow.' : 'Bukti ditolak; Customer dapat mengirim bukti baru.'); await load(); }
-    setBusy(false);
+    try {
+      const { error: rpcError } = await (supabase as any).rpc('admin_review_bank_transfer_payment', {
+        p_submission_id: dialog.row.id, p_approve: dialog.approve,
+        p_admin_notes: notes.trim(), p_transfer_reference: dialog.approve ? reference.trim() : null,
+      });
+      if (rpcError) throw rpcError;
+      setDialog(null); setNotes(''); setReference('');
+      setMessage(dialog.approve ? 'Pembayaran disahkan dan masuk escrow.' : 'Bukti ditolak; Customer dapat mengirim bukti baru.');
+      await load();
+    } catch (e: any) {
+      setError(e?.message || 'Gagal memproses verifikasi pembayaran.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   const actionable = rows.filter(r => bookingStatus[r.booking_id] === 'pending_payment');
