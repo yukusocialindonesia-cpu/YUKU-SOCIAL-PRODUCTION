@@ -161,7 +161,39 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
 
   const normalizedSearch = searchTerm.trim();
   if (normalizedSearch) {
-    const escapedSearch = normalizedSearch.replace(/["\\]/g, '\\/**
+    const escapedSearch = normalizedSearch.replace(/["\\]/g, '\\$&');
+    const pattern = '"%' + escapedSearch + '%"';
+    query = query.or(
+      'display_name.ilike.' + pattern + ',headline.ilike.' + pattern + ',bio.ilike.' + pattern
+    );
+  }
+
+  const { data: talentsData, error: talentsError } = await query;
+  if (talentsError) {
+    throw new Error(\`Gagal membaca Talent terdekat dari Supabase: \${talentsError.message} (\${talentsError.code || 'UNKNOWN'})\`);
+  }
+  if (!talentsData || talentsData.length === 0) return [];
+
+  const { data: servicesData, error: servicesError } = await supabase
+    .from('talent_services')
+    .select('talent_id, activity_category_id')
+    .in('talent_id', talentsData.map((talent) => talent.id));
+
+  if (servicesError) {
+    throw new Error(\`Gagal membaca layanan Talent terdekat: \${servicesError.message} (\${servicesError.code || 'UNKNOWN'})\`);
+  }
+
+  const servicesMap = new Map<string, string[]>();
+  (servicesData || []).forEach((service) => {
+    const existing = servicesMap.get(service.talent_id) || [];
+    existing.push(service.activity_category_id);
+    servicesMap.set(service.talent_id, existing);
+  });
+
+  return talentsData.map((row) => mapSupabaseTalent(row, servicesMap.get(row.id) || []));
+}
+
+/**
  * Fetch a single talent profile by ID from Supabase talent_profiles table via SELECT.');
     const pattern = '"%' + escapedSearch + '%"';
     query = query.or(
