@@ -143,26 +143,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     }
   };
 
-  useEffect(() => {
-    const sentinel = loadMoreSentinelRef.current;
-    if (!sentinel || loading || loadingMoreTalents || loadMoreError) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        if (visibleTalentCount < filteredTalents.length) {
-          setVisibleTalentCount((current) => current + TALENT_DISPLAY_STEP);
-        } else if (hasMoreTalents) {
-          void loadNextTalentBatch();
-        }
-      },
-      { rootMargin: '500px 0px' }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [loading, loadingMoreTalents, loadMoreError, visibleTalentCount, filteredTalents.length, hasMoreTalents, talents.length]);
-
   // Pin the Jelajah controls to the viewport on mobile; reserve their measured height in the document flow.
   useEffect(() => {
     const element = mobilePinnedRef.current;
@@ -257,6 +237,26 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       return true;
     });
   }, [talents, user?.id, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
+
+  useEffect(() => {
+    const sentinel = loadMoreSentinelRef.current;
+    if (!sentinel || loading || loadingMoreTalents || loadMoreError) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        if (visibleTalentCount < filteredTalents.length) {
+          setVisibleTalentCount((current) => current + TALENT_DISPLAY_STEP);
+        } else if (hasMoreTalents) {
+          void loadNextTalentBatch();
+        }
+      },
+      { rootMargin: '500px 0px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loading, loadingMoreTalents, loadMoreError, visibleTalentCount, filteredTalents.length, hasMoreTalents, talents.length]);
 
   // Setiap perubahan filter memulai kembali tampilan dari 12 kartu pertama.
   useEffect(() => {
