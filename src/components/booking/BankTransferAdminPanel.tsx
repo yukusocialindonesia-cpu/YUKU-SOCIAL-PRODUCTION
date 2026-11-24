@@ -80,7 +80,7 @@ export const BankTransferAdminPanel: React.FC = () => {
       <p>Nominal: <strong>{formatRupiah(Number(row.claimed_amount))}</strong></p>
       {row.transfer_reference && <p>Referensi Customer: {row.transfer_reference}</p>}
       {url && <a href={url} target="_blank" rel="noreferrer" className="inline-block text-purple-700 underline">Lihat bukti transfer</a>}
-      {inactive ? <p className="rounded-lg bg-slate-100 p-2 text-slate-600">Booking tidak aktif ({bookingStatus[row.booking_id] || 'tidak diketahui'}); jangan sahkan pembayaran dari panel ini.</p> :
+      {inactive ? <div className="space-y-2"><p className="rounded-lg bg-slate-100 p-2 text-slate-600">Booking tidak aktif ({bookingStatus[row.booking_id] || 'tidak diketahui'}); pembayaran tidak boleh disahkan.</p><button disabled={busy} onClick={() => { setDialog({ row, approve: false }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tutup pengajuan / Tolak</button></div> :
         <div className="flex flex-wrap gap-2"><button disabled={busy} onClick={() => { setDialog({ row, approve: true }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Setujui</button><button disabled={busy} onClick={() => { setDialog({ row, approve: false }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tolak</button></div>}
     </article>;
   };
