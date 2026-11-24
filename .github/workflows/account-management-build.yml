@@ -14,7 +14,6 @@ on:
   push:
     branches:
       - feature/super-admin-account-management
-      - feature/manual-bank-transfer-no-xendit
     paths:
       - "src/**"
       - "supabase/functions/account-management/**"
