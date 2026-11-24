@@ -251,17 +251,17 @@ DECLARE v_booking public.bookings%ROWTYPE; v_actor UUID := auth.uid();
 BEGIN
   IF v_actor IS NULL THEN RAISE EXCEPTION 'Authentication required.'; END IF;
   IF p_route IS NULL OR p_route NOT IN ('xendit','manual_qris','manual_bank_transfer') THEN RAISE EXCEPTION 'Jalur pembayaran tidak valid.'; END IF;
-  IF p_route = 'manual_qris' AND NOT EXISTS (
-    SELECT 1 FROM public.qris_payment_settings WHERE id = TRUE AND is_active
-  ) THEN RAISE EXCEPTION 'Pembayaran QRIS sedang tidak aktif.'; END IF;
-  IF p_route = 'manual_bank_transfer' AND NOT EXISTS (
-    SELECT 1 FROM public.bank_transfer_settings WHERE id = TRUE AND is_active
-  ) THEN RAISE EXCEPTION 'Transfer bank sedang tidak aktif.'; END IF;
   SELECT * INTO v_booking FROM public.bookings WHERE id=p_booking_id FOR UPDATE;
   IF NOT FOUND OR v_booking.customer_id <> v_actor THEN RAISE EXCEPTION 'Booking tidak ditemukan.'; END IF;
   IF v_booking.status <> 'pending_payment'::public.booking_status_type THEN RAISE EXCEPTION 'Booking tidak lagi menunggu pembayaran.'; END IF;
   IF v_booking.payment_expires_at <= NOW() THEN RAISE EXCEPTION 'Batas waktu pembayaran telah kedaluwarsa.'; END IF;
   IF v_booking.payment_route IS NULL THEN
+    IF p_route = 'manual_qris' AND NOT EXISTS (
+      SELECT 1 FROM public.qris_payment_settings WHERE id = TRUE AND is_active
+    ) THEN RAISE EXCEPTION 'Pembayaran QRIS sedang tidak aktif.'; END IF;
+    IF p_route = 'manual_bank_transfer' AND NOT EXISTS (
+      SELECT 1 FROM public.bank_transfer_settings WHERE id = TRUE AND is_active
+    ) THEN RAISE EXCEPTION 'Transfer bank sedang tidak aktif.'; END IF;
     UPDATE public.bookings SET payment_route=p_route,updated_at=NOW() WHERE id=p_booking_id;
     RETURN TRUE;
   END IF;
