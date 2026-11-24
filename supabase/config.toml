@@ -2,3 +2,6 @@
 # The function verifies signed-in user tokens itself and validates webhook requests
 # with the dedicated x-yuku-push-secret header.
 verify_jwt = false
+
+[functions.account-management]
+verify_jwt = true
