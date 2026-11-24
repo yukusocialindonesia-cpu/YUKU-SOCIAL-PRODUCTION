@@ -101,9 +101,19 @@ BEGIN
      OR v_booking.payment_expires_at <= NOW() THEN
     RAISE EXCEPTION 'Booking tidak lagi dapat menerima pembayaran.';
   END IF;
+  SELECT * INTO v_settings FROM public.bank_transfer_settings WHERE id = TRUE FOR SHARE;
+  IF NOT FOUND OR NOT v_settings.is_active THEN
+    -- Existing booking snapshots remain usable even after Admin deactivates or changes the current account.
+    SELECT i.bank_name, i.account_number, i.account_holder, i.instructions, v_booking.gross_amount
+      INTO bank_name, account_number, account_holder, instructions, gross_amount
+      FROM public.bank_transfer_payment_instructions i WHERE i.booking_id = p_booking_id;
+    IF FOUND THEN
+      RETURN QUERY SELECT bank_name, account_number, account_holder, instructions, v_booking.gross_amount;
+      RETURN;
+    END IF;
+    RAISE EXCEPTION 'Transfer bank sedang tidak aktif.';
+  END IF;
   PERFORM public.claim_booking_payment_route(p_booking_id, 'manual_bank_transfer');
-  SELECT * INTO v_settings FROM public.bank_transfer_settings WHERE id = TRUE;
-  IF NOT FOUND OR NOT v_settings.is_active THEN RAISE EXCEPTION 'Transfer bank sedang tidak aktif.'; END IF;
   INSERT INTO public.bank_transfer_payment_instructions
     (booking_id, bank_name, account_number, account_holder, instructions)
   VALUES
@@ -240,6 +250,12 @@ DECLARE v_booking public.bookings%ROWTYPE; v_actor UUID := auth.uid();
 BEGIN
   IF v_actor IS NULL THEN RAISE EXCEPTION 'Authentication required.'; END IF;
   IF p_route NOT IN ('xendit','manual_qris','manual_bank_transfer') THEN RAISE EXCEPTION 'Jalur pembayaran tidak valid.'; END IF;
+  IF p_route = 'manual_qris' AND NOT EXISTS (
+    SELECT 1 FROM public.qris_payment_settings WHERE id = TRUE AND is_active
+  ) THEN RAISE EXCEPTION 'Pembayaran QRIS sedang tidak aktif.'; END IF;
+  IF p_route = 'manual_bank_transfer' AND NOT EXISTS (
+    SELECT 1 FROM public.bank_transfer_settings WHERE id = TRUE AND is_active
+  ) THEN RAISE EXCEPTION 'Transfer bank sedang tidak aktif.'; END IF;
   SELECT * INTO v_booking FROM public.bookings WHERE id=p_booking_id FOR UPDATE;
   IF NOT FOUND OR v_booking.customer_id <> v_actor THEN RAISE EXCEPTION 'Booking tidak ditemukan.'; END IF;
   IF v_booking.status <> 'pending_payment'::public.booking_status_type THEN RAISE EXCEPTION 'Booking tidak lagi menunggu pembayaran.'; END IF;
