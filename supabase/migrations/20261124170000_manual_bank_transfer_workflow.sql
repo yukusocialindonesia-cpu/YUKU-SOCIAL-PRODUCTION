@@ -1,6 +1,4 @@
 -- YUKU: manual bank transfer workflow. Additive migration; QRIS and legacy providers remain intact.
-ALTER TYPE public.payment_provider_type ADD VALUE IF NOT EXISTS 'manual_bank_transfer';
-
 ALTER TABLE public.bookings
   DROP CONSTRAINT IF EXISTS bookings_payment_route_check;
 ALTER TABLE public.bookings
