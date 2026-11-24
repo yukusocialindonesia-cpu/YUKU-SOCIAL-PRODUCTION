@@ -73,6 +73,7 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'Akun Customer/Talent tidak ditemukan.' }, 404);
     }
     if (target.account_status === nextStatus) return json({ error: 'Akun sudah memiliki status tersebut.' }, 409);
+    if (target.account_status === 'banned') return json({ error: 'Akun yang diblokir permanen tidak dapat diaktifkan dari menu ini.' }, 403);
 
     // Auth ban is applied first when suspending, so a DB failure cannot leave a
     // newly suspended account able to refresh its session. Re-enable DB first
