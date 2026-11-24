@@ -130,3 +130,25 @@ BEGIN
   END IF;
 END;
 $block$;
+
+
+-- Keep every admin RPC/SECURITY DEFINER authorization helper tied to the
+-- current database account status, not only the Admin panel's session state.
+CREATE OR REPLACE FUNCTION private.is_active_admin(p_user_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+  SELECT p_user_id IS NOT NULL
+    AND EXISTS (
+      SELECT 1
+      FROM private.admin_accounts aa
+      JOIN public.users u ON u.id = aa.user_id
+      WHERE aa.user_id = p_user_id
+        AND aa.is_active IS TRUE
+        AND u.role = 'admin'::public.user_role_type
+        AND u.account_status = 'active'::public.account_status_type
+    );
+$function$;
