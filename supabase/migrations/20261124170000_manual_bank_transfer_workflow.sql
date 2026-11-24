@@ -249,7 +249,7 @@ RETURNS BOOLEAN LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE v_booking public.bookings%ROWTYPE; v_actor UUID := auth.uid();
 BEGIN
   IF v_actor IS NULL THEN RAISE EXCEPTION 'Authentication required.'; END IF;
-  IF p_route NOT IN ('xendit','manual_qris','manual_bank_transfer') THEN RAISE EXCEPTION 'Jalur pembayaran tidak valid.'; END IF;
+  IF p_route IS NULL OR p_route NOT IN ('xendit','manual_qris','manual_bank_transfer') THEN RAISE EXCEPTION 'Jalur pembayaran tidak valid.'; END IF;
   IF p_route = 'manual_qris' AND NOT EXISTS (
     SELECT 1 FROM public.qris_payment_settings WHERE id = TRUE AND is_active
   ) THEN RAISE EXCEPTION 'Pembayaran QRIS sedang tidak aktif.'; END IF;
@@ -401,4 +401,12 @@ CREATE POLICY qris_proof_read_owner_or_finance ON storage.objects
       OR EXISTS (SELECT 1 FROM public.qris_payment_submissions s
         WHERE s.proof_storage_path = name AND s.customer_id = auth.uid())
     )
+  );
+
+CREATE POLICY bank_transfer_proof_delete_own_booking ON storage.objects
+  FOR DELETE TO authenticated USING (
+    bucket_id='bank-transfer-payment-proofs'
+    AND EXISTS(SELECT 1 FROM public.bookings b WHERE b.id::text=(storage.foldername(name))[1]
+      AND b.customer_id=auth.uid() AND b.status='pending_payment'::public.booking_status_type
+      AND b.payment_route='manual_bank_transfer')
   );
