@@ -27,6 +27,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { INDONESIA_CITIES } from '../utils/cities';
 import { PhotoCropEditor } from '../components/common/PhotoCropEditor';
+import { compressProfileImage } from '../utils/compressProfileImage';
 
 interface BecomeTalentPageProps {
   onNavigate: (path: AppRoute) => void;
@@ -287,11 +288,11 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       // 2c. Unggah foto profil ke bucket publik 'avatars' (folder = id pengguna, sesuai aturan RLS).
       let uploadedAvatarUrl: string | null = null;
       if (avatarFile) {
-        const avatarExt = (avatarFile.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-        const avatarPath = `${activeUserId}/avatar_${Date.now()}.${avatarExt}`;
+        const compressedAvatar = await compressProfileImage(avatarFile);
+        const avatarPath = `${activeUserId}/avatar_${Date.now()}.webp`;
         const { error: avatarUploadError } = await supabase.storage
           .from('avatars')
-          .upload(avatarPath, avatarFile, { upsert: false, contentType: avatarFile.type });
+          .upload(avatarPath, compressedAvatar, { upsert: false, contentType: 'image/webp' });
         if (avatarUploadError) {
           throw new Error(`Gagal mengunggah foto profil: ${avatarUploadError.message}`);
         }
@@ -809,7 +810,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
                     </div>
                     <div>
                       <label className="block font-bold text-slate-700 mb-1">
-                        Foto Profil Utama * <span className="font-normal text-slate-500">(JPG/PNG/WebP, maks. 10 MB)</span>
+                        Foto Profil Utama * <span className="font-normal text-slate-500">(JPG/PNG/WebP, maks. 10 MB; otomatis dikompres WebP)</span>
                       </label>
                       <div className="relative">
                         <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
