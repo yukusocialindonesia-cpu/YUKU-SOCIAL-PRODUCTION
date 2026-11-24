@@ -93,6 +93,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE
   v_booking public.bookings%ROWTYPE;
   v_settings public.bank_transfer_settings%ROWTYPE;
+  v_snapshot public.bank_transfer_payment_instructions%ROWTYPE;
 BEGIN
   IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Authentication required.'; END IF;
   SELECT * INTO v_booking FROM public.bookings WHERE id = p_booking_id FOR UPDATE;
@@ -104,11 +105,11 @@ BEGIN
   SELECT * INTO v_settings FROM public.bank_transfer_settings WHERE id = TRUE FOR SHARE;
   IF NOT FOUND OR NOT v_settings.is_active THEN
     -- Existing booking snapshots remain usable even after Admin deactivates or changes the current account.
-    SELECT i.bank_name, i.account_number, i.account_holder, i.instructions, v_booking.gross_amount
-      INTO bank_name, account_number, account_holder, instructions, gross_amount
+    SELECT * INTO v_snapshot
       FROM public.bank_transfer_payment_instructions i WHERE i.booking_id = p_booking_id;
     IF FOUND THEN
-      RETURN QUERY SELECT bank_name, account_number, account_holder, instructions, v_booking.gross_amount;
+      RETURN QUERY SELECT v_snapshot.bank_name, v_snapshot.account_number,
+        v_snapshot.account_holder, v_snapshot.instructions, v_booking.gross_amount;
       RETURN;
     END IF;
     RAISE EXCEPTION 'Transfer bank sedang tidak aktif.';
