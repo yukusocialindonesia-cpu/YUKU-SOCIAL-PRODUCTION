@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, MapPin } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
@@ -76,6 +76,39 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
+  const [customerLocation, setCustomerLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsMessage, setGpsMessage] = useState<string | null>(null);
+
+  const handleUseMyLocation = () => {
+    if (!window.isSecureContext || !navigator.geolocation) {
+      setGpsMessage('GPS memerlukan browser yang mendukung lokasi dan koneksi aman (HTTPS).');
+      return;
+    }
+
+    setGpsLoading(true);
+    setGpsMessage(null);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCustomerLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setGpsMessage('Izin lokasi aktif. Pengurutan Talent terdekat akan tersedia setelah tahap berikutnya.');
+        setGpsLoading(false);
+      },
+      (error) => {
+        const message = error.code === error.PERMISSION_DENIED
+          ? 'Izin lokasi ditolak. Kamu tetap bisa memilih kota secara manual.'
+          : error.code === error.POSITION_UNAVAILABLE
+            ? 'Lokasi belum dapat ditemukan. Coba lagi atau pilih kota secara manual.'
+            : 'Permintaan lokasi terlalu lama. Coba lagi.';
+        setGpsMessage(message);
+        setGpsLoading(false);
+      },
+      { enableHighAccuracy: false, maximumAge: 60000, timeout: 12000 }
+    );
+  };
 
   const TALENT_BATCH_SIZE = 100;
   const TALENT_DISPLAY_STEP = 12;
@@ -382,6 +415,21 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 talentCities={talentCities}
                 onChangeCity={setSelectedCity}
               />
+              <button
+                type="button"
+                onClick={handleUseMyLocation}
+                disabled={gpsLoading}
+                aria-label="Gunakan lokasi GPS saya"
+                className="mt-1.5 inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-2 text-[11px] font-semibold text-purple-800 transition-colors hover:bg-purple-100 disabled:cursor-wait disabled:opacity-60 sm:min-h-10 sm:text-xs"
+              >
+                <MapPin className="h-3.5 w-3.5 shrink-0" />
+                {gpsLoading ? 'Mencari lokasi...' : customerLocation ? 'Lokasi Saya Aktif' : 'Gunakan Lokasi Saya'}
+              </button>
+              {gpsMessage && (
+                <p role="status" aria-live="polite" className="mt-1 text-[10px] leading-snug text-slate-600 sm:text-xs">
+                  {gpsMessage}
+                </p>
+              )}
             </div>
 
             <button
