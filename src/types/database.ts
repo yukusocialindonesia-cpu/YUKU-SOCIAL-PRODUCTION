@@ -34,7 +34,7 @@ export type BookingStatus =
   | 'expired';
 
 /** Database enum retains legacy simulation value; production flows must not use it. */
-export type PaymentProvider = 'xendit' | 'midtrans' | 'manual_qris' | 'simulation';
+export type PaymentProvider = 'xendit' | 'midtrans' | 'manual_qris' | 'manual_bank_transfer' | 'simulation';
 
 export type PayoutProvider = 'manual' | 'xendit' | 'midtrans';
 
