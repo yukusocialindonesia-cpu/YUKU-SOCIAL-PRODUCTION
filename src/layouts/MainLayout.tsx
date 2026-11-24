@@ -35,8 +35,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
         showBottomNav ? 'pb-[calc(104px+env(safe-area-inset-bottom))] md:pb-0' : ''
       }`}
     >
-      {/* Satu-satunya header aplikasi; sticky dan konsisten di semua halaman. */}
+      {/* Header fixed di HP; spacer menjaga konten tidak tertutup. Desktop tetap sticky. */}
       <Navbar currentPath={currentPath} onNavigate={onNavigate} />
+      <div aria-hidden="true" className="h-14 min-[376px]:h-[60px] min-[431px]:h-16 xl:hidden" />
 
       <main className="flex-1">{children}</main>
 
