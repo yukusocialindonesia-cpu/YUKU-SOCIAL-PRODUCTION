@@ -120,7 +120,7 @@ export const TalentMediaModerationPanel: React.FC = () => {
                 <p className="text-[10px] text-slate-400">{new Date(item.created_at).toLocaleString('id-ID')}</p>
                 {item.moderation_status === 'approved' ? (
                   <div className="space-y-2 pt-1">
-                    <div className="flex items-center gap-1 text-[11px] text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" /> Sudah tampil di galeri publik</div>
+                    <div className="flex items-center gap-1 text-[11px] text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" /> Disetujui; tampil jika profil Talent juga aktif dan disetujui</div>
                     <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Cabut persetujuan</button>
                   </div>
                 ) : (
