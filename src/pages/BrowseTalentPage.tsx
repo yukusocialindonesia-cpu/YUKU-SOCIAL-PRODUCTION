@@ -186,7 +186,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </section>
 
         <div aria-hidden="true" className="sm:hidden" style={{ height: mobilePinnedHeight }} />
-        <div ref={mobilePinnedRef} className="fixed inset-x-0 top-0 z-50 w-full bg-[#FAF8FC]/95 px-4 pb-2 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
+        <div ref={mobilePinnedRef} className="fixed inset-x-0 top-0 z-50 w-full bg-[#FAF8FC]/95 px-4 pb-1 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
         <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
@@ -256,7 +256,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         )}
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-2 sm:mb-8 space-y-1.5 sm:space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1.5 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-1.5 sm:gap-3">
             {/* Search Input */}
@@ -309,7 +309,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
           <div id="jelajah-advanced-filters" className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
           {/* Row 2: Activity Categories Buttons */}
-          <div className="pt-2 sm:pt-4 border-t border-purple-100/80">
+          <div className="hidden sm:block pt-2 sm:pt-4 border-t border-purple-100/80">
             <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
               <button
                 type="button"
@@ -402,7 +402,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
-        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-2 -mx-1">
+        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-1 -mx-1">
           <div className="flex items-center gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
@@ -430,7 +430,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-2 flex items-center justify-between">
+        <div className="sm:hidden mb-1 flex items-center justify-between">
           <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Jelajahi Talent</h2>
           <span className="text-[10px] font-medium text-slate-500">{filteredTalents.length} tersedia</span>
         </div>
