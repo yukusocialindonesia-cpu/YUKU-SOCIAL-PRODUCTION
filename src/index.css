@@ -52,7 +52,7 @@ body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: url('/yuku-app-icon-transparent.png');
+  background-image: url('/icon-192.png');
   background-repeat: no-repeat;
   background-position: right 8% center;
   background-size: clamp(220px, 34vw, 420px);
