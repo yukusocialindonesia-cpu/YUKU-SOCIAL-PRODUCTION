@@ -5,6 +5,7 @@ import { formatRupiah } from '../../utils/formatters';
 
 export const BankTransferAdminPanel: React.FC = () => {
   const [rows, setRows] = useState<any[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
   const [bookingStatus, setBookingStatus] = useState<Record<string, string>>({});
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
@@ -22,11 +23,12 @@ export const BankTransferAdminPanel: React.FC = () => {
     const db = supabase as any;
     const [{ data: cfg, error: cfgError }, { data: submissions, error: submissionsError }] = await Promise.all([
       db.from('bank_transfer_settings').select('*').eq('id', true).maybeSingle(),
-      db.from('bank_transfer_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,created_at').eq('status', 'pending_review').order('created_at', { ascending: true }),
+      db.from('bank_transfer_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,admin_notes,created_at,reviewed_at').order('created_at', { ascending: false }).limit(50),
     ]);
     if (cfgError) throw cfgError;
     if (submissionsError) throw submissionsError;
-    setRows(submissions || []);
+    setRows((submissions || []).filter((r: any) => r.status === 'pending_review').reverse());
+    setHistory((submissions || []).filter((r: any) => r.status !== 'pending_review'));
     if (cfg) {
       setBankName(cfg.bank_name || ''); setAccountNumber(cfg.account_number || '');
       setAccountHolder(cfg.account_holder || ''); setInstructions(cfg.instructions || '');
@@ -102,6 +104,15 @@ export const BankTransferAdminPanel: React.FC = () => {
       {actionable.map(row => <ReviewCard key={row.id} row={row} />)}
     </section>
     {stale.length > 0 && <section className="space-y-3"><h3 className="font-extrabold text-slate-500">Booking tidak aktif ({stale.length})</h3>{stale.map(row => <ReviewCard key={row.id} row={row} inactive />)}</section>}
+    <section className="space-y-3"><h3 className="font-extrabold text-slate-900">Riwayat Verifikasi Transfer Bank</h3>
+      {history.length === 0 && <p className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-500">Belum ada pembayaran transfer bank yang selesai diperiksa.</p>}
+      {history.map(row => <article key={row.id} className="rounded-xl border border-slate-200 bg-white p-3 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2"><strong>Booking: {row.booking_id}</strong><span className={row.status === 'approved' ? 'font-bold text-emerald-700' : 'font-bold text-rose-700'}>{row.status === 'approved' ? 'Disetujui' : 'Ditolak'}</span></div>
+        <p className="mt-1">Nominal: <strong>{formatRupiah(Number(row.claimed_amount))}</strong>{row.transfer_reference ? ` • Referensi: ${row.transfer_reference}` : ''}</p>
+        {row.admin_notes && <p className="mt-1 text-slate-500">Catatan: {row.admin_notes}</p>}
+        <p className="mt-1 text-[10px] text-slate-400">Diajukan: {new Date(row.created_at).toLocaleString('id-ID')}{row.reviewed_at ? ` • Diperiksa: ${new Date(row.reviewed_at).toLocaleString('id-ID')}` : ''}</p>
+      </article>)}
+    </section>
     {dialog && <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/50 p-4 sm:items-center" onClick={() => !busy && setDialog(null)}><div className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl" onClick={e => e.stopPropagation()}>
       <h4 className="font-extrabold text-slate-900">{dialog.approve ? 'Verifikasi Transfer Bank' : 'Tolak Bukti Transfer'}</h4>
       <p className="text-xs text-slate-500">Nominal: <strong>{formatRupiah(Number(dialog.row.claimed_amount))}</strong></p>
