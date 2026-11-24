@@ -1,8 +1,8 @@
 import React from 'react';
 import { HOW_IT_WORKS_STEPS } from '../../utils/contentData';
-import { ArrowRight, Search, CalendarClock, Smile, BadgeCheck, Lock, Headphones, Heart } from 'lucide-react';
+import { ArrowRight, Search, CalendarCheck, ClipboardCheck, Star, BadgeCheck, Lock, Headphones, Heart } from 'lucide-react';
 
-const STEP_ICONS = [Search, CalendarClock, Smile, BadgeCheck];
+const STEP_ICONS = [Search, CalendarCheck, ClipboardCheck, Star];
 
 const TRUST_ITEMS = [
   { label: 'Profil Terverifikasi', Icon: BadgeCheck },
@@ -20,13 +20,13 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
     <section className="py-4 md:py-16 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10">
-          {/* Cara Kerja */}
+          {/* Cara Memesan */}
           <div className="lg:col-span-8">
             <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase block">
               Alur Mudah & Transparan
             </span>
             <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E0938] tracking-tight mb-3 sm:mb-5">
-              Cara Kerja YUKU
+              Cara Memesan di YUKU
             </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
