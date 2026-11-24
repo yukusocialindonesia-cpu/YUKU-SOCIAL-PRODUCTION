@@ -612,6 +612,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         setMediaModerationAvailable(moderationSchemaAvailable);
         const ownMedia = (mediaRows || []) as TalentMediaRow[];
         const ownMediaWithSignedUrls = await Promise.all(ownMedia.map(async (item) => {
+          // Preserve legacy public URLs until migration 65 is applied. Once the
+          // moderation schema exists, only signed URLs are used.
+          if (!moderationSchemaAvailable) return item;
           if (!item.storage_path) return { ...item, media_url: '' };
           const { data: signedData, error: signedError } = await supabase.storage
             .from('talent-media')
