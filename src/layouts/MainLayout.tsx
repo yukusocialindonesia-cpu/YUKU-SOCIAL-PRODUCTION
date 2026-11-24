@@ -38,7 +38,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
     >
       {/* Satu-satunya <header> aplikasi */}
       <div
-        className={`${currentPath === '/talent' ? 'hidden md:block' : ''} ${
+        className={`${
           isHomePage ? 'fixed inset-x-0 top-0 z-50 md:static' : ''
         }`}
       >
