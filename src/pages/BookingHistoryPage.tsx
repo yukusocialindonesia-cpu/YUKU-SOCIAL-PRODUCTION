@@ -95,13 +95,13 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
   const hasLoadedOnceRef = useRef(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [availablePaymentMethods, setAvailablePaymentMethods] = useState({ qris: false, bankTransfer: false });
+  const [availablePaymentMethods, setAvailablePaymentMethods] = useState({ qris: false, bankTransfer: false, loading: true });
 
   useEffect(() => {
     let alive = true;
     const loadPaymentMethods = async () => {
       if (!currentUser) {
-        if (alive) setAvailablePaymentMethods({ qris: false, bankTransfer: false });
+        if (alive) setAvailablePaymentMethods({ qris: false, bankTransfer: false, loading: false });
         return;
       }
       const db = supabase as any;
@@ -114,6 +114,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
         setAvailablePaymentMethods({
           qris: !qrisResult.error && qrisResult.data?.is_active === true,
           bankTransfer: !bankResult.error && bankResult.data?.is_active === true,
+          loading: false,
         });
       }
     };
@@ -907,7 +908,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                         <div className="grid gap-2 sm:grid-cols-2">
                           {availablePaymentMethods.qris && <button type="button" onClick={async () => { const { error } = await (supabase as any).rpc('claim_booking_payment_route', { p_booking_id: item.id, p_route: 'manual_qris' }); if (error) setErrorMsg(error.message); else setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: 'manual_qris' as const } : b)); }} className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-left text-xs font-extrabold text-purple-900 hover:bg-purple-100">Bayar dengan QRIS</button>}
                           {availablePaymentMethods.bankTransfer && <button type="button" onClick={async () => { const { error } = await (supabase as any).rpc('get_bank_transfer_instructions', { p_booking_id: item.id }); if (error) setErrorMsg(error.message); else setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: 'manual_bank_transfer' as const } : b)); }} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs font-extrabold text-slate-900 hover:bg-slate-100">Transfer Bank</button>}
-                          {!availablePaymentMethods.qris && !availablePaymentMethods.bankTransfer && <p className="col-span-full rounded-xl bg-amber-50 p-3 text-xs text-amber-800">Metode pembayaran sementara belum tersedia. Silakan hubungi Bantuan YUKU.</p>}
+                          {!availablePaymentMethods.qris && !availablePaymentMethods.bankTransfer && <p className="col-span-full rounded-xl bg-amber-50 p-3 text-xs text-amber-800">{availablePaymentMethods.loading ? 'Memuat metode pembayaran...' : 'Metode pembayaran sementara belum tersedia. Silakan hubungi Bantuan YUKU.'}</p>}
                         </div>
                       </div>
                     )}
