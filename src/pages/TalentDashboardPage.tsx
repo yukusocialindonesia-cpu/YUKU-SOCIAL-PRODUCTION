@@ -1312,6 +1312,25 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     }
   };
 
+  const refreshTalentMediaSignedUrl = async (item: TalentMediaRow): Promise<boolean> => {
+    if (!item.storage_path) return false;
+    const { data, error } = await supabase.storage.from('talent-media').createSignedUrl(item.storage_path, 1800);
+    if (error || !data?.signedUrl) return false;
+    setMediaItems((current) => current.map((media) => media.id === item.id ? { ...media, media_url: data.signedUrl } : media));
+    return true;
+  };
+
+  const handleTalentMediaUrlError = (item: TalentMediaRow, element: HTMLImageElement | HTMLMediaElement) => {
+    if (element.dataset.urlRefreshAttempted === 'true') {
+      if (element instanceof HTMLImageElement) element.style.display = 'none';
+      return;
+    }
+    element.dataset.urlRefreshAttempted = 'true';
+    void refreshTalentMediaSignedUrl(item).then((refreshed) => {
+      if (!refreshed && element instanceof HTMLImageElement) element.style.display = 'none';
+    });
+  };
+
   const handleUploadMedia = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
@@ -2886,7 +2905,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                             </button>
                           )}
                         </div>
-                        <audio controls preload="metadata" src={voice.media_url} className="w-full h-9" />
+                        <audio controls preload="metadata" src={voice.media_url} onError={(e) => handleTalentMediaUrlError(voice, e.currentTarget)} className="w-full h-9" />
                         <p className="text-[11px] font-semibold text-amber-700">{voice.moderation_status === 'rejected' ? 'Ditolak · tidak tampil di profil publik' : voice.moderation_status === 'pending' ? 'Menunggu persetujuan Admin' : 'Disetujui · tampil di profil publik'}</p>
                       </div>
                     ))}
@@ -2917,9 +2936,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                             alt={photo.caption || 'Foto profil Talent'}
                             className="w-full h-full object-cover"
                             referrerPolicy="no-referrer"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).style.display = 'none';
-                            }}
+                            onError={(e) => handleTalentMediaUrlError(photo, e.currentTarget)}
                           />
                         </div>
                         <div className="p-2.5 bg-white flex items-center justify-between gap-2 text-xs">
@@ -2984,6 +3001,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           playsInline
                           preload="metadata"
                           src={vid.media_url}
+                          onError={(e) => handleTalentMediaUrlError(vid, e.currentTarget)}
                           className="w-full aspect-video bg-slate-950 object-cover"
                         />
                         <div className="p-3 flex items-center justify-between gap-2 text-xs">
