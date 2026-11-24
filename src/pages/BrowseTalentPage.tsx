@@ -439,6 +439,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   key={talent.id}
                   talent={talent}
                   showPrice={false}
+                  compact
                   priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
                   onSelect={(id) => onNavigate('/talent/:id', { id })}
                 />
