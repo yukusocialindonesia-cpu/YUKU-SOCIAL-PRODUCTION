@@ -311,6 +311,13 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     serviceMode: 'Offline & Online',
   });
 
+  // GPS service-area settings (coordinates are only read back by this Talent's own RPC).
+  const [serviceLocation, setServiceLocation] = useState<{ latitude: number; longitude: number; radius_km: number; location_label: string | null; is_active: boolean } | null>(null);
+  const [locationRadius, setLocationRadius] = useState('10');
+  const [locationLabel, setLocationLabel] = useState('');
+  const [isSavingLocation, setIsSavingLocation] = useState(false);
+  const [locationStatusMessage, setLocationStatusMessage] = useState('');
+
   // Load Session and Profile
   const loadDashboardData = useCallback(async (userId: string) => {
     setIsLoadingData(true);
@@ -326,6 +333,20 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
       if (profError) {
         console.warn('Gagal membaca profil talent:', profError.message);
+      }
+
+      const { data: ownLocation, error: ownLocationError } = await supabase.rpc('get_my_talent_service_location');
+      if (ownLocationError) {
+        console.warn('Gagal membaca pengaturan lokasi Talent:', ownLocationError.message);
+      } else {
+        const savedLocation = Array.isArray(ownLocation) ? ownLocation[0] : null;
+        if (savedLocation) {
+          setServiceLocation(savedLocation);
+          setLocationRadius(String(savedLocation.radius_km || 10));
+          setLocationLabel(savedLocation.location_label || '');
+        } else {
+          setServiceLocation(null);
+        }
       }
 
       if (profData) {
@@ -975,6 +996,58 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
       if (currentUser) await loadDashboardData(currentUser.id);
     } catch (err: any) { setErrorMessage(err?.message || 'Gagal mengajukan perubahan nama.'); }
     finally { setIsSubmittingAction(false); }
+  };
+
+  const handleSaveServiceLocation = async () => {
+    if (!currentUser || !navigator.geolocation) {
+      setLocationStatusMessage('GPS tidak didukung oleh browser/perangkat ini.');
+      return;
+    }
+    setIsSavingLocation(true);
+    setLocationStatusMessage('Meminta izin lokasi perangkat...');
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      try {
+        const { error } = await supabase.rpc('save_talent_service_location', {
+          p_latitude: position.coords.latitude,
+          p_longitude: position.coords.longitude,
+          p_radius_km: Number(locationRadius),
+          p_location_label: locationLabel.trim() || null,
+          p_is_active: true,
+        });
+        if (error) throw error;
+        setServiceLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          radius_km: Number(locationRadius),
+          location_label: locationLabel.trim() || null,
+          is_active: true,
+        });
+        setLocationStatusMessage('Titik layanan tersimpan dan GPS aktif.');
+      } catch (err: any) {
+        setLocationStatusMessage(err?.message || 'Gagal menyimpan titik layanan.');
+      } finally {
+        setIsSavingLocation(false);
+      }
+    }, (error) => {
+      setLocationStatusMessage(error.code === 1 ? 'Izin lokasi ditolak. Izinkan akses lokasi untuk melanjutkan.' : 'Lokasi tidak berhasil didapatkan. Coba lagi.');
+      setIsSavingLocation(false);
+    }, { enableHighAccuracy: false, maximumAge: 60000, timeout: 12000 });
+  };
+
+  const handleToggleServiceLocation = async () => {
+    if (!serviceLocation) return;
+    setIsSavingLocation(true);
+    try {
+      const nextActive = !serviceLocation.is_active;
+      const { error } = await supabase.rpc('set_talent_location_active', { p_is_active: nextActive });
+      if (error) throw error;
+      setServiceLocation({ ...serviceLocation, is_active: nextActive });
+      setLocationStatusMessage(nextActive ? 'Lokasi layanan diaktifkan.' : 'Lokasi layanan dinonaktifkan. Profil tetap tersedia melalui filter kota.');
+    } catch (err: any) {
+      setLocationStatusMessage(err?.message || 'Gagal mengubah status lokasi.');
+    } finally {
+      setIsSavingLocation(false);
+    }
   };
 
   // Action: Update Profile Settings
@@ -1881,6 +1954,13 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             <span>Layanan Saya ({talentServices.length})</span>
           </button>
           <button
+            onClick={() => setActiveTab('location')}
+            className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${activeTab === 'location' ? 'bg-white text-purple-900 shadow-[0_8px_20px_-10px_rgba(76,29,149,0.40)] ring-1 ring-purple-100' : 'hover:bg-slate-100 text-slate-700'}`}
+          >
+            <MapPin className="w-3.5 h-3.5" />
+            <span>Lokasi & GPS</span>
+          </button>
+          <button
             onClick={() => setActiveTab('media')}
             className={`min-h-11 w-full sm:w-auto px-3 py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 text-center ${
               activeTab === 'media'
@@ -1925,6 +2005,36 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
             <span>Protokol Keamanan Talent</span>
           </button>
         </div>
+
+        {activeTab === 'location' && (
+          <section className="rounded-2xl border border-purple-100 bg-white p-4 sm:p-6 shadow-sm space-y-4">
+            <div>
+              <h3 className="text-base font-bold text-slate-900">Lokasi Layanan & GPS</h3>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">Tentukan titik layanan atau area pertemuan publik, bukan alamat rumah pribadi. Customer hanya akan melihat perkiraan jarak, bukan koordinat Anda.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="text-xs font-semibold text-slate-700">
+                Nama titik layanan (opsional)
+                <input value={locationLabel} onChange={(e) => setLocationLabel(e.target.value)} maxLength={100} placeholder="Contoh: Area Botani Square" className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal" />
+              </label>
+              <label className="text-xs font-semibold text-slate-700">
+                Radius layanan
+                <select value={locationRadius} onChange={(e) => setLocationRadius(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal">
+                  <option value="5">5 km</option><option value="10">10 km</option><option value="20">20 km</option>
+                </select>
+              </label>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3 text-xs text-slate-600">
+              {serviceLocation ? <>Status: <strong className={serviceLocation.is_active ? 'text-emerald-700' : 'text-slate-600'}>{serviceLocation.is_active ? 'GPS Aktif' : 'GPS Nonaktif'}</strong><span className="block mt-1">Radius tersimpan: {serviceLocation.radius_km} km</span></> : 'Belum ada titik layanan yang disimpan.'}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button type="button" onClick={handleSaveServiceLocation} disabled={isSavingLocation} className="min-h-11 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{isSavingLocation ? 'Memproses...' : 'Gunakan Lokasi Saya & Aktifkan'}</button>
+              {serviceLocation && <button type="button" onClick={handleToggleServiceLocation} disabled={isSavingLocation} className="min-h-11 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 disabled:opacity-50">{serviceLocation.is_active ? 'Nonaktifkan GPS' : 'Aktifkan GPS'}</button>}
+            </div>
+            {locationStatusMessage && <p role="status" aria-live="polite" className="text-xs text-slate-600">{locationStatusMessage}</p>}
+            <p className="text-[11px] leading-relaxed text-slate-500">Catatan: menonaktifkan GPS hanya mengeluarkan Anda dari pencarian berdasarkan jarak. Profil dan pencarian berdasarkan kota tetap tersedia.</p>
+          </section>
+        )}
 
         {/* TAB 1: BOOKING MANAGEMENT */}
         {activeTab === 'bookings' && (
