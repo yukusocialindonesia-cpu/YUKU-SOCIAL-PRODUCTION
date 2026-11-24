@@ -38,6 +38,9 @@ const statusLabels: Record<AccountStatus, string> = {
 
 export const AccountManagementPanel: React.FC = () => {
   const [accounts, setAccounts] = useState<ManagedAccount[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalAccounts, setTotalAccounts] = useState(0);
+  const pageSize = 50;
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -46,16 +49,18 @@ export const AccountManagementPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (targetPage = 1) => {
     setLoading(true);
     setError(null);
     try {
       const { data, error: invokeError } = await supabase.functions.invoke('account-management', {
-        body: { action: 'list' },
+        body: { action: 'list', page: targetPage },
       });
       if (invokeError) throw invokeError;
-      if (!data?.success || !Array.isArray(data.accounts)) throw new Error(data?.error || 'Daftar akun tidak dapat dimuat.');
+      if (!data?.success || !Array.isArray(data.accounts) || !data.pagination) throw new Error(data?.error || 'Daftar akun tidak dapat dimuat.');
       setAccounts(data.accounts as ManagedAccount[]);
+      setPage(data.pagination.page);
+      setTotalAccounts(data.pagination.total);
     } catch (err: any) {
       setError(err?.message || 'Gagal memuat daftar akun.');
     } finally {
@@ -158,7 +163,7 @@ export const AccountManagementPanel: React.FC = () => {
       </div>
 
       <div className="flex items-center justify-between text-xs text-slate-500">
-        <span>{filteredAccounts.length} akun ditampilkan dari maksimal 250 akun terbaru</span>
+        <span>{totalAccounts === 0 ? 'Belum ada akun' : `Menampilkan ${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, totalAccounts)} dari ${totalAccounts} akun`}</span>
         <span>Customer & Talent</span>
       </div>
 
@@ -224,6 +229,14 @@ export const AccountManagementPanel: React.FC = () => {
           })}
         </div>
       )}
+
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs text-slate-500">Halaman {page} dari {Math.max(1, Math.ceil(totalAccounts / pageSize))}. Pencarian berlaku pada halaman yang sedang dibuka.</p>
+        <div className="flex gap-2">
+          <button onClick={() => void load(page - 1)} disabled={loading || page <= 1} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-40">Sebelumnya</button>
+          <button onClick={() => void load(page + 1)} disabled={loading || page >= Math.ceil(totalAccounts / pageSize)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-40">Berikutnya</button>
+        </div>
+      </div>
 
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-900">
         <strong>Penghapusan permanen belum diaktifkan.</strong> Pemeriksaan kelayakan hanya membaca data. Sebelum anonimisasi, retensi transaksi, audit, dokumen KTP, bukti pembayaran, dan file penyimpanan tetap perlu ditinjau manual.
