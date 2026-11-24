@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../utils/formatters';
 
 export const BankTransferAdminPanel: React.FC = () => {
-  const [config, setConfig] = useState<any>(null);
   const [rows, setRows] = useState<any[]>([]);
   const [bookingStatus, setBookingStatus] = useState<Record<string, string>>({});
   const [bankName, setBankName] = useState('');
@@ -27,7 +26,7 @@ export const BankTransferAdminPanel: React.FC = () => {
     ]);
     if (cfgError) throw cfgError;
     if (submissionsError) throw submissionsError;
-    setConfig(cfg); setRows(submissions || []);
+    setRows(submissions || []);
     if (cfg) {
       setBankName(cfg.bank_name || ''); setAccountNumber(cfg.account_number || '');
       setAccountHolder(cfg.account_holder || ''); setInstructions(cfg.instructions || '');
@@ -35,7 +34,7 @@ export const BankTransferAdminPanel: React.FC = () => {
     }
     const ids = Array.from(new Set((submissions || []).map((r: any) => r.booking_id)));
     if (ids.length) {
-      const { data, error: statusError } = await db.rpc('get_admin_finance_booking_statuses', { p_booking_ids: ids });
+      const { data, error: statusError } = await db.from('bookings').select('id,status').in('id', ids);
       if (statusError) throw statusError;
       const map: Record<string, string> = {};
       (data || []).forEach((b: any) => { map[b.id] = b.status; });
