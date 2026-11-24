@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -244,6 +244,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
     if (!availableTabs.includes(activeTab)) setActiveTab(availableTabs[0]);
   }, [availableTabs, activeTab]);
+
+  const tabContentRef = useRef<HTMLDivElement>(null);
+  const previousActiveTabRef = useRef<AdminTab>(activeTab);
+
+  useEffect(() => {
+    if (previousActiveTabRef.current === activeTab) return;
+    previousActiveTabRef.current = activeTab;
+    window.requestAnimationFrame(() => {
+      tabContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [activeTab]);
 
   // Load Admin Data
   const loadAdminData = useCallback(async () => {
@@ -1395,6 +1406,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </button>
           )}
         </div>
+
+        <div ref={tabContentRef} id="admin-tab-content" className="scroll-mt-4" aria-live="polite" />
 
         {availableTabs.length === 0 && (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center text-sm text-amber-900">
