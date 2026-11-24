@@ -128,6 +128,19 @@ GRANT EXECUTE ON FUNCTION public.can_read_talent_media_object(text) TO anon, aut
 
 DROP POLICY IF EXISTS talent_media_bucket_public_select ON storage.objects;
 DROP POLICY IF EXISTS talent_media_bucket_select_approved_or_owner ON storage.objects;
+-- Prevent an owner from moving an object into another Talent's folder via UPDATE.
+DROP POLICY IF EXISTS talent_media_bucket_owner_update ON storage.objects;
+CREATE POLICY talent_media_bucket_owner_update
+ON storage.objects
+FOR UPDATE TO authenticated
+USING (
+  bucket_id = 'talent-media'
+  AND auth.uid()::text = (storage.foldername(name))[1]
+)
+WITH CHECK (
+  bucket_id = 'talent-media'
+  AND auth.uid()::text = (storage.foldername(name))[1]
+);
 CREATE POLICY talent_media_bucket_select_approved_or_owner
 ON storage.objects
 FOR SELECT
