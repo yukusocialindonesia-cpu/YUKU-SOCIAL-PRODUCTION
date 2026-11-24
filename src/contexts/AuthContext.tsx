@@ -131,8 +131,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const nextAdminAccess = nextRole === 'admin' ? await fetchAdminAccess() : null;
     if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
 
-    if (nextAccess.accountStatus === 'suspended' || nextAccess.accountStatus === 'banned') {
-      // Akun yang dibatasi tidak boleh melanjutkan sesi aplikasi.
+    if (nextAccess.accountStatus !== 'active' && nextAccess.accountStatus !== 'pending_verification') {
+      // Tolak sesi jika akun dibatasi, record tidak ada, atau status gagal diverifikasi.
       await supabase.auth.signOut({ scope: 'global' });
       currentUserIdRef.current = null;
       setUser(null);
