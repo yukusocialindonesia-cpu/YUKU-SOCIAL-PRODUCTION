@@ -96,6 +96,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           longitude: position.coords.longitude,
         };
         setCustomerLocation(nextLocation);
+        setNearestTalentDistances(null);
         void (async () => {
           try {
             const { data, error } = await (await import('../lib/supabase')).supabase.rpc('find_nearest_talents', {
@@ -285,14 +286,27 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         if (selectedMode === 'offline' && !talent.serviceMode?.includes('Offline')) return false;
       }
 
-      if (customerLocation && nearestTalentDistances && nearestTalentDistances[talent.id] == null) return false;
+      // GPS is a meeting-distance filter only for offline-capable Talent.
+      // If no nearby result exists, preserve the normal city-based discovery fallback.
+      const hasNearbyResults = Boolean(nearestTalentDistances && Object.keys(nearestTalentDistances).length > 0);
+      if (
+        customerLocation &&
+        hasNearbyResults &&
+        selectedMode !== 'online' &&
+        talent.serviceMode !== 'Online Only' &&
+        nearestTalentDistances?.[talent.id] == null
+      ) return false;
       return true;
     }).sort((a, b) => {
-      if (!customerLocation || !nearestTalentDistances) return 0;
-      return (nearestTalentDistances[a.id] ?? Number.POSITIVE_INFINITY) - (nearestTalentDistances[b.id] ?? Number.POSITIVE_INFINITY);
+      if (!customerLocation || !nearestTalentDistances || selectedMode === 'online' || Object.keys(nearestTalentDistances).length === 0) return 0;
+      const distanceA = a.serviceMode === 'Online Only' ? Number.POSITIVE_INFINITY : (nearestTalentDistances[a.id] ?? Number.POSITIVE_INFINITY);
+      const distanceB = b.serviceMode === 'Online Only' ? Number.POSITIVE_INFINITY : (nearestTalentDistances[b.id] ?? Number.POSITIVE_INFINITY);
+      return distanceA - distanceB;
     }).map((talent) => ({
       ...talent,
-      distanceKm: customerLocation && nearestTalentDistances ? nearestTalentDistances[talent.id] : undefined,
+      distanceKm: customerLocation && nearestTalentDistances && selectedMode !== 'online' && talent.serviceMode !== 'Online Only'
+        ? nearestTalentDistances[talent.id]
+        : undefined,
     }));
   }, [talents, user?.id, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, customerLocation, nearestTalentDistances]);
 
