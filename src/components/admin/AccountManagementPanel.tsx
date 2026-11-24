@@ -93,7 +93,7 @@ export const AccountManagementPanel: React.FC = () => {
           <div>
             <h3 className="text-sm font-black text-violet-950">Manajemen Akun Customer & Talent</h3>
             <p className="mt-1 text-xs leading-relaxed text-violet-900">
-              Menu ini hanya tersedia untuk Super Admin. Menonaktifkan akun akan mencabut sesi login dan menyembunyikan Talent dari katalog.
+              Menu ini hanya tersedia untuk Super Admin. Menonaktifkan akun memblokir login baru dan perpanjangan sesi; sesi yang sedang aktif berakhir saat access token kedaluwarsa. Talent tidak lagi tampil di katalog.
               Riwayat transaksi tidak dihapus.
             </p>
           </div>
