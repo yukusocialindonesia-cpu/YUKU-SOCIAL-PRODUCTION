@@ -47,6 +47,7 @@ import { AppRoute } from '../types/navigation';
 import { formatRupiah } from '../utils/formatters';
 import { YUKU_BUSINESS_RULES } from '../utils/businessRules';
 import { INDONESIA_CITIES } from '../utils/cities';
+import { compressProfileImage } from '../utils/compressProfileImage';
 import { Modal } from '../components/common/Modal';
 import { PhotoCropEditor } from '../components/common/PhotoCropEditor';
 import { BookingChatModal } from '../components/chat/BookingChatModal';
@@ -973,11 +974,11 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     try {
       let newAvatarUrl: string | undefined;
       if (profileAvatarFile) {
-        const ext = (profileAvatarFile.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-        const avatarPath = `${currentUser.id}/avatar_${Date.now()}.${ext}`;
+        const compressedAvatar = await compressProfileImage(profileAvatarFile);
+        const avatarPath = `${currentUser.id}/avatar_${Date.now()}.webp`;
         const { error: avatarErr } = await supabase.storage
           .from('avatars')
-          .upload(avatarPath, profileAvatarFile, { upsert: false, contentType: profileAvatarFile.type });
+          .upload(avatarPath, compressedAvatar, { upsert: false, contentType: 'image/webp' });
         if (avatarErr) throw new Error(`Gagal mengunggah foto profil: ${avatarErr.message}`);
         newAvatarUrl = supabase.storage.from('avatars').getPublicUrl(avatarPath).data.publicUrl;
       }
@@ -3464,7 +3465,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         <form onSubmit={handleProfileUpdate} className="space-y-4 text-xs">
           <div>
             <label className="block font-bold text-slate-700 mb-1">
-              Ganti Foto Profil <span className="font-normal text-slate-500">(opsional, JPG/PNG/WebP, maks. 10 MB)</span>
+              Ganti Foto Profil <span className="font-normal text-slate-500">(JPG/PNG/WebP, maks. 10 MB; otomatis dikompres WebP)</span>
             </label>
             <input
               type="file"
