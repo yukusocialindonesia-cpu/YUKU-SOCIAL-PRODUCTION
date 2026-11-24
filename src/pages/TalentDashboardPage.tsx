@@ -1321,10 +1321,48 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     }
 
     const maxBytes = mediaType === 'photo' ? 8 * 1024 * 1024 : mediaType === 'video' ? 50 * 1024 * 1024 : 15 * 1024 * 1024;
-    if (fileToUpload.size > maxBytes) {
+    if (fileToUpload.size === 0 || fileToUpload.size > maxBytes) {
       const maxMb = Math.round(maxBytes / (1024 * 1024));
-      setErrorMessage(`Ukuran file ${typeLabel[mediaType]} melebihi batas maksimal ${maxMb} MB.`);
+      setErrorMessage(`Ukuran file ${typeLabel[mediaType]} harus lebih dari 0 dan maksimal ${maxMb} MB.`);
       return;
+    }
+
+    const allowedTypes: Record<TalentMediaType, string[]> = {
+      photo: ['image/jpeg', 'image/png', 'image/webp'],
+      video: ['video/mp4', 'video/webm', 'video/quicktime'],
+      voice: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/ogg', 'audio/webm', 'audio/mp4', 'audio/aac', 'audio/x-m4a'],
+    };
+    const normalizedType = (contentType || '').split(';')[0].trim().toLowerCase();
+    if (!allowedTypes[mediaType].includes(normalizedType)) {
+      setErrorMessage(mediaType === 'photo'
+        ? 'Format foto harus JPG, PNG, atau WebP.'
+        : mediaType === 'video'
+        ? 'Format video harus MP4, WebM, atau MOV.'
+        : 'Format audio harus MP3, WAV, OGG, WebM, atau M4A.');
+      return;
+    }
+
+    if (mediaType === 'video' || mediaType === 'voice') {
+      const previewUrl = URL.createObjectURL(fileToUpload);
+      try {
+        const duration = await new Promise<number>((resolve, reject) => {
+          const mediaElement = document.createElement(mediaType === 'video' ? 'video' : 'audio');
+          mediaElement.preload = 'metadata';
+          mediaElement.onloadedmetadata = () => resolve(mediaElement.duration);
+          mediaElement.onerror = () => reject(new Error('File tidak dapat dibaca. Pastikan format media valid.'));
+          mediaElement.src = previewUrl;
+        });
+        const maxDuration = mediaType === 'video' ? 120 : 60;
+        if (!Number.isFinite(duration) || duration <= 0 || duration > maxDuration) {
+          setErrorMessage(`${typeLabel[mediaType]} maksimal ${maxDuration} detik.`);
+          return;
+        }
+      } catch (metadataError) {
+        setErrorMessage(metadataError instanceof Error ? metadataError.message : 'Media tidak dapat diperiksa.');
+        return;
+      } finally {
+        URL.revokeObjectURL(previewUrl);
+      }
     }
 
     if (mediaFile) {
@@ -1334,6 +1372,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     } else {
       rawFileName = 'voice-intro';
     }
+    contentType = normalizedType;
 
     const storagePath = `${currentUser.id}/${mediaType}/${Date.now()}-${rawFileName}.${fileExt}`;
 
@@ -2565,8 +2604,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
                     { type: 'photo' as TalentMediaType, label: 'Foto Aktivitas', icon: ImageIcon, hint: 'Maks 8 foto (JPG/PNG/WebP)' },
-                    { type: 'video' as TalentMediaType, label: 'Video Perkenalan', icon: Video, hint: 'Maks 3 video (MP4/WebM, 50MB)' },
-                    { type: 'voice' as TalentMediaType, label: 'Voice Intro', icon: Mic, hint: 'Maks 2 audio (Rekam / Unggah)' },
+                    { type: 'video' as TalentMediaType, label: 'Video Perkenalan', icon: Video, hint: 'Maks 3 video (MP4/WebM/MOV, 50 MB, 2 menit)' },
+                    { type: 'voice' as TalentMediaType, label: 'Voice Intro', icon: Mic, hint: 'Maks 2 audio (15 MB, 60 detik)' },
                   ].map((opt) => {
                     const Icon = opt.icon;
                     const active = mediaType === opt.type;
