@@ -46,9 +46,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           setErrorMsg('Data akun belum dapat diverifikasi. Silakan coba lagi.');
           return;
         }
-        if (userRow.account_status === 'suspended' || userRow.account_status === 'banned') {
+        if (userRow.account_status !== 'active' && userRow.account_status !== 'pending_verification') {
           await supabase.auth.signOut({ scope: 'global' });
-          setErrorMsg('Akun YUKU ini sedang dinonaktifkan. Hubungi tim Support untuk informasi lebih lanjut.');
+          setErrorMsg('Status akun belum memenuhi syarat untuk masuk. Hubungi tim Support jika menurut lu ini keliru.');
           return;
         }
 
