@@ -999,8 +999,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   };
 
   const handleSaveServiceLocation = async () => {
-    if (!currentUser || !navigator.geolocation) {
-      setLocationStatusMessage('GPS tidak didukung oleh browser/perangkat ini.');
+    if (!currentUser) return;
+    if (!window.isSecureContext || !navigator.geolocation) {
+      setLocationStatusMessage('GPS memerlukan browser yang mendukung lokasi dan koneksi aman (HTTPS).');
       return;
     }
     setIsSavingLocation(true);
