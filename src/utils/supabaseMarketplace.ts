@@ -103,13 +103,6 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searc
     );
   }
 
-  if (limit !== undefined) {');
-    const pattern = `"%${escapedSearch}%"`;
-    query = query.or(
-      `display_name.ilike.${pattern},headline.ilike.${pattern},bio.ilike.${pattern}`
-    );
-  }
-
   if (limit !== undefined) {
     const safeLimit = Math.max(1, Math.floor(limit));
     const safeOffset = Math.max(0, Math.floor(offset));
