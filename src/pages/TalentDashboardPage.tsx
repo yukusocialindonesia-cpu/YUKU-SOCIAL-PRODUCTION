@@ -2714,6 +2714,11 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                         onChange={(e) => {
                           const selected = e.target.files?.[0] ?? null;
                           if (selected && mediaType === 'photo') {
+                            if (selected.size === 0 || selected.size > 15 * 1024 * 1024) {
+                              setErrorMessage('Ukuran foto asli maksimal 15 MB. Pilih foto lain atau kecilkan ukuran file terlebih dahulu.');
+                              e.target.value = '';
+                              return;
+                            }
                             setPendingGalleryPhotoFile(selected);
                             e.target.value = '';
                           } else {
