@@ -77,7 +77,7 @@ export async function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]>
  * Fetch public talent profiles from Supabase talent_profiles table via SELECT.
  * Explicitly checks errors on both talent_profiles and talent_services queries to prevent masking failures.
  */
-export async function fetchTalentsFromSupabase(limit?: number, offset = 0): Promise<TalentProfile[]> {
+export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
   let query = supabase
     .from('talent_profiles')
     .select(
@@ -92,6 +92,18 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0): Prom
     .order('created_at', { ascending: false })
     // Tie-breaker stabil agar pagination tidak mengulang/melewatkan baris dengan nilai urutan sama.
     .order('id', { ascending: true });
+
+  // Search di server agar hasil tidak terbatas pada batch yang sudah dimuat browser.
+  const normalizedSearch = searchTerm.trim();
+  if (normalizedSearch) {
+    const escapedSearch = normalizedSearch.replace(/[\\\\"]/g, '\\    .order('id', { ascending: true });
+
+  if (limit !== undefined) {');
+    const pattern = `"%${escapedSearch}%"`;
+    query = query.or(
+      `display_name.ilike.${pattern},headline.ilike.${pattern},bio.ilike.${pattern}`
+    );
+  }
 
   if (limit !== undefined) {
     const safeLimit = Math.max(1, Math.floor(limit));
