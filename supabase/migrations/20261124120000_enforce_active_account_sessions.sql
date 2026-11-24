@@ -32,20 +32,14 @@ SET search_path = ''
 AS $function$
 DECLARE
   v_actor uuid;
-  v_role text;
   v_status public.account_status_type;
 BEGIN
   v_actor := auth.uid();
-  v_role := auth.role();
-
-  -- Trusted backend/webhook/cron work is not a user session.
-  IF v_role IS DISTINCT FROM 'authenticated' THEN
+  -- Trusted service-role/backend/cron work has no end-user identity.
+  -- Anonymous requests remain subject to their existing RLS/grants.
+  IF v_actor IS NULL THEN
     IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
     RETURN NEW;
-  END IF;
-
-  IF v_actor IS NULL THEN
-    RAISE EXCEPTION 'Sesi pengguna tidak valid.' USING ERRCODE = '42501';
   END IF;
 
   -- Allow the initial profile row created during Auth signup.
