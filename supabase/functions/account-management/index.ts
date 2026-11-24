@@ -12,6 +12,12 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 
+const countRows = async (query: any) => {
+  const { count, error } = await query;
+  if (error) throw error;
+  return count ?? 0;
+};
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Method tidak diizinkan.' }, 405);
@@ -46,12 +52,83 @@ Deno.serve(async (req: Request) => {
     if (body?.action === 'list') {
       const { data: accounts, error } = await serviceClient
         .from('users')
-        .select('id,email,full_name,role,account_status,created_at')
+        .select('id,email,full_name,phone_number,role,account_status,created_at')
         .in('role', ['customer', 'talent'])
         .order('created_at', { ascending: false })
         .limit(250);
       if (error) return json({ error: 'Daftar akun gagal dimuat.' }, 500);
       return json({ success: true, accounts: accounts || [] });
+    }
+
+    if (body?.action === 'preflight') {
+      const targetUserId = typeof body.userId === 'string' ? body.userId : '';
+      if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(targetUserId)) return json({ error: 'ID akun tidak valid.' }, 400);
+      const { data: target, error: targetError } = await serviceClient
+        .from('users')
+        .select('id,role,account_status')
+        .eq('id', targetUserId)
+        .maybeSingle();
+      if (targetError) return json({ error: 'Data akun target gagal diverifikasi.' }, 500);
+      if (!target || !['customer', 'talent'].includes(target.role)) return json({ error: 'Akun Customer/Talent tidak ditemukan.' }, 404);
+
+      try {
+        const isTalent = target.role === 'talent';
+        const activeBookingStatuses = ['pending_payment', 'paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'disputed_hold'];
+        const pendingPaymentStatuses = ['pending', 'settled_held', 'disputed_hold'];
+        const pendingPayoutStatuses = ['requested', 'processing'];
+        const pendingRefundStatuses = ['requested', 'approved'];
+        const activeReportStatuses = ['open', 'investigating'];
+        const activeEarningStatuses = ['held_in_escrow', 'disputed_hold', 'available_for_payout', 'partially_paid_out'];
+
+        const [
+          totalBookings, activeBookings, pendingPayments, pendingPayouts, pendingRefunds,
+          activeReports, referralLinks, pendingRewards, affiliateEarnings, identityRows,
+          qrisSubmissions, orders,
+        ] = await Promise.all([
+          countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`)),
+          countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`).in('status', activeBookingStatuses)),
+          countRows(serviceClient.from('payments').select('id,bookings!inner(customer_id,talent_id)', { count: 'exact', head: true }).eq(isTalent ? 'bookings.talent_id' : 'bookings.customer_id', targetUserId).in('payment_status', pendingPaymentStatuses)),
+          isTalent ? countRows(serviceClient.from('payout_requests').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId).in('payout_status', pendingPayoutStatuses)) : Promise.resolve(0),
+          countRows(serviceClient.from('refunds').select('id,bookings!inner(customer_id,talent_id)', { count: 'exact', head: true }).eq(isTalent ? 'bookings.talent_id' : 'customer_id', targetUserId).in('status', pendingRefundStatuses)),
+          countRows(serviceClient.from('reports_complaints').select('id', { count: 'exact', head: true }).or(`reporter_id.eq.${targetUserId},reported_user_id.eq.${targetUserId}`).in('status', activeReportStatuses)),
+          isTalent ? countRows(serviceClient.from('referral_relationships').select('id', { count: 'exact', head: true }).or(`referrer_id.eq.${targetUserId},referee_talent_id.eq.${targetUserId}`)) : countRows(serviceClient.from('referral_relationships').select('id', { count: 'exact', head: true }).eq('referrer_id', targetUserId)),
+          countRows(serviceClient.from('referral_rewards').select('id', { count: 'exact', head: true }).eq('referrer_id', targetUserId).eq('status', 'pending_completion')),
+          isTalent ? countRows(serviceClient.from('talent_affiliate_earnings').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId).in('status', activeEarningStatuses)) : Promise.resolve(0),
+          countRows(serviceClient.from('user_identities').select('id', { count: 'exact', head: true }).eq('id', targetUserId)),
+          isTalent ? Promise.resolve(0) : countRows(serviceClient.from('qris_payment_submissions').select('id', { count: 'exact', head: true }).eq('customer_id', targetUserId)),
+          countRows(serviceClient.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', targetUserId)),
+        ]);
+
+        const checks = [
+          { key: 'active_bookings', label: 'Booking belum selesai', count: activeBookings, blocker: activeBookings > 0 },
+          { key: 'pending_payments', label: 'Pembayaran tertahan / belum selesai', count: pendingPayments, blocker: pendingPayments > 0 },
+          { key: 'pending_payouts', label: 'Payout menunggu / diproses', count: pendingPayouts, blocker: pendingPayouts > 0 },
+          { key: 'pending_refunds', label: 'Refund menunggu / disetujui', count: pendingRefunds, blocker: pendingRefunds > 0 },
+          { key: 'active_reports', label: 'Laporan atau sengketa terbuka', count: activeReports, blocker: activeReports > 0 },
+          { key: 'pending_rewards', label: 'Reward referral belum dikreditkan', count: pendingRewards, blocker: pendingRewards > 0 },
+          { key: 'affiliate_earnings', label: 'Saldo affiliate / earning aktif', count: affiliateEarnings, blocker: affiliateEarnings > 0 },
+          { key: 'identity_records', label: 'Catatan identitas / KTP', count: identityRows, blocker: false, manualReview: identityRows > 0 },
+          { key: 'qris_submissions', label: 'Bukti pembayaran QRIS', count: qrisSubmissions, blocker: false, manualReview: qrisSubmissions > 0 },
+          { key: 'orders', label: 'Riwayat pesanan', count: orders, blocker: false, manualReview: orders > 0 },
+          { key: 'referral_links', label: 'Relasi referral', count: referralLinks, blocker: false, manualReview: referralLinks > 0 },
+          { key: 'total_bookings', label: 'Total riwayat booking', count: totalBookings, blocker: false, manualReview: totalBookings > 0 },
+        ];
+        const blockers = checks.filter((item) => item.blocker).length;
+        const manualReviews = checks.filter((item) => item.manualReview).length;
+        return json({
+          success: true,
+          preflight: {
+            status: blockers > 0 ? 'blocked' : 'manual_review_required',
+            blockers,
+            manualReviews,
+            checks,
+            permanentDeletionEnabled: false,
+            note: 'Pemeriksaan ini hanya membaca data. Hasil tanpa blocker bukan persetujuan penghapusan; retensi data, file Storage, audit, dan kewajiban hukum tetap perlu ditinjau manual.',
+          },
+        });
+      } catch (_error) {
+        return json({ error: 'Pemeriksaan kelayakan tidak lengkap. Demi keamanan, akun tidak boleh diproses untuk penghapusan.' }, 500);
+      }
     }
 
     if (body?.action !== 'set_status') return json({ error: 'Aksi tidak dikenal.' }, 400);
@@ -75,9 +152,6 @@ Deno.serve(async (req: Request) => {
     if (target.account_status === nextStatus) return json({ error: 'Akun sudah memiliki status tersebut.' }, 409);
     if (target.account_status === 'banned') return json({ error: 'Akun yang diblokir permanen tidak dapat diaktifkan dari menu ini.' }, 403);
 
-    // Auth ban is applied first when suspending, so a DB failure cannot leave a
-    // newly suspended account able to refresh its session. Re-enable DB first
-    // when activating, so a failed Auth update remains fail-closed.
     if (nextStatus === 'suspended') {
       const { error } = await serviceClient.auth.admin.updateUserById(targetUserId, { ban_duration: '876000h' });
       if (error) return json({ error: 'Sesi akun gagal diblokir. Status database tidak diubah.' }, 500);
