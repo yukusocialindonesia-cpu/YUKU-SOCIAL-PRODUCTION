@@ -153,6 +153,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                       alt={slide.title}
                       referrerPolicy="no-referrer"
                       loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      fetchPriority={index === 0 ? 'high' : 'auto'}
                       onError={() => setBroken((p) => ({ ...p, [slide.id]: true }))}
                       className={`w-full h-full object-cover md:object-[70%_20%] ${
                         slide.mobile_image_url ? 'object-center' : 'object-[70%_20%]'
