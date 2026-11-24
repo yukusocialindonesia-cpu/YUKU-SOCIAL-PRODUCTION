@@ -411,3 +411,17 @@ CREATE POLICY bank_transfer_proof_delete_own_booking ON storage.objects
       AND b.customer_id=auth.uid() AND b.status='pending_payment'::public.booking_status_type
       AND b.payment_route='manual_bank_transfer')
   );
+
+CREATE OR REPLACE FUNCTION public.get_bank_transfer_booking_statuses(p_booking_ids UUID[])
+RETURNS TABLE(id UUID, status public.booking_status_type)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.has_admin_permission('finance') THEN
+    RAISE EXCEPTION 'Akses ditolak: izin Finance diperlukan.';
+  END IF;
+  RETURN QUERY SELECT b.id, b.status FROM public.bookings b WHERE b.id = ANY(p_booking_ids);
+END;
+$$;
+REVOKE ALL ON FUNCTION public.get_bank_transfer_booking_statuses(UUID[]) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_bank_transfer_booking_statuses(UUID[]) TO authenticated;
+
