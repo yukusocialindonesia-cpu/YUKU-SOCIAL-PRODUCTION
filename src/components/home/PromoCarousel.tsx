@@ -149,6 +149,8 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                         alt={promo.title || 'Poster promosi YUKU'}
                         referrerPolicy="no-referrer"
                         loading={index === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        fetchPriority={index === 0 ? 'high' : 'auto'}
                         onLoad={(e) => {
                           const { naturalWidth, naturalHeight } = e.currentTarget;
                           if (naturalWidth > 0 && naturalHeight > 0) {
