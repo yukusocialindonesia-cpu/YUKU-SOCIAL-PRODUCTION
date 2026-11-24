@@ -337,3 +337,54 @@ CREATE POLICY bank_transfer_proof_read_owner_or_finance ON storage.objects
     AND (public.has_admin_permission('finance')
       OR EXISTS(SELECT 1 FROM public.bank_transfer_submissions s WHERE s.proof_storage_path=name AND s.customer_id=auth.uid()))
   );
+
+
+-- Tighten existing QRIS administration to the same Finance permission as bank transfer.
+DROP POLICY IF EXISTS qris_settings_admin_update ON public.qris_payment_settings;
+DROP POLICY IF EXISTS qris_settings_admin_insert ON public.qris_payment_settings;
+DROP POLICY IF EXISTS qris_submissions_read_owner_or_admin ON public.qris_payment_submissions;
+DROP POLICY IF EXISTS qris_audit_read_admin ON public.qris_payment_audit_logs;
+CREATE POLICY qris_submissions_read_owner_or_finance ON public.qris_payment_submissions
+  FOR SELECT TO authenticated USING (customer_id = auth.uid() OR public.has_admin_permission('finance'));
+CREATE POLICY qris_audit_read_finance ON public.qris_payment_audit_logs
+  FOR SELECT TO authenticated USING (public.has_admin_permission('finance'));
+REVOKE INSERT, UPDATE ON public.qris_payment_settings FROM authenticated;
+
+DROP POLICY IF EXISTS qris_display_admin_upload ON storage.objects;
+DROP POLICY IF EXISTS qris_display_admin_update ON storage.objects;
+CREATE POLICY qris_display_finance_upload ON storage.objects
+  FOR INSERT TO authenticated WITH CHECK (bucket_id = 'qris-payment-display' AND public.has_admin_permission('finance'));
+CREATE POLICY qris_display_finance_update ON storage.objects
+  FOR UPDATE TO authenticated USING (bucket_id = 'qris-payment-display' AND public.has_admin_permission('finance'))
+  WITH CHECK (bucket_id = 'qris-payment-display' AND public.has_admin_permission('finance'));
+
+-- The legacy QRIS RPC bodies are retained behind Finance-checked wrappers.
+REVOKE EXECUTE ON FUNCTION public.admin_update_qris_settings(BOOLEAN,TEXT,TEXT,TEXT,TEXT) FROM authenticated;
+CREATE OR REPLACE FUNCTION public.admin_update_qris_settings_finance(
+  p_is_active BOOLEAN, p_image_path TEXT, p_merchant_name TEXT DEFAULT NULL,
+  p_merchant_identifier TEXT DEFAULT NULL, p_instructions TEXT DEFAULT NULL
+) RETURNS BOOLEAN LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.has_admin_permission('finance') THEN
+    RAISE EXCEPTION 'Akses ditolak: izin Finance diperlukan.';
+  END IF;
+  RETURN public.admin_update_qris_settings(p_is_active,p_image_path,p_merchant_name,p_merchant_identifier,p_instructions);
+END;
+$$;
+REVOKE ALL ON FUNCTION public.admin_update_qris_settings_finance(BOOLEAN,TEXT,TEXT,TEXT,TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.admin_update_qris_settings_finance(BOOLEAN,TEXT,TEXT,TEXT,TEXT) TO authenticated;
+
+REVOKE EXECUTE ON FUNCTION public.admin_review_qris_payment(UUID,BOOLEAN,TEXT,TEXT) FROM authenticated;
+CREATE OR REPLACE FUNCTION public.admin_review_qris_payment_finance(
+  p_submission_id UUID, p_approve BOOLEAN, p_admin_notes TEXT,
+  p_transfer_reference TEXT DEFAULT NULL
+) RETURNS BOOLEAN LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.has_admin_permission('finance') THEN
+    RAISE EXCEPTION 'Akses ditolak: izin Finance diperlukan.';
+  END IF;
+  RETURN public.admin_review_qris_payment(p_submission_id,p_approve,p_admin_notes,p_transfer_reference);
+END;
+$$;
+REVOKE ALL ON FUNCTION public.admin_review_qris_payment_finance(UUID,BOOLEAN,TEXT,TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.admin_review_qris_payment_finance(UUID,BOOLEAN,TEXT,TEXT) TO authenticated;
