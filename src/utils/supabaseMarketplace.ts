@@ -170,7 +170,7 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
 
   const { data: talentsData, error: talentsError } = await query;
   if (talentsError) {
-    throw new Error(\`Gagal membaca Talent terdekat dari Supabase: \${talentsError.message} (\${talentsError.code || 'UNKNOWN'})\`);
+    throw new Error(`Gagal membaca Talent terdekat dari Supabase: ${talentsError.message} (${talentsError.code || 'UNKNOWN'})`);
   }
   if (!talentsData || talentsData.length === 0) return [];
 
@@ -180,7 +180,7 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
     .in('talent_id', talentsData.map((talent) => talent.id));
 
   if (servicesError) {
-    throw new Error(\`Gagal membaca layanan Talent terdekat: \${servicesError.message} (\${servicesError.code || 'UNKNOWN'})\`);
+    throw new Error(`Gagal membaca layanan Talent terdekat: ${servicesError.message} (${servicesError.code || 'UNKNOWN'})`);
   }
 
   const servicesMap = new Map<string, string[]>();
