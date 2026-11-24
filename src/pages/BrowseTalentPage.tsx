@@ -258,6 +258,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     });
   }, [talents, user?.id, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
 
+  // Setiap perubahan filter memulai kembali tampilan dari 12 kartu pertama.
+  useEffect(() => {
+    setVisibleTalentCount(TALENT_DISPLAY_STEP);
+  }, [selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
+
   const hasAdvancedFilters = selectedActivity !== 'all' || selectedCity !== 'Semua Kota' || selectedGender !== 'Semua' || selectedMode !== 'all' || searchQuery.trim().length > 0;
 
   const handleResetFilters = () => {
