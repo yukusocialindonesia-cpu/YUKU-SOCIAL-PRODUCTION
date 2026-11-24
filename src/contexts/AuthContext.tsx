@@ -71,7 +71,7 @@ async function fetchAdminAccess(): Promise<AdminAccess | null> {
   }
 }
 
-async function fetchUserAccess(userId: string): Promise<{ role: UserRole | null; accountStatus: AccountStatus | null }> {
+async function fetchUserAccess(userId: string): Promise<{ role: UserRole | null; accountStatus: AccountStatus | null; verified: boolean }> {
   try {
     const { data, error } = await supabase
       .from('users')
@@ -79,10 +79,16 @@ async function fetchUserAccess(userId: string): Promise<{ role: UserRole | null;
       .eq('id', userId)
       .maybeSingle();
     if (error) throw error;
-    return { role: normalizeRole(data?.role), accountStatus: normalizeAccountStatus(data?.account_status) };
+    return {
+      role: normalizeRole(data?.role),
+      accountStatus: normalizeAccountStatus(data?.account_status),
+      verified: true,
+    };
   } catch (error) {
-    console.error('YUKU: gagal memuat status dan role pengguna', error);
-    return { role: null, accountStatus: null };
+    console.error('YUKU: gagal memverifikasi status dan role pengguna', error);
+    // Gangguan jaringan/database bukan bukti bahwa akun dinonaktifkan.
+    // Pertahankan sesi autentikasi, tetapi cabut akses berbasis role sampai verifikasi berhasil.
+    return { role: null, accountStatus: null, verified: false };
   }
 }
 
@@ -127,6 +133,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!sameUser) setIsAuthLoading(true);
 
     const nextAccess = await fetchUserAccess(nextUser.id);
+    if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+
+    if (!nextAccess.verified) {
+      setUser(nextUser);
+      setRole(null);
+      setAdminAccess(null);
+      setAccountStatus(null);
+      setIsAuthLoading(false);
+      return;
+    }
+
     const nextRole = nextAccess.role;
     const nextAdminAccess = nextRole === 'admin' ? await fetchAdminAccess() : null;
     if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
