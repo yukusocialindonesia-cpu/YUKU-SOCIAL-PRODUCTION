@@ -79,6 +79,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [customerLocation, setCustomerLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsMessage, setGpsMessage] = useState<string | null>(null);
+  const [nearestTalentDistances, setNearestTalentDistances] = useState<Record<string, number> | null>(null);
 
   const handleUseMyLocation = () => {
     if (!window.isSecureContext || !navigator.geolocation) {
@@ -90,12 +91,33 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setGpsMessage(null);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCustomerLocation({
+        const nextLocation = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        });
-        setGpsMessage('Izin lokasi aktif. Pengurutan Talent terdekat akan tersedia setelah tahap berikutnya.');
-        setGpsLoading(false);
+        };
+        setCustomerLocation(nextLocation);
+        void (async () => {
+          try {
+            const { data, error } = await (await import('../lib/supabase')).supabase.rpc('find_nearest_talents', {
+              p_customer_latitude: nextLocation.latitude,
+              p_customer_longitude: nextLocation.longitude,
+              p_limit: 500,
+            });
+            if (error) throw error;
+            const distances = Object.fromEntries(
+              ((data || []) as Array<{ talent_id: string; distance_km: number }>).map((item) => [item.talent_id, Number(item.distance_km)])
+            );
+            setNearestTalentDistances(distances);
+            setGpsMessage(Object.keys(distances).length
+              ? 'Talent di sekitar Anda sudah diurutkan berdasarkan jarak perkiraan.'
+              : 'Belum ada Talent aktif dalam radius layanan. Anda tetap bisa mencari berdasarkan kota.');
+          } catch (error: any) {
+            setNearestTalentDistances(null);
+            setGpsMessage(error?.message || 'Pencarian jarak belum tersedia. Anda tetap bisa mencari berdasarkan kota.');
+          } finally {
+            setGpsLoading(false);
+          }
+        })();
       },
       (error) => {
         const message = error.code === error.PERMISSION_DENIED
@@ -263,9 +285,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         if (selectedMode === 'offline' && !talent.serviceMode?.includes('Offline')) return false;
       }
 
+      if (customerLocation && nearestTalentDistances && nearestTalentDistances[talent.id] == null) return false;
       return true;
+    }).sort((a, b) => {
+      if (!customerLocation || !nearestTalentDistances) return 0;
+      return (nearestTalentDistances[a.id] ?? Number.POSITIVE_INFINITY) - (nearestTalentDistances[b.id] ?? Number.POSITIVE_INFINITY);
     });
-  }, [talents, user?.id, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
+  }, [talents, user?.id, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery, customerLocation, nearestTalentDistances]);
 
   useEffect(() => {
     const sentinel = loadMoreSentinelRef.current;
