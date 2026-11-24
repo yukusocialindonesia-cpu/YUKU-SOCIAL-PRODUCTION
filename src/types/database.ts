@@ -208,6 +208,7 @@ export interface BookingRow {
   platform_fee_amount: number; // BIGINT (20%)
   talent_gross_share: number; // BIGINT (80%)
   status: BookingStatus;
+  payment_route: 'xendit' | 'manual_qris' | 'manual_bank_transfer' | null;
   payment_expires_at: string;
   completion_confirmed_at: string | null;
   escrow_release_scheduled_at: string | null;
