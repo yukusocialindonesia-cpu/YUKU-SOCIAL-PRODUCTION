@@ -28,6 +28,8 @@ export const BankTransferCustomerPaymentPanel: React.FC<Props> = ({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const onRouteClaimedRef = useRef(onRouteClaimed);
+  onRouteClaimedRef.current = onRouteClaimed;
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -51,7 +53,7 @@ export const BankTransferCustomerPaymentPanel: React.FC<Props> = ({
         if (alive) {
           setInstructions(bank);
           setSubmission(proofData);
-          onRouteClaimed?.('manual_bank_transfer');
+          onRouteClaimedRef.current?.('manual_bank_transfer');
         }
       } catch (e: any) {
         if (alive) setError(e?.message || 'Gagal memuat instruksi transfer bank.');
@@ -62,7 +64,7 @@ export const BankTransferCustomerPaymentPanel: React.FC<Props> = ({
     if (bookingStatus === 'pending_payment' && (!paymentRoute || paymentRoute === 'manual_bank_transfer')) load();
     else setLoading(false);
     return () => { alive = false; };
-  }, [bookingId, bookingStatus, paymentRoute, onRouteClaimed]);
+  }, [bookingId, bookingStatus, paymentRoute]);
 
   const left = expiresAt ? Math.max(0, Math.floor((new Date(expiresAt).getTime() - now) / 1000)) : null;
   const countdown = left === null ? '' : `${String(Math.floor(left / 60)).padStart(2, '0')}:${String(left % 60).padStart(2, '0')}`;
