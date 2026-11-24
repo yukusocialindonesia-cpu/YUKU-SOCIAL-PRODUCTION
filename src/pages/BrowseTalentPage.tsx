@@ -73,12 +73,22 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setLoading(true);
     setErrorMsg(null);
     try {
-      const [talentsData, categoriesData] = await Promise.all([
+      const [talentsResult, categoriesResult] = await Promise.allSettled([
         fetchTalentsFromSupabase(),
         fetchCategoriesFromSupabase(),
       ]);
-      setTalents(talentsData);
-      setCategories(categoriesData);
+
+      if (talentsResult.status === 'rejected') {
+        throw talentsResult.reason;
+      }
+
+      setTalents(talentsResult.value);
+      if (categoriesResult.status === 'fulfilled') {
+        setCategories(categoriesResult.value);
+      } else {
+        console.warn('Kategori aktivitas Jelajah tidak dapat dimuat:', categoriesResult.reason);
+        setCategories([]);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal memuat data marketplace dari Supabase.');
     } finally {
@@ -94,7 +104,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   useEffect(() => {
     const element = mobilePinnedRef.current;
     if (!element) return;
-    const updateHeight = () => setMobilePinnedHeight(Math.ceil(element.getBoundingClientRect().bottom));
+    const updateHeight = () => setMobilePinnedHeight(Math.ceil(element.getBoundingClientRect().height));
     updateHeight();
     const observer = new ResizeObserver(updateHeight);
     observer.observe(element);
