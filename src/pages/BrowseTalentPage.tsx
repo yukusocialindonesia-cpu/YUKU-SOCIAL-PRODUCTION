@@ -552,7 +552,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <span>{errorMsg}</span>
             </div>
             <button
-              onClick={loadMarketplaceData}
+              onClick={() => void loadMarketplaceData(searchQuery)}
               className="min-h-11 px-3 py-2 bg-rose-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 hover:bg-rose-700 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
