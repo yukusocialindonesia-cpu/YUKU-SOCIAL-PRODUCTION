@@ -159,3 +159,47 @@ AS $function$
         AND u.account_status = 'active'::public.account_status_type
     );
 $function$;
+
+
+-- SECURITY DEFINER reads bypass table RLS, so explicitly guard this
+-- authenticated personal-data RPC as well.
+CREATE OR REPLACE FUNCTION public.get_my_referral_network()
+RETURNS TABLE(
+  id uuid,
+  referee_talent_id uuid,
+  referee_name text,
+  referee_city text,
+  referee_account_status text,
+  referral_code_used character varying,
+  is_active boolean,
+  created_at timestamp with time zone
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+DECLARE
+  v_caller_id uuid := auth.uid();
+BEGIN
+  IF v_caller_id IS NULL OR NOT private.is_current_user_active() THEN
+    RAISE EXCEPTION 'Akun tidak aktif atau autentikasi diperlukan.'
+      USING ERRCODE = '42501';
+  END IF;
+
+  RETURN QUERY
+  SELECT
+    rr.id,
+    rr.referee_talent_id,
+    COALESCE(tp.display_name, 'Talent Terdaftar')::text,
+    COALESCE(tp.city, '-')::text,
+    COALESCE(u.account_status::text, 'pending_verification'),
+    rr.referral_code_used,
+    rr.is_active,
+    rr.created_at
+  FROM public.referral_relationships rr
+  LEFT JOIN public.talent_profiles tp ON tp.id = rr.referee_talent_id
+  LEFT JOIN public.users u ON u.id = rr.referee_talent_id
+  WHERE rr.referrer_id = v_caller_id
+  ORDER BY rr.created_at DESC;
+END;
+$function$;
