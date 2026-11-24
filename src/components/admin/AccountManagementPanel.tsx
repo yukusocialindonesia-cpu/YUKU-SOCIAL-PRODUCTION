@@ -9,7 +9,6 @@ interface ManagedAccount {
   id: string;
   email: string;
   full_name: string | null;
-  phone_number: string | null;
   role: ManagedRole;
   account_status: AccountStatus;
   created_at: string;
@@ -53,7 +52,7 @@ export const AccountManagementPanel: React.FC = () => {
     const term = search.trim().toLowerCase();
     if (!term) return accounts;
     return accounts.filter((account) =>
-      [account.full_name, account.email, account.phone_number, account.role, account.account_status]
+      [account.full_name, account.email, account.role, account.account_status]
         .some((value) => String(value || '').toLowerCase().includes(term)),
     );
   }, [accounts, search]);
@@ -134,7 +133,7 @@ export const AccountManagementPanel: React.FC = () => {
                     <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${account.account_status === 'active' ? 'bg-emerald-50 text-emerald-700' : account.account_status === 'suspended' || account.account_status === 'banned' ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700'}`}>{statusLabels[account.account_status]}</span>
                   </div>
                   <p className="mt-1 break-all text-xs text-slate-600">{account.email}</p>
-                  <p className="mt-0.5 text-[11px] text-slate-400">{account.phone_number || 'Nomor telepon tidak tersedia'} · Bergabung {new Date(account.created_at).toLocaleDateString('id-ID')}</p>
+                  <p className="mt-0.5 text-[11px] text-slate-400">Bergabung {new Date(account.created_at).toLocaleDateString('id-ID')}</p>
                 </div>
                 <div className="flex shrink-0 gap-2">
                   {account.account_status === 'active' || account.account_status === 'pending_verification' ? (
