@@ -120,6 +120,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 {talent.city}
               </p>
             )}
+            {talent.distanceKm != null && (
+              <p className="mt-0.5 text-[10px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari lokasi Anda</p>
+            )}
           </div>
         </div>
       </article>
@@ -166,14 +169,10 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
         {/* Lokasi & mode (bawah foto) */}
         <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 flex items-center justify-between text-white text-[10px] sm:text-xs font-medium">
-          {talent.city ? (
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-              {talent.city}
-            </span>
-          ) : (
-            <span />
-          )}
+          <span className="inline-flex min-w-0 flex-col">
+            {talent.city && <span className="inline-flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />{talent.city}</span>}
+            {talent.distanceKm != null && <span className="text-[10px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari Anda</span>}
+          </span>
           {talent.serviceMode && (
             <span className="text-[11px] bg-white/20 backdrop-blur-sm border border-white/30 px-2 py-0.5 rounded-full">
               {priceMode === 'online' ? 'Jasa Online' : priceMode === 'offline' ? 'Jasa Offline' : talent.serviceMode}
