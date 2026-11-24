@@ -4,7 +4,7 @@ import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
 import { AppRoute } from '../types/navigation';
-import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
+import { fetchTalentsFromSupabase, fetchTalentsByIdsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
 import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 import { useAuth } from '../contexts/AuthContext';
@@ -109,6 +109,18 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               ((data || []) as Array<{ talent_id: string; distance_km: number }>).map((item) => [item.talent_id, Number(item.distance_km)])
             );
             setNearestTalentDistances(distances);
+
+            // Load GPS matches directly by ID so the nearest Talent are not hidden
+            // merely because they fall beyond the first 100 catalog records.
+            if (Object.keys(distances).length > 0) {
+              const nearbyTalents = await fetchTalentsByIdsFromSupabase(Object.keys(distances), searchQuery);
+              setTalents((current) => {
+                const merged = new Map(current.map((talent) => [talent.id, talent]));
+                nearbyTalents.forEach((talent) => merged.set(talent.id, talent));
+                return [...merged.values()];
+              });
+            }
+
             setGpsMessage(Object.keys(distances).length
               ? 'Talent di sekitar Anda sudah diurutkan berdasarkan jarak perkiraan.'
               : 'Belum ada Talent aktif dalam radius layanan. Anda tetap bisa mencari berdasarkan kota.');
