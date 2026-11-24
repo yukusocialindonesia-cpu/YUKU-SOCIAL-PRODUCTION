@@ -145,6 +145,56 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searc
 }
 
 /**
+ * Fetch a targeted set of public Talent profiles by ID.
+ * Used by GPS discovery so nearby profiles are not missed by the first catalog page.
+ */
+export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchTerm = ''): Promise<TalentProfile[]> {
+  const uniqueIds = [...new Set(talentIds.filter((id) => typeof id === 'string' && id.length > 0))];
+  if (uniqueIds.length === 0) return [];
+
+  let query = supabase
+    .from('talent_profiles')
+    .select(
+      'id, display_name, avatar_url, city, gender, headline, bio, hourly_rate, online_chat_rate, service_mode, rating_average, review_count, completed_hours, languages, interests, is_approved, created_at'
+    )
+    .in('id', uniqueIds);
+
+  const normalizedSearch = searchTerm.trim();
+  if (normalizedSearch) {
+    const escapedSearch = normalizedSearch.replace(/["\\]/g, '\\/**
+ * Fetch a single talent profile by ID from Supabase talent_profiles table via SELECT.');
+    const pattern = '"%' + escapedSearch + '%"';
+    query = query.or(
+      'display_name.ilike.' + pattern + ',headline.ilike.' + pattern + ',bio.ilike.' + pattern
+    );
+  }
+
+  const { data: talentsData, error: talentsError } = await query;
+  if (talentsError) {
+    throw new Error(`Gagal membaca Talent terdekat dari Supabase: ${talentsError.message} (${talentsError.code || 'UNKNOWN'})`);
+  }
+  if (!talentsData || talentsData.length === 0) return [];
+
+  const { data: servicesData, error: servicesError } = await supabase
+    .from('talent_services')
+    .select('talent_id, activity_category_id')
+    .in('talent_id', talentsData.map((talent) => talent.id));
+
+  if (servicesError) {
+    throw new Error(`Gagal membaca layanan Talent terdekat: ${servicesError.message} (${servicesError.code || 'UNKNOWN'})`);
+  }
+
+  const servicesMap = new Map<string, string[]>();
+  (servicesData || []).forEach((service) => {
+    const existing = servicesMap.get(service.talent_id) || [];
+    existing.push(service.activity_category_id);
+    servicesMap.set(service.talent_id, existing);
+  });
+
+  return talentsData.map((row) => mapSupabaseTalent(row, servicesMap.get(row.id) || []));
+}
+
+/**
  * Fetch a single talent profile by ID from Supabase talent_profiles table via SELECT.
  * Explicitly checks errors on both talent_profiles and talent_services queries to prevent masking failures.
  */
