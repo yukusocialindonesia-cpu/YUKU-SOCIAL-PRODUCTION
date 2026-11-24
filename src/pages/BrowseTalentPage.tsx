@@ -61,6 +61,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [visibleTalentCount, setVisibleTalentCount] = useState(12);
   const nextTalentOffsetRef = useRef(0);
   const loadingMoreRef = useRef(false);
+  const searchRequestRef = useRef(0);
   const loadMoreSentinelRef = useRef<HTMLDivElement | null>(null);
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
@@ -79,7 +80,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const TALENT_BATCH_SIZE = 100;
   const TALENT_DISPLAY_STEP = 12;
 
-  const loadMarketplaceData = async () => {
+  const loadMarketplaceData = async (searchTerm = searchQuery) => {
+    const requestId = ++searchRequestRef.current;
     setLoading(true);
     setErrorMsg(null);
     setLoadMoreError(null);
@@ -89,10 +91,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     nextTalentOffsetRef.current = 0;
     try {
       const [talentsResult, categoriesResult] = await Promise.allSettled([
-        fetchTalentsFromSupabase(TALENT_BATCH_SIZE, 0),
+        fetchTalentsFromSupabase(TALENT_BATCH_SIZE, 0, searchTerm),
         fetchCategoriesFromSupabase(),
       ]);
 
+      if (requestId !== searchRequestRef.current) return;
       if (talentsResult.status === 'rejected') {
         throw talentsResult.reason;
       }
@@ -107,15 +110,20 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         setCategories([]);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal memuat data marketplace dari Supabase.');
+      if (requestId === searchRequestRef.current) {
+        setErrorMsg(err.message || 'Gagal memuat data marketplace dari Supabase.');
+      }
     } finally {
-      setLoading(false);
+      if (requestId === searchRequestRef.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadMarketplaceData();
-  }, []);
+    const timer = window.setTimeout(() => {
+      void loadMarketplaceData(searchQuery);
+    }, searchQuery.trim() ? 350 : 0);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery]);
 
   const loadNextTalentBatch = async () => {
     if (loadingMoreRef.current || !hasMoreTalents) return;
@@ -125,7 +133,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setLoadMoreError(null);
     try {
       const offset = nextTalentOffsetRef.current;
-      const nextBatch = await fetchTalentsFromSupabase(TALENT_BATCH_SIZE, offset);
+      const nextBatch = await fetchTalentsFromSupabase(TALENT_BATCH_SIZE, offset, searchQuery);
       if (nextBatch.length > 0) {
         setTalents((current) => {
           const existingIds = new Set(current.map((talent) => talent.id));
@@ -220,18 +228,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       if (selectedMode !== 'all') {
         if (selectedMode === 'online' && !talent.serviceMode?.includes('Online')) return false;
         if (selectedMode === 'offline' && !talent.serviceMode?.includes('Offline')) return false;
-      }
-
-      // Search query (name, headline, interests, bio)
-      if (searchQuery.trim()) {
-        const q = searchQuery.trim().toLowerCase();
-        const matchesName = talent.name?.toLowerCase().includes(q) ?? false;
-        const matchesHeadline = talent.headline?.toLowerCase().includes(q) ?? false;
-        const matchesBio = talent.bio?.toLowerCase().includes(q) ?? false;
-        const matchesInterests = talent.interests?.some((i) => i.toLowerCase().includes(q)) ?? false;
-        if (!matchesName && !matchesHeadline && !matchesBio && !matchesInterests) {
-          return false;
-        }
       }
 
       return true;
