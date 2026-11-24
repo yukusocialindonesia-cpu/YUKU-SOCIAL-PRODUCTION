@@ -1,0 +1,50 @@
+name: Account management build and type checks
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "supabase/functions/account-management/**"
+      - "supabase/functions/admin-management/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "vite.config.*"
+      - ".github/workflows/account-management-build.yml"
+  push:
+    branches:
+      - feature/super-admin-account-management
+    paths:
+      - "src/**"
+      - "supabase/functions/account-management/**"
+      - "supabase/functions/admin-management/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "vite.config.*"
+      - ".github/workflows/account-management-build.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build

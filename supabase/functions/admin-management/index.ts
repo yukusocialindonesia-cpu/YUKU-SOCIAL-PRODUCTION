@@ -41,6 +41,15 @@ Deno.serve(async (req: Request) => {
     const { data: authData, error: authError } = await userClient.auth.getUser(token);
     if (authError || !authData.user) return json({ error: 'Sesi login tidak valid.' }, 401);
 
+    const { data: actor, error: actorError } = await serviceClient
+      .from('users')
+      .select('account_status')
+      .eq('id', authData.user.id)
+      .maybeSingle();
+    if (actorError || actor?.account_status !== 'active') {
+      return json({ error: 'Akun Admin tidak aktif. Undangan Admin ditolak.' }, 403);
+    }
+
     const { data: access, error: accessError } = await userClient.rpc('get_admin_access');
     if (accessError || access?.is_super_admin !== true) {
       return json({ error: 'Hanya Super Admin yang dapat mengundang Admin baru.' }, 403);
@@ -60,9 +69,10 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'Alamat aktivasi Admin tidak valid.' }, 400);
     }
 
-    const permissions = Array.isArray(body?.permissions)
-      ? [...new Set(body.permissions.filter((item: unknown): item is string => typeof item === 'string'))]
-      : [];
+    const permissionValues: unknown[] = Array.isArray(body?.permissions) ? body.permissions : [];
+    const permissions: string[] = [...new Set(
+      permissionValues.filter((item): item is string => typeof item === 'string'),
+    )];
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: 'Alamat email tidak valid.' }, 400);

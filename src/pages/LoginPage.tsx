@@ -35,11 +35,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         setErrorMsg(translateAuthError(error));
         setNeedsConfirmation(isEmailNotConfirmed(error));
       } else if (data.user) {
-        const { data: userRow } = await supabase
+        const { data: userRow, error: userRowError } = await supabase
           .from('users')
-          .select('role')
+          .select('role,account_status')
           .eq('id', data.user.id)
           .maybeSingle();
+
+        if (userRowError || !userRow) {
+          await supabase.auth.signOut({ scope: 'global' });
+          setErrorMsg('Data akun belum dapat diverifikasi. Silakan coba lagi.');
+          return;
+        }
+        if (userRow.account_status !== 'active' && userRow.account_status !== 'pending_verification') {
+          await supabase.auth.signOut({ scope: 'global' });
+          setErrorMsg('Status akun belum memenuhi syarat untuk masuk. Hubungi tim Support jika menurut lu ini keliru.');
+          return;
+        }
 
         // Jika ada isian pendaftaran talent yang tersimpan (dibuat sebelum konfirmasi email),
         // lanjutkan langsung ke formulir agar pengguna tidak tersesat di dashboard kosong.

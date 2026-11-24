@@ -45,6 +45,18 @@ Deno.serve(async (req) => {
   if (userErr || !userData?.user) return json({ error: 'Unauthorized' }, 401, headers);
   const userId = userData.user.id;
 
+  // This function later reads booking data with service_role, so it must
+  // enforce account status explicitly rather than relying on caller RLS.
+  const admin = createClient(supabaseUrl, serviceKey);
+  const { data: account, error: accountError } = await admin
+    .from('users')
+    .select('account_status')
+    .eq('id', userId)
+    .maybeSingle();
+  if (accountError || !account || !['active', 'pending_verification'].includes(account.account_status)) {
+    return json({ error: 'Akun sedang dinonaktifkan dan tidak dapat memulai pembayaran.' }, 403, headers);
+  }
+
   let bookingId: string;
   try {
     const body = await req.json();
@@ -53,8 +65,6 @@ Deno.serve(async (req) => {
     return json({ error: 'Body tidak valid.' }, 400, headers);
   }
   if (!/^[0-9a-f-]{36}$/i.test(bookingId)) return json({ error: 'booking_id tidak valid.' }, 400, headers);
-
-  const admin = createClient(supabaseUrl, serviceKey);
 
   // 2) Feature flag server-side harus aktif.
   const { data: flag } = await admin
