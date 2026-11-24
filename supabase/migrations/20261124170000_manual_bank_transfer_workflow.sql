@@ -214,10 +214,11 @@ BEGIN
   SELECT * INTO v_submission FROM public.bank_transfer_submissions WHERE id=p_submission_id FOR UPDATE;
   IF NOT FOUND OR v_submission.status <> 'pending_review' THEN RAISE EXCEPTION 'Pengajuan tidak ditemukan atau sudah diproses.'; END IF;
   SELECT * INTO v_booking FROM public.bookings WHERE id=v_submission.booking_id FOR UPDATE;
-  IF NOT FOUND OR v_booking.status <> 'pending_payment' THEN RAISE EXCEPTION 'Booking tidak lagi menunggu pembayaran.'; END IF;
-  IF v_booking.payment_expires_at <= NOW() THEN RAISE EXCEPTION 'Booking telah kedaluwarsa; pembayaran tidak boleh disahkan.'; END IF;
-  IF v_booking.payment_route IS DISTINCT FROM 'manual_bank_transfer' THEN RAISE EXCEPTION 'Booking tidak terkunci pada transfer bank.'; END IF;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Booking tidak ditemukan.'; END IF;
   IF p_approve THEN
+    IF v_booking.status <> 'pending_payment' THEN RAISE EXCEPTION 'Booking tidak lagi menunggu pembayaran.'; END IF;
+    IF v_booking.payment_expires_at <= NOW() THEN RAISE EXCEPTION 'Booking telah kedaluwarsa; pembayaran tidak boleh disahkan.'; END IF;
+    IF v_booking.payment_route IS DISTINCT FROM 'manual_bank_transfer' THEN RAISE EXCEPTION 'Booking tidak terkunci pada transfer bank.'; END IF;
     IF NULLIF(trim(COALESCE(p_transfer_reference,'')),'') IS NULL THEN RAISE EXCEPTION 'Referensi transaksi bank wajib dicatat.'; END IF;
     IF NOT EXISTS (SELECT 1 FROM storage.objects WHERE bucket_id='bank-transfer-payment-proofs' AND name=v_submission.proof_storage_path) THEN
       RAISE EXCEPTION 'File bukti transfer sudah tidak tersedia; minta Customer mengirim ulang.';
