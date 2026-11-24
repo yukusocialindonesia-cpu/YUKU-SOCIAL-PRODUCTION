@@ -1,6 +1,6 @@
 const MAX_INPUT_BYTES = 10 * 1024 * 1024;
-const TARGET_OUTPUT_BYTES = 300 * 1024;
 const MAX_DIMENSION = 1200;
+const OUTPUT_QUALITY = 0.86;
 
 /**
  * Compresses a user-selected profile image into a WebP file.
@@ -56,16 +56,7 @@ export async function compressProfileImage(file: File): Promise<File> {
       );
     });
 
-    let output: Blob | null = null;
-    for (let dimensionAttempt = 0; dimensionAttempt < 4; dimensionAttempt += 1) {
-      for (const quality of [0.82, 0.72, 0.62, 0.52]) {
-        output = await drawAndEncode(quality);
-        if (output.size <= TARGET_OUTPUT_BYTES) break;
-      }
-      if (output && output.size <= TARGET_OUTPUT_BYTES) break;
-      width = Math.max(1, Math.round(width * 0.85));
-      height = Math.max(1, Math.round(height * 0.85));
-    }
+    const output = await drawAndEncode(OUTPUT_QUALITY);
 
     if (!output) throw new Error('Gagal mengompres foto.');
     return new File([output], `yuku-profile-${Date.now()}.webp`, {
