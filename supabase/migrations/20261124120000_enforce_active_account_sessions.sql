@@ -1,7 +1,9 @@
 -- Block suspended/banned authenticated sessions at the database boundary.
--- Additive guard: existing RLS policies remain in place; a restrictive policy
--- requires an eligible account for authenticated access. Trusted service-role
--- and database/cron work continue to operate.
+-- Additive guard: existing RLS policies remain in place; restrictive policies
+-- require an eligible account for authenticated access to application tables.
+-- The users table retains its existing self-only SELECT policy so AuthContext
+-- can detect suspension; its writes are still blocked by the BEFORE trigger.
+-- Trusted service-role and database/cron work continue to operate.
 
 CREATE OR REPLACE FUNCTION private.is_current_user_active()
 RETURNS boolean
