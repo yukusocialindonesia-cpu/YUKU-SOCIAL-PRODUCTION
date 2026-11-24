@@ -102,6 +102,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const [mediaItems, setMediaItems] = useState<TalentMediaRow[]>([]);
   const [serviceRateOverrides, setServiceRateOverrides] = useState<Record<string, number | null>>({});
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const lightboxTouchStartX = useRef<number | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
 
   // Voice intro (pemutar ringkas versi HP)
@@ -550,7 +551,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[68vh] sm:max-h-none bg-slate-900 shadow-md">
+                    <div className="relative mx-0 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[65vh] sm:max-h-none bg-slate-900 shadow-md">
                       {heroUrl && !avatarFailed ? (
                         <PhotoLightbox
                           src={heroUrl}
@@ -582,11 +583,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       >
                         <Share2 className="w-5 h-5" />
                       </button>
-                      {photoMedia.length > 0 && (
-                        <span className="absolute right-4 bottom-10 rounded-full bg-purple-950/80 backdrop-blur text-white px-3 py-1 text-xs font-semibold tabular-nums">
-                          1 / {photoMedia.length}
-                        </span>
-                      )}
                     </div>
 
                     <div className="relative -mt-6 mx-2 rounded-2xl border border-slate-200 bg-white px-4 pt-5 pb-4 shadow-sm space-y-3">
@@ -849,7 +845,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
             )}
 
             {/* Galeri Foto & Video Card */}
-            {(photoMedia.length > 0 || videoMedia.length > 0) && (
+            {(photoMedia.length > 0 || videoMedia.length > 0) ? (
               <div className="rounded-2xl bg-white border border-slate-100 p-3 sm:rounded-[28px] sm:border-white/90 sm:p-6 md:p-8 sm:shadow-[0_16px_40px_rgba(76,29,149,0.08)] sm:ring-1 sm:ring-purple-100/70 space-y-4 sm:space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
@@ -928,6 +924,12 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     </div>
                   </div>
                 )}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-purple-200 bg-purple-50/50 px-4 py-5 text-center sm:rounded-[24px]">
+                <ImageIcon className="mx-auto mb-2 h-6 w-6 text-purple-500" />
+                <p className="text-sm font-semibold text-slate-700">Galeri belum tersedia</p>
+                <p className="mt-1 text-xs text-slate-500">Talent ini belum mengunggah foto atau video tambahan.</p>
               </div>
             )}
 
@@ -1660,7 +1662,24 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
           <div
             onClick={(e) => e.stopPropagation()}
-            className="max-w-4xl w-full flex flex-col items-center gap-3"
+            onTouchStart={(e) => {
+              lightboxTouchStartX.current = e.touches[0]?.clientX ?? null;
+            }}
+            onTouchEnd={(e) => {
+              const startX = lightboxTouchStartX.current;
+              const endX = e.changedTouches[0]?.clientX;
+              lightboxTouchStartX.current = null;
+              if (startX === null || endX === undefined || photoMedia.length < 2) return;
+              const deltaX = endX - startX;
+              if (Math.abs(deltaX) < 45) return;
+              setLightboxIndex((current) => {
+                if (current === null) return current;
+                return deltaX < 0
+                  ? (current + 1) % photoMedia.length
+                  : (current - 1 + photoMedia.length) % photoMedia.length;
+              });
+            }}
+            className="max-w-4xl w-full flex flex-col items-center gap-3 touch-pan-y"
           >
             <img
               src={photoMedia[lightboxIndex].media_url}
