@@ -83,7 +83,7 @@ Deno.serve(async (req: Request) => {
         const [
           totalBookings, activeBookings, pendingPayments, pendingPayouts, pendingRefunds,
           activeReports, referralLinks, pendingRewards, affiliateEarnings, identityRows,
-          qrisSubmissions, orders,
+          qrisSubmissions, orders, cancellationCases, auditRecords,
         ] = await Promise.all([
           countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`)),
           countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`).in('status', activeBookingStatuses)),
@@ -97,6 +97,8 @@ Deno.serve(async (req: Request) => {
           countRows(serviceClient.from('user_identities').select('id', { count: 'exact', head: true }).eq('id', targetUserId)),
           isTalent ? Promise.resolve(0) : countRows(serviceClient.from('qris_payment_submissions').select('id', { count: 'exact', head: true }).eq('customer_id', targetUserId)),
           countRows(serviceClient.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', targetUserId)),
+          isTalent ? countRows(serviceClient.from('customer_cancellation_cases').select('id,bookings!inner(talent_id)', { count: 'exact', head: true }).eq('bookings.talent_id', targetUserId)) : countRows(serviceClient.from('customer_cancellation_cases').select('id', { count: 'exact', head: true }).eq('customer_id', targetUserId)),
+          countRows(serviceClient.from('admin_audit_logs').select('id', { count: 'exact', head: true }).eq('target_id', targetUserId)),
         ]);
 
         const checks = [
@@ -112,6 +114,8 @@ Deno.serve(async (req: Request) => {
           { key: 'orders', label: 'Riwayat pesanan', count: orders, blocker: false, manualReview: orders > 0 },
           { key: 'referral_links', label: 'Relasi referral', count: referralLinks, blocker: false, manualReview: referralLinks > 0 },
           { key: 'total_bookings', label: 'Total riwayat booking', count: totalBookings, blocker: false, manualReview: totalBookings > 0 },
+          { key: 'cancellation_cases', label: 'Riwayat kasus pembatalan', count: cancellationCases, blocker: false, manualReview: cancellationCases > 0 },
+          { key: 'audit_records', label: 'Catatan audit terkait akun', count: auditRecords, blocker: false, manualReview: auditRecords > 0 },
         ];
         const blockers = checks.filter((item) => item.blocker).length;
         const manualReviews = checks.filter((item) => item.manualReview).length;
