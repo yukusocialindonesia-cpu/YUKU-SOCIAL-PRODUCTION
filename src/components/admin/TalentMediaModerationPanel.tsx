@@ -21,6 +21,20 @@ export const TalentMediaModerationPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
+  const refreshPreviewUrl = async (item: MediaRow): Promise<boolean> => {
+    if (!item.storage_path) return false;
+    const { data, error } = await supabase.storage.from('talent-media').createSignedUrl(item.storage_path, 1800);
+    if (error || !data?.signedUrl) return false;
+    setItems((current) => current.map((row) => row.id === item.id ? { ...row, signed_url: data.signedUrl } : row));
+    return true;
+  };
+
+  const handlePreviewUrlError = (item: MediaRow, element: HTMLImageElement | HTMLMediaElement) => {
+    if (element.dataset.urlRefreshAttempted === 'true') return;
+    element.dataset.urlRefreshAttempted = 'true';
+    void refreshPreviewUrl(item);
+  };
+
   const loadItems = useCallback(async () => {
     setLoading(true); setError(null);
     try {
@@ -102,9 +116,9 @@ export const TalentMediaModerationPanel: React.FC = () => {
           {visibleItems.map((item) => (
             <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
               <div className="flex aspect-video items-center justify-center overflow-hidden bg-slate-950">
-                {item.signed_url && item.media_type === 'photo' && <img src={item.signed_url} alt={item.caption || 'Foto Talent'} className="h-full w-full object-contain" />}
-                {item.signed_url && item.media_type === 'video' && <video src={item.signed_url} controls preload="metadata" className="h-full w-full" />}
-                {item.signed_url && item.media_type === 'voice' && <div className="w-full p-4"><Mic className="mx-auto mb-3 h-8 w-8 text-white" /><audio src={item.signed_url} controls className="w-full" /></div>}
+                {item.signed_url && item.media_type === 'photo' && <img src={item.signed_url} alt={item.caption || 'Foto Talent'} onError={(e) => handlePreviewUrlError(item, e.currentTarget)} className="h-full w-full object-contain" />}
+                {item.signed_url && item.media_type === 'video' && <video src={item.signed_url} controls preload="metadata" onError={(e) => handlePreviewUrlError(item, e.currentTarget)} className="h-full w-full" />}
+                {item.signed_url && item.media_type === 'voice' && <div className="w-full p-4"><Mic className="mx-auto mb-3 h-8 w-8 text-white" /><audio src={item.signed_url} controls onError={(e) => handlePreviewUrlError(item, e.currentTarget)} className="w-full" /></div>}
                 {!item.signed_url && <div className="px-4 text-center text-xs text-slate-300">Pratinjau tidak tersedia. Periksa akses Storage.</div>}
               </div>
               <div className="space-y-2 p-3">
