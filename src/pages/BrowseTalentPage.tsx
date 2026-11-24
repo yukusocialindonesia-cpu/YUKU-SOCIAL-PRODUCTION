@@ -55,6 +55,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const { user } = useAuth();
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
+  const [hasMoreTalents, setHasMoreTalents] = useState(false);
+  const [loadingMoreTalents, setLoadingMoreTalents] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
+  const [visibleTalentCount, setVisibleTalentCount] = useState(12);
+  const nextTalentOffsetRef = useRef(0);
+  const loadingMoreRef = useRef(false);
+  const loadMoreSentinelRef = useRef<HTMLDivElement | null>(null);
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
@@ -69,12 +76,20 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
   const [selectedMode, setSelectedMode] = useState<string>(initialMode);
 
+  const TALENT_BATCH_SIZE = 100;
+  const TALENT_DISPLAY_STEP = 12;
+
   const loadMarketplaceData = async () => {
     setLoading(true);
     setErrorMsg(null);
+    setLoadMoreError(null);
+    setVisibleTalentCount(TALENT_DISPLAY_STEP);
+    setTalents([]);
+    setHasMoreTalents(false);
+    nextTalentOffsetRef.current = 0;
     try {
       const [talentsResult, categoriesResult] = await Promise.allSettled([
-        fetchTalentsFromSupabase(),
+        fetchTalentsFromSupabase(TALENT_BATCH_SIZE, 0),
         fetchCategoriesFromSupabase(),
       ]);
 
@@ -83,6 +98,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       }
 
       setTalents(talentsResult.value);
+      nextTalentOffsetRef.current = talentsResult.value.length;
+      setHasMoreTalents(talentsResult.value.length === TALENT_BATCH_SIZE);
       if (categoriesResult.status === 'fulfilled') {
         setCategories(categoriesResult.value);
       } else {
@@ -99,6 +116,52 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   useEffect(() => {
     loadMarketplaceData();
   }, []);
+
+  const loadNextTalentBatch = async () => {
+    if (loadingMoreRef.current || !hasMoreTalents) return;
+
+    loadingMoreRef.current = true;
+    setLoadingMoreTalents(true);
+    setLoadMoreError(null);
+    try {
+      const offset = nextTalentOffsetRef.current;
+      const nextBatch = await fetchTalentsFromSupabase(TALENT_BATCH_SIZE, offset);
+      if (nextBatch.length > 0) {
+        setTalents((current) => {
+          const existingIds = new Set(current.map((talent) => talent.id));
+          return [...current, ...nextBatch.filter((talent) => !existingIds.has(talent.id))];
+        });
+        nextTalentOffsetRef.current = offset + nextBatch.length;
+      }
+      setHasMoreTalents(nextBatch.length === TALENT_BATCH_SIZE);
+    } catch (error: any) {
+      console.warn('Batch Talent berikutnya gagal dimuat:', error);
+      setLoadMoreError(error?.message || 'Talent berikutnya gagal dimuat.');
+    } finally {
+      loadingMoreRef.current = false;
+      setLoadingMoreTalents(false);
+    }
+  };
+
+  useEffect(() => {
+    const sentinel = loadMoreSentinelRef.current;
+    if (!sentinel || loading || loadingMoreTalents || loadMoreError) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        if (visibleTalentCount < filteredTalents.length) {
+          setVisibleTalentCount((current) => current + TALENT_DISPLAY_STEP);
+        } else if (hasMoreTalents) {
+          void loadNextTalentBatch();
+        }
+      },
+      { rootMargin: '500px 0px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loading, loadingMoreTalents, loadMoreError, visibleTalentCount, filteredTalents.length, hasMoreTalents, talents.length]);
 
   // Pin the Jelajah controls to the viewport on mobile; reserve their measured height in the document flow.
   useEffect(() => {
@@ -498,7 +561,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         ) : filteredTalents.length > 0 ? (
           <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
             <div className="grid grid-cols-2 gap-1.5 sm:gap-5 lg:grid-cols-3">
-              {filteredTalents.map((talent) => (
+              {filteredTalents.slice(0, visibleTalentCount).map((talent) => (
                 <TalentCard
                   key={talent.id}
                   talent={talent}
@@ -509,6 +572,23 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 />
               ))}
             </div>
+            <div ref={loadMoreSentinelRef} aria-hidden="true" className="h-2 w-full" />
+            {(loadingMoreTalents || loadMoreError) && (
+              <div className="flex flex-col items-center gap-2 py-3 text-center">
+                {loadingMoreTalents && <span className="text-xs text-slate-500">Memuat Talent berikutnya...</span>}
+                {loadMoreError && (
+                  <>
+                    <span role="alert" className="text-xs text-rose-600">{loadMoreError}</span>
+                    <button type="button" onClick={() => void loadNextTalentBatch()} className="min-h-10 rounded-lg bg-purple-700 px-4 text-xs font-semibold text-white">
+                      Coba muat lagi
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+            {!hasMoreTalents && talents.length > 0 && visibleTalentCount >= filteredTalents.length && (
+              <p className="py-3 text-center text-xs text-slate-400">Semua Talent yang tersedia sudah ditampilkan.</p>
+            )}
           </section>
         ) : (
           <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
@@ -519,12 +599,24 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
               Coba ganti kategori aktivitas, pilih kota lain, atau reset filter untuk melihat seluruh profil.
             </p>
-            <button
-              onClick={handleResetFilters}
-              className="min-h-11 px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800 transition-colors"
-            >
-              Reset Semua Filter
-            </button>
+            <div className="flex flex-col items-center gap-2">
+              <button
+                onClick={handleResetFilters}
+                className="min-h-11 px-4 py-2 bg-purple-700 text-white text-xs font-semibold rounded-lg hover:bg-purple-800 transition-colors"
+              >
+                Reset Semua Filter
+              </button>
+              {hasMoreTalents && (
+                <button
+                  type="button"
+                  onClick={() => void loadNextTalentBatch()}
+                  disabled={loadingMoreTalents}
+                  className="min-h-10 px-4 text-xs font-semibold text-purple-700 disabled:opacity-50"
+                >
+                  {loadingMoreTalents ? 'Memuat...' : 'Cari Talent berikutnya'}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
