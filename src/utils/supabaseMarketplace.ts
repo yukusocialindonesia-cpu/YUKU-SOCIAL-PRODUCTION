@@ -77,7 +77,7 @@ export async function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]>
  * Fetch public talent profiles from Supabase talent_profiles table via SELECT.
  * Explicitly checks errors on both talent_profiles and talent_services queries to prevent masking failures.
  */
-export async function fetchTalentsFromSupabase(limit?: number): Promise<TalentProfile[]> {
+export async function fetchTalentsFromSupabase(limit?: number, offset = 0): Promise<TalentProfile[]> {
   let query = supabase
     .from('talent_profiles')
     .select(
@@ -89,10 +89,14 @@ export async function fetchTalentsFromSupabase(limit?: number): Promise<TalentPr
     .order('review_count', { ascending: false })
     .order('rating_average', { ascending: false })
     .order('completed_hours', { ascending: false })
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    // Tie-breaker stabil agar pagination tidak mengulang/melewatkan baris dengan nilai urutan sama.
+    .order('id', { ascending: true });
 
-  if (limit) {
-    query = query.limit(limit);
+  if (limit !== undefined) {
+    const safeLimit = Math.max(1, Math.floor(limit));
+    const safeOffset = Math.max(0, Math.floor(offset));
+    query = query.range(safeOffset, safeOffset + safeLimit - 1);
   }
 
   const { data: talentsData, error: talentsError } = await query;
