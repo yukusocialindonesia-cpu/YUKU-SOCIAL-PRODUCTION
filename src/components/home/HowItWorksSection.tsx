@@ -52,21 +52,27 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
               })}
             </div>
 
-            {/* Penanda urutan alur di bawah kartu langkah */}
+            {/* Simbol alur berupa ikon di bawah kartu langkah */}
             <div
               className="mt-3 flex items-center justify-center gap-2 sm:gap-3"
-              aria-label="Urutan langkah: 01, 02, 03, 04"
+              aria-label="Alur proses YUKU: cari talent, pilih jadwal, konfirmasi aktivitas, dan beri ulasan"
             >
-              {HOW_IT_WORKS_STEPS.map((item, index) => (
-                <React.Fragment key={item.step}>
-                  <span className="flex h-7 min-w-7 items-center justify-center rounded-full border border-purple-200 bg-white px-2 text-[11px] font-extrabold tabular-nums text-purple-700 shadow-sm">
-                    {item.step}
-                  </span>
-                  {index < HOW_IT_WORKS_STEPS.length - 1 && (
-                    <ArrowRight className="h-4 w-4 shrink-0 text-purple-400" aria-hidden="true" />
-                  )}
-                </React.Fragment>
-              ))}
+              {HOW_IT_WORKS_STEPS.map((item, index) => {
+                const Icon = STEP_ICONS[index % STEP_ICONS.length];
+                return (
+                  <React.Fragment key={item.step}>
+                    <span
+                      className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full border border-purple-200 bg-white text-purple-700 shadow-sm"
+                      title={item.title}
+                    >
+                      <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
+                    </span>
+                    {index < HOW_IT_WORKS_STEPS.length - 1 && (
+                      <ArrowRight className="h-4 w-4 shrink-0 text-purple-400" aria-hidden="true" />
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
 
             <button
