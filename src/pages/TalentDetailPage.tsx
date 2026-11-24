@@ -155,6 +155,25 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     payment_expires_at: string;
   } | null>(null);
 
+  const refreshMediaSignedUrl = async (item: TalentMediaRow): Promise<boolean> => {
+    if (!item.storage_path) return false;
+    const { data, error } = await supabase.storage.from('talent-media').createSignedUrl(item.storage_path, 1800);
+    if (error || !data?.signedUrl) return false;
+    setMediaItems((current) => current.map((media) => media.id === item.id ? { ...media, media_url: data.signedUrl } : media));
+    return true;
+  };
+
+  const handleMediaUrlError = (item: TalentMediaRow, element: HTMLImageElement | HTMLMediaElement) => {
+    if (element.dataset.urlRefreshAttempted === 'true') {
+      if (element instanceof HTMLImageElement) element.style.display = 'none';
+      return;
+    }
+    element.dataset.urlRefreshAttempted = 'true';
+    void refreshMediaSignedUrl(item).then((refreshed) => {
+      if (!refreshed && element instanceof HTMLImageElement) element.style.display = 'none';
+    });
+  };
+
   const loadTalentDetail = async () => {
     setLoading(true);
     setErrorMsg(null);
@@ -673,6 +692,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                             onPlay={() => setVoicePlaying(true)}
                             onPause={() => setVoicePlaying(false)}
                             onEnded={() => { setVoicePlaying(false); setVoiceTime(0); }}
+                            onError={(e) => handleMediaUrlError(voiceMedia[0], e.currentTarget)}
                             onTimeUpdate={(e) => setVoiceTime(e.currentTarget.currentTime)}
                             onLoadedMetadata={(e) => setVoiceDur(e.currentTarget.duration)}
                           />
@@ -836,6 +856,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         controls
                         preload="metadata"
                         src={voice.media_url}
+                        onError={(e) => handleMediaUrlError(voice, e.currentTarget)}
                         className="w-full h-9 rounded-lg"
                       />
                     </div>
@@ -912,6 +933,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                             playsInline
                             preload="metadata"
                             src={vid.media_url}
+                            onError={(e) => handleMediaUrlError(vid, e.currentTarget)}
                             className="w-full aspect-video bg-slate-950 object-cover"
                           />
                           {vid.caption && (
@@ -1683,6 +1705,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           >
             <img
               src={photoMedia[lightboxIndex].media_url}
+              onError={(e) => handleMediaUrlError(photoMedia[lightboxIndex], e.currentTarget)}
               alt={photoMedia[lightboxIndex].caption || `Foto ${talent.name}`}
               className="max-h-[80vh] w-auto max-w-full rounded-2xl object-contain shadow-2xl"
               referrerPolicy="no-referrer"
