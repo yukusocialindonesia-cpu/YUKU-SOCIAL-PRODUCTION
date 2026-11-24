@@ -11,6 +11,7 @@ import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 export type UserRole = 'admin' | 'talent' | 'customer';
+export type AccountStatus = 'pending_verification' | 'active' | 'suspended' | 'banned';
 export type AdminPermission = 'talent' | 'booking' | 'finance' | 'support';
 
 export interface AdminAccess {
@@ -26,6 +27,8 @@ interface AuthContextValue {
   role: UserRole | null;
   /** Hak menu Admin yang dikonfirmasi database; null berarti tidak punya akses Admin. */
   adminAccess: AdminAccess | null;
+  /** Status akun dari public.users. */
+  accountStatus: AccountStatus | null;
   /** true selama sesi DAN role belum selesai dipulihkan. Selama true, jangan render menu apa pun. */
   isAuthLoading: boolean;
   isAuthenticated: boolean;
@@ -38,6 +41,9 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const normalizeRole = (value: unknown): UserRole | null =>
   value === 'admin' || value === 'talent' || value === 'customer' ? value : null;
+
+const normalizeAccountStatus = (value: unknown): AccountStatus | null =>
+  value === 'pending_verification' || value === 'active' || value === 'suspended' || value === 'banned' ? value : null;
 
 const normalizeAdminAccess = (value: unknown): AdminAccess | null => {
   if (!value || typeof value !== 'object') return null;
@@ -65,17 +71,18 @@ async function fetchAdminAccess(): Promise<AdminAccess | null> {
   }
 }
 
-async function fetchRole(userId: string): Promise<UserRole | null> {
+async function fetchUserAccess(userId: string): Promise<{ role: UserRole | null; accountStatus: AccountStatus | null }> {
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('users')
-      .select('role')
+      .select('role,account_status')
       .eq('id', userId)
       .maybeSingle();
-    return normalizeRole(data?.role);
+    if (error) throw error;
+    return { role: normalizeRole(data?.role), accountStatus: normalizeAccountStatus(data?.account_status) };
   } catch (error) {
-    console.error('YUKU: gagal memuat role pengguna', error);
-    return null;
+    console.error('YUKU: gagal memuat status dan role pengguna', error);
+    return { role: null, accountStatus: null };
   }
 }
 
@@ -87,6 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
   const [adminAccess, setAdminAccess] = useState<AdminAccess | null>(null);
+  const [accountStatus, setAccountStatus] = useState<AccountStatus | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Menghindari state usang saat dua pemuatan role bertumpuk.
@@ -101,6 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setRole(null);
       setAdminAccess(null);
+      setAccountStatus(null);
       setIsAuthLoading(false);
       return;
     }
@@ -117,13 +126,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     currentUserIdRef.current = nextUser.id;
     if (!sameUser) setIsAuthLoading(true);
 
-    const nextRole = await fetchRole(nextUser.id);
+    const nextAccess = await fetchUserAccess(nextUser.id);
+    const nextRole = nextAccess.role;
     const nextAdminAccess = nextRole === 'admin' ? await fetchAdminAccess() : null;
     if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+
+    if (nextAccess.accountStatus === 'suspended' || nextAccess.accountStatus === 'banned') {
+      // Akun yang dibatasi tidak boleh melanjutkan sesi aplikasi.
+      await supabase.auth.signOut({ scope: 'global' });
+      currentUserIdRef.current = null;
+      setUser(null);
+      setRole(null);
+      setAdminAccess(null);
+      setAccountStatus(nextAccess.accountStatus);
+      setIsAuthLoading(false);
+      return;
+    }
 
     setUser(nextUser);
     setRole(nextRole);
     setAdminAccess(nextAdminAccess);
+    setAccountStatus(nextAccess.accountStatus);
     setIsAuthLoading(false);
   }, []);
 
@@ -188,12 +211,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user,
       role,
       adminAccess,
+      accountStatus,
       isAuthLoading,
       isAuthenticated: Boolean(user),
       signOut,
       refreshRole,
     }),
-    [user, role, adminAccess, isAuthLoading, signOut, refreshRole],
+    [user, role, adminAccess, accountStatus, isAuthLoading, signOut, refreshRole],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
