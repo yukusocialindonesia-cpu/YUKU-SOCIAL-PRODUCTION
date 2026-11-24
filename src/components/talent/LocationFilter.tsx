@@ -93,7 +93,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
-          className={`w-full min-h-10 sm:min-h-[46px] pl-9 pr-14 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border rounded-xl text-left shadow-sm transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
+          className={`w-full min-h-10 sm:min-h-[46px] pl-8 sm:pl-9 pr-8 sm:pr-14 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border rounded-xl text-left shadow-sm transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
             isOpen
               ? 'border-purple-400 bg-white shadow-[0_12px_28px_-16px_rgba(124,58,237,0.55)]'
               : selectedCity !== 'Semua Kota'
@@ -101,7 +101,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               : 'border-slate-200 hover:bg-slate-100/70 text-slate-700'
           }`}
         >
-          <MapPin className="w-4 h-4 text-purple-700 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <MapPin className="w-4 h-4 text-purple-700 absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <span className="truncate">{selectedCity}</span>
         </button>
 
@@ -120,7 +120,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         )}
 
         <ChevronDown
-          className={`w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-150 ${
+          className={`w-4 h-4 text-slate-400 absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-150 ${
             isOpen ? 'rotate-180 text-purple-700' : ''
           }`}
         />
