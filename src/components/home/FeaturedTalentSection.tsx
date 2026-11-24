@@ -28,6 +28,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const reduceMotion = useReducedMotion();
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const scrollByCards = (dir: 1 | -1) => {
     const el = scrollRef.current;
     if (!el) return;
@@ -73,15 +74,43 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
     }
   };
 
+  // Data Talent cukup dimuat saat bagian ini mendekati layar, bukan saat halaman baru dibuka.
   useEffect(() => {
-    loadFeaturedTalents();
+    const target = sectionRef.current;
+    if (!target) return;
+
+    let hasStarted = false;
+    let observer: IntersectionObserver | null = null;
+
+    const startLoading = () => {
+      if (hasStarted) return;
+      hasStarted = true;
+      void loadFeaturedTalents();
+    };
+
+    if (typeof IntersectionObserver === 'undefined') {
+      startLoading();
+    } else {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            startLoading();
+            observer?.disconnect();
+          }
+        },
+        { rootMargin: '300px 0px' }
+      );
+      observer.observe(target);
+    }
+
+    return () => observer?.disconnect();
   }, []);
 
   // Beranda menampilkan maksimal enam Talent; daftar lengkap tetap tersedia melalui tombol Lihat Semua.
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section className="relative py-3 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
+    <section ref={sectionRef} className="relative py-3 md:py-16 bg-gradient-to-b from-[#F8F5FF] via-[#FCFAFF] to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
