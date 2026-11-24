@@ -381,7 +381,8 @@ CREATE POLICY qris_display_finance_update ON storage.objects
   WITH CHECK (bucket_id = 'qris-payment-display' AND public.has_admin_permission('finance'));
 
 -- The legacy QRIS RPC bodies are retained behind Finance-checked wrappers.
-REVOKE EXECUTE ON FUNCTION public.admin_update_qris_settings(BOOLEAN,TEXT,TEXT,TEXT,TEXT) FROM authenticated;
+-- Remove inherited PUBLIC execution as well; Finance-only wrapper is the supported entry point.
+REVOKE ALL ON FUNCTION public.admin_update_qris_settings(BOOLEAN,TEXT,TEXT,TEXT,TEXT) FROM PUBLIC, anon, authenticated;
 CREATE OR REPLACE FUNCTION public.admin_update_qris_settings_finance(
   p_is_active BOOLEAN, p_image_path TEXT, p_merchant_name TEXT DEFAULT NULL,
   p_merchant_identifier TEXT DEFAULT NULL, p_instructions TEXT DEFAULT NULL
@@ -396,7 +397,8 @@ $$;
 REVOKE ALL ON FUNCTION public.admin_update_qris_settings_finance(BOOLEAN,TEXT,TEXT,TEXT,TEXT) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.admin_update_qris_settings_finance(BOOLEAN,TEXT,TEXT,TEXT,TEXT) TO authenticated;
 
-REVOKE EXECUTE ON FUNCTION public.admin_review_qris_payment(UUID,BOOLEAN,TEXT,TEXT) FROM authenticated;
+-- Remove inherited PUBLIC execution as well; Finance-only wrapper is the supported entry point.
+REVOKE ALL ON FUNCTION public.admin_review_qris_payment(UUID,BOOLEAN,TEXT,TEXT) FROM PUBLIC, anon, authenticated;
 CREATE OR REPLACE FUNCTION public.admin_review_qris_payment_finance(
   p_submission_id UUID, p_approve BOOLEAN, p_admin_notes TEXT,
   p_transfer_reference TEXT DEFAULT NULL
