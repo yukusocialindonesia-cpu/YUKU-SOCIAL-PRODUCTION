@@ -2698,8 +2698,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                         {mediaType === 'photo'
                           ? 'Pilih File Foto (JPG, PNG, WebP · Maks 8 MB)'
                           : mediaType === 'video'
-                          ? 'Pilih File Video (MP4, WebM, MOV · Maks 50 MB)'
-                          : 'Atau Unggah File Audio (MP3, WAV, M4A, OGG · Maks 15 MB)'}
+                          ? 'Pilih File Video (MP4, WebM, MOV · Maks 50 MB · 2 menit)'
+                          : 'Atau Unggah File Audio (MP3, WAV, M4A, OGG, WebM · Maks 15 MB · 60 detik)'}
                       </label>
                       <input
                         ref={mediaFileInputRef}
@@ -2709,7 +2709,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                             ? 'image/jpeg,image/png,image/webp'
                             : mediaType === 'video'
                             ? 'video/mp4,video/webm,video/quicktime'
-                            : 'audio/*'
+                            : 'audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/ogg,audio/webm,audio/mp4,audio/aac,audio/x-m4a'
                         }
                         onChange={(e) => {
                           const selected = e.target.files?.[0] ?? null;
