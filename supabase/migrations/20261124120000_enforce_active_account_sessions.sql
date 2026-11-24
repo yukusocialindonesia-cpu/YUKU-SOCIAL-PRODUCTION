@@ -100,7 +100,12 @@ BEGIN
       v_table.schema_name, v_table.table_name
     );
 
-    IF v_table.relrowsecurity AND NOT EXISTS (
+    -- Keep public.users readable through its existing self-only SELECT policy.
+    -- AuthContext must be able to read account_status to detect suspension and
+    -- sign the user out. The BEFORE trigger below still blocks inactive writes.
+    IF v_table.relrowsecurity
+       AND v_table.table_name <> 'users'
+       AND NOT EXISTS (
       SELECT 1 FROM pg_policies p
       WHERE p.schemaname = v_table.schema_name
         AND p.tablename = v_table.table_name
