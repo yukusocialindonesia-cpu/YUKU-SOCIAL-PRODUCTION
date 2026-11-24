@@ -116,6 +116,24 @@ export const QrisAdminPanel: React.FC = () => {
 
 const QrisReviewCard: React.FC<{ row: any; busy: boolean; onReview: (row: any, approve: boolean) => void; inactiveStatus?: string }> = ({ row, busy, onReview, inactiveStatus }) => {
   const [url, setUrl] = useState('');
-  useEffect(() => { let alive = true; supabase.storage.from('qris-payment-proofs').createSignedUrl(row.proof_storage_path, 300).then(({ data }) => { if (alive) setUrl(data?.signedUrl || ''); }); return () => { alive = false; }; }, [row.proof_storage_path]);
-  return <article className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2 text-xs"><div className="flex flex-wrap items-center justify-between gap-2"><strong>Booking: {row.booking_id}</strong><span className="inline-flex items-center gap-1 text-amber-700"><Clock className="h-3.5 w-3.5" /> Menunggu</span></div><p>Nominal: <strong>{formatRupiah(Number(row.claimed_amount))}</strong></p>{row.transfer_reference && <p>Referensi Customer: {row.transfer_reference}</p>}{url && <a href={url} target="_blank" rel="noreferrer" className="inline-block text-purple-700 underline">Lihat bukti pembayaran</a>}{inactiveStatus ? <p className="rounded-lg bg-slate-100 p-2 text-slate-600">Status booking: <strong>{inactiveStatus}</strong> — tidak bisa diverifikasi.</p> : <div className="flex flex-wrap gap-2 pt-2"><button disabled={busy} onClick={() => onReview(row, true)} className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Verifikasi & Setujui</button><button disabled={busy} onClick={() => onReview(row, false)} className="inline-flex items-center gap-1 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tolak Bukti</button></div>}</article>;
+  const [proofError, setProofError] = useState('');
+  useEffect(() => {
+    let alive = true;
+    setUrl('');
+    setProofError('');
+    supabase.storage.from('qris-payment-proofs').createSignedUrl(row.proof_storage_path, 300)
+      .then(({ data, error: signedUrlError }) => {
+        if (!alive) return;
+        if (signedUrlError || !data?.signedUrl) {
+          setProofError(signedUrlError?.message || 'Tautan bukti pembayaran tidak tersedia.');
+          return;
+        }
+        setUrl(data.signedUrl);
+      })
+      .catch((e: any) => {
+        if (alive) setProofError(e?.message || 'Gagal memuat tautan bukti pembayaran.');
+      });
+    return () => { alive = false; };
+  }, [row.proof_storage_path]);
+  return <article className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2 text-xs"><div className="flex flex-wrap items-center justify-between gap-2"><strong>Booking: {row.booking_id}</strong><span className="inline-flex items-center gap-1 text-amber-700"><Clock className="h-3.5 w-3.5" /> Menunggu</span></div><p>Nominal: <strong>{formatRupiah(Number(row.claimed_amount))}</strong></p>{row.transfer_reference && <p>Referensi Customer: {row.transfer_reference}</p>}{url && <a href={url} target="_blank" rel="noreferrer" className="inline-block text-purple-700 underline">Lihat bukti pembayaran</a>}{proofError && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-rose-700">Bukti tidak dapat dimuat: {proofError}</p>}{!url && !proofError && <p className="text-slate-500">Memuat tautan bukti pembayaran...</p>}{inactiveStatus ? <p className="rounded-lg bg-slate-100 p-2 text-slate-600">Status booking: <strong>{inactiveStatus}</strong> — tidak bisa diverifikasi.</p> : <div className="flex flex-wrap gap-2 pt-2"><button disabled={busy} onClick={() => onReview(row, true)} className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Verifikasi & Setujui</button><button disabled={busy} onClick={() => onReview(row, false)} className="inline-flex items-center gap-1 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tolak Bukti</button></div>}</article>;
 };
