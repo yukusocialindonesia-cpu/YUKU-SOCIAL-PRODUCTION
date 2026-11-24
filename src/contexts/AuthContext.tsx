@@ -173,7 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (event === 'INITIAL_SESSION') return; // sudah ditangani getSession()
       window.setTimeout(() => {
         if (!isMounted) return;
-        void applySession(session?.user ?? null, event === 'USER_UPDATED');
+        void applySession(session?.user ?? null, event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED');
       }, 0);
     });
 
