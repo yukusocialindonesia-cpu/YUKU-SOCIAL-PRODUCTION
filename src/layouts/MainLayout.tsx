@@ -28,7 +28,6 @@ const HIDE_BOTTOM_NAV: string[] = [
  */
 export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate, children }) => {
   const showBottomNav = !HIDE_BOTTOM_NAV.includes(currentPath);
-  const isHomePage = currentPath === '/';
 
   return (
     <div
@@ -36,16 +35,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
         showBottomNav ? 'pb-[calc(104px+env(safe-area-inset-bottom))] md:pb-0' : ''
       }`}
     >
-      {/* Satu-satunya <header> aplikasi */}
-      <div
-        className={`${
-          isHomePage ? 'fixed inset-x-0 top-0 z-50 md:static' : ''
-        }`}
-      >
-        <Navbar currentPath={currentPath} onNavigate={onNavigate} />
-      </div>
-      {/* Ruang pengganti tinggi header yang fixed khusus Beranda HP. */}
-      {isHomePage && <div className="h-[52px] sm:h-16 shrink-0 md:hidden" aria-hidden="true" />}
+      {/* Satu-satunya header aplikasi; sticky dan konsisten di semua halaman. */}
+      <Navbar currentPath={currentPath} onNavigate={onNavigate} />
 
       <main className="flex-1">{children}</main>
 
