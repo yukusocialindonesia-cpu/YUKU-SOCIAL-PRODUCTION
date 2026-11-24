@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HeroSection } from '../components/home/HeroSection';
 import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
@@ -20,32 +20,49 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
+  const promoSectionRef = useRef<HTMLDivElement | null>(null);
 
+  // Poster promosi berada di bawah Talent Pilihan. Ambil datanya saat area
+  // mendekati layar agar permintaan awal beranda lebih ringan.
   useEffect(() => {
+    const target = promoSectionRef.current;
+    if (!target) return;
+
     let isMounted = true;
+    let hasLoaded = false;
+    let observer: IntersectionObserver | null = null;
 
-    async function loadPromotions() {
+    const loadPromotions = async () => {
+      if (hasLoaded) return;
+      hasLoaded = true;
       try {
-        setIsLoadingPromotions(true);
         const data = await fetchPromotionsFromSupabase();
-        if (isMounted) {
-          setPromotions(data);
-        }
+        if (isMounted) setPromotions(data);
       } catch {
-        if (isMounted) {
-          setPromotions([]);
-        }
+        if (isMounted) setPromotions([]);
       } finally {
-        if (isMounted) {
-          setIsLoadingPromotions(false);
-        }
+        if (isMounted) setIsLoadingPromotions(false);
       }
-    }
+    };
 
-    loadPromotions();
+    if (typeof IntersectionObserver === 'undefined') {
+      void loadPromotions();
+    } else {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            void loadPromotions();
+            observer?.disconnect();
+          }
+        },
+        { rootMargin: '300px 0px' }
+      );
+      observer.observe(target);
+    }
 
     return () => {
       isMounted = false;
+      observer?.disconnect();
     };
   }, []);
 
@@ -85,11 +102,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       />
 
       {/* Ruang Promosi Poster Berjalan */}
-      <PromoCarousel
-        promotions={promotions}
-        isLoading={isLoadingPromotions}
-        onNavigate={onNavigate}
-      />
+      <div ref={promoSectionRef}>
+        <PromoCarousel
+          promotions={promotions}
+          isLoading={isLoadingPromotions}
+          onNavigate={onNavigate}
+        />
+      </div>
 
       {/* Cara kerja setelah pengunjung melihat pilihan Talent dan promosi */}
       <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
