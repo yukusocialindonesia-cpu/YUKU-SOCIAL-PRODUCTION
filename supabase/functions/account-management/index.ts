@@ -46,7 +46,7 @@ Deno.serve(async (req: Request) => {
     if (body?.action === 'list') {
       const { data: accounts, error } = await serviceClient
         .from('users')
-        .select('id,email,full_name,phone_number,role,account_status,created_at')
+        .select('id,email,full_name,role,account_status,created_at')
         .in('role', ['customer', 'talent'])
         .order('created_at', { ascending: false })
         .limit(250);
