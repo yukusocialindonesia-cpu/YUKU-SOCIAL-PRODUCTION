@@ -176,8 +176,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           .order('start_time', { ascending: true }),
         supabase
           .from('talent_media')
-          .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
+          .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at, moderation_status')
           .eq('talent_id', talentId)
+          .eq('moderation_status', 'approved')
           .order('sort_order', { ascending: true })
           .order('created_at', { ascending: false }),
         supabase
@@ -193,8 +194,21 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       if (reviewsRes.error) {
         throw new Error(`Gagal membaca ulasan Talent: ${reviewsRes.error.message}`);
       }
+      let mediaRows: any[] = (mediaRes.data || []) as any[];
       if (mediaRes.error) {
-        throw new Error(`Gagal membaca galeri Talent: ${mediaRes.error.message}`);
+        // Compatibility window: the new frontend can be deployed before migration 65.
+        // Until the moderation column exists, retain the current public gallery behavior.
+        if (/moderation_status/i.test(mediaRes.error.message) && /(column|schema cache|does not exist|could not find)/i.test(mediaRes.error.message)) {
+          const legacyMediaRes = await supabase.from('talent_media')
+            .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
+            .eq('talent_id', talentId)
+            .order('sort_order', { ascending: true })
+            .order('created_at', { ascending: false });
+          if (legacyMediaRes.error) throw new Error(`Gagal membaca galeri Talent: ${legacyMediaRes.error.message}`);
+          mediaRows = (legacyMediaRes.data || []) as any[];
+        } else {
+          throw new Error(`Gagal membaca galeri Talent: ${mediaRes.error.message}`);
+        }
       }
       if (serviceRatesRes.error) {
         throw new Error(`Gagal membaca tarif layanan Talent: ${serviceRatesRes.error.message}`);
@@ -205,7 +219,19 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       setCategories(categoriesData);
       setAvailabilitySlots((availabilityRes.data as TalentAvailabilityRow[]) || []);
       setServiceRateOverrides(Object.fromEntries((serviceRatesRes.data || []).map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
-      setMediaItems((mediaRes.data as TalentMediaRow[]) || []);
+      const approvedMedia = mediaRows as TalentMediaRow[];
+      const mediaWithSignedUrls = await Promise.all(approvedMedia.map(async (item) => {
+        if (!item.storage_path) return { ...item, media_url: '' };
+        const { data: signedData, error: signedError } = await supabase.storage
+          .from('talent-media')
+          .createSignedUrl(item.storage_path, 1800);
+        if (signedError || !signedData?.signedUrl) {
+          console.warn('Gagal membuat URL galeri Talent:', signedError?.message || item.id);
+          return { ...item, media_url: '' };
+        }
+        return { ...item, media_url: signedData.signedUrl };
+      }));
+      setMediaItems(mediaWithSignedUrls.filter((item) => Boolean(item.media_url)) as TalentMediaRow[]);
       if (talentData && talentData.activities.length > 0) {
         setSelectedActivity(talentData.activities[0]);
       }

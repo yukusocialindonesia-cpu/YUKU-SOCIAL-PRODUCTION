@@ -468,6 +468,10 @@ export interface TalentMediaRow {
   caption: string | null;
   sort_order: number;
   created_at: string;
+  moderation_status?: 'pending' | 'approved' | 'rejected';
+  moderation_reason?: string | null;
+  reviewed_at?: string | null;
+  reviewed_by?: string | null;
 }
 
 /** 25. public.booking_messages (Chat Real-Time Customer & Talent per Booking) */

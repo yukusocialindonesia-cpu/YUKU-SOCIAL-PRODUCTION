@@ -244,6 +244,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   // Media Gallery & Voice Intro State
   const [mediaItems, setMediaItems] = useState<TalentMediaRow[]>([]);
   const [mediaMigrationMissing, setMediaMigrationMissing] = useState(false);
+  const [mediaModerationAvailable, setMediaModerationAvailable] = useState(false);
   const [mediaType, setMediaType] = useState<TalentMediaType>('photo');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaCaption, setMediaCaption] = useState('');
@@ -575,14 +576,30 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
       setReferralRewards((rewardRows as ReferralRewardItem[]) || []);
 
       // 8. Fetch Talent Media Gallery & Voice Intro
-      const { data: mediaRows, error: mediaErr } = await supabase
+      let { data: mediaRows, error: mediaErr } = await supabase
         .from('talent_media')
-        .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
+        .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at, moderation_status, moderation_reason')
         .eq('talent_id', userId)
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
 
+      // Deploy frontend before migration 65 safely: use the old projection only
+      // while the moderation columns have not been added yet. Uploads stay paused
+      // during this short compatibility window.
+      let moderationSchemaAvailable = true;
+      if (mediaErr && /moderation_status/i.test(mediaErr.message) && /(column|schema cache|does not exist|could not find)/i.test(mediaErr.message)) {
+        moderationSchemaAvailable = false;
+        const legacyMediaResult = await supabase.from('talent_media')
+          .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
+          .eq('talent_id', userId)
+          .order('sort_order', { ascending: true })
+          .order('created_at', { ascending: false });
+        mediaRows = legacyMediaResult.data;
+        mediaErr = legacyMediaResult.error;
+      }
+
       if (mediaErr) {
+        setMediaModerationAvailable(false);
         const msg = mediaErr.message.toLowerCase();
         if (msg.includes('talent_media') || msg.includes('does not exist') || msg.includes('schema cache')) {
           setMediaMigrationMissing(true);
@@ -592,7 +609,20 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         setMediaItems([]);
       } else {
         setMediaMigrationMissing(false);
-        setMediaItems((mediaRows as TalentMediaRow[]) || []);
+        setMediaModerationAvailable(moderationSchemaAvailable);
+        const ownMedia = (mediaRows || []) as TalentMediaRow[];
+        const ownMediaWithSignedUrls = await Promise.all(ownMedia.map(async (item) => {
+          if (!item.storage_path) return { ...item, media_url: '' };
+          const { data: signedData, error: signedError } = await supabase.storage
+            .from('talent-media')
+            .createSignedUrl(item.storage_path, 1800);
+          if (signedError || !signedData?.signedUrl) {
+            console.warn('Gagal membuat URL media pribadi:', signedError?.message || item.id);
+            return { ...item, media_url: '' };
+          }
+          return { ...item, media_url: signedData.signedUrl };
+        }));
+        setMediaItems(ownMediaWithSignedUrls as TalentMediaRow[]);
       }
     } catch (err: any) {
       setErrorMessage(err?.message || 'Terjadi kesalahan sistem saat memuat data dashboard.');
@@ -1282,6 +1312,10 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   const handleUploadMedia = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
+    if (!mediaModerationAvailable) {
+      setErrorMessage('Unggah media sementara dijeda sampai pembaruan keamanan galeri selesai diterapkan. Media lama tetap dapat dilihat.');
+      return;
+    }
 
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -1389,9 +1423,16 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         throw uploadErr;
       }
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('talent-media').getPublicUrl(storagePath);
+      // Keep the legacy media_url field populated for compatibility; the bucket is
+      // private and all actual rendering uses a short-lived signed URL.
+      const { data: { publicUrl } } = supabase.storage.from('talent-media').getPublicUrl(storagePath);
+      const { data: signedData, error: signedError } = await supabase.storage
+        .from('talent-media')
+        .createSignedUrl(storagePath, 1800);
+      if (signedError || !signedData?.signedUrl) {
+        await supabase.storage.from('talent-media').remove([storagePath]);
+        throw signedError || new Error('Gagal membuat pratinjau media.');
+      }
 
       const cleanCaption = mediaCaption.trim() || null;
 
@@ -1405,7 +1446,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           caption: cleanCaption,
           sort_order: existingCount,
         })
-        .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
+        .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at, moderation_status, moderation_reason')
         .single();
 
       if (insertErr) {
@@ -1413,14 +1454,14 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         throw insertErr;
       }
 
-      setMediaItems((prev) => [insertedRow as TalentMediaRow, ...prev]);
+      setMediaItems((prev) => [{ ...(insertedRow as TalentMediaRow), media_url: signedData.signedUrl }, ...prev]);
       setMediaFile(null);
       setMediaCaption('');
       handleClearRecordedVoice();
       if (mediaFileInputRef.current) {
         mediaFileInputRef.current.value = '';
       }
-      setSuccessMessage(`${typeLabel[mediaType]} berhasil ditambahkan ke profil Anda!`);
+      setSuccessMessage(`${typeLabel[mediaType]} berhasil diunggah dan sedang menunggu persetujuan Admin sebelum tampil di profil publik.`);
     } catch (err: any) {
       setErrorMessage(`Gagal mengunggah ${typeLabel[mediaType].toLowerCase()}: ${err?.message || 'Pastikan migrasi database sudah dijalankan.'}`);
     } finally {
@@ -2581,6 +2622,11 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   </div>
                 </div>
               )}
+              {!mediaModerationAvailable && !mediaMigrationMissing && (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+                  Pembaruan keamanan galeri sedang disiapkan. Unggah baru dijeda sementara; media lama tetap dapat dilihat.
+                </div>
+              )}
 
               {/* Upload / Record Card */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-5">
@@ -2835,6 +2881,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           )}
                         </div>
                         <audio controls preload="metadata" src={voice.media_url} className="w-full h-9" />
+                        <p className="text-[11px] font-semibold text-amber-700">{voice.moderation_status === 'rejected' ? 'Ditolak · tidak tampil di profil publik' : voice.moderation_status === 'pending' ? 'Menunggu persetujuan Admin' : 'Disetujui · tampil di profil publik'}</p>
                       </div>
                     ))}
                   </div>
@@ -2870,6 +2917,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           />
                         </div>
                         <div className="p-2.5 bg-white flex items-center justify-between gap-2 text-xs">
+                          <span className="text-[10px] font-semibold text-amber-700">{photo.moderation_status === 'rejected' ? 'Ditolak' : photo.moderation_status === 'pending' ? 'Menunggu review' : 'Disetujui'}</span>
                           <span className="text-[11px] text-slate-600 truncate">
                             {photo.caption || 'Foto Aktivitas'}
                           </span>
@@ -2933,6 +2981,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           className="w-full aspect-video bg-slate-950 object-cover"
                         />
                         <div className="p-3 flex items-center justify-between gap-2 text-xs">
+                          <span className="text-[10px] font-semibold text-amber-700">{vid.moderation_status === 'rejected' ? 'Ditolak' : vid.moderation_status === 'pending' ? 'Menunggu review' : 'Disetujui'}</span>
                           <span className="font-semibold text-slate-700 truncate">
                             {vid.caption || 'Video Perkenalan Talent'}
                           </span>

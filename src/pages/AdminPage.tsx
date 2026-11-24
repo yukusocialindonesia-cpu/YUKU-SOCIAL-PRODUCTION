@@ -47,6 +47,7 @@ import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
 import { AdminManagementPanel } from '../components/admin/AdminManagementPanel';
 import { AccountManagementPanel } from '../components/admin/AccountManagementPanel';
 import { CommunityModerationPanel } from '../components/admin/CommunityModerationPanel';
+import { TalentMediaModerationPanel } from '../components/admin/TalentMediaModerationPanel';
 
 interface AdminPageProps {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
@@ -122,7 +123,7 @@ interface CustomerCancellationCaseItem {
   customer_name?: string;
 }
 
-type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'bank_transfer' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management' | 'account_management' | 'community_moderation';
+type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'bank_transfer' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management' | 'account_management' | 'community_moderation' | 'media_moderation';
 
 interface AdminBookingItem {
   id: string;
@@ -229,7 +230,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     isSuperAdmin || adminAccess?.permissions.includes(permission) === true;
   const availableTabs = useMemo<AdminTab[]>(() => {
     const tabs: AdminTab[] = [];
-    if (canAccess('talent')) tabs.push('talents', 'service_reviews');
+    if (canAccess('talent')) tabs.push('talents', 'service_reviews', 'media_moderation');
     if (canAccess('booking')) tabs.push('bookings');
     if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'bank_transfer', 'affiliate');
     if (canAccess('support')) tabs.push('customer_ktp', 'reports', 'community_moderation');
@@ -1252,6 +1253,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <span>Review Talent ({pendingTalentServices.length + pendingIdentityChanges.length})</span>
           </button>
           )}
+          {canAccess('talent') && (
+          <button
+            onClick={() => setActiveTab('media_moderation')}
+            className={'h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ' + (activeTab === 'media_moderation' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700')}
+          >
+            <ImageIcon className={'w-3.5 h-3.5 ' + (activeTab === 'media_moderation' ? 'text-white' : 'text-purple-600')} />
+            <span>Moderasi Galeri</span>
+          </button>
+          )}
           {canAccess('support') && (
           <button
             onClick={() => setActiveTab('customer_ktp')}
@@ -1429,6 +1439,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     admin_management: 'Pengaturan Admin',
                     account_management: 'Manajemen Akun',
                     community_moderation: 'Moderasi Komunitas',
+                    media_moderation: 'Moderasi Galeri Talent',
                     overview: 'Dashboard',
                   } as Record<AdminTab, string>)[activeTab]}
                 </h2>
@@ -1442,6 +1453,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             Akun Admin ini belum memiliki izin menu. Hubungi Super Admin untuk mengatur akses.
           </div>
         )}
+
+        {activeTab === 'media_moderation' && <TalentMediaModerationPanel />}
 
         {activeTab === 'service_reviews' && (
           <div className="space-y-6">
