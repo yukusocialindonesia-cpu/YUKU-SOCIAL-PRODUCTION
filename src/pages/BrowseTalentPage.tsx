@@ -94,7 +94,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   useEffect(() => {
     const element = mobilePinnedRef.current;
     if (!element) return;
-    const updateHeight = () => setMobilePinnedHeight(element.getBoundingClientRect().height);
+    const updateHeight = () => setMobilePinnedHeight(Math.ceil(element.getBoundingClientRect().bottom));
     updateHeight();
     const observer = new ResizeObserver(updateHeight);
     observer.observe(element);
