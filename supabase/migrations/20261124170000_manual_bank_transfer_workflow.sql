@@ -226,10 +226,25 @@ BEGIN
   SELECT * INTO v_booking FROM public.bookings WHERE id=v_submission.booking_id FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'Booking tidak ditemukan.'; END IF;
   IF p_approve THEN
+    IF v_booking.customer_id IS DISTINCT FROM v_submission.customer_id THEN
+      RAISE EXCEPTION 'Pemilik pengajuan tidak cocok dengan pemilik booking.';
+    END IF;
+    IF v_submission.claimed_amount IS DISTINCT FROM v_booking.gross_amount THEN
+      RAISE EXCEPTION 'Nominal pada pengajuan tidak cocok dengan total booking.';
+    END IF;
     IF v_booking.status <> 'pending_payment' THEN RAISE EXCEPTION 'Booking tidak lagi menunggu pembayaran.'; END IF;
     IF v_booking.payment_expires_at <= NOW() THEN RAISE EXCEPTION 'Booking telah kedaluwarsa; pembayaran tidak boleh disahkan.'; END IF;
     IF v_booking.payment_route IS DISTINCT FROM 'manual_bank_transfer' THEN RAISE EXCEPTION 'Booking tidak terkunci pada transfer bank.'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.bank_transfer_payment_instructions WHERE booking_id=v_booking.id) THEN
+      RAISE EXCEPTION 'Snapshot rekening untuk booking ini tidak ditemukan.';
+    END IF;
     IF NULLIF(trim(COALESCE(p_transfer_reference,'')),'') IS NULL THEN RAISE EXCEPTION 'Referensi transaksi bank wajib dicatat.'; END IF;
+    IF EXISTS (
+      SELECT 1 FROM public.payments p
+      WHERE p.provider_charge_id = left(trim(p_transfer_reference),100)
+    ) THEN
+      RAISE EXCEPTION 'Referensi transaksi ini sudah digunakan pada pembayaran lain.';
+    END IF;
     IF NOT EXISTS (SELECT 1 FROM storage.objects WHERE bucket_id='bank-transfer-payment-proofs' AND name=v_submission.proof_storage_path) THEN
       RAISE EXCEPTION 'File bukti transfer sudah tidak tersedia; minta Customer mengirim ulang.';
     END IF;
