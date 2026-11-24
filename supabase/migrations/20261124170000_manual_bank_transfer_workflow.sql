@@ -182,6 +182,9 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM public.bank_transfer_payment_instructions WHERE booking_id=p_booking_id) THEN
     RAISE EXCEPTION 'Instruksi rekening belum tersimpan untuk booking ini.';
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM storage.objects WHERE bucket_id='bank-transfer-payment-proofs' AND name=p_proof_storage_path) THEN
+    RAISE EXCEPTION 'File bukti transfer tidak ditemukan di penyimpanan.';
+  END IF;
   IF EXISTS (SELECT 1 FROM public.bank_transfer_submissions WHERE booking_id=p_booking_id AND status='pending_review') THEN
     RAISE EXCEPTION 'Bukti pembayaran masih menunggu pemeriksaan Admin.';
   END IF;
@@ -216,6 +219,9 @@ BEGIN
   IF v_booking.payment_route IS DISTINCT FROM 'manual_bank_transfer' THEN RAISE EXCEPTION 'Booking tidak terkunci pada transfer bank.'; END IF;
   IF p_approve THEN
     IF NULLIF(trim(COALESCE(p_transfer_reference,'')),'') IS NULL THEN RAISE EXCEPTION 'Referensi transaksi bank wajib dicatat.'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM storage.objects WHERE bucket_id='bank-transfer-payment-proofs' AND name=v_submission.proof_storage_path) THEN
+      RAISE EXCEPTION 'File bukti transfer sudah tidak tersedia; minta Customer mengirim ulang.';
+    END IF;
     SELECT * INTO v_payment FROM public.payments WHERE booking_id=v_booking.id FOR UPDATE;
     IF NOT FOUND THEN
       INSERT INTO public.payments(booking_id,provider,provider_charge_id,payment_method,amount,payment_status,paid_at)
@@ -331,6 +337,10 @@ CREATE POLICY bank_transfer_proof_upload_own_booking ON storage.objects
     AND EXISTS(SELECT 1 FROM public.bookings b WHERE b.id::text=(storage.foldername(name))[1]
       AND b.customer_id=auth.uid() AND b.status='pending_payment'::public.booking_status_type
       AND b.payment_route='manual_bank_transfer')
+    AND NOT EXISTS (
+      SELECT 1 FROM public.bank_transfer_submissions s
+      WHERE s.proof_storage_path=name AND s.status='pending_review'
+    )
   );
 CREATE POLICY bank_transfer_proof_read_owner_or_finance ON storage.objects
   FOR SELECT TO authenticated USING (
