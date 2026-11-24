@@ -9,23 +9,34 @@ export const QrisAdminPanel: React.FC = () => {
   const [instructions, setInstructions] = useState('Scan QRIS, bayar sesuai nominal, lalu unggah bukti pembayaran.');
   const [bookingStatus, setBookingStatus] = useState<Record<string, string>>({});
   const [dialog, setDialog] = useState<{ row: any; approve: boolean } | null>(null); const [dialogNotes, setDialogNotes] = useState(''); const [dialogRef, setDialogRef] = useState(''); const [dialogError, setDialogError] = useState('');
-  const [active, setActive] = useState(false); const [busy, setBusy] = useState(false); const [message, setMessage] = useState(''); const [error, setError] = useState('');
+  const [active, setActive] = useState(false); const [busy, setBusy] = useState(false); const [loading, setLoading] = useState(false); const [loadError, setLoadError] = useState(''); const [message, setMessage] = useState(''); const [error, setError] = useState('');
   const load = useCallback(async () => {
     const db = supabase as any;
-    const [{ data: cfg }, { data: submissions }] = await Promise.all([
-      db.from('qris_payment_settings').select('*').eq('id', true).maybeSingle(),
-      db.from('qris_payment_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,created_at').eq('status', 'pending_review').order('created_at', { ascending: true }),
-    ]);
-    setConfig(cfg); setRows(submissions || []);
-    const ids = Array.from(new Set((submissions || []).map((r: any) => r.booking_id)));
-    if (ids.length > 0) {
-      const { data: bks, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
-      if (statusError) throw statusError;
+    setLoading(true);
+    try {
+      const [cfgResult, submissionsResult] = await Promise.all([
+        db.from('qris_payment_settings').select('*').eq('id', true).maybeSingle(),
+        db.from('qris_payment_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,created_at').eq('status', 'pending_review').order('created_at', { ascending: true }),
+      ]);
+      if (cfgResult.error) throw cfgResult.error;
+      if (submissionsResult.error) throw submissionsResult.error;
+      const cfg = cfgResult.data;
+      const submissions = submissionsResult.data || [];
+      const ids = Array.from(new Set(submissions.map((r: any) => r.booking_id)));
       const map: Record<string, string> = {};
-      (bks || []).forEach((b: any) => { map[b.id] = b.status; });
-      setBookingStatus(map);
-    } else { setBookingStatus({}); }
-    if (cfg) { setMerchant(cfg.merchant_name || ''); setIdentifier(cfg.merchant_identifier || ''); setInstructions(cfg.instructions || ''); setActive(!!cfg.is_active); }
+      if (ids.length > 0) {
+        const { data: bks, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
+        if (statusError) throw statusError;
+        (bks || []).forEach((b: any) => { map[b.id] = b.status; });
+      }
+      setConfig(cfg); setRows(submissions); setBookingStatus(map);
+      if (cfg) { setMerchant(cfg.merchant_name || ''); setIdentifier(cfg.merchant_identifier || ''); setInstructions(cfg.instructions || ''); setActive(!!cfg.is_active); }
+      setLoadError('');
+    } catch (e: any) {
+      setLoadError(e?.message || 'Gagal memuat data QRIS. Periksa koneksi dan coba muat ulang.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
   useEffect(() => { load(); }, [load]);
   const save = async () => {
@@ -51,12 +62,17 @@ export const QrisAdminPanel: React.FC = () => {
     if (!dialogNotes.trim()) { setDialogError(approve ? 'Catatan verifikasi wajib diisi.' : 'Alasan penolakan wajib diisi.'); return; }
     if (approve && !dialogRef.trim()) { setDialogError('Referensi transaksi wajib diisi.'); return; }
     setBusy(true); setError(''); setMessage(''); setDialogError('');
-    const { error: rpcError } = await (supabase as any).rpc('admin_review_qris_payment_finance', { p_submission_id: row.id, p_approve: approve, p_admin_notes: dialogNotes.trim(), p_transfer_reference: approve ? dialogRef.trim() : null });
-    if (rpcError) { setDialogError(rpcError.message); setBusy(false); return; }
-    setDialog(null);
-    setMessage(approve ? 'Pembayaran disahkan dan masuk escrow.' : 'Bukti ditolak; Customer dapat mengirim bukti baru.');
-    await load();
-    setBusy(false);
+    try {
+      const { error: rpcError } = await (supabase as any).rpc('admin_review_qris_payment_finance', { p_submission_id: row.id, p_approve: approve, p_admin_notes: dialogNotes.trim(), p_transfer_reference: approve ? dialogRef.trim() : null });
+      if (rpcError) throw rpcError;
+      setDialog(null);
+      setMessage(approve ? 'Pembayaran disahkan dan masuk escrow.' : 'Bukti ditolak; Customer dapat mengirim bukti baru.');
+      await load();
+    } catch (e: any) {
+      setDialogError(e?.message || 'Gagal memproses verifikasi pembayaran.');
+    } finally {
+      setBusy(false);
+    }
   };
   const actionableRows = rows.filter(r => bookingStatus[r.booking_id] === 'pending_payment');
   const staleRows = rows.filter(r => bookingStatus[r.booking_id] !== 'pending_payment');
@@ -72,9 +88,10 @@ export const QrisAdminPanel: React.FC = () => {
       <label className="flex items-center gap-2 text-xs font-bold"><input type="checkbox" checked={active} onChange={e => setActive(e.target.checked)} /> Aktifkan QRIS untuk Customer</label>
       <button onClick={save} disabled={busy || (active && !file && !config?.image_path)} className="inline-flex items-center gap-2 rounded-xl bg-purple-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Simpan Pengaturan QRIS</button>
     </section>
-    {message && <p className="rounded-lg bg-emerald-50 p-3 text-xs text-emerald-800">{message}</p>}{error && <p className="rounded-lg bg-rose-50 p-3 text-xs text-rose-800">{error}</p>}
-    <section className="space-y-3"><div className="flex items-center justify-between"><h3 className="font-extrabold text-slate-900">Bukti Menunggu Verifikasi ({actionableRows.length})</h3><button onClick={load} className="inline-flex items-center gap-1 text-xs font-bold text-purple-700"><RefreshCw className="h-3.5 w-3.5" /> Muat ulang</button></div>
-      {actionableRows.length === 0 && <p className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-500">Belum ada bukti pembayaran yang menunggu pemeriksaan.</p>}
+    {message && <p className="rounded-lg bg-emerald-50 p-3 text-xs text-emerald-800">{message}</p>}{error && <p className="rounded-lg bg-rose-50 p-3 text-xs text-rose-800">{error}</p>}{loadError && <div role="alert" className="rounded-lg bg-rose-50 p-3 text-xs text-rose-800">Gagal memuat data QRIS: {loadError} <button type="button" onClick={load} disabled={loading} className="ml-2 font-bold underline">Coba lagi</button></div>}
+    <section className="space-y-3"><div className="flex items-center justify-between"><h3 className="font-extrabold text-slate-900">Bukti Menunggu Verifikasi ({actionableRows.length})</h3><button onClick={load} disabled={loading} className="inline-flex items-center gap-1 text-xs font-bold text-purple-700 disabled:opacity-50"><RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> {loading ? 'Memuat...' : 'Muat ulang'}</button></div>
+      {loading && rows.length === 0 && <p className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-500">Memuat data pembayaran...</p>}
+      {!loading && !loadError && actionableRows.length === 0 && <p className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-500">Belum ada bukti pembayaran yang menunggu pemeriksaan.</p>}
       {actionableRows.map(row => <QrisReviewCard key={row.id} row={row} busy={busy} onReview={openDialog} />)}
     </section>
     {staleRows.length > 0 && <section className="space-y-3"><h3 className="font-extrabold text-slate-500">Bukti dari booking yang sudah tidak aktif ({staleRows.length})</h3>
