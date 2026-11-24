@@ -173,6 +173,7 @@ DECLARE v_booking public.bookings%ROWTYPE; v_submission_id UUID;
 BEGIN
   IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Authentication required.'; END IF;
   IF p_claimed_amount IS NULL OR p_claimed_amount <= 0 THEN RAISE EXCEPTION 'Nominal pembayaran tidak valid.'; END IF;
+  IF length(COALESCE(p_transfer_reference,'')) > 100 THEN RAISE EXCEPTION 'Referensi transaksi maksimal 100 karakter.'; END IF;
   IF p_proof_storage_path IS NULL OR p_proof_storage_path !~ ('^' || p_booking_id::text || '/[A-Za-z0-9._-]+$') THEN
     RAISE EXCEPTION 'Lokasi bukti pembayaran tidak valid.';
   END IF;
@@ -217,6 +218,9 @@ BEGIN
     RAISE EXCEPTION 'Akses ditolak: izin Finance diperlukan.';
   END IF;
   IF NULLIF(trim(COALESCE(p_admin_notes,'')),'') IS NULL THEN RAISE EXCEPTION 'Catatan pemeriksaan wajib diisi.'; END IF;
+  IF length(COALESCE(p_admin_notes,'')) > 500 OR length(COALESCE(p_transfer_reference,'')) > 100 THEN
+    RAISE EXCEPTION 'Catatan maksimal 500 karakter dan referensi maksimal 100 karakter.';
+  END IF;
   SELECT * INTO v_submission FROM public.bank_transfer_submissions WHERE id=p_submission_id FOR UPDATE;
   IF NOT FOUND OR v_submission.status <> 'pending_review' THEN RAISE EXCEPTION 'Pengajuan tidak ditemukan atau sudah diproses.'; END IF;
   SELECT * INTO v_booking FROM public.bookings WHERE id=v_submission.booking_id FOR UPDATE;
