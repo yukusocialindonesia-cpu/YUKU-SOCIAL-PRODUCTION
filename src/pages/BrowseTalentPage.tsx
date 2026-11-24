@@ -7,6 +7,37 @@ import { AppRoute } from '../types/navigation';
 import { fetchTalentsFromSupabase, fetchCategoriesFromSupabase, fetchPromotionsFromSupabase } from '../utils/supabaseMarketplace';
 import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
+import { useAuth } from '../contexts/AuthContext';
+
+const PromotionBannerVisual: React.FC<{ imageUrl: string; title: string }> = ({ imageUrl, title }) => {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (imageFailed || !imageUrl) {
+    return (
+      <div
+        role="img"
+        aria-label={`Gambar promosi ${title} tidak tersedia`}
+        className="flex min-h-24 w-full items-center justify-center bg-gradient-to-r from-purple-950 via-purple-900 to-fuchsia-900 px-5 py-6 text-center text-white sm:min-h-32"
+      >
+        <div>
+          <p className="text-sm font-extrabold tracking-wide">YUKU</p>
+          <p className="mt-1 text-xs text-purple-100">Informasi promosi belum dapat ditampilkan.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={title || 'Promosi YUKU'}
+      loading="eager"
+      decoding="async"
+      onError={() => setImageFailed(true)}
+      className="block h-auto w-full"
+    />
+  );
+};
 
 interface BrowseTalentPageProps {
   initialActivity?: string;
@@ -21,6 +52,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   initialMode = 'all',
   onNavigate,
 }) => {
+  const { user } = useAuth();
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
@@ -110,6 +142,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
   const filteredTalents = useMemo(() => {
     return talents.filter((talent) => {
+      // Do not show the signed-in account's own profile in its discovery results.
+      if (user?.id && talent.id === user.id) return false;
+
       // Activity filter
       if (
         selectedActivity !== 'all' &&
@@ -148,7 +183,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
       return true;
     });
-  }, [talents, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
+  }, [talents, user?.id, selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
 
   const hasAdvancedFilters = selectedActivity !== 'all' || selectedCity !== 'Semua Kota' || selectedGender !== 'Semua' || selectedMode !== 'all' || searchQuery.trim().length > 0;
 
@@ -186,7 +221,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </section>
 
         <div aria-hidden="true" className="sm:hidden" style={{ height: mobilePinnedHeight }} />
-        <div ref={mobilePinnedRef} className="fixed inset-x-0 top-0 z-50 w-full bg-[#FAF8FC]/95 px-4 pb-1 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
+        <div ref={mobilePinnedRef} className="fixed inset-x-0 top-14 min-[376px]:top-[60px] min-[431px]:top-16 z-30 w-full bg-[#FAF8FC]/95 px-4 pb-1 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-xl sm:static sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
         <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
@@ -198,16 +233,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               return (
                 <div className="relative w-full overflow-hidden rounded-2xl border border-purple-100 bg-purple-950 shadow-[0_10px_28px_rgba(76,29,149,0.14)]">
                   <div className="relative w-full bg-purple-950">
-                    <img
+                    <PromotionBannerVisual
                       key={promotion.id}
-                      src={promotion.image_url}
-                      alt={promotion.title || 'Promosi YUKU'}
-                      loading="eager"
-                      decoding="async"
-                      onError={(event) => {
-                        event.currentTarget.style.display = 'none';
-                      }}
-                      className="block h-auto w-full"
+                      imageUrl={promotion.image_url}
+                      title={promotion.title || 'Promosi YUKU'}
                     />
                     {canNavigate && (
                       <a
