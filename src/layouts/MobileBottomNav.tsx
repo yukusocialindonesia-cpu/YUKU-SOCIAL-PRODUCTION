@@ -70,7 +70,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   if (isAuthLoading) {
     return (
       <nav aria-hidden="true" className={navShell}>
-        <div className="grid min-h-[52px] grid-cols-5" />
+        <div className="grid min-h-[48px] grid-cols-5" />
       </nav>
     );
   }
@@ -90,7 +90,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
                 type="button"
                 onClick={item.onPress}
                 aria-current={active ? 'page' : undefined}
-                className={`group relative flex min-h-[52px] w-full flex-col items-center justify-center gap-0.5 rounded-[14px] sm:rounded-[18px] px-0.5 sm:px-1 py-1 text-[9px] sm:text-[10px] font-semibold transition-all duration-200 active:scale-95 ${
+                className={`group relative flex min-h-[48px] w-full flex-col items-center justify-center gap-0.5 rounded-[14px] sm:rounded-[18px] px-0.5 sm:px-1 py-1 text-[9px] sm:text-[10px] font-semibold transition-all duration-200 active:scale-95 ${
                   active
                     ? 'bg-gradient-to-b from-purple-100/95 to-fuchsia-50 text-purple-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_3px_10px_rgba(109,40,217,0.10)]'
                     : 'text-slate-500 hover:bg-purple-50/70 hover:text-purple-700'
