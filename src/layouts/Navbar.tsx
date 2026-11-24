@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   if (isAuthLoading) {
     return (
       <header
-        className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white/90 xl:bg-white/75 backdrop-blur-2xl border-b xl:border border-white/80 xl:border-purple-100/80 shadow-[0_8px_28px_-18px_rgba(76,29,149,0.28)] xl:shadow-[0_16px_42px_-20px_rgba(76,29,149,0.22)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
+        className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white xl:bg-white/75 backdrop-blur-none xl:backdrop-blur-2xl border-b xl:border border-white/80 xl:border-purple-100/80 shadow-[0_8px_28px_-18px_rgba(76,29,149,0.28)] xl:shadow-[0_16px_42px_-20px_rgba(76,29,149,0.22)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white/95 backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
+    <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white xl:bg-white/95 backdrop-blur-none xl:backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
         <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-[60px] min-[431px]:h-16 lg:h-[72px] min-[1440px]:h-[76px]">
@@ -316,7 +316,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
       {isMobileMenuOpen && (
         <div
           id="yuku-mobile-navigation"
-          className="xl:hidden border-t border-purple-100/70 bg-white/90 backdrop-blur-2xl px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem)] md:max-h-[calc(100dvh-3.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
+          className="xl:hidden border-t border-purple-100/70 bg-white backdrop-blur-none px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem)] md:max-h-[calc(100dvh-3.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
         >
           {currentUser && (
             <div className="mb-4 p-3.5 bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 rounded-2xl flex items-center justify-between border border-purple-100/80 shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]">
