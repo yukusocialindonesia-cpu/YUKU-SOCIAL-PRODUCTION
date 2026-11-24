@@ -20,6 +20,8 @@ export interface TalentProfile {
   name: string;
   age?: number;
   city?: string;
+  /** Approximate straight-line distance from the Customer's current location, in km. */
+  distanceKm?: number;
   gender?: 'Pria' | 'Wanita';
   headline?: string;
   bio?: string;
