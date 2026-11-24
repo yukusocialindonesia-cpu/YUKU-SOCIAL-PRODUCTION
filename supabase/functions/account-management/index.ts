@@ -83,7 +83,7 @@ Deno.serve(async (req: Request) => {
         const [
           totalBookings, activeBookings, pendingPayments, pendingPayouts, pendingRefunds,
           activeReports, referralLinks, pendingRewards, affiliateEarnings, identityRows,
-          qrisSubmissions, orders, cancellationCases, auditRecords,
+          qrisSubmissions, orders, cancellationCases, auditRecords, talentEarnings, outstandingTalentEarnings, reservedAllocations,
         ] = await Promise.all([
           countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`)),
           countRows(serviceClient.from('bookings').select('id', { count: 'exact', head: true }).or(`customer_id.eq.${targetUserId},talent_id.eq.${targetUserId}`).in('status', activeBookingStatuses)),
@@ -99,6 +99,9 @@ Deno.serve(async (req: Request) => {
           countRows(serviceClient.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', targetUserId)),
           isTalent ? countRows(serviceClient.from('customer_cancellation_cases').select('id,bookings!inner(talent_id)', { count: 'exact', head: true }).eq('bookings.talent_id', targetUserId)) : countRows(serviceClient.from('customer_cancellation_cases').select('id', { count: 'exact', head: true }).eq('customer_id', targetUserId)),
           countRows(serviceClient.from('admin_audit_logs').select('id', { count: 'exact', head: true }).eq('target_id', targetUserId)),
+          isTalent ? countRows(serviceClient.from('talent_earnings').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId)) : Promise.resolve(0),
+          isTalent ? countRows(serviceClient.from('talent_earnings').select('id', { count: 'exact', head: true }).eq('talent_id', targetUserId).in('status', activeEarningStatuses)) : Promise.resolve(0),
+          isTalent ? countRows(serviceClient.from('payout_earnings_allocations').select('id,talent_earnings!inner(talent_id)', { count: 'exact', head: true }).eq('talent_earnings.talent_id', targetUserId).eq('status', 'reserved')) : Promise.resolve(0),
         ]);
 
         const checks = [
@@ -108,7 +111,10 @@ Deno.serve(async (req: Request) => {
           { key: 'pending_refunds', label: 'Refund menunggu / disetujui', count: pendingRefunds, blocker: pendingRefunds > 0 },
           { key: 'active_reports', label: 'Laporan atau sengketa terbuka', count: activeReports, blocker: activeReports > 0 },
           { key: 'pending_rewards', label: 'Reward referral belum dikreditkan', count: pendingRewards, blocker: pendingRewards > 0 },
+          { key: 'talent_earnings', label: 'Saldo dan earning Talent yang belum selesai', count: outstandingTalentEarnings, blocker: outstandingTalentEarnings > 0 },
+          { key: 'reserved_allocations', label: 'Saldo yang sedang dialokasikan untuk payout', count: reservedAllocations, blocker: reservedAllocations > 0 },
           { key: 'affiliate_earnings', label: 'Saldo affiliate / earning aktif', count: affiliateEarnings, blocker: affiliateEarnings > 0 },
+          { key: 'talent_earnings_history', label: 'Riwayat ledger penghasilan Talent', count: talentEarnings, blocker: false, manualReview: talentEarnings > 0 },
           { key: 'identity_records', label: 'Catatan identitas / KTP', count: identityRows, blocker: false, manualReview: identityRows > 0 },
           { key: 'qris_submissions', label: 'Bukti pembayaran QRIS', count: qrisSubmissions, blocker: false, manualReview: qrisSubmissions > 0 },
           { key: 'orders', label: 'Riwayat pesanan', count: orders, blocker: false, manualReview: orders > 0 },
