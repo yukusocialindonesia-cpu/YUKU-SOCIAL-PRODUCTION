@@ -268,7 +268,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 aria-label="Cari talent berdasarkan nama atau minat"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-9 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
+                className="w-full min-h-10 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
               />
             </div>
 
@@ -288,7 +288,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-2 md:hidden min-h-9 inline-flex items-center justify-center rounded-lg border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-lg border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
               {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
