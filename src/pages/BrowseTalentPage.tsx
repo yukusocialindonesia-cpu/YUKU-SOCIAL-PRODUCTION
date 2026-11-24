@@ -256,7 +256,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         )}
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1.5 sm:space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-1.5 sm:gap-3">
             {/* Search Input */}
@@ -307,7 +307,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
           </div>
 
-          <div id="jelajah-advanced-filters" className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-2 sm:space-y-4`}>
+          <div id="jelajah-advanced-filters" className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-1.5 sm:space-y-4`}>
           {/* Row 2: Activity Categories Buttons */}
           <div className="hidden sm:block pt-2 sm:pt-4 border-t border-purple-100/80">
             <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
@@ -340,9 +340,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           {/* Row 3: Secondary Filters (Gender & Mode) */}
-          <div className="pt-2 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-xs">
+          <div className="pt-2 sm:pt-4 border-t border-purple-100/80 flex flex-wrap items-center justify-between gap-1.5 sm:gap-4 text-xs">
             {/* Gender Segmented */}
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-start">
               <span className="font-semibold text-slate-500">Gender:</span>
               <div className="inline-flex p-1 bg-white/70 border border-purple-100/80 shadow-inner rounded-full">
                 {(['Semua', 'Wanita', 'Pria'] as GenderType[]).map((gender) => (
@@ -430,7 +430,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-1 flex items-center justify-between">
+        <div className="sm:hidden mb-0 flex items-center justify-between">
           <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Jelajahi Talent</h2>
           <span className="text-[10px] font-medium text-slate-500">{filteredTalents.length} tersedia</span>
         </div>
