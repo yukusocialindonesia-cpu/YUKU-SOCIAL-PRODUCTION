@@ -82,8 +82,10 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
     setBusy(true);
     setError('');
     try {
-      const width = 1600;
-      const height = Math.round(width / aspectRatio);
+      const maxDimension = 1600;
+      const safeAspectRatio = Number.isFinite(aspectRatio) && aspectRatio > 0 ? aspectRatio : 1;
+      const width = safeAspectRatio >= 1 ? maxDimension : Math.round(maxDimension * safeAspectRatio);
+      const height = Math.round(width / safeAspectRatio);
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
