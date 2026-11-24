@@ -96,7 +96,12 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searc
   // Search di server agar hasil tidak terbatas pada batch yang sudah dimuat browser.
   const normalizedSearch = searchTerm.trim();
   if (normalizedSearch) {
-    const escapedSearch = normalizedSearch.replace(/[\\\\"]/g, '\\    .order('id', { ascending: true });
+    const escapedSearch = normalizedSearch.replace(/["\\]/g, '\\$&');
+    const pattern = '"%' + escapedSearch + '%"';
+    query = query.or(
+      'display_name.ilike.' + pattern + ',headline.ilike.' + pattern + ',bio.ilike.' + pattern
+    );
+  }
 
   if (limit !== undefined) {');
     const pattern = `"%${escapedSearch}%"`;
