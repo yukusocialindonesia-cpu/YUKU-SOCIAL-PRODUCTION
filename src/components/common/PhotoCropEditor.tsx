@@ -97,10 +97,10 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
       const centerY = height / 2 + safeOffset.y / 100 * height;
       context.drawImage(image, centerX - drawWidth / 2, centerY - drawHeight / 2, drawWidth, drawHeight);
       const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((value) => value ? resolve(value) : reject(new Error('Foto gagal diproses.')), 'image/jpeg', 0.92);
+        canvas.toBlob((value) => value ? resolve(value) : reject(new Error('Foto gagal diproses.')), 'image/webp', 0.82);
       });
-      const cropped = new File([blob], file.name.replace(/\.[^.]+$/, '') + '-yuku.jpg', {
-        type: 'image/jpeg',
+      const cropped = new File([blob], file.name.replace(/\.[^.]+$/, '') + '-yuku.webp', {
+        type: 'image/webp',
         lastModified: Date.now(),
       });
       onApply(cropped);
