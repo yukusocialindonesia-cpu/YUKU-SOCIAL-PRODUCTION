@@ -256,19 +256,19 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         )}
 
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/85 p-1.5 sm:p-5 rounded-2xl sm:rounded-[26px] border border-white/90 shadow-[0_12px_34px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 mb-3 sm:mb-8 space-y-2 sm:space-y-4 backdrop-blur-xl">
+        <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-2 sm:mb-8 space-y-1.5 sm:space-y-4 backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
+          <div className="grid grid-cols-12 md:grid-cols-12 gap-1.5 sm:gap-3">
             {/* Search Input */}
             <div className="col-span-5 md:col-span-5 relative min-w-0">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Cari talent..."
                 aria-label="Cari talent berdasarkan nama atau minat"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-10 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-2 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
+                className="w-full min-h-9 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
               />
             </div>
 
@@ -288,7 +288,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-xl border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-9 inline-flex items-center justify-center rounded-lg border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
               {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
@@ -405,7 +405,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-3 flex items-center justify-between">
+        <div className="sm:hidden mb-2 flex items-center justify-between">
           <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Jelajahi Talent</h2>
           <span className="text-[10px] font-medium text-slate-500">{filteredTalents.length} tersedia</span>
         </div>
@@ -432,8 +432,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </button>
           </div>
         ) : filteredTalents.length > 0 ? (
-          <section aria-label="Daftar Talent" className="space-y-2">
-            <div className="grid grid-cols-2 gap-2 sm:gap-5 lg:grid-cols-3">
+          <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
+            <div className="grid grid-cols-2 gap-1.5 sm:gap-5 lg:grid-cols-3">
               {filteredTalents.map((talent) => (
                 <TalentCard
                   key={talent.id}
