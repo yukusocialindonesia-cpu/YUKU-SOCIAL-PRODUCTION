@@ -237,7 +237,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
   // Active Dashboard Tab
   const [activeTab, setActiveTab] = useState<
-    'bookings' | 'availability' | 'services' | 'media' | 'referral' | 'payouts' | 'profile' | 'safety'
+    'bookings' | 'availability' | 'services' | 'media' | 'referral' | 'payouts' | 'profile' | 'safety' | 'location'
   >('bookings');
   const [bookingFilter, setBookingFilter] = useState<BookingStatusFilter>('all');
 
