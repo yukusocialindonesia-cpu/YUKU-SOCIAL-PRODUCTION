@@ -401,6 +401,31 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </div>
 
+        {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
+        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-2 -mx-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <button
+              type="button"
+              onClick={() => setSelectedActivity('all')}
+              aria-pressed={selectedActivity === 'all'}
+              className={`min-h-9 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+            >
+              Semua
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedActivity(cat.id)}
+                aria-pressed={selectedActivity === cat.id}
+                className={`min-h-9 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+              >
+                {cat.title}
+              </button>
+            ))}
+          </div>
+        </section>
+
         </div>
         </div>
 
