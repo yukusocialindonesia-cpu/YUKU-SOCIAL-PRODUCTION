@@ -37,7 +37,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
     >
       {/* Header fixed di HP; spacer menjaga konten tidak tertutup. Desktop tetap sticky. */}
       <Navbar currentPath={currentPath} onNavigate={onNavigate} />
-      <div aria-hidden="true" className="h-14 min-[376px]:h-[60px] min-[431px]:h-16 xl:hidden" />
+      <div aria-hidden="true" className="h-14 min-[376px]:h-[60px] min-[431px]:h-16 lg:h-[72px] xl:hidden" />
 
       <main className="flex-1">{children}</main>
 
