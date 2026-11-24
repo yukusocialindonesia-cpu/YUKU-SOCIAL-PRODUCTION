@@ -40,6 +40,7 @@ import { Modal } from '../components/common/Modal';
 import { PromotionRow, ReportStatus } from '../types/database';
 import { getReportCategoryLabel, getReportStatusMeta } from '../utils/reportHelpers';
 import { QrisAdminPanel } from '../components/booking/QrisAdminPanel';
+import { BankTransferAdminPanel } from '../components/booking/BankTransferAdminPanel';
 import { BrandingAdminPanel } from '../components/admin/BrandingAdminPanel';
 import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
 import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
@@ -121,7 +122,7 @@ interface CustomerCancellationCaseItem {
   customer_name?: string;
 }
 
-type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management' | 'account_management' | 'community_moderation';
+type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'bank_transfer' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management' | 'account_management' | 'community_moderation';
 
 interface AdminBookingItem {
   id: string;
@@ -230,7 +231,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     const tabs: AdminTab[] = [];
     if (canAccess('talent')) tabs.push('talents', 'service_reviews');
     if (canAccess('booking')) tabs.push('bookings');
-    if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'affiliate');
+    if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'bank_transfer', 'affiliate');
     if (canAccess('support')) tabs.push('customer_ktp', 'reports', 'community_moderation');
     if (isSuperAdmin) tabs.push('overview', 'hero', 'promos', 'branding', 'admin_management', 'account_management');
     return tabs;
@@ -1327,9 +1328,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <span>QRIS & Verifikasi</span>
           </button>
           )}
+          {canAccess('finance') && (
+            <button
+              onClick={() => setActiveTab('bank_transfer')}
+              className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+                activeTab === 'bank_transfer' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
+              }`}
+            >
+              <CreditCard className={`w-3.5 h-3.5 ${activeTab === 'bank_transfer' ? 'text-white' : 'text-blue-600'}`} />
+              <span>Transfer Bank</span>
+            </button>
+          )}
           {isSuperAdmin && (
           <button
-            onClick={() => setActiveTab('hero')}
+            onClick={() => setActiveTab('hero')
             className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'hero' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
@@ -1409,6 +1421,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         )}
 
         {activeTab === 'qris' && <QrisAdminPanel />}
+        {activeTab === 'bank_transfer' && <BankTransferAdminPanel />}
         {activeTab === 'branding' && <BrandingAdminPanel />}
         {activeTab === 'hero' && <HeroSlidesAdminPanel />}
         {activeTab === 'affiliate' && <AffiliateAdminPanel />}
