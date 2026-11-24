@@ -82,7 +82,7 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
     setBusy(true);
     setError('');
     try {
-      const width = 1024;
+      const width = 1600;
       const height = Math.round(width / aspectRatio);
       const canvas = document.createElement('canvas');
       canvas.width = width;
@@ -97,7 +97,7 @@ export const PhotoCropEditor: React.FC<PhotoCropEditorProps> = ({
       const centerY = height / 2 + safeOffset.y / 100 * height;
       context.drawImage(image, centerX - drawWidth / 2, centerY - drawHeight / 2, drawWidth, drawHeight);
       const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((value) => value ? resolve(value) : reject(new Error('Foto gagal diproses.')), 'image/webp', 0.82);
+        canvas.toBlob((value) => value ? resolve(value) : reject(new Error('Foto gagal diproses.')), 'image/webp', 0.88);
       });
       const cropped = new File([blob], file.name.replace(/\.[^.]+$/, '') + '-yuku.webp', {
         type: 'image/webp',
