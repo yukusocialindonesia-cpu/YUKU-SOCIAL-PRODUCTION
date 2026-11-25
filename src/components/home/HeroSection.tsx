@@ -259,7 +259,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[10px] font-extrabold uppercase tracking-[0.13em] text-purple-700">
+          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-purple-700">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Social Experience & Paid Companionship</span>
           </p>
@@ -276,7 +276,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </span>
           </h1>
 
-          <p className="max-w-2xl text-[12px] leading-snug sm:text-base md:text-lg md:leading-relaxed text-slate-700">
+          <p className="max-w-2xl text-[14px] leading-relaxed sm:text-base md:text-lg md:leading-relaxed text-slate-700">
             Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
           </p>
         </div>
@@ -285,7 +285,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <SearchActivityWidget onSearch={onSearch} />
           {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
-          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[10.5px] leading-tight whitespace-nowrap text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-snug whitespace-nowrap text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Ruang publik & aman</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
