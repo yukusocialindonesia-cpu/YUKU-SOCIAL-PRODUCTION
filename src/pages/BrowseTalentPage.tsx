@@ -396,7 +396,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
 
   return (
-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
+    <div className="yuku-discovery-surface relative isolate min-h-screen overflow-hidden py-0 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
         <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
@@ -656,7 +656,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-3 flex items-center justify-between border-b border-purple-100/80 pb-2">
+        <div className="yuku-discovery-heading sm:hidden mb-3 flex items-center justify-between border-b border-purple-200/70 pb-2.5">
           <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
           <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
             <Flame className="h-3.5 w-3.5 fill-purple-600 text-purple-600" />
@@ -702,7 +702,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 Data belum berhasil diperbarui. Menampilkan hasil sebelumnya.
               </p>
             )}
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:gap-5 xl:grid-cols-4">
+            <div className="yuku-talent-grid grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:gap-5 xl:grid-cols-4">
               {displayTalents.slice(0, visibleTalentCount).map((talent) => (
                 <div key={talent.id} className="min-w-0">
                   <TalentCard
