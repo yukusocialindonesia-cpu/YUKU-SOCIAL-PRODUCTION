@@ -668,6 +668,24 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </label>
         </div>
 
+        {/* Desktop results toolbar */}
+        <div className="hidden sm:flex items-center justify-between gap-4 mb-4 rounded-2xl border border-white/90 bg-white/80 px-4 py-3 shadow-[0_8px_24px_rgba(76,29,149,0.06)] ring-1 ring-purple-100/60 backdrop-blur-xl">
+          <div className="min-w-0">
+            <h2 className="text-base font-extrabold tracking-tight text-[#32134F]">Temukan teman aktivitasmu</h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              {loading ? 'Sedang memuat profil...' : `${filteredTalents.length} profil cocok dengan pilihanmu`}
+            </p>
+          </div>
+          <label className="inline-flex shrink-0 items-center gap-2 text-xs font-semibold text-slate-600">
+            Urutkan
+            <select aria-label="Urutkan talent" value={sortBy} onChange={(event) => setSortBy(event.target.value as 'popular' | 'rating' | 'newest')} className="min-h-10 rounded-xl border border-purple-100 bg-white px-3 text-xs font-semibold text-purple-800 shadow-sm outline-none transition focus:ring-2 focus:ring-purple-200">
+              <option value="popular">Terpopuler</option>
+              <option value="rating">Rating tertinggi</option>
+              <option value="newest">Terbaru</option>
+            </select>
+          </label>
+        </div>
+
         {/* Results Grid */}
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
@@ -691,7 +709,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         ) : filteredTalents.length > 0 ? (
           <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
-            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-5 lg:grid-cols-3">
               {displayTalents.slice(0, visibleTalentCount).map((talent) => (
                 <TalentCard
                   key={talent.id}
