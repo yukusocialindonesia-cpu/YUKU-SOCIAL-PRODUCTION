@@ -74,9 +74,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         role="button"
         tabIndex={0}
         aria-label={`Lihat profil ${talent.name}`}
-        className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.12)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+        className="group relative h-full min-w-0 overflow-hidden rounded-2xl sm:rounded-[22px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.10)] ring-1 ring-purple-100/80 cursor-pointer transition-shadow hover:shadow-[0_12px_28px_rgba(49,19,79,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
       >
-        <div className="relative aspect-[0.92/1] w-full overflow-hidden bg-purple-100">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-purple-100">
           {hasRealPhoto ? (
             <img
               src={talent.avatarUrl}
@@ -89,7 +89,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             />
           ) : (
             <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${pickGradient(talent.id)}`}>
-              <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
+              <span className="text-3xl sm:text-4xl font-black text-white">{initialsOf(talent.name)}</span>
             </div>
           )}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
@@ -98,7 +98,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               BARU
             </span>
           )}
-          <div className="absolute inset-x-2 bottom-2 text-white">
+          <div className="absolute inset-x-2 bottom-2.5 text-white sm:inset-x-3 sm:bottom-3">
             <div className="flex items-center justify-between gap-1">
             <div className="flex min-w-0 items-center gap-1">
               <h3 className="min-w-0 flex-1 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">

@@ -73,7 +73,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="relative py-2.5 sm:py-10 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section aria-label="Ruang Promosi YUKU" className="relative py-2.5 sm:py-10 bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
           <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80" />
