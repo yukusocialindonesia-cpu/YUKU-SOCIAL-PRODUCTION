@@ -34,16 +34,36 @@ body,
 }
 
 body {
-  background-color: #FAF8FC;
+  background-color: #FBF8FF;
   background-image:
-    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
-    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
+    radial-gradient(ellipse at 8% 2%, rgba(220, 170, 255, 0.38), transparent 30%),
+    radial-gradient(ellipse at 92% 14%, rgba(194, 150, 255, 0.30), transparent 28%),
+    radial-gradient(ellipse at 50% 42%, rgba(255, 255, 255, 0.96), transparent 52%),
+    radial-gradient(ellipse at 4% 82%, rgba(222, 180, 255, 0.24), transparent 30%),
+    linear-gradient(180deg, #F8F1FF 0%, #FFFCFF 48%, #F7F0FF 100%);
   background-attachment: scroll;
 }
 
 #root {
   position: relative;
   isolation: isolate;
+  overflow: clip;
+}
+
+/* Soft YUKU orbs: decorative only, never intercept taps or scrolling. */
+#root::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(196, 132, 252, 0.22) 0 27px, transparent 28px),
+    radial-gradient(circle, rgba(232, 121, 249, 0.16) 0 42px, transparent 43px),
+    radial-gradient(circle, rgba(167, 112, 245, 0.13) 0 58px, transparent 59px);
+  background-size: 100% 560px, 100% 760px, 100% 920px;
+  background-position: 4% 110px, 96% 320px, 0% 610px;
+  background-repeat: repeat-y;
 }
 
 /*
