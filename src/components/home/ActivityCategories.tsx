@@ -54,19 +54,19 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   const tones = [{ orb: 'from-[#e5d5ff] to-[#a78bda]' }];
 
   return (
-    <section className="relative overflow-hidden border-y border-[#eee7f5] bg-[radial-gradient(ellipse_at_50%_0%,rgba(196,165,235,0.24),transparent_58%),linear-gradient(180deg,#fbf9fd_0%,#f5f0fa_100%)] py-5 sm:py-10">
-      <div className="pointer-events-none absolute -left-24 top-0 h-64 w-64 rounded-full bg-violet-300/30 blur-3xl" />
-      <div className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-fuchsia-200/40 blur-3xl" />
+    <section className="relative overflow-hidden border-y border-[#EEEAF5] bg-[#F8F7FC] py-5 sm:py-10">
+      <div className="pointer-events-none absolute -left-24 top-0 h-64 w-64 rounded-full bg-[#741CFF]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-[#24105F]/5 blur-3xl" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-6">
           <div>
-            <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-[#e7d9f5] bg-white/80 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#7541a5] shadow-sm sm:text-[10px]">
+            <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-[#e7d9f5] bg-white/80 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#741CFF] shadow-sm sm:text-[10px]">
               <Sparkles className="h-3 w-3" /> PILIH PENGALAMAN
             </span>
-            <h2 className="text-[22px] font-black tracking-tight text-[#241238] sm:text-3xl">
+            <h2 className="text-[22px] font-black tracking-tight text-[#24105F] sm:text-3xl">
               Pilih aktivitasmu
             </h2>
-            <p className="mt-1 max-w-[270px] text-[11px] leading-relaxed text-[#74677f] sm:max-w-none sm:text-sm">
+            <p className="mt-1 max-w-[270px] text-[11px] leading-relaxed text-[#625B70] sm:max-w-none sm:text-sm">
               Pilih aktivitas untuk menemukan Talent yang sesuai dengan kebutuhanmu.
             </p>
           </div>
@@ -102,7 +102,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[64px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-[10px] border border-[#e8def1] bg-gradient-to-br from-white via-white to-[#f7f1fc] px-0.5 py-1.5 text-center shadow-[0_4px_10px_rgba(48,25,70,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] transition duration-300 hover:-translate-y-1 hover:border-[#cdb5e5] hover:shadow-[0_14px_28px_rgba(48,25,70,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9b6bc7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8f4fb] sm:min-h-[184px] sm:items-start sm:justify-between sm:gap-0 sm:rounded-[24px] sm:p-4 sm:text-left"
+                  className="group relative flex min-h-[64px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-[10px] border border-[#e8def1] bg-gradient-to-br from-white via-white to-[#f7f1fc] px-0.5 py-1.5 text-center shadow-[0_4px_10px_rgba(48,25,70,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] transition duration-300 hover:-translate-y-1 hover:border-[#cdb5e5] hover:shadow-[0_14px_28px_rgba(48,25,70,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F7FC] sm:min-h-[184px] sm:items-start sm:justify-between sm:gap-0 sm:rounded-[24px] sm:p-4 sm:text-left"
                 >
                   <span className={`pointer-events-none absolute -right-5 -top-6 h-24 w-24 rounded-full bg-gradient-to-br ${tone.orb} opacity-[0.20] blur-2xl transition duration-300 group-hover:opacity-35`} />
                   <span className="relative flex w-full items-center justify-center sm:items-start sm:justify-between sm:gap-2">
@@ -114,7 +114,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                     </span>
                   </span>
                   <span className="relative block w-full sm:mt-1.5">
-                    <span className="block line-clamp-2 break-words text-[7px] font-extrabold leading-[1.1] tracking-tight text-[#28183a] sm:line-clamp-1 sm:text-[14px]">
+                    <span className="block line-clamp-2 break-words text-[8.5px] font-extrabold leading-[1.15] tracking-tight text-[#28183a] sm:line-clamp-1 sm:text-[14px]">
                       {cat.title}
                     </span>
                     <span className="mt-0.5 hidden min-h-[24px] text-[11px] leading-snug text-[#786b83] sm:block sm:line-clamp-2">
