@@ -19,11 +19,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               YUKU adalah platform Social Experience & Paid Companionship Marketplace pertama di Indonesia yang menghubungkan individu untuk berbagi momen aktivitas sosial yang positif, aman, dan beradab.
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <div className="inline-flex min-h-10 items-center gap-2 rounded-full border border-purple-300/15 bg-purple-300/[0.07] px-3 py-2 text-xs sm:text-sm text-purple-100">
+              <div className="inline-flex min-h-11 items-center gap-2 rounded-full border border-purple-300/15 bg-purple-300/[0.07] px-3 py-2 text-xs sm:text-sm text-purple-100">
                 <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span>Beroperasi di Seluruh Indonesia</span>
               </div>
-              <div className="inline-flex min-h-10 items-center gap-2 rounded-full border border-purple-300/15 bg-purple-300/[0.07] px-3 py-2 text-xs sm:text-sm text-purple-100">
+              <div className="inline-flex min-h-11 items-center gap-2 rounded-full border border-purple-300/15 bg-purple-300/[0.07] px-3 py-2 text-xs sm:text-sm text-purple-100">
                 <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span>yukufriends@gmail.com</span>
               </div>
