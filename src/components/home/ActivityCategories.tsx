@@ -74,15 +74,15 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-6">
+          <div className="flex gap-2.5 overflow-x-auto overscroll-x-contain pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:gap-3.5 sm:overflow-visible sm:pb-0 lg:grid-cols-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[120px] animate-pulse rounded-[20px] border border-[#e9e0f0] bg-white sm:h-[184px]" />
+              <div key={i} className="h-[112px] w-[128px] shrink-0 snap-start animate-pulse rounded-[18px] border border-[#e9e0f0] bg-white sm:h-[184px] sm:w-auto sm:rounded-[20px]" />
             ))}
           </div>
         ) : errorMsg ? (
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-rose-300/20 bg-rose-500/10 p-4 text-xs text-rose-100">
+          <div className="flex items-center justify-between gap-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-800">
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 shrink-0 text-rose-300" />
+              <AlertCircle className="h-5 w-5 shrink-0 text-rose-500" />
               <span>{errorMsg}</span>
             </div>
             <button onClick={loadCategories} className="flex shrink-0 cursor-pointer items-center gap-1 rounded-xl bg-rose-500 px-3 py-2 font-bold text-white hover:bg-rose-400">
@@ -94,7 +94,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
             Aktivitas belum tersedia. Coba lagi beberapa saat.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
+          <div className="flex gap-2.5 overflow-x-auto overscroll-x-contain pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:pb-0 lg:grid-cols-6">
             {categories.map((cat) => {
               const tone = tones[0];
               return (
@@ -102,7 +102,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[120px] cursor-pointer flex-col items-start justify-between overflow-hidden rounded-[16px] border border-[#e8def1] bg-gradient-to-br from-white via-white to-[#f7f1fc] p-2.5 text-left shadow-[0_8px_22px_rgba(48,25,70,0.07),inset_0_1px_0_rgba(255,255,255,0.95)] transition duration-300 hover:-translate-y-1 hover:border-[#cdb5e5] hover:shadow-[0_14px_28px_rgba(48,25,70,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9b6bc7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8f4fb] sm:min-h-[184px] sm:rounded-[24px] sm:p-4"
+                  className="group relative flex min-h-[112px] w-[128px] shrink-0 snap-start cursor-pointer flex-col items-start justify-between overflow-hidden rounded-[18px] border border-[#e8def1] bg-gradient-to-br from-white via-white to-[#f7f1fc] p-2.5 text-left shadow-[0_8px_22px_rgba(48,25,70,0.07),inset_0_1px_0_rgba(255,255,255,0.95)] transition duration-300 hover:-translate-y-1 hover:border-[#cdb5e5] hover:shadow-[0_14px_28px_rgba(48,25,70,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9b6bc7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8f4fb] sm:min-h-[184px] sm:w-auto sm:shrink sm:rounded-[24px] sm:p-4"
                 >
                   <span className={`pointer-events-none absolute -right-5 -top-6 h-24 w-24 rounded-full bg-gradient-to-br ${tone.orb} opacity-[0.20] blur-2xl transition duration-300 group-hover:opacity-35`} />
                   <span className="relative flex w-full items-start justify-between gap-2">
