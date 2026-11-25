@@ -70,6 +70,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const activeSearchQueryRef = useRef(searchQuery);
+
+  useEffect(() => {
+    activeSearchQueryRef.current = searchQuery;
+  }, [searchQuery]);
   const [selectedActivity, setSelectedActivity] = useState<string>(initialActivity);
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
@@ -204,9 +209,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     loadingMoreRef.current = true;
     setLoadingMoreTalents(true);
     setLoadMoreError(null);
+    const requestId = searchRequestRef.current;
+    const requestedSearch = searchQuery;
     try {
       const offset = nextTalentOffsetRef.current;
-      const nextBatch = await fetchTalentsFromSupabase(TALENT_BATCH_SIZE, offset, searchQuery);
+      const nextBatch = await fetchTalentsFromSupabase(TALENT_BATCH_SIZE, offset, requestedSearch);
+      // Ignore a page response if the user has since started a new search.
+      if (requestId !== searchRequestRef.current || requestedSearch !== activeSearchQueryRef.current) return;
       if (nextBatch.length > 0) {
         setTalents((current) => {
           const existingIds = new Set(current.map((talent) => talent.id));
