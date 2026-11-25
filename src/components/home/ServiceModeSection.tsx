@@ -24,9 +24,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
+              <span className="yuku-icon-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
@@ -41,7 +41,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-[#eee8f8] bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-[#eee8f8] bg-white p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
                 <MessageCircle className="h-4 w-4" />
@@ -75,9 +75,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-fuchsia-100/90 bg-white p-2.5 sm:p-5 text-left shadow-[0_10px_30px_rgba(36,16,95,0.05)] hover:shadow-[0_18px_40px_rgba(36,16,95,0.10)] hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-fuchsia-100/90 bg-white p-2.5 sm:p-5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
-              <span className="mb-2 flex h-8 w-8 sm:mb-2.5 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#4b12b8] text-white shadow-md shadow-fuchsia-200/70">
+              <span className="yuku-icon-orb mb-2 flex h-8 w-8 sm:mb-2.5 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#4b12b8] text-white">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
                   <UsersRound className="h-4 w-4 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
                   <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-[#5b22c7]">
@@ -97,9 +97,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-purple-100/90 bg-white p-2.5 sm:p-5 text-left shadow-[0_8px_24px_rgba(124,58,237,0.07)] hover:shadow-[0_16px_34px_rgba(124,58,237,0.14)] hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-purple-100/90 bg-white p-2.5 sm:p-5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
-              <span className="mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#4b12b8] text-white shadow-md shadow-purple-200/70">
+              <span className="yuku-icon-orb mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#4b12b8] text-white">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
                   <Video className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
                   <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-indigo-700">
