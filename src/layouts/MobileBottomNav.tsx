@@ -65,11 +65,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   ];
 
   const isHomePage = currentPath === '/';
-  const navShell = `yuku-glass-shell md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+8px)] z-40 mx-auto w-[calc(100%-16px)] sm:w-[calc(100%-24px)] max-w-[480px] rounded-[20px] sm:rounded-[24px] border px-1.5 sm:px-2 py-1 backdrop-blur-2xl transition-colors duration-200 ${
-    isHomePage
-      ? 'border-white/15 bg-[#17052f]/90 shadow-[0_16px_42px_rgba(12,3,28,0.48),0_2px_12px_rgba(116,28,255,0.16)]'
-      : 'border-purple-100/90 bg-gradient-to-r from-[#f3edff]/95 via-white/96 to-[#fff0f8]/95 shadow-[0_14px_38px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.07)]'
-  }`;
+  const navShell = 'yuku-glass-shell md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+8px)] z-40 mx-auto w-[calc(100%-16px)] sm:w-[calc(100%-24px)] max-w-[480px] rounded-[20px] sm:rounded-[24px] border border-[#E8E2F0] bg-white/95 px-1.5 sm:px-2 py-1 shadow-[0_12px_34px_rgba(36,16,95,0.14)] backdrop-blur-2xl';
 
   if (isAuthLoading) {
     return (
@@ -98,27 +94,27 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
                 className={`group relative flex min-h-[52px] w-full flex-col items-center justify-center gap-1 rounded-[14px] sm:rounded-[18px] px-0.5 sm:px-1 py-1 text-[10px] sm:text-[11px] font-semibold transition-all duration-200 active:scale-95 ${
                   active
                     ? isHomePage
-                      ? 'bg-gradient-to-b from-[#7427db] to-[#4b12a8] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_5px_16px_rgba(116,28,255,0.32)]'
-                      : 'bg-gradient-to-b from-purple-100/95 to-fuchsia-50 text-purple-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_3px_10px_rgba(109,40,217,0.10)]'
+                      ? 'bg-[#741CFF] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_5px_16px_rgba(116,28,255,0.24)]'
+                      : 'bg-[#741CFF] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_5px_16px_rgba(116,28,255,0.24)]'
                     : isHomePage
-                      ? 'text-white/65 hover:bg-white/10 hover:text-white'
-                      : 'text-slate-500 hover:bg-purple-50/70 hover:text-purple-700'
+                      ? 'text-slate-500 hover:bg-[#F8F7FC] hover:text-[#24105F]'
+                      : 'text-slate-500 hover:bg-[#F8F7FC] hover:text-[#24105F]'
                 }`}
               >
                 <span className={`flex h-6 w-8 sm:h-7 sm:w-9 items-center justify-center rounded-xl transition-all duration-200 ${
                   active
                     ? isHomePage
-                      ? 'bg-white/15 text-white shadow-[0_3px_10px_rgba(12,3,28,0.2)]'
-                      : 'bg-white/90 text-purple-700 shadow-[0_3px_10px_rgba(76,29,149,0.12)]'
+                      ? 'bg-white/15 text-white shadow-[0_3px_10px_rgba(12,3,28,0.12)]'
+                      : 'bg-white/15 text-white shadow-[0_3px_10px_rgba(12,3,28,0.12)]'
                     : isHomePage
-                      ? 'text-white/65 group-hover:text-white'
-                      : 'text-slate-500 group-hover:text-purple-700'
+                      ? 'text-slate-500 group-hover:text-[#24105F]'
+                      : 'text-slate-500 group-hover:text-[#24105F]'
                 }`}>
                   {item.icon}
                 </span>
                 <span className="max-w-full truncate leading-none">{item.label}</span>
                 {active && (
-                  <span className="absolute -bottom-0.5 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-gradient-to-r from-fuchsia-400 to-amber-300" />
+                  <span className="absolute -bottom-0.5 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-[#741CFF]" />
                 )}
               </button>
             </li>
