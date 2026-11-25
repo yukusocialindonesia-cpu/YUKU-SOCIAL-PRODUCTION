@@ -92,7 +92,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
             </div>
           )}
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
           <div className="absolute left-2 right-2 top-2 flex items-center justify-between gap-1">
             {isNew ? (
               <span className="rounded-full bg-amber-400 px-2.5 py-1 text-[10px] font-extrabold text-amber-950 shadow">
@@ -128,6 +128,11 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 </span>
               )}
             </div>
+            {talent.headline && (
+              <p className="mt-1 truncate text-[10px] font-semibold text-fuchsia-100/95 drop-shadow-sm">
+                {talent.headline}
+              </p>
+            )}
             {talent.city && (
               <p className="mt-1 flex items-center gap-1 truncate text-[11px] font-medium text-white/90">
                 <MapPin className="h-3 w-3 shrink-0" />
