@@ -39,7 +39,7 @@ const PromotionBannerVisual: React.FC<{ imageUrl: string; title: string }> = ({ 
       loading="eager"
       decoding="async"
       onError={() => setImageFailed(true)}
-      className="block h-[clamp(132px,24vw,168px)] w-full bg-white object-cover object-center"
+      className="block h-[clamp(150px,34vw,220px)] w-full bg-white object-contain object-center"
     />
   );
 };
