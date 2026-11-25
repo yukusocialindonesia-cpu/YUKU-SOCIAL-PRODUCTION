@@ -76,7 +76,7 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
         <div className="min-w-0 md:col-span-5 flex items-center gap-3 px-3 md:px-3 py-2.5 md:py-3 min-h-[56px] bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
           <Coffee className="hidden md:block w-5 h-5 text-purple-700 shrink-0" />
           <div className="flex-1 min-w-0 text-left">
-            <label htmlFor="search-activity" className="block text-[10px] md:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <label htmlFor="search-activity" className="block text-[11px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               <span className="md:hidden">Aktivitas</span>
               <span className="hidden md:inline">Pilihan Aktivitas</span>
             </label>
@@ -103,7 +103,7 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
         <div className="min-w-0 md:col-span-4 flex items-center gap-3 px-3 md:px-3 py-2.5 md:py-3 min-h-[56px] bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
           <MapPin className="hidden md:block w-5 h-5 text-amber-600 shrink-0" />
           <div className="flex-1 min-w-0 text-left">
-            <label htmlFor="search-city" className="block text-[10px] md:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <label htmlFor="search-city" className="block text-[11px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               <span className="md:hidden">Kota</span>
               <span className="hidden md:inline">Lokasi Kota</span>
             </label>
