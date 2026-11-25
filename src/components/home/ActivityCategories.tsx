@@ -30,7 +30,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   }, []);
 
   const getIcon = (iconName: string) => {
-    const iconClass = 'w-6 h-6 sm:w-7 sm:h-7';
+    const iconClass = 'w-7 h-7 sm:w-8 sm:h-8';
     switch (iconName) {
       case 'Coffee':
       case 'utensils':
@@ -84,7 +84,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         {loading ? (
           <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[116px] animate-pulse rounded-[20px] border border-white/10 bg-white/[0.07] sm:h-[132px]" />
+              <div key={i} className="h-[144px] animate-pulse rounded-[20px] border border-white/10 bg-white/[0.07] sm:h-[164px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -110,12 +110,12 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[116px] cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-[20px] border border-white/[0.11] bg-gradient-to-b from-white/[0.13] to-white/[0.055] px-2 py-4 text-center shadow-[0_10px_28px_rgba(5,0,20,0.2)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/40 hover:from-white/[0.19] hover:to-white/[0.09] sm:min-h-[132px] sm:rounded-[22px]"
+                  className="group relative flex min-h-[144px] cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-[20px] border border-white/[0.11] bg-gradient-to-b from-white/[0.13] to-white/[0.055] px-2 py-4 text-center shadow-[0_10px_28px_rgba(5,0,20,0.2)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/40 hover:from-white/[0.19] hover:to-white/[0.09] sm:min-h-[164px] sm:rounded-[22px]"
                 >
-                  <span className={`relative flex h-12 w-12 items-center justify-center rounded-[17px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} transition duration-300 group-hover:scale-110 group-hover:rotate-3 sm:h-14 sm:w-14 sm:rounded-[19px]`}>
+                  <span className={`relative flex h-14 w-14 items-center justify-center rounded-[18px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} transition duration-300 group-hover:scale-110 group-hover:rotate-3 sm:h-16 sm:w-16 sm:rounded-[20px]`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <span className="line-clamp-2 text-[11px] font-extrabold leading-tight text-white sm:text-[13px]">
+                  <span className="line-clamp-2 text-[13px] font-extrabold leading-tight text-white sm:text-[14px]">
                     {cat.title}
                   </span>
                 </button>
