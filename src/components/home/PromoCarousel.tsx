@@ -73,21 +73,21 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="relative border-t border-white/[0.06] bg-gradient-to-b from-[#1b073b] via-[#24094a] to-[#1b073b] py-4 sm:py-7">
+    <section aria-label="Ruang Promosi YUKU" className="relative border-t border-[#EEEAF5] bg-[#F8F7FC] py-4 sm:py-7">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
-          <div className="w-full aspect-[16/9] md:max-w-[860px] md:mx-auto rounded-[20px] sm:rounded-3xl bg-white/10 animate-pulse border border-white/10" />
+          <div className="w-full aspect-[16/9] md:max-w-[860px] md:mx-auto rounded-[20px] sm:rounded-3xl bg-[#EDE8F5] animate-pulse border border-[#E8E2F0]" />
         ) : totalSlides === 0 ? (
-          <div className="w-full min-h-[112px] sm:aspect-[21/6] rounded-2xl border border-white/10 bg-gradient-to-r from-[#2b1053] via-[#351064] to-[#4a126f] px-3.5 py-4 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 shadow-[0_14px_38px_rgba(8,2,25,0.22)]">
+          <div className="w-full min-h-[112px] sm:aspect-[21/6] rounded-2xl border border-[#E8E2F0] bg-white px-3.5 py-4 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 shadow-[0_8px_24px_rgba(36,16,95,0.08)]">
             <div className="flex items-start gap-3 sm:gap-4 max-w-2xl">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/10 text-amber-300 ring-1 ring-white/10 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#EEE8FF] text-[#741CFF] ring-1 ring-[#E8E2F0] flex items-center justify-center shrink-0">
                 <Megaphone className="w-5 h-5" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm sm:text-base font-bold text-white">
+                <h3 className="text-sm sm:text-base font-bold text-[#24105F]">
                   Etalase Poster Promosi Resmi
                 </h3>
-                <p className="text-xs sm:text-sm text-violet-100/80 leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#625B70] leading-relaxed">
                   Belum ada poster promosi aktif saat ini. Penawaran spesial, kampanye komunitas, dan pengumuman resmi YUKU akan tampil berjalan otomatis di sini.
                 </p>
               </div>
@@ -96,7 +96,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('/talent')}
-              className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 hover:brightness-110 text-white text-xs font-bold rounded-xl transition-all whitespace-nowrap shrink-0 cursor-pointer shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300"
+              className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-[#741CFF] to-[#5F13D6] hover:brightness-110 text-[#24105F] text-xs font-bold rounded-xl transition-all whitespace-nowrap shrink-0 cursor-pointer shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300"
             >
               Jelajahi Talent
             </button>
@@ -126,7 +126,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
           >
             {/* Kotak mengikuti rasio asli poster yang sedang tampil (dibatasi 3:2 sampai 3:1), jadi poster tidak terpotong. */}
             <div
-              className="w-full rounded-[20px] sm:rounded-[28px] overflow-hidden border border-white/15 bg-[#120522] relative shadow-[0_16px_42px_rgba(0,0,0,0.32)] ring-1 ring-white/[0.06] touch-pan-y"
+              className="w-full rounded-[20px] sm:rounded-[28px] overflow-hidden border border-[#E8E2F0] bg-white relative shadow-[0_8px_24px_rgba(36,16,95,0.10)] ring-1 ring-[#E8E2F0] touch-pan-y"
               style={{ aspectRatio: String(frameRatio) }}
             >
               {promotions.map((promo, index) => {
@@ -139,8 +139,8 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                 const slideBody = (
                   <div className="relative w-full h-full">
                     {isBroken ? (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-950 via-[#2D1052] to-slate-900 flex flex-col items-center justify-center p-6 text-center text-white">
-                        <Megaphone className="w-8 h-8 text-amber-400 mb-2" />
+                      <div className="w-full h-full bg-gradient-to-br from-purple-950 via-[#2D1052] to-slate-900 flex flex-col items-center justify-center p-6 text-center text-[#24105F]">
+                        <Megaphone className="w-8 h-8 text-[#741CFF] mb-2" />
                         <p className="text-sm sm:text-base font-bold">{promo.title}</p>
                       </div>
                     ) : (
@@ -166,9 +166,9 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                     )}
 
                     {(isInternal || isExternal) && (
-                      <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl bg-slate-950/80 text-white text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-xs">
+                      <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl bg-slate-950/80 text-[#24105F] text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-xs">
                         <span>Lihat Promo</span>
-                        <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-[#741CFF]" />
                       </div>
                     )}
                   </div>
@@ -188,7 +188,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         tabIndex={isCurrent ? 0 : -1}
-                        className="block w-full h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400"
+                        className="block w-full h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#741CFF]"
                         aria-label={promo.title}
                       >
                         {slideBody}
@@ -198,7 +198,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                         type="button"
                         onClick={() => handlePosterClick(promo)}
                         tabIndex={isCurrent ? 0 : -1}
-                        className="block w-full h-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400"
+                        className="block w-full h-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#741CFF]"
                         aria-label={promo.title}
                       >
                         {slideBody}
