@@ -95,7 +95,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
-            {categories.map((cat, idx) => {
+            {categories.map((cat) => {
               const tone = tones[0];
               return (
                 <button
