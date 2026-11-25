@@ -1,7 +1,14 @@
--- STAGE D: payment route lock tests.
--- Run only in STAGING with suitable fixture users/bookings.
--- Expected invariant:
---   NULL -> xendit OR NULL -> manual_qris is allowed once;
---   xendit -> manual_qris and manual_qris -> xendit are rejected;
---   same-route re-claim is idempotent.
--- See docs/AUDIT-AND-PAYMENT-ROUTE-LOCK-2026-11-13.md for execution notes.
+-- STAGE D: payment route lock acceptance-test specification.
+-- IMPORTANT: this file currently documents scenarios only; it is NOT an executable SQL test.
+-- Run real assertions only in STAGING with isolated fixture users/bookings.
+-- Current policy is defined by the latest payment-route migrations:
+--   * NULL -> manual_qris is allowed once, only while QRIS is active.
+--   * NULL -> manual_bank_transfer is allowed once, only while bank transfer is active.
+--   * NULL -> xendit is rejected for NEW checkouts.
+--   * A legacy booking already locked to xendit may re-claim xendit, but cannot switch routes.
+--   * Cross-route changes are rejected (e.g. manual_qris -> manual_bank_transfer).
+--   * Same-route re-claim is idempotent while the booking is still pending and unexpired.
+--   * Wrong customer, unauthenticated caller, expired booking, inactive method,
+--     and non-pending booking are rejected.
+-- Do not infer production behavior from this specification: verify migration history
+-- and the deployed function definition on the target Supabase project first.
