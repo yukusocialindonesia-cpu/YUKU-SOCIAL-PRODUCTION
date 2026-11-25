@@ -113,3 +113,20 @@ body {
     transform: none;
   }
 }
+
+
+/* YUKU Premium Social: warm white foundation with restrained lavender accents. */
+.yuku-home-surface {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(196,181,253,.14), transparent 28rem),
+    radial-gradient(ellipse at 100% 12%, rgba(232,121,249,.08), transparent 26rem),
+    linear-gradient(180deg, #FFFEFF 0%, #FBF9FD 58%, #FFFFFF 100%);
+}
+.yuku-discovery-surface {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(196,181,253,.12), transparent 25rem),
+    radial-gradient(ellipse at 100% 18%, rgba(232,121,249,.07), transparent 24rem),
+    #FCFBFD;
+}
+.yuku-talent-grid > div { min-width: 0; }
+.yuku-home-surface h2 { text-wrap: balance; }
