@@ -84,7 +84,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         {loading ? (
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[140px] animate-pulse rounded-[20px] border border-white/10 bg-white/[0.07] sm:h-[184px]" />
+              <div key={i} className="h-[154px] animate-pulse rounded-[20px] border border-white/10 bg-white/[0.07] sm:h-[184px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -110,11 +110,11 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[144px] cursor-pointer flex-col items-start justify-between overflow-hidden rounded-[20px] border border-white/[0.16] bg-gradient-to-br from-[#421477] via-[#2d1056] to-[#1d0b3a] p-3.5 text-left shadow-[0_12px_30px_rgba(5,0,20,0.28)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/50 hover:from-[#501b88] hover:to-[#28104c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b] sm:min-h-[184px] sm:rounded-[24px] sm:p-4"
+                  className="group relative flex min-h-[158px] cursor-pointer flex-col items-start justify-between overflow-hidden rounded-[20px] border border-white/[0.16] bg-gradient-to-br from-[#421477] via-[#2d1056] to-[#1d0b3a] p-3.5 text-left shadow-[0_12px_30px_rgba(5,0,20,0.28)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/50 hover:from-[#501b88] hover:to-[#28104c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b] sm:min-h-[184px] sm:rounded-[24px] sm:p-4"
                 >
                   <span className={`pointer-events-none absolute -right-5 -top-6 h-24 w-24 rounded-full bg-gradient-to-br ${tone.orb} opacity-[0.13] blur-2xl transition duration-300 group-hover:opacity-25`} />
                   <span className="relative flex w-full items-start justify-between gap-2">
-                    <span className={`flex h-[52px] w-[52px] items-center justify-center rounded-[17px] bg-gradient-to-br ${tone.orb} text-[#281044] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-white/30 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[62px] sm:w-[62px] sm:rounded-[20px]`}>
+                    <span className={`flex h-[58px] w-[58px] items-center justify-center rounded-[18px] bg-gradient-to-br ${tone.orb} text-[#281044] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-white/30 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[62px] sm:w-[62px] sm:rounded-[20px]`}>
                       {getIcon(cat.iconName)}
                     </span>
                     <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.07] text-violet-100/80 transition duration-300 group-hover:border-fuchsia-200/40 group-hover:bg-fuchsia-300/15 group-hover:text-white">
@@ -122,10 +122,10 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                     </span>
                   </span>
                   <span className="relative mt-2 block w-full">
-                    <span className="block line-clamp-1 text-[13px] font-extrabold leading-tight text-white sm:text-[14px]">
+                    <span className="block line-clamp-1 text-[14px] font-extrabold leading-tight tracking-tight text-white sm:text-[14px]">
                       {cat.title}
                     </span>
-                    <span className="mt-1 block line-clamp-2 min-h-[25px] text-[10px] leading-snug text-violet-100/80 sm:text-[11px]">
+                    <span className="mt-1 block line-clamp-2 min-h-[25px] text-[11px] leading-snug text-violet-100/85 sm:text-[11px]">
                       {cat.description}
                     </span>
                     {cat.isOnlineAvailable && (
