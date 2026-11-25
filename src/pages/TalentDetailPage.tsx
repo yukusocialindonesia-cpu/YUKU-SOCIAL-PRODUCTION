@@ -570,7 +570,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-0 sm:mx-0 rounded-none sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[58vh] sm:max-h-none bg-[#24105F] shadow-[0_22px_52px_rgba(36,16,95,0.30)]">
+                    <div className="relative mx-0 sm:mx-0 rounded-none sm:rounded-3xl overflow-hidden w-full aspect-[5/6] max-h-[52svh] sm:max-h-none bg-[#24105F] shadow-[0_22px_52px_rgba(36,16,95,0.30)]">
                       {heroUrl && !avatarFailed ? (
                         <PhotoLightbox
                           src={heroUrl}
@@ -808,7 +808,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         <span>Layanan: {talent.serviceMode}</span>
                       </>
                     )}
-                    {talent.completedHours !== undefined && (
+                    {(talent.completedHours ?? 0) > 0 && (
                       <>
                         <span aria-hidden="true">·</span>
                         <span className="tabular-nums">Total Selesai: {talent.completedHours} jam</span>
@@ -893,7 +893,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         key={photo.id}
                         type="button"
                         onClick={() => setLightboxIndex(idx)}
-                        className="group relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        className={`group relative w-full ${idx === 0 ? "col-span-2 aspect-[16/10] sm:col-span-1 sm:aspect-[4/5]" : "aspect-[4/5]"} rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600`}
                       >
                         <img
                           src={photo.media_url}
@@ -995,7 +995,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
 
               {/* Supported Activities */}
               {talent.activities && talent.activities.length > 0 && (
-                <div className="mt-4">
+                <div className="mt-4 hidden lg:block">
                   <h3 className="text-sm font-semibold text-slate-800 mb-2">
                     Aktivitas yang Ditawarkan
                   </h3>
