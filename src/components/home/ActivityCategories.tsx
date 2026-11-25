@@ -53,7 +53,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   const gridClass = 'grid grid-cols-3 min-[360px]:grid-cols-3 gap-2 sm:flex sm:gap-3 sm:overflow-x-auto sm:snap-x sm:pb-2 sm:-mx-4 sm:px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
 
   return (
-    <section className="relative py-5 sm:py-9 bg-[#FCFBFE]">
+    <section className="relative py-5 sm:py-9 bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-2 sm:mb-5 gap-1 md:gap-4">
           <div>
@@ -98,12 +98,9 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
           <div className={gridClass}>
             {categories.map((cat, idx) => {
               const tones = [
-                'bg-purple-100 text-purple-700',
-                'bg-fuchsia-100 text-fuchsia-700',
-                'bg-amber-100 text-amber-700',
-                'bg-sky-100 text-sky-700',
-                'bg-rose-100 text-rose-700',
-                'bg-emerald-100 text-emerald-700',
+                'bg-[#f0eaff] text-[#5b22c7]',
+                'bg-[#fff0f7] text-[#c02678]',
+                'bg-[#fff6e8] text-[#a96808]',
               ];
               return (
                 <button
