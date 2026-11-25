@@ -732,6 +732,12 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <p className="py-3 text-center text-xs text-slate-400">Semua Talent yang tersedia sudah ditampilkan.</p>
             )}
           </section>
+        ) : loading && talents.length > 0 ? (
+          <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-[28px] border border-purple-100 bg-white/85 px-5 py-10 text-center shadow-[0_16px_42px_rgba(76,29,149,0.06)]" role="status" aria-live="polite">
+            <RefreshCw className="h-5 w-5 animate-spin text-purple-600" />
+            <p className="text-sm font-semibold text-slate-700">Mencari Talent yang sesuai...</p>
+            <p className="text-xs text-slate-500">Hasil akan muncul setelah pencarian selesai.</p>
+          </div>
         ) : (
           <div className="text-center py-10 sm:py-16 bg-white/85 rounded-[28px] border border-white shadow-[0_16px_42px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70 p-5 sm:p-8 backdrop-blur-xl">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
