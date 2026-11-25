@@ -152,7 +152,6 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </div>
-            </div>
           </div>
         </div>
       </article>
