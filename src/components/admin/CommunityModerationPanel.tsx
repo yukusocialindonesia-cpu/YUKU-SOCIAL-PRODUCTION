@@ -64,7 +64,7 @@ export const CommunityModerationPanel: React.FC = () => {
           <p className="mt-1 text-xs text-slate-500">Tinjau laporan postingan dan komentar anggota YUKU.</p>
         </div>
         <button type="button" onClick={() => void refresh()} disabled={loading}
-          className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-3 py-2 text-xs font-bold text-purple-800 hover:bg-purple-50 disabled:opacity-50">
+          className="inline-flex items-center gap-2 min-h-11 rounded-xl border border-purple-200 bg-white px-3 py-2 text-xs font-bold text-purple-800 hover:bg-purple-50 disabled:opacity-50">
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Perbarui
         </button>
       </div>
@@ -93,11 +93,11 @@ export const CommunityModerationPanel: React.FC = () => {
                 {report.details && <p className="mt-2 rounded-lg bg-slate-50 p-2 text-xs text-slate-600">Catatan pelapor: {report.details}</p>}
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button type="button" disabled={busyId !== null || !target} onClick={() => void handleAction(report, 'hide')}
-                    className="rounded-lg bg-amber-100 px-3 py-2 text-[11px] font-bold text-amber-900 disabled:opacity-50">Sembunyikan</button>
+                    className="min-h-11 rounded-lg bg-amber-100 px-3 py-2 text-[11px] font-bold text-amber-900 disabled:opacity-50">Sembunyikan</button>
                   <button type="button" disabled={busyId !== null || !target} onClick={() => void handleAction(report, 'remove')}
-                    className="rounded-lg bg-rose-600 px-3 py-2 text-[11px] font-bold text-white disabled:opacity-50">Keluarkan konten</button>
+                    className="min-h-11 rounded-lg bg-rose-600 px-3 py-2 text-[11px] font-bold text-white disabled:opacity-50">Keluarkan konten</button>
                   <button type="button" disabled={busyId !== null} onClick={() => void handleAction(report, 'dismiss')}
-                    className="rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-700 disabled:opacity-50">Tolak laporan</button>
+                    className="min-h-11 rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-700 disabled:opacity-50">Tolak laporan</button>
                 </div>
               </article>
             );

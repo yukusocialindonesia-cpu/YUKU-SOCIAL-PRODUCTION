@@ -12,10 +12,10 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
           <div className="mb-2">
-            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">
               Pilih Teman
             </h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-[13px] leading-relaxed text-slate-600">
               Mau bertemu langsung atau ngobrol online?
             </p>
           </div>
@@ -24,14 +24,14 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group flex min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-fuchsia-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-fuchsia-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fuchsia-50 text-fuchsia-700">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-fuchsia-50 text-fuchsia-700">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-xs font-bold text-slate-900">Offline</span>
-                <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
+                <span className="block text-[13px] font-bold text-slate-900">Offline</span>
+                <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">
                   Bertemu langsung
                 </span>
               </span>
@@ -41,14 +41,14 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="group flex min-w-0 items-center gap-2 rounded-xl border border-purple-100 bg-white p-3 text-left shadow-sm transition hover:border-purple-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-purple-100 bg-white p-3 text-left shadow-sm transition hover:border-purple-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-50 text-purple-700">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-50 text-purple-700">
                 <MessageCircle className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-xs font-bold text-slate-900">Online</span>
-                <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
+                <span className="block text-[13px] font-bold text-slate-900">Online</span>
+                <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">
                   Ngobrol dari mana saja
                 </span>
               </span>

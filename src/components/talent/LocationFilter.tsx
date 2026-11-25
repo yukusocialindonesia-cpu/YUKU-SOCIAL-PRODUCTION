@@ -20,6 +20,8 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [citySearch, setCitySearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [dropdownTop, setDropdownTop] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const groupedCities: DynamicCityGroup[] = useMemo(
@@ -78,6 +80,24 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
       setCitySearch('');
     }
   }, [isOpen]);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateDropdownPosition = () => {
+      if (triggerRef.current) {
+        setDropdownTop(triggerRef.current.getBoundingClientRect().bottom + 8);
+      }
+    };
+
+    updateDropdownPosition();
+    window.addEventListener('scroll', updateDropdownPosition, { passive: true });
+    window.addEventListener('resize', updateDropdownPosition);
+
+    return () => {
+      window.removeEventListener('scroll', updateDropdownPosition);
+      window.removeEventListener('resize', updateDropdownPosition);
+    };
+  }, [isOpen]);
 
   const handleSelect = (city: string) => {
     onChangeCity(city);
@@ -88,12 +108,19 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
     <div ref={containerRef} className="relative">
       <div className="flex items-center">
         <button
+          ref={triggerRef}
           type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => {
+            if (!isOpen && triggerRef.current) {
+              const rect = triggerRef.current.getBoundingClientRect();
+              setDropdownTop(rect.bottom + 8);
+            }
+            setIsOpen((prev) => !prev);
+          }}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
-          className={`w-full min-h-10 sm:min-h-[46px] pl-8 sm:pl-9 pr-8 sm:pr-14 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border rounded-xl text-left shadow-sm transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
+          className={`w-full min-h-11 sm:min-h-[46px] pl-8 sm:pl-9 pr-8 sm:pr-14 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border rounded-xl text-left shadow-sm transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
             isOpen
               ? 'border-purple-400 bg-white shadow-[0_12px_28px_-16px_rgba(124,58,237,0.55)]'
               : selectedCity !== 'Semua Kota'
@@ -113,7 +140,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               onChangeCity('Semua Kota');
             }}
             aria-label="Hapus filter kota"
-            className="absolute right-7 top-1/2 -translate-y-1/2 w-9 h-9 inline-flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-md cursor-pointer"
+            className="absolute right-7 top-1/2 -translate-y-1/2 w-11 h-11 inline-flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-md cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -130,10 +157,11 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         <div
           role="listbox"
           aria-label="Daftar kota di Indonesia"
-          className="absolute z-40 left-0 right-0 mt-2 bg-white/95 rounded-3xl border border-white/80 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)] ring-1 ring-slate-200/70 backdrop-blur-2xl overflow-hidden w-full max-w-[calc(100vw-2rem)]"
+          style={{ "--dropdown-top": `${dropdownTop}px` } as React.CSSProperties}
+          className="fixed top-[var(--dropdown-top)] z-[60] left-4 right-4 w-auto max-w-none bg-white rounded-2xl border border-slate-200 shadow-[0_18px_48px_-20px_rgba(15,23,42,0.35)] overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-[min(22rem,calc(100vw-2rem))] sm:max-w-[calc(100vw-2rem)] sm:rounded-3xl sm:bg-white sm:border-white/80 sm:shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)]"
         >
           {/* City Search Bar */}
-          <div className="p-3 border-b border-slate-100/80 bg-gradient-to-r from-violet-50/80 to-fuchsia-50/50">
+          <div className="p-3 border-b border-slate-100 bg-violet-50">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -149,7 +177,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                   type="button"
                   onClick={() => setCitySearch('')}
                   aria-label="Bersihkan pencarian kota"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 inline-flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 inline-flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -164,7 +192,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               role="option"
               aria-selected={selectedCity === 'Semua Kota'}
               onClick={() => handleSelect('Semua Kota')}
-              className={`w-full min-h-10 px-3 py-2 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+              className={`w-full min-h-11 px-3 py-2 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                 selectedCity === 'Semua Kota'
                   ? 'bg-purple-50 text-purple-900 font-bold'
                   : 'text-slate-700 hover:bg-slate-50 font-medium'
@@ -190,7 +218,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                         role="option"
                         aria-selected={isSelected}
                         onClick={() => handleSelect(item.name)}
-                        className={`w-full min-h-10 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+                        className={`w-full min-h-11 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                           isSelected
                             ? 'bg-purple-50 text-purple-900 font-bold'
                             : 'text-slate-700 hover:bg-slate-50'
@@ -228,7 +256,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                           role="option"
                           aria-selected={isSelected}
                           onClick={() => handleSelect(item.name)}
-                          className={`w-full min-h-10 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+                          className={`w-full min-h-11 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                             isSelected
                               ? 'bg-purple-50 text-purple-900 font-bold'
                               : 'text-slate-700 hover:bg-slate-50'

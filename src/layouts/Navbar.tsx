@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown } from 'lucide-react';
+import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown, Bell } from 'lucide-react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { AppRoute } from '../types/navigation';
@@ -80,9 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-[60px] min-[431px]:h-16 lg:h-[72px] min-[1440px]:h-[76px]">
+          <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 min-[1440px]:h-[76px]">
             <div className="shrink-0 flex items-center">
-              <BrandLogo size="md" showTagline={false} className="[&>img]:h-10 min-[376px]:[&>img]:h-11 min-[431px]:[&>img]:h-12 lg:[&>img]:h-14 min-[1440px]:[&>img]:h-[60px]" onClick={() => onNavigate('/')} />
+              <BrandLogo size="md" showTagline={false} className="[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 xl:[&>img]:h-12" onClick={() => onNavigate('/')} />
             </div>
           </div>
         </div>
@@ -94,13 +94,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white xl:bg-white/95 backdrop-blur-none xl:backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
-        <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-[60px] min-[431px]:h-16 lg:h-[72px] min-[1440px]:h-[76px]">
+        <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 min-[1440px]:h-[76px]">
           {/* Zone 1: Single Brand Element */}
           <div className="shrink-0 flex items-center">
             <BrandLogo
               size="md"
               showTagline={false}
-              className="[&>img]:h-10 min-[376px]:[&>img]:h-11 min-[431px]:[&>img]:h-12 lg:[&>img]:h-14 min-[1440px]:[&>img]:h-[60px]"
+              className="[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 xl:[&>img]:h-12"
               onClick={() => handleLinkClick('/')}
             />
           </div>
@@ -132,12 +132,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
           {/* Zone 3: Shared notification + responsive account actions */}
           <div className="flex items-center gap-2 xl:gap-3 shrink-0">
-            {currentUser && (
+            {currentUser ? (
               <NotificationBell
                 userId={currentUser.id}
                 userRole={userRole}
                 onNavigate={handleLinkClick}
               />
+            ) : (
+              <button
+                type="button"
+                onClick={() => handleLinkClick('/login')}
+                aria-label="Masuk untuk melihat notifikasi"
+                title="Masuk untuk melihat notifikasi"
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-100/80 bg-white/85 text-slate-700 shadow-sm transition hover:border-purple-200 hover:bg-purple-50 hover:text-purple-900"
+              >
+                <Bell className="h-4 w-4" />
+              </button>
             )}
             <div className="hidden xl:flex items-center gap-3">
             {currentUser ? (
@@ -286,7 +296,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
                 <button
                   onClick={() => handleLinkClick('/register')}
-                  className="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 rounded-lg shadow-xs hover:shadow transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+                  className="min-h-11 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 rounded-lg shadow-xs hover:shadow transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5"
                 >
                   <User className="w-3.5 h-3.5" />
                   <span>Daftar Sekarang</span>
@@ -300,7 +310,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className="p-1.5 sm:p-2.5 rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
+              className="min-h-11 min-w-11 p-1.5 sm:p-2.5 inline-flex items-center justify-center rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="yuku-mobile-navigation"
@@ -316,7 +326,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
       {isMobileMenuOpen && (
         <div
           id="yuku-mobile-navigation"
-          className="xl:hidden border-t border-purple-100/70 bg-white backdrop-blur-none px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem)] md:max-h-[calc(100dvh-3.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
+          className="xl:hidden border-t border-purple-100/70 bg-white backdrop-blur-none px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] min-[376px]:max-h-[calc(100dvh-3.75rem-4rem-env(safe-area-inset-bottom))] min-[431px]:max-h-[calc(100dvh-4rem-4rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-4rem)] lg:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
         >
           {currentUser && (
             <div className="mb-4 p-3.5 bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 rounded-2xl flex items-center justify-between border border-purple-100/80 shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]">

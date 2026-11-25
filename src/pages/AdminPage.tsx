@@ -1195,14 +1195,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 onClick={loadAdminData}
                 disabled={isLoading}
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-[11px] font-bold text-white transition hover:bg-white/20 disabled:opacity-60"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-[11px] font-bold text-white transition hover:bg-white/20 disabled:opacity-60"
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 Segarkan Data
               </button>
               <button
                 onClick={() => onNavigate('/talent')}
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-white px-3 py-2.5 text-[11px] font-bold text-purple-900 transition hover:bg-purple-50"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-3 py-2.5 text-[11px] font-bold text-purple-900 transition hover:bg-purple-50"
               >
                 Lihat Katalog <ChevronRight className="h-4 w-4" />
               </button>
@@ -1216,7 +1216,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('promos')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'promos' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1227,7 +1227,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('overview')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'overview' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'overview' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
           >
             <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'overview' ? 'text-white' : 'text-emerald-600'}`} />
             <span>Overview</span>
@@ -1236,7 +1236,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('talents')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'talents' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1247,7 +1247,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('service_reviews')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'service_reviews' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'service_reviews' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Review Talent ({pendingTalentServices.length + pendingIdentityChanges.length})</span>
@@ -1256,7 +1256,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('talent') && (
           <button
             onClick={() => setActiveTab('media_moderation')}
-            className={'h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ' + (activeTab === 'media_moderation' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700')}
+            className={'h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ' + (activeTab === 'media_moderation' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700')}
           >
             <ImageIcon className={'w-3.5 h-3.5 ' + (activeTab === 'media_moderation' ? 'text-white' : 'text-purple-600')} />
             <span>Moderasi Galeri</span>
@@ -1265,7 +1265,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('support') && (
           <button
             onClick={() => setActiveTab('customer_ktp')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'customer_ktp' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1278,7 +1278,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('payouts')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'payouts' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1289,7 +1289,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('refunds')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'refunds' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1300,7 +1300,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('booking') && (
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'bookings' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1311,7 +1311,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('support') && (
           <button
             onClick={() => setActiveTab('community_moderation')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'community_moderation' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'community_moderation' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
           >
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Moderasi Komunitas</span>
@@ -1320,7 +1320,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('support') && (
           <button
             onClick={() => setActiveTab('reports')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'reports' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1331,7 +1331,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('qris')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'qris' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1342,7 +1342,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
             <button
               onClick={() => setActiveTab('bank_transfer')}
-              className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+              className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
                 activeTab === 'bank_transfer' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
               }`}
             >
@@ -1353,7 +1353,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('hero')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'hero' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1364,7 +1364,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {canAccess('finance') && (
           <button
             onClick={() => setActiveTab('affiliate')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'affiliate' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1375,7 +1375,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('admin_management')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'admin_management' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1386,7 +1386,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('account_management')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'account_management' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1397,7 +1397,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {isSuperAdmin && (
           <button
             onClick={() => setActiveTab('branding')}
-            className={`h-20 w-20 min-h-0 rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'branding' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
@@ -1414,7 +1414,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => setActiveTab('overview')}
-                className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-bold text-purple-800 transition hover:bg-purple-100"
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-bold text-purple-800 transition hover:bg-purple-100"
               >
                 <ArrowUp className="h-4 w-4 -rotate-90" />
                 Kembali ke Dashboard
@@ -1496,15 +1496,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-amber-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Talent menunggu review</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Talent menunggu review</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700"><Clock className="h-4 w-4" /></span>
                 </div>
                 <div className="text-2xl font-black tracking-tight text-amber-700 tabular-nums sm:text-3xl">{talents.filter((t) => !t.is_approved).length}</div>
-                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Belum disetujui atau belum terverifikasi e-KTP.</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">Belum disetujui atau belum terverifikasi e-KTP.</p>
               </div>
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-violet-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Antrean pencairan</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Antrean pencairan</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700"><CreditCard className="h-4 w-4" /></span>
                 </div>
                 <div className="text-2xl font-black tracking-tight text-violet-800 tabular-nums sm:text-3xl">{payouts.filter((p) => p.payout_status === 'requested').length}</div>
@@ -1512,19 +1512,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-emerald-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Pendapatan platform · 20%</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Pendapatan platform · 20%</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"><TrendingUp className="h-4 w-4" /></span>
                 </div>
                 <div className="break-words text-xl font-black tracking-tight text-emerald-800 tabular-nums sm:text-2xl">{formatRupiah(platformRevenueFee)}</div>
-                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Dari {completedBookings.length} order selesai.</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">Dari {completedBookings.length} order selesai.</p>
               </div>
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-slate-200/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Nilai transaksi · GMV</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Nilai transaksi · GMV</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-200 text-slate-700"><DollarSign className="h-4 w-4" /></span>
                 </div>
                 <div className="break-words text-xl font-black tracking-tight text-slate-900 tabular-nums sm:text-2xl">{formatRupiah(grossMarketplaceVolume)}</div>
-                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Akumulasi transaksi di sistem escrow.</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">Akumulasi transaksi di sistem escrow.</p>
               </div>
             </div>
           </section>
@@ -1768,14 +1768,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     </div>
                     {p.payout_status === 'requested' && (
                       <div className="grid grid-cols-2 gap-2">
-                        <button onClick={() => handleProcessPayout(p.id, 'rejected')} disabled={isSubmittingAction} className="py-2.5 bg-rose-50 text-rose-700 rounded-lg text-xs font-bold disabled:opacity-50">Tolak</button>
-                        <button onClick={() => handleProcessPayout(p.id, 'processing')} disabled={isSubmittingAction} className="py-2.5 bg-purple-700 text-white rounded-lg text-xs font-bold disabled:opacity-50">Mulai Proses</button>
+                        <button onClick={() => handleProcessPayout(p.id, 'rejected')} disabled={isSubmittingAction} className="min-h-11 py-2.5 bg-rose-50 text-rose-700 rounded-lg text-xs font-bold disabled:opacity-50">Tolak</button>
+                        <button onClick={() => handleProcessPayout(p.id, 'processing')} disabled={isSubmittingAction} className="min-h-11 py-2.5 bg-purple-700 text-white rounded-lg text-xs font-bold disabled:opacity-50">Mulai Proses</button>
                       </div>
                     )}
                     {p.payout_status === 'processing' && (
                       <div className="grid grid-cols-2 gap-2">
-                        <button onClick={() => handleProcessPayout(p.id, 'rejected')} disabled={isSubmittingAction} className="py-2.5 bg-rose-50 text-rose-700 rounded-lg text-xs font-bold disabled:opacity-50">Tolak</button>
-                        <button onClick={() => handleProcessPayout(p.id, 'completed_provider_confirmed')} disabled={isSubmittingAction} className="py-2.5 bg-emerald-600 text-white rounded-lg text-xs font-bold disabled:opacity-50">Konfirmasi Transfer</button>
+                        <button onClick={() => handleProcessPayout(p.id, 'rejected')} disabled={isSubmittingAction} className="min-h-11 py-2.5 bg-rose-50 text-rose-700 rounded-lg text-xs font-bold disabled:opacity-50">Tolak</button>
+                        <button onClick={() => handleProcessPayout(p.id, 'completed_provider_confirmed')} disabled={isSubmittingAction} className="min-h-11 py-2.5 bg-emerald-600 text-white rounded-lg text-xs font-bold disabled:opacity-50">Konfirmasi Transfer</button>
                       </div>
                     )}
                   </article>
@@ -1902,9 +1902,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         <div className="text-[10px] text-slate-600">Batas penahanan: {c.admin_hold_until ? new Date(c.admin_hold_until).toLocaleString('id-ID') : 'Belum diperpanjang'}</div>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
-                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'refund_customer')} className="py-2.5 rounded-lg bg-blue-600 text-white text-xs font-bold disabled:opacity-50">Refund Customer</button>
-                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'compensate_talent')} className="py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-50">Kompensasi Talent</button>
-                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'extend_hold')} className="py-2.5 rounded-lg bg-amber-600 text-white text-xs font-bold disabled:opacity-50">Perpanjang Tahan</button>
+                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'refund_customer')} className="min-h-11 py-2.5 rounded-lg bg-blue-600 text-white text-xs font-bold disabled:opacity-50">Refund Customer</button>
+                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'compensate_talent')} className="min-h-11 py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-50">Kompensasi Talent</button>
+                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'extend_hold')} className="min-h-11 py-2.5 rounded-lg bg-amber-600 text-white text-xs font-bold disabled:opacity-50">Perpanjang Tahan</button>
                       </div>
                     </article>
                   ))}
@@ -1950,7 +1950,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <div className="text-base font-black text-slate-900">{formatRupiah(Number(refund.refund_amount))}</div>
                     <p className="text-xs text-slate-600 break-words">{refund.reason}</p>
                     {refund.provider_refund_id && <p className="text-[10px] text-slate-500 break-all">Referensi: {refund.provider_refund_id}</p>}
-                    {(refund.status === 'requested' || refund.status === 'approved') && <button onClick={() => handleProcessRefund(refund.id)} disabled={isSubmittingAction} className="w-full py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-50">Konfirmasi Refund</button>}
+                    {(refund.status === 'requested' || refund.status === 'approved') && <button onClick={() => handleProcessRefund(refund.id)} disabled={isSubmittingAction} className="min-h-11 w-full py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-50">Konfirmasi Refund</button>}
                   </article>
                 ))}
               </div>
@@ -2516,7 +2516,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               onClick={() => handleShiftPromoOrder(poster, -1)}
                               disabled={isSubmittingAction || poster.sort_order <= 0}
                               aria-label="Naikkan prioritas urutan"
-                              className="p-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg cursor-pointer disabled:opacity-40"
+                              className="h-11 w-11 inline-flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg cursor-pointer disabled:opacity-40"
                             >
                               <ArrowUp className="w-3.5 h-3.5" />
                             </button>
@@ -2525,7 +2525,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               onClick={() => handleShiftPromoOrder(poster, 1)}
                               disabled={isSubmittingAction}
                               aria-label="Turunkan prioritas urutan"
-                              className="p-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg cursor-pointer disabled:opacity-40"
+                              className="h-11 w-11 inline-flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg cursor-pointer disabled:opacity-40"
                             >
                               <ArrowDown className="w-3.5 h-3.5" />
                             </button>
@@ -2578,7 +2578,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 onClick={() => setConfirmDeletePromoId(poster.id)}
                                 disabled={isSubmittingAction}
                                 aria-label="Hapus poster promosi"
-                                className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg cursor-pointer"
+                                className="h-11 w-11 inline-flex items-center justify-center bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg cursor-pointer"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -2648,7 +2648,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     display_name: selectedKtpItem.display_name,
                   })}
                   disabled={loadingCustomerKtpId === selectedKtpItem.id}
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-700 text-white font-bold text-xs hover:bg-indigo-800 disabled:opacity-50"
+                  className="min-h-11 w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-700 text-white font-bold text-xs hover:bg-indigo-800 disabled:opacity-50"
                 >
                   {loadingCustomerKtpId === selectedKtpItem.id ? 'Membuka foto...' : 'Lihat Foto KTP Talent'}
                 </button>
@@ -2663,7 +2663,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => setSelectedKtpItem(null)}
-                className="px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg cursor-pointer"
+                className="min-h-11 px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg cursor-pointer"
               >
                 Tutup
               </button>
@@ -2671,7 +2671,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 type="button"
                 onClick={() => handleRejectTalent(selectedKtpItem)}
                 disabled={isSubmittingAction}
-                className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg cursor-pointer"
+                className="min-h-11 px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg cursor-pointer"
               >
                 Tolak Berkas
               </button>
@@ -2679,7 +2679,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 type="button"
                 onClick={() => handleApproveTalent(selectedKtpItem)}
                 disabled={isSubmittingAction || selectedKtpItem.is_approved}
-                className="px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
+                className="min-h-11 px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>{selectedKtpItem.is_approved ? 'Sudah Disetujui' : 'Setujui & Verifikasi 18+'}</span>
@@ -2697,7 +2697,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <h3 className="font-black text-sm text-slate-900">Foto e-KTP Pengguna</h3>
                 <p className="text-xs text-slate-500 truncate">{selectedCustomerKtpImage.name}</p>
               </div>
-              <button type="button" onClick={() => setSelectedCustomerKtpImage(null)} className="shrink-0 px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Tutup</button>
+              <button type="button" onClick={() => setSelectedCustomerKtpImage(null)} className="min-h-11 shrink-0 px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Tutup</button>
             </div>
             <div className="p-2 sm:p-4 overflow-auto flex items-center justify-center bg-slate-100">
               <img src={selectedCustomerKtpImage.url} alt={`Foto e-KTP ${selectedCustomerKtpImage.name}`} className="max-w-full max-h-[76vh] object-contain rounded-lg" />
@@ -2738,7 +2738,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 id="admin-report-status"
                 value={reportDecision}
                 onChange={(e) => setReportDecision(e.target.value as ReportStatus)}
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 font-semibold"
+                className="min-h-11 w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 font-semibold"
               >
                 <option value="open">Menunggu Tinjauan (Open)</option>
                 <option value="investigating">Sedang Diinvestigasi (Investigating)</option>
@@ -2771,7 +2771,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 value={reportAdminNotes}
                 onChange={(e) => setReportAdminNotes(e.target.value)}
                 placeholder="Tuliskan hasil investigasi atau langkah tindak lanjut dari Tim Keamanan YUKU..."
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 resize-none"
+                className="w-full min-h-24 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 resize-none"
               />
             </div>
 
@@ -2780,7 +2780,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 type="button"
                 onClick={() => setSelectedReportItem(null)}
                 disabled={isSubmittingAction}
-                className="px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg cursor-pointer"
+                className="min-h-11 px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg cursor-pointer"
               >
                 Batal
               </button>

@@ -235,7 +235,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   return (
     <>
     {pendingAvatarFile && <PhotoCropEditor file={pendingAvatarFile} title="Atur Foto Profil" onCancel={() => setPendingAvatarFile(null)} onApply={(cropped) => { setAvatarFile(cropped); setPendingAvatarFile(null); }} />}
-    <div className="min-h-[65vh] bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.72),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)] px-4 py-8 sm:py-12">
+    <div className="min-h-[65vh] bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.72),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)] px-4 py-6 sm:py-12">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-bold text-purple-800">
@@ -246,7 +246,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
           <p className="mt-1 text-sm text-slate-500">Kelola informasi profil yang tampil di YUKU.</p>
         </div>
 
-        <form onSubmit={handleSave} className="bg-white/85 backdrop-blur-xl rounded-[30px] border border-white shadow-[0_24px_60px_-28px_rgba(76,29,149,0.3)] ring-1 ring-violet-100/80 overflow-hidden">
+        <form onSubmit={handleSave} className="bg-white/85 backdrop-blur-xl rounded-[24px] sm:rounded-[30px] border border-white shadow-[0_24px_60px_-28px_rgba(76,29,149,0.3)] ring-1 ring-violet-100/80 overflow-hidden">
           <div className="p-5 sm:p-8 border-b border-violet-100/80 bg-gradient-to-br from-white via-violet-50/70 to-indigo-50/60 flex flex-col sm:flex-row items-center sm:items-start gap-4">
             <div className="relative shrink-0">
               <div className="w-24 h-24 rounded-full bg-purple-100 border-[5px] border-white shadow-[0_12px_28px_rgba(76,29,149,0.24)] ring-1 ring-violet-200 overflow-hidden flex items-center justify-center">
@@ -256,13 +256,13 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
                   <UserRound className="w-10 h-10 text-purple-500" />
                 )}
               </div>
-              <label className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-purple-700 text-white border-2 border-white flex items-center justify-center cursor-pointer hover:bg-purple-800" title="Ubah foto profil">
+              <label className="absolute bottom-0 right-0 w-11 h-11 rounded-full bg-purple-700 text-white border-2 border-white flex items-center justify-center cursor-pointer hover:bg-purple-800" title="Ubah foto profil">
                 <Camera className="w-4 h-4" />
                 <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleAvatarChange} className="sr-only" />
               </label>
             </div>
             <div className="text-center sm:text-left min-w-0">
-              <h2 className="font-extrabold text-lg text-slate-900">{displayName || 'Customer YUKU'}</h2>
+              <h2 className="break-words font-extrabold text-lg text-slate-900">{displayName || 'Customer YUKU'}</h2>
               <p className="text-xs text-slate-500 mt-1">Foto JPG, PNG, atau WEBP. Maksimal 2 MB.</p>
               {avatarFile && <p className="text-xs text-purple-700 mt-2 break-all">Foto baru: {avatarFile.name}</p>}
             </div>

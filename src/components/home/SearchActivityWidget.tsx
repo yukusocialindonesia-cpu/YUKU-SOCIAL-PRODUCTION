@@ -71,12 +71,12 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
       onSubmit={handleSubmit}
       className="bg-gradient-to-br from-white via-white to-purple-50/70 p-2 md:p-4 rounded-[22px] shadow-[0_12px_30px_rgba(76,29,149,0.10)] border border-purple-100 max-w-4xl mx-auto"
     >
-      <div className="grid grid-cols-2 md:grid-cols-12 gap-1 md:gap-3 items-center">
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-12 gap-2 md:gap-3 items-center">
         {/* Aktivitas Selector */}
-        <div className="min-w-0 md:col-span-5 flex items-center gap-3 px-2.5 md:px-3 py-2 md:py-3 bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
+        <div className="min-w-0 md:col-span-5 flex items-center gap-3 px-3 md:px-3 py-2.5 md:py-3 min-h-[56px] bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
           <Coffee className="hidden md:block w-5 h-5 text-purple-700 shrink-0" />
           <div className="flex-1 min-w-0 text-left">
-            <label htmlFor="search-activity" className="block text-[10px] md:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <label htmlFor="search-activity" className="block text-[11px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               <span className="md:hidden">Aktivitas</span>
               <span className="hidden md:inline">Pilihan Aktivitas</span>
             </label>
@@ -100,10 +100,10 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
         </div>
 
         {/* Kota Selector */}
-        <div className="min-w-0 md:col-span-4 flex items-center gap-3 px-2.5 md:px-3 py-2 md:py-3 bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
+        <div className="min-w-0 md:col-span-4 flex items-center gap-3 px-3 md:px-3 py-2.5 md:py-3 min-h-[56px] bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
           <MapPin className="hidden md:block w-5 h-5 text-amber-600 shrink-0" />
           <div className="flex-1 min-w-0 text-left">
-            <label htmlFor="search-city" className="block text-[10px] md:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <label htmlFor="search-city" className="block text-[11px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               <span className="md:hidden">Kota</span>
               <span className="hidden md:inline">Lokasi Kota</span>
             </label>
@@ -123,11 +123,11 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
         </div>
 
         {/* Submit Button */}
-        <div className="col-span-2 md:col-span-3">
+        <div className="col-span-1 min-[360px]:col-span-2 md:col-span-3">
           <button
             type="submit"
             disabled={loading}
-            className="w-full min-h-10 md:min-h-11 py-2 md:py-3 px-5 bg-gradient-to-r from-purple-800 via-purple-700 to-fuchsia-600 hover:from-purple-900 hover:to-fuchsia-700 text-white font-bold text-sm rounded-xl shadow-[0_8px_18px_rgba(109,40,217,0.24)] hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full min-h-11 md:min-h-12 py-2 md:py-3 px-5 bg-gradient-to-r from-purple-800 via-purple-700 to-fuchsia-600 hover:from-purple-900 hover:to-fuchsia-700 text-white font-bold text-sm rounded-xl shadow-[0_8px_18px_rgba(109,40,217,0.24)] hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <Search className="w-4 h-4" />
             <span>Cari Talent</span>

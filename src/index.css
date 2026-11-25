@@ -36,9 +36,9 @@ body,
 body {
   background-color: #FAF8FC;
   background-image:
-    radial-gradient(ellipse at 12% 0%, rgba(196, 181, 253, 0.14), transparent 34%),
-    radial-gradient(ellipse at 92% 18%, rgba(232, 121, 249, 0.08), transparent 30%);
-  background-attachment: fixed;
+    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
+    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
+  background-attachment: scroll;
 }
 
 #root {
@@ -46,11 +46,16 @@ body {
   isolation: isolate;
 }
 
+/*
+ * Keep the watermark in the document layer instead of a viewport-fixed layer.
+ * This avoids mobile fixed-background compositing issues while allowing the
+ * watermark to span the full app height.
+ */
 #root::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   background-image: url('/icon-192.png');
   background-repeat: no-repeat;
@@ -59,21 +64,17 @@ body {
   opacity: 0.045;
 }
 
+/* Keep the app UI above the decorative watermark without blocking interaction. */
+:where(#root) > * {
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 640px) {
   #root::before {
     background-position: right 8px center;
     background-size: 230px;
     opacity: 0.10;
-  }
-}
-
-@media (max-width: 767px) {
-  body {
-    background-attachment: scroll;
-  }
-
-  #root::before {
-    position: absolute;
   }
 }
 

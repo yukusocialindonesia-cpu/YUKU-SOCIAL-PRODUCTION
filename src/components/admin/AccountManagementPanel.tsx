@@ -159,9 +159,9 @@ export const AccountManagementPanel: React.FC = () => {
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari nama, email, telepon, role..." className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-xs outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100" />
+          <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari nama, email, telepon, role..." className="min-h-11 w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-xs outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100" />
         </div>
-        <button onClick={() => void load()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 disabled:opacity-50">
+        <button onClick={() => void load()} disabled={loading} className="inline-flex items-center justify-center gap-2 min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 disabled:opacity-50">
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Muat ulang
         </button>
       </div>
@@ -193,15 +193,15 @@ export const AccountManagementPanel: React.FC = () => {
                     <p className="mt-0.5 text-[11px] text-slate-400">Bergabung {new Date(account.created_at).toLocaleDateString('id-ID')}</p>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">
-                    <button onClick={() => void runPreflight(account)} disabled={preflightId !== null || busyId !== null} className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-50 px-3 py-2 text-[11px] font-bold text-indigo-700 disabled:opacity-50">
+                    <button onClick={() => void runPreflight(account)} disabled={preflightId !== null || busyId !== null} className="inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-indigo-50 px-3 py-2 text-[11px] font-bold text-indigo-700 disabled:opacity-50">
                       {preflightId === account.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ClipboardCheck className="h-3.5 w-3.5" />} Periksa kelayakan
                     </button>
                     {account.account_status === 'active' || account.account_status === 'pending_verification' ? (
-                      <button onClick={() => void changeStatus(account, 'suspended')} disabled={busyId !== null} className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 px-3 py-2 text-[11px] font-bold text-rose-700 disabled:opacity-50">
+                      <button onClick={() => void changeStatus(account, 'suspended')} disabled={busyId !== null} className="inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-rose-50 px-3 py-2 text-[11px] font-bold text-rose-700 disabled:opacity-50">
                         {busyId === account.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserX className="h-3.5 w-3.5" />} Nonaktifkan
                       </button>
                     ) : account.account_status === 'suspended' ? (
-                      <button onClick={() => void changeStatus(account, 'active')} disabled={busyId !== null} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700 disabled:opacity-50">
+                      <button onClick={() => void changeStatus(account, 'active')} disabled={busyId !== null} className="inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700 disabled:opacity-50">
                         {busyId === account.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserCheck className="h-3.5 w-3.5" />} Aktifkan
                       </button>
                     ) : null}
@@ -237,8 +237,8 @@ export const AccountManagementPanel: React.FC = () => {
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-slate-500">Halaman {page} dari {Math.max(1, Math.ceil(totalAccounts / pageSize))}. Pencarian berlaku pada halaman yang sedang dibuka.</p>
         <div className="flex gap-2">
-          <button onClick={() => void load(page - 1)} disabled={loading || page <= 1} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-40">Sebelumnya</button>
-          <button onClick={() => void load(page + 1)} disabled={loading || page >= Math.ceil(totalAccounts / pageSize)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-40">Berikutnya</button>
+          <button onClick={() => void load(page - 1)} disabled={loading || page <= 1} className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-40">Sebelumnya</button>
+          <button onClick={() => void load(page + 1)} disabled={loading || page >= Math.ceil(totalAccounts / pageSize)} className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-40">Berikutnya</button>
         </div>
       </div>
 

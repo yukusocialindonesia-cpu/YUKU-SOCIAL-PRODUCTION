@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, MapPin } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, MapPin, Flame, ChevronDown, Activity, CalendarDays, Music2, Heart, Utensils, Dumbbell, Gamepad2, Sparkles, Star } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
@@ -8,6 +8,11 @@ import { fetchTalentsFromSupabase, fetchTalentsByIdsFromSupabase, fetchCategorie
 import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 import { useAuth } from '../contexts/AuthContext';
+
+const getCreatedAtTimestamp = (createdAt?: string) => {
+  const timestamp = Date.parse(createdAt || '');
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
 
 const PromotionBannerVisual: React.FC<{ imageUrl: string; title: string }> = ({ imageUrl, title }) => {
   const [imageFailed, setImageFailed] = useState(false);
@@ -66,12 +71,15 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
-  const [mobilePinnedHeight, setMobilePinnedHeight] = useState(0);
-  const mobilePinnedRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const activeSearchQueryRef = useRef(searchQuery);
+
+  useEffect(() => {
+    activeSearchQueryRef.current = searchQuery;
+  }, [searchQuery]);
   const [selectedActivity, setSelectedActivity] = useState<string>(initialActivity);
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedGender, setSelectedGender] = useState<GenderType>('Semua');
@@ -80,6 +88,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsMessage, setGpsMessage] = useState<string | null>(null);
   const [nearestTalentDistances, setNearestTalentDistances] = useState<Record<string, number> | null>(null);
+  const [sortBy, setSortBy] = useState<'popular' | 'rating' | 'newest'>('popular');
 
   const handleUseMyLocation = () => {
     // A failed or denied new GPS attempt must not leave an older location active.
@@ -207,18 +216,16 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const loadNextTalentBatch = async () => {
     if (loadingMoreRef.current || !hasMoreTalents) return;
 
-    const requestId = searchRequestRef.current;
-    const requestedSearchTerm = searchQuery;
     loadingMoreRef.current = true;
     setLoadingMoreTalents(true);
     setLoadMoreError(null);
+    const requestId = searchRequestRef.current;
+    const requestedSearch = searchQuery;
     try {
       const offset = nextTalentOffsetRef.current;
-      const nextBatch = await fetchTalentsFromSupabase(TALENT_BATCH_SIZE, offset, requestedSearchTerm);
-
-      // Ignore a late response if a newer search/filter request has started.
-      if (requestId !== searchRequestRef.current) return;
-
+      const nextBatch = await fetchTalentsFromSupabase(TALENT_BATCH_SIZE, offset, requestedSearch);
+      // Ignore a page response if the user has since started a new search.
+      if (requestId !== searchRequestRef.current || requestedSearch !== activeSearchQueryRef.current) return;
       if (nextBatch.length > 0) {
         setTalents((current) => {
           const existingIds = new Set(current.map((talent) => talent.id));
@@ -228,7 +235,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       }
       setHasMoreTalents(nextBatch.length === TALENT_BATCH_SIZE);
     } catch (error: any) {
-      if (requestId !== searchRequestRef.current) return;
+      if (requestId !== searchRequestRef.current || requestedSearch !== activeSearchQueryRef.current) return;
       console.warn('Batch Talent berikutnya gagal dimuat:', error);
       setLoadMoreError(error?.message || 'Talent berikutnya gagal dimuat.');
     } finally {
@@ -239,21 +246,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       }
     }
   };
-
-  // Pin the Jelajah controls to the viewport on mobile; reserve their measured height in the document flow.
-  useEffect(() => {
-    const element = mobilePinnedRef.current;
-    if (!element) return;
-    const updateHeight = () => setMobilePinnedHeight(Math.ceil(element.getBoundingClientRect().height));
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(element);
-    window.addEventListener('resize', updateHeight);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', updateHeight);
-    };
-  }, []);
 
   // Promosi dimuat terpisah agar gangguan tabel promosi tidak menghambat katalog Talent.
   useEffect(() => {
@@ -368,6 +360,28 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setVisibleTalentCount(TALENT_DISPLAY_STEP);
   }, [selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
 
+  const displayTalents = useMemo(() => {
+    const items = [...filteredTalents];
+    if (customerLocation && nearestTalentDistances && selectedMode !== 'online' && Object.keys(nearestTalentDistances).length > 0) return items;
+    return items.sort((a, b) => {
+      if (sortBy === 'newest') return getCreatedAtTimestamp(b.createdAt) - getCreatedAtTimestamp(a.createdAt);
+      if (sortBy === 'popular') return (b.reviewCount ?? 0) - (a.reviewCount ?? 0) || (b.rating ?? 0) - (a.rating ?? 0);
+      return (b.rating ?? 0) - (a.rating ?? 0) || (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
+    });
+  }, [filteredTalents, sortBy, customerLocation, nearestTalentDistances, selectedMode]);
+
+  const getActivityIcon = (category: ActivityCategory) => {
+    const key = `${category.iconName} ${category.title}`.toLowerCase();
+    if (/run|sport|olahraga|fitness|gym/.test(key)) return <Dumbbell className="h-4 w-4" />;
+    if (/event|calendar|acara|meeting/.test(key)) return <CalendarDays className="h-4 w-4" />;
+    if (/music|musik|karaoke|hiburan/.test(key)) return <Music2 className="h-4 w-4" />;
+    if (/food|kuliner|makan|coffee|kopi/.test(key)) return <Utensils className="h-4 w-4" />;
+    if (/game|gaming|permainan/.test(key)) return <Gamepad2 className="h-4 w-4" />;
+    if (/social|sosial|friend|teman|heart/.test(key)) return <Heart className="h-4 w-4" />;
+    if (/activity|aktivitas/.test(key)) return <Activity className="h-4 w-4" />;
+    return <Sparkles className="h-4 w-4" />;
+  };
+
   const hasAdvancedFilters = selectedActivity !== 'all' || selectedCity !== 'Semua Kota' || selectedGender !== 'Semua' || selectedMode !== 'all' || searchQuery.trim().length > 0;
 
   const handleResetFilters = () => {
@@ -381,7 +395,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
 
   return (
-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
         <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
@@ -403,12 +417,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
-        <div aria-hidden="true" className="sm:hidden" style={{ height: mobilePinnedHeight }} />
-        <div ref={mobilePinnedRef} className="fixed inset-x-0 top-14 min-[376px]:top-[60px] min-[431px]:top-16 z-30 w-full bg-[#FAF8FC] px-4 pb-1 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-none sm:static sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
-        <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
-          <section aria-label="Promosi YUKU" className="mb-1 sm:mb-7">
+          <section aria-label="Promosi YUKU" className="mb-3 sm:mb-7">
             {(() => {
               const promotion = promotions[activePromotionIndex] || promotions[0];
               const safeLink = promotion.link_url?.trim() || '';
@@ -451,45 +462,32 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
+        <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-12 md:grid-cols-12 gap-1.5 sm:gap-3">
-            {/* Search Input */}
-            <div className="col-span-5 md:col-span-5 relative min-w-0">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Cari talent..."
-                aria-label="Cari talent berdasarkan nama atau minat"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-10 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
-              />
-            </div>
-
-            {/* Dynamic Regional Location Filter */}
-            <div className="col-span-5 md:col-span-4 min-w-0">
-              <LocationFilter
-                selectedCity={selectedCity}
-                talentCities={talentCities}
-                onChangeCity={setSelectedCity}
-              />
-              <button
-                type="button"
-                onClick={handleUseMyLocation}
-                disabled={gpsLoading}
-                aria-label="Gunakan lokasi GPS saya"
-                className="mt-1.5 inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-2 text-[11px] font-semibold text-purple-800 transition-colors hover:bg-purple-100 disabled:cursor-wait disabled:opacity-60 sm:min-h-10 sm:text-xs"
-              >
-                <MapPin className="h-3.5 w-3.5 shrink-0" />
-                {gpsLoading ? 'Mencari lokasi...' : customerLocation ? 'Lokasi Saya Aktif' : 'Gunakan Lokasi Saya'}
-              </button>
-              {gpsMessage && (
-                <p role="status" aria-live="polite" className="mt-1 text-[10px] leading-snug text-slate-600 sm:text-xs">
-                  {gpsMessage}
-                </p>
-              )}
+          <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
+            {/* Search and city selector share one pill, matching the mobile reference */}
+            <div className="col-span-10 md:col-span-9 flex min-w-0 items-center overflow-visible rounded-full border border-slate-200/80 bg-white shadow-sm">
+              <div className="relative min-w-0 flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 sm:left-4" />
+                <input
+                  type="text"
+                  placeholder="Cari talent..."
+                  aria-label="Cari talent berdasarkan nama atau minat"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-11 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-xs shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-12 sm:pl-11 sm:text-sm"
+                />
+              </div>
+              <div className="h-7 w-px shrink-0 bg-slate-200" />
+              <div className="relative min-w-0 flex-1">
+                <LocationFilter
+                  selectedCity={selectedCity}
+                  talentCities={talentCities}
+                  onChangeCity={setSelectedCity}
+                />
+              </div>
             </div>
 
             <button
@@ -499,9 +497,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-lg border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-11 inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
+              <span className="sr-only">Filter tambahan</span>
               {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
             </button>
 
@@ -519,13 +518,30 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           <div id="jelajah-advanced-filters" className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-1.5 sm:space-y-4`}>
+          <div className="rounded-xl border border-purple-100 bg-purple-50/70 p-2 sm:p-3">
+            <button
+              type="button"
+              onClick={handleUseMyLocation}
+              disabled={gpsLoading}
+              aria-label="Gunakan lokasi GPS saya"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold text-purple-800 transition-colors hover:bg-purple-100 disabled:cursor-wait disabled:opacity-60"
+            >
+              <MapPin className="h-4 w-4 shrink-0" />
+              {gpsLoading ? 'Mencari lokasi...' : customerLocation ? 'Lokasi Saya Aktif' : 'Gunakan Lokasi Saya'}
+            </button>
+            {gpsMessage && (
+              <p role="status" aria-live="polite" className="mt-1 text-center text-[10px] leading-snug text-slate-600 sm:text-xs">
+                {gpsMessage}
+              </p>
+            )}
+          </div>
           {/* Row 2: Activity Categories Buttons */}
           <div className="hidden sm:block pt-2 sm:pt-4 border-t border-purple-100/80">
             <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => setSelectedActivity('all')}
-                className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                className={`min-h-11 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   selectedActivity === 'all'
                     ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
                     : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
@@ -538,13 +554,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedActivity(cat.id)}
-                  className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`min-h-11 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                     selectedActivity === cat.id
                       ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
                       : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
                   }`}
                 >
-                  {cat.title}
+                  <span className="inline-flex items-center gap-1.5">{getActivityIcon(cat)}{cat.title}</span>
                 </button>
               ))}
             </div>
@@ -561,7 +577,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     key={gender}
                     type="button"
                     onClick={() => setSelectedGender(gender)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+                    className={`min-h-11 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                       selectedGender === gender
                         ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
@@ -586,7 +602,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     key={mode.id}
                     type="button"
                     onClick={() => setSelectedMode(mode.id)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+                    className={`min-h-11 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                       selectedMode === mode.id
                         ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
@@ -605,7 +621,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="md:hidden min-h-9 w-full rounded-xl border border-purple-100 bg-white px-3 text-[11px] font-semibold text-slate-600"
+              className="md:hidden min-h-11 w-full rounded-xl border border-purple-100 bg-white px-3 text-[11px] font-semibold text-slate-600"
             >
               Reset semua filter
             </button>
@@ -614,14 +630,14 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
         <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-1 -mx-1">
-          <div className="flex items-center gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
               onClick={() => setSelectedActivity('all')}
               aria-pressed={selectedActivity === 'all'}
-              className={`min-h-9 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+              className={`min-h-11 shrink-0 rounded-full px-4 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
             >
-              Semua
+              <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 fill-current" />Semua</span>
             </button>
             {categories.map((cat) => (
               <button
@@ -629,21 +645,27 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 type="button"
                 onClick={() => setSelectedActivity(cat.id)}
                 aria-pressed={selectedActivity === cat.id}
-                className={`min-h-9 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+                className={`min-h-11 shrink-0 rounded-full px-4 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
               >
-                {cat.title}
+                <span className="inline-flex items-center gap-1.5">{getActivityIcon(cat)}{cat.title}</span>
               </button>
             ))}
           </div>
         </section>
-
-        </div>
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-0 flex items-center justify-between">
-          <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Jelajahi Talent</h2>
-          <span className="text-[10px] font-medium text-slate-500">{filteredTalents.length} tersedia</span>
+        <div className="sm:hidden mb-2 flex items-center justify-between">
+          <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
+          <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
+            <Flame className="h-3.5 w-3.5 fill-purple-600 text-purple-600" />
+            <select aria-label="Urutkan talent" value={sortBy} onChange={(event) => setSortBy(event.target.value as 'popular' | 'rating' | 'newest')} className="min-h-9 appearance-none rounded-full border border-purple-100 bg-white py-1 pl-2 pr-6 text-[10px] font-semibold text-purple-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
+              <option value="popular">Terpopuler</option>
+              <option value="rating">Rating tertinggi</option>
+              <option value="newest">Terbaru</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2 h-3 w-3" />
+          </label>
         </div>
 
         {/* Results Grid */}
@@ -669,8 +691,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         ) : filteredTalents.length > 0 ? (
           <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
-            <div className="grid grid-cols-2 gap-1.5 sm:gap-5 lg:grid-cols-3">
-              {filteredTalents.slice(0, visibleTalentCount).map((talent) => (
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+              {displayTalents.slice(0, visibleTalentCount).map((talent) => (
                 <TalentCard
                   key={talent.id}
                   talent={talent}
@@ -688,7 +710,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 {loadMoreError && (
                   <>
                     <span role="alert" className="text-xs text-rose-600">{loadMoreError}</span>
-                    <button type="button" onClick={() => void loadNextTalentBatch()} className="min-h-10 rounded-lg bg-purple-700 px-4 text-xs font-semibold text-white">
+                    <button type="button" onClick={() => void loadNextTalentBatch()} className="min-h-11 rounded-lg bg-purple-700 px-4 text-xs font-semibold text-white">
                       Coba muat lagi
                     </button>
                   </>
@@ -720,7 +742,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   type="button"
                   onClick={() => void loadNextTalentBatch()}
                   disabled={loadingMoreTalents}
-                  className="min-h-10 px-4 text-xs font-semibold text-purple-700 disabled:opacity-50"
+                  className="min-h-11 px-4 text-xs font-semibold text-purple-700 disabled:opacity-50"
                 >
                   {loadingMoreTalents ? 'Memuat...' : 'Cari Talent berikutnya'}
                 </button>

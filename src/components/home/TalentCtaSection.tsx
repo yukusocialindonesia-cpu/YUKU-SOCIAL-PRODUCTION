@@ -24,19 +24,19 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-1.5 md:mb-4">
               Cari Teman Ngopi, Nonton, atau Partner Acara di Kotamu
             </h2>
-            <p className="text-xs sm:text-base text-purple-200/90 leading-relaxed mb-2 md:mb-5">
+            <p className="text-xs sm:text-base text-[13px] sm:text-base text-purple-200/90 leading-relaxed mb-2 md:mb-5">
               Tidak perlu datang sendirian ke kafe baru, konser, atau kondangan. Pilih Talent terverifikasi sesuai hobi dan jadwalmu, lalu pesan dengan sistem pembayaran yang aman.
             </p>
 
             {/* Customer Feature Highlights */}
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-4 mb-3 sm:mb-8 text-[10px] sm:text-xs">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-4 mb-3 sm:mb-8 text-xs sm:text-xs">
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
+                  <strong className="text-white block font-semibold text-xs sm:text-sm leading-tight">
                     Profil Terkurasi & Terverifikasi
                   </strong>
-                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
+                  <span className="text-purple-200/80 text-xs sm:text-xs leading-snug">
                     Semua Talent melalui verifikasi identitas 18+ dan standar etika komunikasi.
                   </span>
                 </div>
@@ -125,15 +125,15 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
             {/* Secondary subtle Talent invitation */}
             <div className="p-3.5 sm:p-4 rounded-[22px] bg-gradient-to-r from-white/[0.11] to-white/[0.06] backdrop-blur-xl border border-white/20 shadow-[0_10px_26px_rgba(0,0,0,0.16)] flex items-center justify-between gap-3">
-              <div className="text-xs">
+              <div className="text-[13px]">
                 <span className="font-bold text-white block">Ingin bergabung menjadi Talent?</span>
-                <span className="text-purple-200/75 text-[11px]">
+                <span className="text-purple-200/80 text-xs">
                   Atur jadwal sendiri dan temani aktivitas sosial positif.
                 </span>
               </div>
               <button
                 onClick={onRegisterClick}
-                className="shrink-0 min-h-10 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/25 text-xs font-bold text-amber-300 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
+                className="shrink-0 min-h-11 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/25 text-xs font-bold text-amber-300 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
               >
                 Daftar Talent →
               </button>

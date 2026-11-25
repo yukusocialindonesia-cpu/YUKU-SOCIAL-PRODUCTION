@@ -35,7 +35,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                 return (
                   <div
                     key={item.step}
-                    className="flex flex-col items-center text-center bg-gradient-to-b from-white to-purple-50/60 backdrop-blur-xl border border-purple-100/80 rounded-[20px] sm:rounded-[22px] p-2.5 sm:p-4 shadow-[0_7px_18px_rgba(76,29,149,0.06)] ring-1 ring-white/90 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.12)] transition-all duration-300"
+                    className="flex flex-col items-center text-center bg-gradient-to-b from-white to-purple-50/60 backdrop-blur-xl border border-purple-100/80 rounded-[20px] sm:rounded-[22px] p-3 sm:p-4 shadow-[0_7px_18px_rgba(76,29,149,0.06)] ring-1 ring-white/90 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.12)] transition-all duration-300"
                   >
                     <div className="relative mb-2">
                       <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] sm:rounded-2xl bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center shadow-[0_5px_12px_rgba(126,34,206,0.22)] ring-2 ring-white">
@@ -45,8 +45,8 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                         {index + 1}
                       </span>
                     </div>
-                    <h3 className="text-[13px] font-bold text-[#1E0938] mb-1 leading-tight tracking-tight">{item.title}</h3>
-                    <p className="text-xs text-slate-600 leading-snug line-clamp-4">{item.description}</p>
+                    <h3 className="text-[14px] font-bold text-[#1E0938] mb-1 leading-tight tracking-tight">{item.title}</h3>
+                    <p className="text-[13px] text-slate-600 leading-snug line-clamp-4">{item.description}</p>
                   </div>
                 );
               })}
@@ -77,7 +77,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
 
             <button
               onClick={onLearnMoreClick}
-              className="mt-3 sm:mt-5 inline-flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors cursor-pointer"
+              className="mt-3 sm:mt-5 min-h-11 inline-flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors cursor-pointer"
             >
               <span>Pelajari Pedoman Etika & Panduan Lengkap</span>
               <ArrowRight className="w-4 h-4" />
