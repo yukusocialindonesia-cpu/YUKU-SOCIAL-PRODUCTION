@@ -7,7 +7,7 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-3 sm:py-9 bg-[#f5efff]">
+    <section className="relative overflow-hidden py-4 sm:py-9 bg-gradient-to-r from-[#24105f] via-[#3b0d78] to-[#5416a6] text-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
@@ -24,24 +24,24 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 p-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
               <span className="yuku-icon-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-bold text-slate-900">Offline</span>
-                <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">
+                <span className="block text-[13px] font-bold text-white">Offline</span>
+                <span className="mt-0.5 block text-[11px] leading-snug text-purple-100">
                   Bertemu langsung
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-[#5b22c7] transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-fuchsia-200 transition-transform group-hover:translate-x-0.5" />
             </button>
 
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-[#eee8f8] bg-white p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 p-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
                 <MessageCircle className="h-4 w-4" />
@@ -52,7 +52,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                   Ngobrol dari mana saja
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-[#5b22c7] transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-fuchsia-200 transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
         </div>
@@ -60,10 +60,10 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
         {/* Tampilan desktop dipertahankan seperti desain sebelumnya */}
         <div className="hidden sm:block">
           <div className="mb-2 sm:mb-4">
-            <span className="text-[11px] font-bold text-[#5b22c7] tracking-wider uppercase">
+            <span className="text-[11px] font-bold text-fuchsia-200 tracking-wider uppercase">
               Pilih Cara Menemani
             </span>
-            <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-white tracking-tight">
               Mau Teman Offline atau Online?
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-slate-500">
@@ -75,7 +75,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-fuchsia-100/90 bg-white p-2.5 sm:p-5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-white/15 bg-white/10 p-2.5 sm:p-5 backdrop-blur-md text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
               <span className="yuku-icon-orb mb-2 flex h-8 w-8 sm:mb-2.5 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#4b12b8] text-white">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
@@ -85,8 +85,8 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                   </span>
                 </span>
               </span>
-              <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Teman Offline</span>
-              <span className="mt-1 block min-h-8 text-[10.5px] sm:mt-1.5 sm:min-h-9 sm:text-sm leading-relaxed text-slate-600">
+              <span className="block text-sm sm:text-lg font-extrabold text-white">Teman Offline</span>
+              <span className="mt-1 block min-h-8 text-[10.5px] sm:mt-1.5 sm:min-h-9 sm:text-sm leading-relaxed text-purple-100">
                 Teman untuk bertemu dan beraktivitas langsung.
               </span>
               <span className="mt-2 inline-flex items-center gap-1 text-[10.5px] sm:mt-3 sm:text-sm font-bold text-fuchsia-700">
@@ -97,7 +97,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-purple-100/90 bg-white p-2.5 sm:p-5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-white/15 bg-white/10 p-2.5 sm:p-5 backdrop-blur-md text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
               <span className="yuku-icon-orb mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#4b12b8] text-white">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
@@ -111,7 +111,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               <span className="mt-1 block min-h-9 text-[11px] sm:text-sm leading-relaxed text-slate-600">
                 Teman ngobrol dan berinteraksi dari mana saja.
               </span>
-              <span className="mt-3 inline-flex items-center gap-1 text-[11px] sm:text-sm font-bold text-purple-700">
+              <span className="mt-3 inline-flex items-center gap-1 text-[11px] sm:text-sm font-bold text-fuchsia-200">
                 Cari teman online <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </span>
             </button>
