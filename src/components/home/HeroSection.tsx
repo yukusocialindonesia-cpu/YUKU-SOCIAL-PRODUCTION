@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-transparent"
+      className="relative overflow-hidden bg-gradient-to-br from-[#210847] via-[#3b0d78] to-[#5416a6] text-white"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -259,24 +259,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#5b22c7]">
+          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#e6d5ff]">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Temukan Teman & Pengalaman</span>
           </p>
-          <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-[#e9e1f7] rounded-full text-purple-900 text-xs font-semibold mb-5">
+          <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-white text-xs font-semibold mb-5">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-purple-700" />
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[clamp(1.75rem,5.2vw,3.75rem)] leading-[1.06] font-black text-[#24105f] tracking-tight mb-1 md:mb-4">
+          <h1 className="text-[clamp(1.75rem,5.2vw,3.75rem)] leading-[1.06] font-black text-white tracking-tight mb-1 md:mb-4">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
-            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#4b12b8] via-[#741cff] to-[#ed1688] bg-clip-text text-transparent">
+            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#d7b8ff] via-[#f0d5ff] to-[#ffb3dc] bg-clip-text text-transparent">
               Real Moments.
             </span>
           </h1>
 
-          <p className="max-w-2xl text-[14px] leading-relaxed sm:text-base md:text-lg md:leading-relaxed text-slate-700">
+          <p className="max-w-2xl text-[14px] leading-relaxed sm:text-base md:text-lg md:leading-relaxed text-purple-100">
             Temukan orang, aktivitas, dan pengalaman yang membuat setiap momen lebih berarti.
           </p>
         </div>
@@ -285,14 +285,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <SearchActivityWidget onSearch={onSearch} />
           {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
-          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-snug whitespace-nowrap text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Ruang publik & aman</span>
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-snug whitespace-nowrap text-purple-100 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
+            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[#e5b8ff]" />Ruang publik & aman</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
             <button
               type="button"
               onClick={onRegisterCustomerClick}
-              className="basis-full mt-0 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2 md:py-1.5 rounded-full border border-purple-300 bg-white font-bold text-[#4b12b8] hover:text-[#24105f] shadow-sm border-[#e6ddf4] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="basis-full mt-0 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2 md:py-1.5 rounded-full border border-white/35 bg-white/10 font-bold text-white backdrop-blur-md hover:text-[#24105f] shadow-sm border-white/20 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
             >
               Daftar gratis
             </button>
