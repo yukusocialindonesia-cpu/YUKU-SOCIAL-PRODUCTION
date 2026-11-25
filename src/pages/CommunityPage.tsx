@@ -198,25 +198,25 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_rgba(91,33,182,0.18),_transparent_38%),linear-gradient(180deg,#F1E9FF_0%,#FAF8FF_46%,#FFFFFF_100%)] pb-8">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_rgba(91,33,182,0.18),_transparent_38%),linear-gradient(180deg,#F1E9FF_0%,#FAF8FF_46%,#FFFFFF_100%)] pb-24 md:pb-8">
       <section className="relative isolate overflow-hidden border-b border-violet-300/20 bg-gradient-to-br from-[#24105F] via-[#45149A] to-[#7624C9] text-white shadow-[0_20px_48px_rgba(55,18,112,0.22)]">
         <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/25 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-violet-300/20 blur-3xl" />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-7 sm:px-6 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:gap-6 sm:px-6 sm:py-7 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold tracking-wide text-violet-100 shadow-sm">
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold tracking-wide text-violet-100 shadow-sm sm:mb-4 sm:px-3 sm:py-1.5 sm:text-[11px]">
               <Sparkles className="h-3.5 w-3.5 text-amber-500" /> RUANG KOMUNITAS YUKU
             </div>
-            <h1 className="text-3xl font-black leading-tight tracking-tight text-[#1E0938] sm:text-4xl md:text-5xl">
+            <h1 className="text-xl font-black leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
               Temukan teman.
-              <span className="block bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-fuchsia-200 via-white to-amber-200 bg-clip-text text-transparent">
                 Mulai cerita baru.
               </span>
             </h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+            <p className="mt-2 max-w-xl text-xs leading-5 text-violet-100 sm:mt-4 sm:text-base sm:leading-6">
               Berbagi minat, ngobrol dengan orang baru, dan temukan aktivitas seru bersama komunitas YUKU.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-3 hidden flex-wrap gap-2 sm:flex sm:mt-5">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/80 px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm">
                 <Users className="h-3.5 w-3.5" /> Kenalan dengan komunitas
               </span>
@@ -225,7 +225,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </span>
             </div>
           </div>
-          <div className="w-full rounded-2xl border border-purple-100 bg-white/90 p-4 shadow-[0_12px_35px_rgba(76,29,149,0.10)] md:max-w-xs md:p-5">
+          <div className="hidden w-full rounded-2xl border border-purple-100 bg-white/90 p-4 shadow-[0_12px_35px_rgba(76,29,149,0.10)] md:block md:max-w-xs md:p-5">
             <p className="text-xs font-semibold text-purple-700">Dari obrolan sederhana...</p>
             <p className="mt-1 text-lg font-extrabold leading-snug text-[#1E0938]">bisa jadi aktivitas yang berkesan.</p>
             <div className="my-4 h-px bg-purple-100" />
@@ -240,10 +240,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 md:py-9 lg:px-8">
+      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-7 md:py-9 lg:px-8">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
-            <section className="relative overflow-hidden rounded-[1.6rem] border border-white/90 bg-white/85 p-4 shadow-[0_16px_42px_rgba(76,29,149,0.10)] ring-1 ring-purple-100/80 backdrop-blur-xl sm:rounded-[2rem] sm:p-5">
+            <section className="relative overflow-hidden rounded-2xl border border-white/90 bg-white/90 p-3 shadow-[0_12px_32px_rgba(76,29,149,0.10)] ring-1 ring-purple-100/80 backdrop-blur-xl sm:rounded-[2rem] sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white shadow-sm">
                   {user?.email?.slice(0, 1).toUpperCase() || 'YK'}
@@ -288,10 +288,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {notice && <p className="mt-3 rounded-lg bg-purple-50 px-3 py-2 text-[11px] text-purple-800">{notice}</p>}
             </section>
 
-            <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
+            <div className="mt-5 flex flex-wrap items-end justify-between gap-3 sm:mt-7">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-purple-700">Temukan obrolan</p>
-                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Cerita dari komunitas</h2>
+                <h2 className="mt-1 text-lg font-black tracking-tight text-slate-900 sm:text-2xl">Cerita dari komunitas</h2>
                 <p className="mt-1 text-xs text-slate-500">Postingan terbaru dari anggota YUKU.</p>
               </div>
               <button type="button" onClick={() => onNavigate('/talent')}
@@ -321,7 +321,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            <div className="mt-3 space-y-4">
+            <div className="mt-2 space-y-3 sm:mt-3 sm:space-y-4">
               {isLoading ? (
                 <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
               ) : errorMessage ? null : visiblePosts.length === 0 ? (
