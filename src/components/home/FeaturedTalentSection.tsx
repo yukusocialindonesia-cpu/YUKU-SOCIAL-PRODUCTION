@@ -110,7 +110,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section ref={sectionRef} className="relative py-4 md:py-10 bg-white/45">
+    <section ref={sectionRef} className="relative py-4 md:py-10 bg-[#f8f4ff]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
