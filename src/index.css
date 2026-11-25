@@ -7,7 +7,7 @@
   --yuku-violet: #741cff;
   --yuku-magenta: #ed1688;
   --yuku-orange: #ff9700;
-  --yuku-canvas: #eee5fb;
+  --yuku-canvas: #f0e8ff;
   --yuku-surface: #ffffff;
   --yuku-lavender: #eee7ff;
   --yuku-blush: #fff0f7;
@@ -18,18 +18,16 @@
 
 @layer base {
   html { scroll-behavior: smooth; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-  body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #eee5fb; color: #201b2d; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0e8ff; color: #201b2d; }
   button, input, select { font: inherit; }
 }
 
 .yuku-home-canvas {
   background-color: var(--yuku-canvas);
   background-image:
-    radial-gradient(ellipse 72% 38% at 4% 0%, rgba(116, 28, 255, .28), transparent 72%),
-    radial-gradient(ellipse 62% 34% at 98% 8%, rgba(237, 22, 136, .20), transparent 72%),
-    radial-gradient(ellipse 78% 42% at 48% 48%, rgba(205, 180, 255, .42), transparent 78%),
-    radial-gradient(ellipse 66% 36% at 90% 100%, rgba(255, 151, 0, .16), transparent 72%),
-    linear-gradient(135deg, #e7d9fb 0%, #f0e4ff 36%, #f7e5f0 72%, #f8eadb 100%);
+    radial-gradient(ellipse 72% 34% at 0% 0%, rgba(116, 28, 255, .16), transparent 70%),
+    radial-gradient(ellipse 68% 32% at 100% 35%, rgba(75, 18, 184, .10), transparent 72%),
+    linear-gradient(145deg, #f6f0ff 0%, #eee4ff 48%, #f7efff 100%);
   background-attachment: scroll;
   background-repeat: no-repeat;
 }
