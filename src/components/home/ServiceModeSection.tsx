@@ -12,10 +12,10 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
           <div className="mb-2">
-            <h2 className="text-base font-extrabold tracking-tight text-slate-900">
+            <h2 className="text-base font-extrabold tracking-tight text-white">
               Pilih Teman
             </h2>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
+            <p className="mt-0.5 text-[11px] leading-relaxed text-violet-100/80">
               Mau bertemu langsung atau ngobrol online?
             </p>
           </div>
@@ -48,7 +48,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] font-bold text-white">Online</span>
-                <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">
+                <span className="mt-0.5 block text-[11px] leading-snug text-violet-100/75">
                   Ngobrol dari mana saja
                 </span>
               </span>
@@ -66,7 +66,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-white tracking-tight">
               Mau Teman Offline atau Online?
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-violet-100/75">
               Pilih layanan yang sesuai dengan kebutuhanmu.
             </p>
           </div>
@@ -89,7 +89,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               <span className="mt-1 block min-h-8 text-[10.5px] sm:mt-1.5 sm:min-h-9 sm:text-sm leading-relaxed text-purple-100">
                 Teman untuk bertemu dan beraktivitas langsung.
               </span>
-              <span className="mt-2 inline-flex items-center gap-1 text-[10.5px] sm:mt-3 sm:text-sm font-bold text-fuchsia-700">
+              <span className="mt-2 inline-flex items-center gap-1 text-[10.5px] sm:mt-3 sm:text-sm font-bold text-fuchsia-200">
                 Cari teman offline <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </span>
             </button>
@@ -107,8 +107,8 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                   </span>
                 </span>
               </span>
-              <span className="block text-sm sm:text-lg font-extrabold text-slate-900">Teman Online</span>
-              <span className="mt-1 block min-h-9 text-[11px] sm:text-sm leading-relaxed text-slate-600">
+              <span className="block text-sm sm:text-lg font-extrabold text-white">Teman Online</span>
+              <span className="mt-1 block min-h-9 text-[11px] sm:text-sm leading-relaxed text-violet-100/75">
                 Teman ngobrol dan berinteraksi dari mana saja.
               </span>
               <span className="mt-3 inline-flex items-center gap-1 text-[11px] sm:text-sm font-bold text-fuchsia-200">
