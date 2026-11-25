@@ -34,10 +34,10 @@ body,
 }
 
 body {
-  background-color: #FAF8FC;
+  background-color: #FFFEFF;
   background-image:
-    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
-    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
+    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.055), transparent 34%),
+    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.035), transparent 30%);
   background-attachment: scroll;
 }
 
@@ -74,7 +74,7 @@ body {
   #root::before {
     background-position: right 8px center;
     background-size: 230px;
-    opacity: 0.10;
+    opacity: 0.025;
   }
 }
 
@@ -112,4 +112,50 @@ body {
     opacity: 1;
     transform: none;
   }
+}
+
+
+/* YUKU brand system: purple first, magenta second, warm yellow/orange as a small highlight. */
+:root {
+  --yuku-purple: #6410B5;
+  --yuku-purple-deep: #32104F;
+  --yuku-magenta: #D414B8;
+  --yuku-orange: #FF8A1F;
+  --yuku-yellow: #FFD52A;
+  --yuku-ink: #241533;
+  --yuku-muted: #687184;
+  --yuku-surface: #FFFEFF;
+  --yuku-line: #EEE8F4;
+}
+
+.text-yuku-gradient {
+  background: linear-gradient(100deg, var(--yuku-purple) 0%, var(--yuku-magenta) 68%, var(--yuku-orange) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-yuku-accent {
+  background: linear-gradient(105deg, var(--yuku-purple) 0%, var(--yuku-magenta) 72%, var(--yuku-orange) 100%);
+}
+
+/* White-led surfaces keep the colorful YUKU mark recognizable without tinting every section purple. */
+.yuku-home-surface {
+  background:
+    radial-gradient(ellipse at 96% 0%, rgba(212,20,184,.055), transparent 23rem),
+    radial-gradient(ellipse at 0% 18%, rgba(100,16,181,.055), transparent 25rem),
+    linear-gradient(180deg, #FFFFFF 0%, #FFFCFF 58%, #FFFFFF 100%);
+  color: var(--yuku-ink);
+}
+.yuku-discovery-surface {
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(212,20,184,.045), transparent 22rem),
+    linear-gradient(180deg, #FFFFFF 0%, #FFFCFF 100%);
+  color: var(--yuku-ink);
+}
+.yuku-talent-grid > div { min-width: 0; }
+.yuku-home-surface h2 { text-wrap: balance; }
+
+/* Small brand glints only; never use yellow/orange as a large page background. */
+.yuku-brand-glint {
+  background: linear-gradient(110deg, var(--yuku-orange), var(--yuku-yellow));
 }

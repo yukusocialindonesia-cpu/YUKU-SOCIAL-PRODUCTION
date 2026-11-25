@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-gradient-to-br from-[#F8F4FF] via-white to-[#FFF8F1] md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
+      className="relative overflow-hidden bg-transparent"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -170,18 +170,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             aria-hidden="true"
             className="absolute inset-0 bg-slate-200/70 animate-pulse motion-reduce:animate-none"
           />
-        ) : fallbackOk ? (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%]">
-            <img
-              src="/hero-home.jpg"
-              alt=""
-              aria-hidden="true"
-              onError={() => setFallbackOk(false)}
-              className="w-full h-full object-cover object-[60%_18%] md:[mask-image:linear-gradient(to_left,black_72%,transparent)]"
-            />
-          </div>
         ) : (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400 opacity-90 md:rounded-l-[8rem]" />
+          <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-[#5B0DB5] via-[#9412C8] to-[#E52DA8]">
+            <div className="absolute -right-10 -top-16 h-64 w-64 rounded-full bg-[#FFB52E]/80 blur-3xl" />
+            <div className="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-[#F5A6E8]/50 blur-3xl" />
+            <div className="absolute right-5 top-5 h-24 w-24 rounded-full border-[14px] border-white/15 sm:right-12 sm:top-8 sm:h-36 sm:w-36" />
+            <div className="absolute inset-y-0 left-0 flex max-w-[78%] flex-col justify-center px-5 text-white sm:max-w-[65%] sm:px-10 md:max-w-[60%]">
+              <span className="mb-2 inline-flex w-fit items-center rounded-full border border-white/30 bg-white/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] sm:text-xs">YUKU • Real Friends</span>
+              <p className="text-[clamp(1.25rem,5vw,2.6rem)] font-black leading-[1.05] tracking-tight drop-shadow-sm">Temukan teman untuk setiap momen.</p>
+              <p className="mt-2 max-w-sm text-[11px] font-medium leading-relaxed text-white/90 sm:text-sm">Jalan bareng, menikmati hobi, dan ciptakan pengalaman nyata.</p>
+            </div>
+            <div className="absolute bottom-4 right-5 rounded-full bg-white px-4 py-2 text-[10px] font-extrabold text-[#6410B5] shadow-lg sm:bottom-7 sm:right-10 sm:px-5 sm:py-2.5 sm:text-xs">Jelajahi Talent ↗</div>
+            <div className="absolute left-[58%] top-5 text-3xl text-white/80 sm:top-8 sm:text-5xl">✦</div>
+            <div className="absolute bottom-7 left-[52%] text-2xl text-[#FFD52A] sm:text-4xl">✦</div>
+          </div>
         )}
 
         {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}

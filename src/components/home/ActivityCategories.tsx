@@ -110,7 +110,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 sm:py-4 min-h-[88px] rounded-[20px] border border-purple-100/80 bg-gradient-to-br from-white via-white to-purple-50/60 backdrop-blur-xl shadow-[0_8px_22px_rgba(76,29,149,0.07),inset_0_1px_0_rgba(255,255,255,0.95)] ring-1 ring-white/90 hover:border-purple-200 hover:shadow-[0_16px_30px_rgba(76,29,149,0.13)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 sm:py-4 min-h-[88px] rounded-[20px] border border-purple-100/80 bg-white shadow-[0_4px_14px_rgba(30,9,56,0.06)] ring-1 ring-slate-200/70 hover:border-purple-200 hover:shadow-[0_16px_30px_rgba(76,29,149,0.13)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
                 >
                   <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.7),0_3px_8px_rgba(76,29,149,0.07)] ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
                     {getIcon(cat.iconName)}

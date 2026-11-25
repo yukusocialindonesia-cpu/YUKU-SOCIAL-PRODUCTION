@@ -39,7 +39,7 @@ const PromotionBannerVisual: React.FC<{ imageUrl: string; title: string }> = ({ 
       loading="eager"
       decoding="async"
       onError={() => setImageFailed(true)}
-      className="block h-auto w-full"
+      className="block h-[clamp(150px,34vw,220px)] w-full bg-white object-contain object-center"
     />
   );
 };
@@ -395,7 +395,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
 
   return (
-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
+    <div className="yuku-discovery-surface min-h-screen py-0 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
         <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
@@ -462,9 +462,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
-        <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
+        <div className="sticky top-[64px] min-[431px]:top-[68px] lg:top-[72px] xl:static z-30 -mx-4 bg-white/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
+        <div className="relative bg-white p-2 sm:p-5 rounded-2xl sm:rounded-[26px] border border-slate-200/80 shadow-[0_5px_18px_rgba(30,9,56,0.06)] mb-2 sm:mb-8 space-y-2 sm:space-y-4">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search and city selector share one pill, matching the mobile reference */}
@@ -629,7 +629,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
-        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-1 -mx-1">
+        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-2 -mx-1">
           <div className="flex items-center gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
