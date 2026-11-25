@@ -33,7 +33,7 @@ export const PeopleDiscoveryStrip: React.FC<PeopleDiscoveryStripProps> = ({ onSe
               <Users className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <h2 className="truncate text-sm font-extrabold tracking-tight">Kenalan di YUKU</h2>
+              <h2 className="truncate text-sm font-extrabold tracking-tight">Kenali Orang di YUKU</h2>
               <p className="text-[10px] text-violet-200">Temukan orang baru untuk aktivitasmu</p>
             </div>
           </div>
@@ -67,7 +67,7 @@ export const PeopleDiscoveryStrip: React.FC<PeopleDiscoveryStripProps> = ({ onSe
                 </span>
               </span>
               <span className="w-full truncate text-[10px] font-bold leading-tight text-violet-50 group-hover:text-white">{talent.name}</span>
-              <span className="w-full truncate text-[9px] leading-none text-violet-300/75">{talent.city || 'Lihat profil'}</span>
+              {talent.city && <span className="w-full truncate text-[9px] leading-none text-violet-300/75">{talent.city}</span>}
             </button>
           ))}
         </div>
