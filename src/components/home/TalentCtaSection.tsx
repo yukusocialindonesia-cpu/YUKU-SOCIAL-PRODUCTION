@@ -60,7 +60,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Tarif Transparan per Jam
                   </strong>
-                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
+                  <span className="text-[#D9CCFF] text-[11px] sm:text-xs leading-snug">
                     Lihat tarif per jam langsung di profil sebelum mengajukan jadwal booking.
                   </span>
                 </div>
@@ -72,7 +72,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Pembayaran Terlindungi
                   </strong>
-                  <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
+                  <span className="text-[#D9CCFF] text-[11px] sm:text-xs leading-snug">
                     Dana booking diamankan melalui sistem YUKU dan diteruskan setelah sesi selesai dikonfirmasi.
                   </span>
                 </div>
@@ -105,7 +105,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
 
               <div className="space-y-3.5 text-xs text-purple-100">
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <Sparkles className="w-4 h-4 text-[#D9CCFF] shrink-0 mt-0.5" />
                   <span>1. Daftar akun Customer dan lengkapi verifikasi e-KTP 18+.</span>
                 </div>
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
@@ -133,7 +133,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
               <button
                 onClick={onRegisterClick}
-                className="shrink-0 min-h-11 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/25 text-xs font-bold text-amber-300 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
+                className="shrink-0 min-h-11 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/25 text-xs font-bold text-[#D9CCFF] shadow-sm transition-colors cursor-pointer whitespace-nowrap"
               >
                 Daftar Talent →
               </button>
