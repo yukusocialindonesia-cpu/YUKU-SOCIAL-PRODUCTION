@@ -17,12 +17,7 @@ interface TalentCardProps {
 // Foto stok bawaan lama dianggap "belum ada foto", supaya kartu tidak terlihat kembar.
 const PLACEHOLDER_PHOTO_MARKER = 'photo-1534528741775-53994a69daeb';
 
-const GRADIENTS = [
-  'from-purple-600 via-fuchsia-600 to-pink-500',
-  'from-indigo-600 via-purple-600 to-fuchsia-500',
-  'from-fuchsia-600 via-pink-600 to-orange-400',
-  'from-violet-700 via-purple-600 to-sky-500',
-];
+const GRADIENTS = ['from-[#24105F] via-[#4B1AA0] to-[#741CFF]'];
 
 function pickGradient(seed: string): string {
   let hash = 0;
@@ -74,9 +69,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         role="button"
         tabIndex={0}
         aria-label={`Lihat profil ${talent.name}`}
-        className="yuku-depth-card yuku-talent-card group relative min-w-0 overflow-hidden rounded-[20px] border border-white/80 bg-white cursor-pointer shadow-[0_8px_24px_rgba(12,4,35,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a0b59]"
+        className="yuku-depth-card yuku-talent-card group relative min-w-0 overflow-hidden rounded-[18px] border border-white/15 bg-white cursor-pointer shadow-[0_8px_22px_rgba(12,4,35,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BDA2FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#24105F]"
       >
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-purple-100">
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#EEE8FF]">
           {hasRealPhoto ? (
             <img
               src={talent.avatarUrl}
@@ -95,12 +90,12 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
           <div className="absolute left-2 right-2 top-2 flex items-center justify-between gap-1">
             {isNew ? (
-              <span className="rounded-full bg-amber-400 px-2.5 py-1 text-[10px] font-extrabold text-amber-950 shadow">
+              <span className="rounded-full border border-white/70 bg-white/95 px-2 py-1 text-[9px] font-extrabold text-[#24105F] shadow">
                 BARU
               </span>
             ) : <span />}
             {talent.serviceMode && (
-              <span className="max-w-[58%] truncate rounded-full border border-white/30 bg-black/30 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm backdrop-blur-md">
+              <span className="max-w-[58%] truncate rounded-full border border-white/35 bg-[#24105F]/70 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm backdrop-blur-md">
                 {talent.serviceMode}
               </span>
             )}
@@ -108,7 +103,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <div className="absolute inset-x-2 bottom-2 text-white">
             <div className="flex items-center justify-between gap-1">
               <div className="flex min-w-0 items-center gap-1">
-                <h3 className="min-w-0 truncate text-[13px] min-[390px]:text-sm font-extrabold leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.65)]">
+                <h3 className="min-w-0 truncate text-[13px] min-[390px]:text-[14px] font-extrabold leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.65)]">
                   {talent.name}
                 </h3>
                 {talent.isVerified === true && <VerifiedBadge />}
@@ -122,15 +117,15 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               )}
             </div>
             {talent.city && (
-              <p className="mt-1 flex items-center gap-1 truncate text-[11px] font-medium text-white/90">
+              <p className="mt-1 flex items-center gap-1 truncate text-[10px] font-medium text-white/90">
                 <MapPin className="h-3 w-3 shrink-0" />
                 <span className="min-w-0 truncate">{talent.city}</span>
               </p>
             )}
             {availableToday && (
               <div className="mt-1.5">
-                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-emerald-200/30 bg-emerald-400/20 px-2 py-0.5 text-[9px] font-bold text-emerald-100 backdrop-blur-sm">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
+                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-white/35 bg-[#741CFF]/80 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
                   <span className="truncate">Tersedia hari ini</span>
                 </span>
               </div>
