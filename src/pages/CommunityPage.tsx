@@ -304,7 +304,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
                 return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
-                  className={`shrink-0 rounded-full border px-4 py-2.5 text-[11px] font-bold shadow-sm transition ${active
+                  className={`shrink-0 rounded-full border px-4 py-3 text-[11px] font-bold shadow-sm transition ${active
                     ? 'border-purple-700 bg-purple-700 text-white shadow-sm'
                     : 'border-purple-100 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-800'}`}>
                   {topic}
