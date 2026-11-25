@@ -43,6 +43,34 @@ body {
 
 /* Discovery page: brighter, layered YUKU lavender atmosphere without
    changing the global look of booking, profile, or account pages. */
+/* Home and Jelajah share one coherent premium-social visual language. */
+.yuku-home-surface {
+  background:
+    radial-gradient(ellipse at 5% 5%, rgba(192, 132, 252, 0.28), transparent 27rem),
+    radial-gradient(ellipse at 96% 19%, rgba(232, 121, 249, 0.18), transparent 29rem),
+    radial-gradient(ellipse at 48% 56%, rgba(196, 181, 253, 0.19), transparent 34rem),
+    radial-gradient(ellipse at 90% 88%, rgba(251, 191, 36, 0.09), transparent 28rem),
+    linear-gradient(180deg, #FCF9FF 0%, #F7F0FF 43%, #FFFBFF 100%);
+}
+
+.yuku-home-surface > section {
+  isolation: isolate;
+}
+
+.yuku-home-surface h2 {
+  text-wrap: balance;
+}
+
+@media (min-width: 640px) {
+  .yuku-home-surface {
+    background:
+      radial-gradient(ellipse at 7% 4%, rgba(192, 132, 252, 0.23), transparent 34rem),
+      radial-gradient(ellipse at 94% 18%, rgba(232, 121, 249, 0.15), transparent 36rem),
+      radial-gradient(ellipse at 50% 60%, rgba(196, 181, 253, 0.15), transparent 42rem),
+      linear-gradient(180deg, #FCF9FF 0%, #F7F1FF 48%, #FFFCFF 100%);
+  }
+}
+
 .yuku-discovery-surface {
   background:
     radial-gradient(ellipse at 4% 7%, rgba(192, 132, 252, 0.30), transparent 26rem),
