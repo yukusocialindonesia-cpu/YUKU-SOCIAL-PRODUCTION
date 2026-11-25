@@ -93,20 +93,27 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             </div>
           )}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-          {isNew && (
-            <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-extrabold text-amber-950 shadow">
-              BARU
-            </span>
-          )}
+          <div className="absolute left-2 right-2 top-2 flex items-center justify-between gap-1">
+            {isNew ? (
+              <span className="rounded-full bg-amber-400 px-2.5 py-1 text-[10px] font-extrabold text-amber-950 shadow">
+                BARU
+              </span>
+            ) : <span />}
+            {talent.serviceMode && (
+              <span className="max-w-[58%] truncate rounded-full border border-white/30 bg-black/30 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm backdrop-blur-md">
+                {talent.serviceMode}
+              </span>
+            )}
+          </div>
           <div className="absolute inset-x-2 bottom-2 text-white">
             <div className="flex items-center justify-between gap-1">
-            <div className="flex min-w-0 items-center gap-1">
-              <h3 className="min-w-0 flex-1 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">
-                {talent.name}
-              </h3>
-              {talent.isVerified === true && <VerifiedBadge />}
-              {talent.age && <span className="shrink-0 text-[11px] font-semibold text-white/90">, {talent.age}</span>}
-            </div>
+              <div className="flex min-w-0 items-center gap-1">
+                <h3 className="min-w-0 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">
+                  {talent.name}
+                </h3>
+                {talent.isVerified === true && <VerifiedBadge />}
+                {talent.age && <span className="shrink-0 text-[11px] font-semibold text-white/90">, {talent.age}</span>}
+              </div>
               {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
                 <span className="inline-flex shrink-0 items-center gap-0.5 text-[11px] font-bold drop-shadow">
                   <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
@@ -123,6 +130,17 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             {talent.distanceKm != null && (
               <p className="mt-0.5 truncate text-[10px] min-[390px]:text-[11px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari lokasi Anda</p>
             )}
+            <div className="mt-1.5 flex items-center justify-between gap-1">
+              {availableToday ? (
+                <span className="inline-flex min-w-0 items-center gap-1 rounded-full border border-emerald-200/30 bg-emerald-400/20 px-2 py-0.5 text-[9px] min-[390px]:text-[10px] font-bold text-emerald-100 backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
+                  <span className="truncate">Tersedia hari ini</span>
+                </span>
+              ) : <span />}
+              <span className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/20 shadow-sm backdrop-blur-md">
+                <ArrowRight className="h-3.5 w-3.5" />
+              </span>
+            </div>
           </div>
         </div>
       </article>
