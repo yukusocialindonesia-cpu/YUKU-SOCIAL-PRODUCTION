@@ -35,7 +35,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
       case 'utensils':
         return <Coffee className="w-4 h-4 sm:w-5 sm:h-5" />;
       case 'ShoppingBag':
-        return <ShoppingBag className="w-5 h-5" />;
+        return <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />;
       case 'Film':
         return <Film className="w-5 h-5" />;
       case 'Sparkles':
@@ -50,17 +50,17 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   };
 
   /* HP kecil: 2 kolom agar nama kategori lega; HP standar: 3 kolom agar tetap ringkas. */
-  const gridClass = 'grid grid-cols-3 min-[360px]:grid-cols-3 gap-2 sm:flex sm:gap-3 sm:overflow-x-auto sm:snap-x sm:pb-2 sm:-mx-4 sm:px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
+  const gridClass = 'grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-[repeat(auto-fit,minmax(132px,1fr))]';
 
   return (
-    <section className="relative py-3 sm:py-9 bg-[#eee5ff]">
+    <section className="relative py-4 sm:py-9 bg-gradient-to-b from-[#eee5ff] via-[#f7f2ff] to-[#f9f6ff]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-2 sm:mb-5 gap-1 md:gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 sm:mb-5 gap-1 md:gap-4">
           <div>
-            <span className="text-[11px] font-bold text-[#5b22c7] tracking-wider uppercase mb-0.5 block">
+            <span className="text-[10px] sm:text-[11px] font-extrabold text-[#741cff] tracking-[0.14em] uppercase mb-1 block">
               Pilihan Pengalaman Sosial
             </span>
-            <h2 className="text-base sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-lg sm:text-2xl font-extrabold text-[#24105f] tracking-tight">
               Aktivitas Seru Bersama Teman Baru
             </h2>
           </div>
@@ -73,7 +73,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         {loading ? (
           <div className={gridClass}>
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-2xl border border-[#eee9f8] bg-white animate-pulse h-[88px] lg:h-20" />
+              <div key={i} className="rounded-2xl border border-[#eee9f8] bg-white animate-pulse h-[100px] sm:h-[116px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -98,21 +98,21 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
           <div className={gridClass}>
             {categories.map((cat, idx) => {
               const tones = [
-                'bg-[#f0eaff] text-[#5b22c7]',
-                'bg-[#fff0f7] text-[#c02678]',
-                'bg-[#fff6e8] text-[#a96808]',
+                'bg-gradient-to-br from-[#eee5ff] to-[#d9c4ff] text-[#5414bd] ring-[#d8c5ff]',
+                'bg-gradient-to-br from-[#ffe8f3] to-[#ffc9e2] text-[#bd2877] ring-[#ffd2e7]',
+                'bg-gradient-to-br from-[#fff1d8] to-[#ffdda0] text-[#9a5a00] ring-[#ffe4b5]',
               ];
               return (
                 <button
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-3 min-h-[66px] rounded-[15px] border border-[#eee9f8] bg-white shadow-[0_8px_24px_rgba(36,16,95,0.045)] hover:border-[#d8c9f5] hover:shadow-[0_16px_34px_rgba(36,16,95,0.09)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="group flex min-h-[100px] sm:min-h-[116px] flex-col items-center justify-center gap-2 rounded-[18px] border border-white/90 bg-white/95 px-1.5 py-3 shadow-[0_8px_24px_rgba(36,16,95,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-[#d8c9f5] hover:shadow-[0_16px_34px_rgba(36,16,95,0.13)] cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
                 >
-                  <span className={`w-7 h-7 sm:w-11 sm:h-11 rounded-[12px] sm:rounded-[15px] flex items-center justify-center shadow-none ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
+                  <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] sm:rounded-[16px] flex items-center justify-center ring-1 ring-inset shadow-[0_4px_12px_rgba(36,16,95,0.06)] ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <h3 className="font-bold text-[13px] sm:text-[13px] leading-snug text-center text-slate-800 group-hover:text-[#5b22c7] transition-colors">
+                  <h3 className="font-extrabold text-[11px] sm:text-[13px] leading-tight text-center text-[#302052] group-hover:text-[#5b22c7] transition-colors">
                     {cat.title}
                   </h3>
                 </button>
