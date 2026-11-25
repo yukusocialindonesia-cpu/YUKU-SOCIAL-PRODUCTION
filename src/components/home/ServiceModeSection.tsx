@@ -7,24 +7,24 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-5 sm:py-9 bg-[#f5efff]">
+    <section className="relative overflow-hidden py-3 sm:py-9 bg-[#f5efff]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
           <div className="mb-2">
-            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">
+            <h2 className="text-base font-extrabold tracking-tight text-slate-900">
               Pilih Teman
             </h2>
-            <p className="mt-0.5 text-[13px] leading-relaxed text-slate-600">
+            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
               Mau bertemu langsung atau ngobrol online?
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group flex min-h-[72px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
                 <MapPin className="h-4 w-4" />
@@ -41,7 +41,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-[#eee8f8] bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-[#eee8f8] bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
                 <MessageCircle className="h-4 w-4" />
