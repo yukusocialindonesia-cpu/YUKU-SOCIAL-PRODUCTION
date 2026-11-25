@@ -453,7 +453,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
-        <div className="sticky top-14 min-[431px]:top-[60px] lg:top-16 xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
+        <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
