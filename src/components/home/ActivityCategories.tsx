@@ -64,10 +64,10 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
               <Sparkles className="h-3 w-3" /> PILIH PENGALAMAN
             </span>
             <h2 className="text-[21px] font-black tracking-tight text-white sm:text-3xl">
-              Mau ngapain hari ini?
+              Pilih aktivitasmu
             </h2>
             <p className="mt-1 max-w-[270px] text-[11px] leading-relaxed text-violet-100/75 sm:max-w-none sm:text-sm">
-              Pilih aktivitas. YUKU bantu temukan teman yang cocok.
+              Pilih aktivitas untuk menemukan Talent yang sesuai dengan kebutuhanmu.
             </p>
           </div>
 
