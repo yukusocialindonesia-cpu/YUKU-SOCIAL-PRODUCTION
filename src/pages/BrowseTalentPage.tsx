@@ -82,7 +82,12 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [nearestTalentDistances, setNearestTalentDistances] = useState<Record<string, number> | null>(null);
 
   const handleUseMyLocation = () => {
+    // A failed or denied new GPS attempt must not leave an older location active.
+    setCustomerLocation(null);
+    setNearestTalentDistances(null);
+
     if (!window.isSecureContext || !navigator.geolocation) {
+      setGpsLoading(false);
       setGpsMessage('GPS memerlukan browser yang mendukung lokasi dan koneksi aman (HTTPS).');
       return;
     }
@@ -158,9 +163,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setHasMoreTalents(false);
     nextTalentOffsetRef.current = 0;
     try {
-      const [talentsResult, categoriesResult] = await Promise.allSettled([
+      const nearbyIds = nearestTalentDistances ? Object.keys(nearestTalentDistances) : [];
+      const [talentsResult, categoriesResult, nearbyTalentsResult] = await Promise.allSettled([
         fetchTalentsFromSupabase(TALENT_BATCH_SIZE, 0, searchTerm),
         fetchCategoriesFromSupabase(),
+        nearbyIds.length > 0
+          ? fetchTalentsByIdsFromSupabase(nearbyIds, searchTerm)
+          : Promise.resolve([] as TalentProfile[]),
       ]);
 
       if (requestId !== searchRequestRef.current) return;
@@ -168,7 +177,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         throw talentsResult.reason;
       }
 
-      setTalents(talentsResult.value);
+      const mergedTalents = new Map(talentsResult.value.map((talent) => [talent.id, talent]));
+      if (nearbyTalentsResult.status === 'fulfilled') {
+        nearbyTalentsResult.value.forEach((talent) => mergedTalents.set(talent.id, talent));
+      } else {
+        console.warn('Talent terdekat berdasarkan GPS tidak dapat dimuat ulang:', nearbyTalentsResult.reason);
+      }
+      setTalents([...mergedTalents.values()]);
       nextTalentOffsetRef.current = talentsResult.value.length;
       setHasMoreTalents(talentsResult.value.length === TALENT_BATCH_SIZE);
       if (categoriesResult.status === 'fulfilled') {
@@ -191,7 +206,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       void loadMarketplaceData(searchQuery);
     }, searchQuery.trim() ? 350 : 0);
     return () => window.clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, nearestTalentDistances]);
 
   const loadNextTalentBatch = async () => {
     if (loadingMoreRef.current || !hasMoreTalents) return;
