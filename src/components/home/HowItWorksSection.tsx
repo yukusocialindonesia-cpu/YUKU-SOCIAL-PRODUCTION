@@ -17,15 +17,15 @@ interface HowItWorksSectionProps {
 
 export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMoreClick }) => {
   return (
-    <section className="py-4 md:py-10 bg-gradient-to-b from-[#f8f4ff] via-[#f1e9ff] to-[#eee5ff]">
+    <section className="py-4 md:py-10 bg-gradient-to-b from-[#1b073b] via-[#210847] to-[#17052f] border-t border-white/[0.06]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10">
           {/* Cara Kerja */}
           <div className="lg:col-span-8">
-            <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase block">
+            <span className="text-[11px] font-bold text-[#d7b8ff] tracking-wider uppercase block">
               Alur Mudah & Transparan
             </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E0938] tracking-tight mb-3 sm:mb-5">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-3 sm:mb-5">
               Cara Kerja YUKU
             </h2>
 
@@ -35,18 +35,18 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                 return (
                   <div
                     key={item.step}
-                    className="flex flex-col items-center text-center bg-gradient-to-b from-white to-purple-50/60 backdrop-blur-xl border border-purple-100/80 rounded-[20px] sm:rounded-[22px] p-3 sm:p-4 shadow-[0_7px_18px_rgba(76,29,149,0.06)] ring-1 ring-white/90 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.12)] transition-all duration-300"
+                    className="flex flex-col items-center text-center bg-white/[0.07] backdrop-blur-xl border border-white/15 rounded-[20px] sm:rounded-[22px] p-3 sm:p-4 shadow-[0_10px_26px_rgba(0,0,0,0.14)] ring-1 ring-white/5 hover:-translate-y-1 hover:bg-white/[0.10] transition-all duration-300"
                   >
                     <div className="relative mb-2">
                       <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] sm:rounded-2xl bg-gradient-to-br from-purple-700 to-fuchsia-600 text-white flex items-center justify-center shadow-[0_5px_12px_rgba(126,34,206,0.22)] ring-2 ring-white">
                         <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                       </span>
-                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-amber-950 text-[11px] font-black flex items-center justify-center ring-2 ring-white">
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#ff9700] text-[#321047] text-[11px] font-black flex items-center justify-center ring-2 ring-white">
                         {index + 1}
                       </span>
                     </div>
-                    <h3 className="text-[14px] font-bold text-[#1E0938] mb-1 leading-tight tracking-tight">{item.title}</h3>
-                    <p className="text-[13px] text-slate-600 leading-snug line-clamp-4">{item.description}</p>
+                    <h3 className="text-[14px] font-bold text-white mb-1 leading-tight tracking-tight">{item.title}</h3>
+                    <p className="text-[13px] text-purple-100/75 leading-snug line-clamp-4">{item.description}</p>
                   </div>
                 );
               })}
@@ -62,13 +62,13 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
                 return (
                   <React.Fragment key={item.step}>
                     <span
-                      className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full border border-purple-200 bg-white text-purple-700 shadow-sm"
+                      className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-[#e2caff] shadow-sm"
                       title={item.title}
                     >
                       <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
                     </span>
                     {index < HOW_IT_WORKS_STEPS.length - 1 && (
-                      <ArrowRight className="h-4 w-4 shrink-0 text-purple-400" aria-hidden="true" />
+                      <ArrowRight className="h-4 w-4 shrink-0 text-[#a78bfa]" aria-hidden="true" />
                     )}
                   </React.Fragment>
                 );
@@ -77,7 +77,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
 
             <button
               onClick={onLearnMoreClick}
-              className="mt-3 sm:mt-5 min-h-11 inline-flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors cursor-pointer"
+              className="mt-3 sm:mt-5 min-h-11 inline-flex items-center gap-2 text-sm font-bold text-[#d7b8ff] hover:text-purple-900 transition-colors cursor-pointer"
             >
               <span>Pelajari Pedoman Etika & Panduan Lengkap</span>
               <ArrowRight className="w-4 h-4" />
@@ -86,20 +86,20 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
 
           {/* Keamanan & Kepercayaan */}
           <div className="hidden lg:block lg:col-span-4 lg:border-l lg:border-purple-100 lg:pl-10">
-            <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase block">
+            <span className="text-[11px] font-bold text-[#d7b8ff] tracking-wider uppercase block">
               Privasi & Keamanan
             </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E0938] tracking-tight mb-1">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-1">
               Keamanan & Kepercayaan
             </h2>
-            <p className="text-sm text-slate-500 mb-4 md:mb-5">Privasi dan keamananmu adalah prioritas kami.</p>
+            <p className="text-sm text-purple-200/70 mb-4 md:mb-5">Privasi dan keamananmu adalah prioritas kami.</p>
             <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-3">
               {TRUST_ITEMS.map(({ label, Icon }) => (
                 <div key={label} className="flex flex-col lg:flex-row items-center lg:gap-3 text-center lg:text-left">
-                  <span className="w-9 h-9 md:w-12 md:h-12 shrink-0 rounded-2xl bg-white/90 border border-purple-100 text-purple-700 shadow-[0_8px_20px_rgba(76,29,149,0.08)] flex items-center justify-center">
+                  <span className="w-9 h-9 md:w-12 md:h-12 shrink-0 rounded-2xl bg-white/[0.08] border border-white/15 text-[#d7b8ff] shadow-[0_8px_20px_rgba(0,0,0,0.12)] flex items-center justify-center">
                     <Icon className="w-5 h-5 md:w-6 md:h-6" />
                   </span>
-                  <span className="mt-1.5 lg:mt-0 text-xs lg:text-sm font-semibold text-slate-700 leading-tight">{label}</span>
+                  <span className="mt-1.5 lg:mt-0 text-xs lg:text-sm font-semibold text-purple-100/85 leading-tight">{label}</span>
                 </div>
               ))}
             </div>
