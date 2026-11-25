@@ -371,9 +371,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
-        <div aria-hidden="true" className="hidden" />
-        <div className="relative z-10 w-full bg-[#FAF8FC] px-4 pb-1 pt-0 sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none">
-        <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
           <section aria-label="Promosi YUKU" className="mb-1 sm:mb-7">
@@ -435,7 +432,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
-        <div className="sticky top-14 min-[376px]:top-[60px] min-[431px]:top-16 lg:top-[72px] xl:static z-30 -mx-4 bg-[#FAF8FC]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
+        <div className="sticky top-14 min-[376px]:top-[60px] min-[431px]:top-16 lg:top-[72px] xl:static z-30 -mx-4 bg-[#FAF8FC]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
@@ -622,8 +619,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
           </div>
         </section>
-        </div>
-
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
