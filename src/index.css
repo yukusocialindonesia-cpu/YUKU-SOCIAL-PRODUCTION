@@ -1,115 +1,40 @@
 @import "tailwindcss";
 
+/* YUKU premium visual system — palette sampled from the official logo. */
+:root {
+  --yuku-ink: #24105f;
+  --yuku-purple: #4b12b8;
+  --yuku-violet: #741cff;
+  --yuku-magenta: #ed1688;
+  --yuku-orange: #ff9700;
+  --yuku-canvas: #fbfaff;
+  --yuku-line: #eee9f8;
+  --yuku-muted: #716b80;
+}
+
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-  
-  body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
+  html { scroll-behavior: smooth; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--yuku-canvas); color: #201b2d; }
+  button, input, select { font: inherit; }
 }
 
-/* Custom brand gradients and utilities */
-.bg-yuku-gradient {
-  background: linear-gradient(135deg, #1e0938 0%, #300f5c 50%, #4a154b 100%);
-}
+.bg-yuku-gradient { background: linear-gradient(120deg, var(--yuku-purple), var(--yuku-violet) 48%, var(--yuku-magenta) 78%, var(--yuku-orange)); }
+.text-yuku-gradient { background: linear-gradient(100deg, var(--yuku-purple), var(--yuku-violet) 48%, var(--yuku-magenta) 78%, var(--yuku-orange)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.bg-yuku-accent { background: linear-gradient(120deg, var(--yuku-purple), var(--yuku-violet) 55%, var(--yuku-magenta)); }
 
-.text-yuku-gradient {
-  background: linear-gradient(135deg, #7c3aed 0%, #c026d3 50%, #f97316 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.bg-yuku-accent {
-  background: linear-gradient(135deg, #9333ea 0%, #db2777 50%, #f97316 100%);
-}
-
-/* Subtle YUKU brand watermark, kept behind all page content. */
-html,
-body,
-#root {
-  min-height: 100%;
-}
-
-body {
-  background-color: #FAF8FC;
-  background-image:
-    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
-    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
-  background-attachment: scroll;
-}
-
-#root {
-  position: relative;
-  isolation: isolate;
-}
-
-/*
- * Keep the watermark in the document layer instead of a viewport-fixed layer.
- * This avoids mobile fixed-background compositing issues while allowing the
- * watermark to span the full app height.
- */
-#root::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url('/icon-192.png');
-  background-repeat: no-repeat;
-  background-position: right 8% center;
-  background-size: clamp(220px, 34vw, 420px);
-  opacity: 0.045;
-}
-
-/* Keep the app UI above the decorative watermark without blocking interaction. */
-:where(#root) > * {
-  position: relative;
-  z-index: 1;
-}
+html, body, #root { min-height: 100%; }
+#root { position: relative; isolation: isolate; }
+#root::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: url('/icon-192.png') no-repeat right 8% center / clamp(220px, 34vw, 420px); opacity: .025; }
+:where(#root) > * { position: relative; z-index: 1; }
 
 @media (max-width: 640px) {
-  #root::before {
-    background-position: right 8px center;
-    background-size: 230px;
-    opacity: 0.10;
-  }
+  #root::before { background-position: right 8px center; background-size: 210px; opacity: .035; }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
-
-/* One-time, gentle entrance for the homepage hero slogan. */
-@keyframes hero-slogan-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.hero-slogan-enter {
-  display: inline-block;
-  animation: hero-slogan-fade-up 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.hero-slogan-enter-delay {
-  animation-delay: 180ms;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-slogan-enter {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-}
+@keyframes hero-slogan-fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.hero-slogan-enter { display: inline-block; animation: hero-slogan-fade-up 650ms cubic-bezier(.22,1,.36,1) both; }
+.hero-slogan-enter-delay { animation-delay: 180ms; }
