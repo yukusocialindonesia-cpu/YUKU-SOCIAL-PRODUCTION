@@ -59,9 +59,9 @@ html, body, #root { min-height: 100%; }
   min-height: 52vh;
   background-color: #f8f7fc;
   background-image:
-    radial-gradient(ellipse 72% 28% at 0% 0%, rgba(91, 33, 182, .15), transparent 72%),
+    radial-gradient(ellipse 72% 28% at 0% 0%, rgba(116, 28, 255, .055), transparent 72%),
     radial-gradient(ellipse 58% 24% at 100% 8%, rgba(116, 28, 255, .055), transparent 72%),
-    linear-gradient(180deg, #f2eaff 0%, #faf8ff 44%, #ffffff 100%);
+    linear-gradient(180deg, #f8f7fc 0%, #ffffff 44%, #ffffff 100%);
 }
 .yuku-route-stage > :first-child {
   background-color: transparent !important;
@@ -73,8 +73,8 @@ html, body, #root { min-height: 100%; }
 }
 @media (max-width: 640px) {
   .yuku-route-stage { background-image:
-    radial-gradient(ellipse 100% 20% at 0% 0%, rgba(91, 33, 182, .12), transparent 78%),
-    linear-gradient(180deg, #f3edff 0%, #fbfaff 42%, #ffffff 100%);
+    radial-gradient(ellipse 100% 20% at 0% 0%, rgba(116, 28, 255, .045), transparent 78%),
+    linear-gradient(180deg, #f8f7fc 0%, #fbfaff 42%, #ffffff 100%);
   }
 }
 
@@ -151,7 +151,7 @@ html, body, #root { min-height: 100%; }
   pointer-events: none;
 }
 .yuku-glass-shell {
-  background: linear-gradient(120deg, rgba(255,255,255,.94), rgba(247,241,255,.88) 58%, rgba(255,242,250,.9));
+  background: linear-gradient(120deg, rgba(255,255,255,.94), rgba(248,247,252,.94) 58%, rgba(255,255,255,.92));
   border: 1px solid rgba(255,255,255,.88);
   box-shadow: 0 12px 34px rgba(53,16,120,.15), inset 0 1px 0 rgba(255,255,255,.98);
   backdrop-filter: blur(22px);
