@@ -11,7 +11,8 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
-          <div className="mb-2">
+          <div className="mb-2.5">
+            <span className="mb-1 block text-[9px] font-extrabold uppercase tracking-[0.18em] text-fuchsia-200/90">Dua cara terhubung</span>
             <h2 className="text-base font-extrabold tracking-tight text-white">
               Pilih Teman
             </h2>
@@ -24,9 +25,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 p-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="yuku-depth-card group flex min-h-[76px] min-w-0 items-center gap-2.5 rounded-2xl border border-fuchsia-100/20 bg-gradient-to-br from-white/[0.16] to-white/[0.06] p-3 text-left shadow-[0_8px_22px_rgba(8,2,25,0.18),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-md transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
-              <span className="yuku-icon-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#a78bfa] to-[#ec4899] text-white">
+              <span className="yuku-icon-orb flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#a78bfa] to-[#ec4899] text-white">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
@@ -41,9 +42,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 p-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="yuku-depth-card group flex min-h-[76px] min-w-0 items-center gap-2.5 rounded-2xl border border-fuchsia-100/20 bg-gradient-to-br from-white/[0.16] to-white/[0.06] p-3 text-left shadow-[0_8px_22px_rgba(8,2,25,0.18),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-md transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#f2edff] text-[#5b22c7]">
                 <MessageCircle className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
