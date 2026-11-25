@@ -639,7 +639,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 aria-pressed={selectedActivity === cat.id}
                 className={`min-h-11 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
               >
-                {cat.title}
+                <span className="inline-flex items-center gap-1.5">{getActivityIcon(cat)}{cat.title}</span>
               </button>
             ))}
           </div>
