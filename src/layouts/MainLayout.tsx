@@ -28,6 +28,7 @@ const HIDE_BOTTOM_NAV: string[] = [
  */
 export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate, children }) => {
   const showBottomNav = !HIDE_BOTTOM_NAV.includes(currentPath);
+  const isAppWorkspace = ['/', '/talent', '/komunitas', '/dashboard-talent', '/riwayat-booking', '/profil-saya'].some((path) => currentPath === path || (path !== '/' && currentPath.startsWith(path))) || /^\/talent\/[^/]+$/.test(currentPath);
 
   return (
     <div
@@ -41,9 +42,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
 
       <main className={`yuku-route-stage relative isolate flex-1 route-${currentPath.replaceAll("/", "-").replaceAll(":", "") || "home"}`}>{children}</main>
 
-      {currentPath !== '/' && <SafetyPledgeBanner />}
+      {currentPath !== '/' && <div className={isAppWorkspace ? 'hidden md:block' : ''}><SafetyPledgeBanner /></div>}
 
-      <Footer onNavigate={onNavigate} />
+      <div className={isAppWorkspace ? 'hidden md:block' : ''}>
+        <Footer onNavigate={onNavigate} />
+      </div>
 
       {showBottomNav && <MobileBottomNav currentPath={currentPath} onNavigate={onNavigate} />}
     </div>
