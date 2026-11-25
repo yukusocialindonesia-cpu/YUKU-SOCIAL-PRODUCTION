@@ -3,7 +3,7 @@ import { ShieldCheck, Ban, Lock, AlertCircle, FileCheck, PhoneCall } from 'lucid
 
 export const SafetySection: React.FC = () => {
   return (
-    <section className="py-4 md:py-20 bg-[#17082A] text-white relative overflow-hidden">
+    <section className="py-4 md:py-12 bg-[#17082A] text-white relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
 
