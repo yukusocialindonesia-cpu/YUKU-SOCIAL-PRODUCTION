@@ -78,7 +78,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsMessage, setGpsMessage] = useState<string | null>(null);
   const [nearestTalentDistances, setNearestTalentDistances] = useState<Record<string, number> | null>(null);
-  const [sortBy, setSortBy] = useState<'rating' | 'reviews' | 'newest'>('rating');
+  const [sortBy, setSortBy] = useState<'popular' | 'rating' | 'newest'>('popular');
 
   const handleUseMyLocation = () => {
     // A failed or denied new GPS attempt must not leave an older location active.
@@ -342,7 +342,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     if (customerLocation && nearestTalentDistances && selectedMode !== 'online' && Object.keys(nearestTalentDistances).length > 0) return items;
     return items.sort((a, b) => {
       if (sortBy === 'newest') return Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '');
-      if (sortBy === 'reviews') return (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
+      if (sortBy === 'popular') return (b.reviewCount ?? 0) - (a.reviewCount ?? 0) || (b.rating ?? 0) - (a.rating ?? 0);
       return (b.rating ?? 0) - (a.rating ?? 0) || (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
     });
   }, [filteredTalents, sortBy, customerLocation, nearestTalentDistances, selectedMode]);
@@ -650,9 +650,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         <div className="sm:hidden mb-0 flex items-center justify-between">
           <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
           <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
-            <select aria-label="Urutkan talent" value={sortBy} onChange={(event) => setSortBy(event.target.value as 'rating' | 'reviews' | 'newest')} className="min-h-9 appearance-none rounded-full border border-purple-100 bg-white py-1 pl-2 pr-6 text-[10px] font-semibold text-purple-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
+            <select aria-label="Urutkan talent" value={sortBy} onChange={(event) => setSortBy(event.target.value as 'popular' | 'rating' | 'newest')} className="min-h-9 appearance-none rounded-full border border-purple-100 bg-white py-1 pl-2 pr-6 text-[10px] font-semibold text-purple-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
+              <option value="popular">Terpopuler</option>
               <option value="rating">Rating tertinggi</option>
-              <option value="reviews">Ulasan terbanyak</option>
               <option value="newest">Terbaru</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2 h-3 w-3" />
