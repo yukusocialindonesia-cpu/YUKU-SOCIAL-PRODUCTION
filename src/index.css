@@ -72,8 +72,10 @@ body {
     background-attachment: scroll;
   }
 
+  /* Temporary diagnostic: disable the fixed watermark on phones to test
+     whether the full-screen flicker is caused by mobile background compositing. */
   #root::before {
-    position: absolute;
+    display: none;
   }
 }
 
