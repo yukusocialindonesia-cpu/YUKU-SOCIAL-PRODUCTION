@@ -111,7 +111,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
 
   return (
     <section ref={sectionRef} className="relative py-4 md:py-10 bg-[#f8f4ff]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
           <div>
@@ -199,7 +199,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[76vw] max-w-[300px] sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[68vw] max-w-[252px] sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
