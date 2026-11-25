@@ -544,7 +544,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     key={gender}
                     type="button"
                     onClick={() => setSelectedGender(gender)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+                    className={`min-h-11 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                       selectedGender === gender
                         ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
@@ -569,7 +569,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     key={mode.id}
                     type="button"
                     onClick={() => setSelectedMode(mode.id)}
-                    className={`min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+                    className={`min-h-11 sm:min-h-0 px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                       selectedMode === mode.id
                         ? 'bg-white text-purple-900 shadow-md ring-1 ring-purple-100 font-bold'
                         : 'text-slate-600 hover:text-slate-900'
