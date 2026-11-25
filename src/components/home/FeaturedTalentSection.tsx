@@ -124,7 +124,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-fuchsia-200 hover:text-white transition-colors cursor-pointer"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-fuchsia-200 hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b]"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua Talent</span>
@@ -194,7 +194,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </button>
           <div
             ref={scrollRef}
-            className="flex gap-2.5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-4 sm:pb-5 pt-0 -mx-4 px-4 sm:mx-0 sm:gap-4 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex gap-2.5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-3 sm:pb-5 pt-0 -mx-4 px-4 scroll-px-4 sm:mx-0 sm:gap-4 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleTalents.map((talent, i) => (
               <motion.div
