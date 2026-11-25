@@ -110,7 +110,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-5 md:py-10 bg-gradient-to-br from-[#180638] via-[#2a0b59] to-[#421078] text-white">
+    <section ref={sectionRef} className="relative overflow-hidden border-t border-white/[0.06] py-5 md:py-10 bg-gradient-to-br from-[#1b073b] via-[#2a0b59] to-[#421078] text-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
@@ -141,7 +141,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {loading ? (
           <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-[3/4] h-auto w-[44vw] max-w-[168px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:w-[190px]" />
+              <div key={i} className="aspect-[3/4] h-auto w-[46vw] max-w-[184px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:w-[196px]" />
             ))}
           </div>
         ) : errorMsg ? (
