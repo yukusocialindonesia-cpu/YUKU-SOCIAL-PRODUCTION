@@ -110,21 +110,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </div>
 
-      {/* Cara kerja setelah pengunjung melihat pilihan Talent dan promosi */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
-
-      {/* Keamanan dan Verifikasi */}
-      <SafetySection />
-
-      {/* 10. Ajakan Customer & Tautan Talent */}
-      <TalentCtaSection
-        onExploreClick={() => onNavigate('/talent')}
-        onRegisterCustomerClick={() => onNavigate('/register')}
-        onRegisterClick={() => onNavigate('/daftar-talent')}
-      />
-
-      {/* 11. FAQ */}
-      <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
+      {/* Konten edukasi/marketing tetap tersedia di desktop; beranda HP fokus ke aktivitas aplikasi. */}
+      <div className="hidden md:block">
+        <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+        <SafetySection />
+        <TalentCtaSection
+          onExploreClick={() => onNavigate('/talent')}
+          onRegisterCustomerClick={() => onNavigate('/register')}
+          onRegisterClick={() => onNavigate('/daftar-talent')}
+        />
+        <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
+      </div>
     </div>
   );
 };
