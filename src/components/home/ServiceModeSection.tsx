@@ -64,7 +64,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <span className="text-[11px] font-bold text-[#741CFF] tracking-wider uppercase">
               PILIH JENIS LAYANAN
             </span>
-            <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-white tracking-tight">
+            <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-[#24105F] tracking-tight">
               Pilih layanan Offline atau Online
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-[#625B70]">
@@ -98,9 +98,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-white/15 bg-white/10 p-2.5 sm:p-5 backdrop-blur-md text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF]"
+              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-white/15 bg-white p-2.5 sm:p-5 backdrop-blur-md text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF]"
             >
-              <span className="yuku-icon-orb mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#4b12b8] text-white">
+              <span className="yuku-icon-orb mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#741CFF] text-white">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
                   <Video className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
                   <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-[#741CFF]">
@@ -108,11 +108,11 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                   </span>
                 </span>
               </span>
-              <span className="block text-sm sm:text-lg font-extrabold text-white">Teman Online</span>
+              <span className="block text-sm sm:text-lg font-extrabold text-[#24105F]">Teman Online</span>
               <span className="mt-1 block min-h-9 text-[11px] sm:text-sm leading-relaxed text-[#625B70]">
                 Teman ngobrol dan berinteraksi dari mana saja.
               </span>
-              <span className="mt-3 inline-flex items-center gap-1 text-[11px] sm:text-sm font-bold text-fuchsia-200">
+              <span className="mt-3 inline-flex items-center gap-1 text-[11px] sm:text-sm font-bold text-[#741CFF]">
                 Cari teman online <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </span>
             </button>
