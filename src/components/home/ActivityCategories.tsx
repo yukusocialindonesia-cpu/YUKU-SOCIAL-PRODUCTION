@@ -107,9 +107,9 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group flex min-h-[100px] sm:min-h-[116px] flex-col items-center justify-center gap-2 rounded-[18px] border border-white/90 bg-white/95 px-1.5 py-3 shadow-[0_8px_24px_rgba(36,16,95,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-[#d8c9f5] hover:shadow-[0_16px_34px_rgba(36,16,95,0.13)] cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="yuku-depth-card group flex min-h-[100px] sm:min-h-[116px] flex-col items-center justify-center gap-2 rounded-[18px] bg-white/95 px-1.5 py-3 cursor-pointer"
                 >
-                  <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] sm:rounded-[16px] flex items-center justify-center ring-1 ring-inset shadow-[0_4px_12px_rgba(36,16,95,0.06)] ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
+                  <span className={`yuku-icon-orb w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] sm:rounded-[16px] flex items-center justify-center ring-1 ring-inset ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
                     {getIcon(cat.iconName)}
                   </span>
                   <h3 className="font-extrabold text-[11px] sm:text-[13px] leading-tight text-center text-[#302052] group-hover:text-[#5b22c7] transition-colors">
