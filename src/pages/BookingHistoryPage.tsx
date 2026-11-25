@@ -668,10 +668,10 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
   }
 
   return (
-    <div className="py-8 sm:py-10 bg-[#F8F8F7] min-h-screen">
+    <div className="py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top_left,_rgba(91,33,182,0.14),_transparent_38%),linear-gradient(180deg,#F2EAFF_0%,#FBFAFF_45%,#FFFFFF_100%)] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_6px_rgba(15,23,42,0.035)] p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-violet-100 bg-white shadow-[0_14px_36px_rgba(55,18,112,0.09)] p-5 sm:p-6">
           <div>
             <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-1 block">
               Manajemen Reservasi & Transaksi
@@ -697,7 +697,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
         {/* Role Selector Tabs (shown only if user also has bookings as Talent) */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           {bookings.some((b) => b.talent_id === currentUser?.id) ? (
-            <div className="flex w-full flex-wrap items-center gap-2 p-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold sm:w-auto">
+            <div className="flex w-full flex-wrap items-center gap-2 p-1.5 bg-white border border-violet-100 rounded-xl text-xs font-bold shadow-sm sm:w-auto">
               <button
                 type="button"
                 onClick={() => setRoleFilter('customer')}
