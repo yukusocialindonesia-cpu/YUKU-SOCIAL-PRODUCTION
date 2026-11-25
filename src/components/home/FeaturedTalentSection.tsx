@@ -110,12 +110,12 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden border-t border-white/[0.06] py-4 md:py-10 bg-gradient-to-br from-[#1b073b] via-[#2a0b59] to-[#421078] text-white">
+    <section ref={sectionRef} className="relative overflow-hidden border-t border-white/[0.06] py-4 md:py-10 bg-[#24105F] text-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
           <div>
-            <span className="text-[10.5px] sm:text-xs font-bold text-fuchsia-200 tracking-wider uppercase mb-0.5 sm:mb-1 block">
+            <span className="text-[10.5px] sm:text-xs font-bold text-[#D9CCFF] tracking-wider uppercase mb-0.5 sm:mb-1 block">
               PROFIL UNTUK BERBAGAI AKTIVITAS
             </span>
             <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
@@ -124,7 +124,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-fuchsia-200 hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b]"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-fuchsia-200 hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#24105F]"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua Talent</span>
@@ -159,7 +159,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             </button>
           </div>
         ) : talents.length === 0 ? (
-          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-purple-100">
+          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-[#E8E0FA]">
             <Users className="w-8 h-8 text-slate-400 mx-auto mb-2" />
             <p>Belum ada profil Talent aktif yang terdaftar di Supabase.</p>
           </div>
@@ -169,7 +169,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             <button
               type="button"
               onClick={() => setQuickFilter('all')}
-              className="px-4 py-2 bg-purple-700 text-white font-semibold rounded-lg hover:bg-purple-800 transition-colors cursor-pointer"
+              className="px-4 py-2 bg-[#741CFF] text-white font-semibold rounded-lg hover:bg-[#5F13D6] transition-colors cursor-pointer"
             >
               Tampilkan semua
             </button>
