@@ -60,20 +60,20 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   ];
 
   return (
-    <section className="relative overflow-hidden border-t border-white/[0.06] bg-[#1b073b] py-4 sm:py-9">
+    <section className="relative overflow-hidden border-t border-white/[0.06] bg-[radial-gradient(ellipse_at_50%_0%,rgba(126,34,206,0.28),transparent_58%),linear-gradient(180deg,#1b073b_0%,#200846_100%)] py-5 sm:py-10">
       <div className="pointer-events-none absolute -left-24 top-0 h-64 w-64 rounded-full bg-violet-700/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-fuchsia-600/15 blur-3xl" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-6">
+        <div className="mb-3 flex items-end justify-between gap-3 sm:mb-6">
           <div>
-            <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-fuchsia-300 sm:text-[11px]">
-              Temukan keseruanmu
+            <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-fuchsia-300/20 bg-fuchsia-300/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-fuchsia-200 sm:text-[10px]">
+              <Sparkles className="h-3 w-3" /> Explore YUKU
             </span>
-            <h2 className="text-xl font-black tracking-tight text-white sm:text-2xl">
-              Mau aktivitas apa hari ini?
+            <h2 className="text-[21px] font-black tracking-tight text-white sm:text-3xl">
+              Mau ngapain hari ini?
             </h2>
-            <p className="mt-1 text-xs text-violet-200/75 sm:text-sm">
-              Pilih aktivitas, temukan teman yang cocok.
+            <p className="mt-1 max-w-[270px] text-[11px] leading-relaxed text-violet-100/75 sm:max-w-none sm:text-sm">
+              Pilih aktivitas. YUKU bantu temukan teman yang cocok.
             </p>
           </div>
           <span className="mb-1 hidden items-center gap-1 text-xs font-bold text-fuchsia-200 sm:flex">
@@ -110,9 +110,9 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-[18px] border border-white/[0.12] bg-gradient-to-br from-[#35105f]/90 via-[#28104c]/90 to-[#1d0b3a] px-2 py-2.5 text-center shadow-[0_12px_30px_rgba(5,0,20,0.24)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/45 hover:from-[#421477] hover:to-[#28104c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b] sm:min-h-[184px] sm:rounded-[24px]"
+                  className="group relative flex min-h-[136px] cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-white/[0.14] bg-gradient-to-br from-[#39116a] via-[#2a1050] to-[#1d0b3a] px-2.5 py-3 text-center shadow-[0_12px_30px_rgba(5,0,20,0.28)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/50 hover:from-[#48177d] hover:to-[#28104c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b] sm:min-h-[184px] sm:rounded-[24px]"
                 >
-                  <span className={`relative flex h-[50px] w-[50px] items-center justify-center rounded-[18px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} ring-1 ring-white/25 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[72px] sm:w-[72px] sm:rounded-[23px]`}>
+                  <span className={`relative flex h-[54px] w-[54px] items-center justify-center rounded-[19px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} ring-1 ring-white/30 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[72px] sm:w-[72px] sm:rounded-[23px]`}>
                     {getIcon(cat.iconName)}
                   </span>
                   <span className="line-clamp-1 text-[11px] font-extrabold leading-tight text-white sm:text-[14px]">
