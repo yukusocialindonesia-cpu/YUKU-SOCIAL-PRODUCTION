@@ -74,7 +74,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         role="button"
         tabIndex={0}
         aria-label={`Lihat profil ${talent.name}`}
-        className="yuku-depth-card yuku-talent-card group relative min-w-0 overflow-hidden rounded-[18px] bg-white cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a0b59]"
+        className="yuku-depth-card yuku-talent-card group relative min-w-0 overflow-hidden rounded-[20px] border border-white/80 bg-white cursor-pointer shadow-[0_8px_24px_rgba(12,4,35,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a0b59]"
       >
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-purple-100">
           {hasRealPhoto ? (
@@ -92,7 +92,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
             </div>
           )}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
           <div className="absolute left-2 right-2 top-2 flex items-center justify-between gap-1">
             {isNew ? (
               <span className="rounded-full bg-amber-400 px-2.5 py-1 text-[10px] font-extrabold text-amber-950 shadow">
@@ -115,7 +115,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             )}
             <div className="flex items-center justify-between gap-1">
               <div className="flex min-w-0 items-center gap-1">
-                <h3 className="min-w-0 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">
+                <h3 className="min-w-0 truncate text-[13px] min-[390px]:text-sm font-extrabold leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.65)]">
                   {talent.name}
                 </h3>
                 {talent.isVerified === true && <VerifiedBadge />}
@@ -133,9 +133,6 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 <MapPin className="h-3 w-3 shrink-0" />
                 <span className="min-w-0 truncate">{talent.city}</span>
               </p>
-            )}
-            {talent.distanceKm != null && (
-              <p className="mt-0.5 truncate text-[10px] min-[390px]:text-[11px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari lokasi Anda</p>
             )}
             <div className="mt-1.5 flex items-center justify-between gap-1">
               {availableToday ? (
