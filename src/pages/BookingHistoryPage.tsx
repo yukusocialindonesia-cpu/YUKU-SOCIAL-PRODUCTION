@@ -668,7 +668,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
   }
 
   return (
-    <div className="py-8 sm:py-10 bg-[radial-gradient(ellipse_at_top_left,_rgba(91,33,182,0.14),_transparent_38%),linear-gradient(180deg,#F2EAFF_0%,#FBFAFF_45%,#FFFFFF_100%)] min-h-screen">
+    <div className="py-8 sm:py-10 bg-[radial-gradient(ellipse_78%_32%_at_0%_0%,rgba(109,40,217,0.23),transparent_72%),radial-gradient(ellipse_48%_24%_at_100%_8%,rgba(217,70,239,0.10),transparent_72%),linear-gradient(180deg,#EEE5FF_0%,#F8F4FF_42%,#FFFFFF_100%)] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-violet-100 bg-white shadow-[0_14px_36px_rgba(55,18,112,0.09)] p-5 sm:p-6">
@@ -817,7 +817,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
             {filteredBookings.map((item) => (
               <div
                 key={item.id}
-                className="relative bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_10px_rgba(15,23,42,0.035)] hover:border-slate-300 hover:shadow-[0_4px_14px_rgba(15,23,42,0.055)] transition-shadow duration-200 p-4 sm:p-6 space-y-4"
+                className="relative bg-white/95 rounded-[26px] border border-violet-100/90 shadow-[0_14px_36px_-22px_rgba(76,29,149,0.26)] hover:border-violet-200 hover:shadow-[0_20px_42px_-22px_rgba(76,29,149,0.32)] transition-shadow duration-200 p-4 sm:p-6 space-y-4"
               >
                 {/* Top Row: Code, Date created, Status */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -885,7 +885,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                   </div>
 
                   {/* Pricing & Escrow */}
-                  <div className="md:col-span-3 text-left md:text-right space-y-1 rounded-xl bg-slate-50 border border-slate-100 p-3 md:bg-transparent md:border-0 md:p-0">
+                  <div className="md:col-span-3 text-left md:text-right space-y-1 rounded-xl bg-violet-50/70 border border-violet-100 p-3 md:bg-transparent md:border-0 md:p-0">
                     <span className="text-[11px] text-slate-400 font-medium block">
                       Total Biaya Sesi
                     </span>
