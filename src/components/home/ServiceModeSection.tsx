@@ -7,16 +7,16 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-4 sm:py-9 bg-gradient-to-r from-[#24105f] via-[#3b0d78] to-[#5416a6] text-white">
+    <section className="relative overflow-hidden py-4 sm:py-9 bg-[#F8F7FC] text-[#24105F] border-y border-[#EEEAF5]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
           <div className="mb-2.5">
-            <span className="mb-1 block text-[9px] font-extrabold uppercase tracking-[0.18em] text-fuchsia-200/90">PILIH JENIS LAYANAN</span>
-            <h2 className="text-base font-extrabold tracking-tight text-white">
+            <span className="mb-1 block text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#741CFF]">PILIH JENIS LAYANAN</span>
+            <h2 className="text-base font-extrabold tracking-tight text-[#24105F]">
               Pilih cara beraktivitas
             </h2>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-violet-100/80">
+            <p className="mt-0.5 text-[11px] leading-relaxed text-[#625B70]">
               Tentukan pengalaman yang kamu inginkan.
             </p>
           </div>
@@ -25,35 +25,35 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="yuku-depth-card group flex min-h-[88px] min-w-0 items-center gap-2.5 rounded-2xl border border-fuchsia-100/20 bg-gradient-to-br from-white/[0.16] to-white/[0.06] p-3 text-left shadow-[0_8px_22px_rgba(8,2,25,0.18),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-md transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="yuku-depth-card group flex min-h-[84px] min-w-0 items-center gap-2.5 rounded-2xl border border-[#E8E2F0] bg-white p-3 text-left shadow-[0_4px_14px_rgba(36,16,95,0.07)] transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF]"
             >
-              <span className="yuku-icon-orb flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#a78bfa] to-[#ec4899] text-white">
+              <span className="yuku-icon-orb flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#741CFF] text-white">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] font-bold text-white">Offline</span>
-                <span className="mt-0.5 block text-[11px] leading-snug text-purple-100">
+                <span className="mt-0.5 block text-[11px] leading-snug text-[#625B70]">
                   Temui Talent secara langsung
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-fuchsia-200 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-[#741CFF] transition-transform group-hover:translate-x-0.5" />
             </button>
 
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="yuku-depth-card group flex min-h-[76px] min-w-0 items-center gap-2.5 rounded-2xl border border-fuchsia-100/20 bg-gradient-to-br from-white/[0.16] to-white/[0.06] p-3 text-left shadow-[0_8px_22px_rgba(8,2,25,0.18),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-md transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="yuku-depth-card group flex min-h-[84px] min-w-0 items-center gap-2.5 rounded-2xl border border-fuchsia-100/20 bg-gradient-to-br from-white/[0.16] to-white/[0.06] p-3 text-left shadow-[0_8px_22px_rgba(8,2,25,0.18),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-md transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF]"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#f2edff] text-[#5b22c7]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#EEE8FF] text-[#741CFF]">
                 <MessageCircle className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] font-bold text-white">Online</span>
-                <span className="mt-0.5 block text-[11px] leading-snug text-violet-100/75">
+                <span className="mt-0.5 block text-[11px] leading-snug text-[#625B70]">
                   Tanpa perlu bertemu langsung
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-fuchsia-200 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-[#741CFF] transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
         </div>
@@ -61,13 +61,13 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
         {/* Tampilan desktop dipertahankan seperti desain sebelumnya */}
         <div className="hidden sm:block">
           <div className="mb-2 sm:mb-4">
-            <span className="text-[11px] font-bold text-fuchsia-200 tracking-wider uppercase">
+            <span className="text-[11px] font-bold text-[#741CFF] tracking-wider uppercase">
               PILIH JENIS LAYANAN
             </span>
             <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-white tracking-tight">
               Pilih layanan Offline atau Online
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-violet-100/75">
+            <p className="mt-1 text-xs sm:text-sm text-[#625B70]">
               Tentukan cara beraktivitas yang paling sesuai untukmu.
             </p>
           </div>
