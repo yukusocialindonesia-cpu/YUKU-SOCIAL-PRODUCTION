@@ -86,7 +86,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex h-12 items-center">
+      <div className="flex h-11 items-center">
         <button
           ref={triggerRef}
           type="button"
@@ -94,7 +94,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
-          className={`h-12 min-h-12 w-full min-w-0 rounded-none border-0 bg-transparent pl-9 pr-8 py-0 text-[13px] sm:text-sm text-left shadow-none transition-colors duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-600 ${
+          className={`h-11 min-h-11 w-full min-w-0 rounded-none border-0 bg-transparent pl-9 pr-8 py-0 text-[13px] sm:text-sm text-left shadow-none transition-colors duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-600 ${
             isOpen
               ? 'bg-purple-50/60'
               : selectedCity !== 'Semua Kota'
