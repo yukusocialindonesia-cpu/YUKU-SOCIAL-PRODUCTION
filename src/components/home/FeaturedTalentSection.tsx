@@ -141,7 +141,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {loading ? (
           <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[360px] w-[76vw] max-w-[280px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:h-72 sm:w-[240px]" />
+              <div key={i} className="aspect-[3/4] h-auto w-[44vw] max-w-[168px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:w-[190px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -199,7 +199,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[68vw] max-w-[252px] sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[44vw] max-w-[168px] sm:w-[190px] lg:w-[calc((100%-4rem)/5)] rounded-[20px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
@@ -211,6 +211,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
                   availableToday={availableTodayIds.has(talent.id)}
                   mediaTypes={mediaTypesByTalent[talent.id] ?? []}
                   showPrice={false}
+                  compact
                 />
               </motion.div>
             ))}
