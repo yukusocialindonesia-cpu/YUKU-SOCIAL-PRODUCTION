@@ -115,17 +115,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             );
             setNearestTalentDistances(distances);
 
-            // Load GPS matches directly by ID so the nearest Talent are not hidden
-            // merely because they fall beyond the first 100 catalog records.
-            if (Object.keys(distances).length > 0) {
-              const nearbyTalents = await fetchTalentsByIdsFromSupabase(Object.keys(distances), searchQuery);
-              setTalents((current) => {
-                const merged = new Map(current.map((talent) => [talent.id, talent]));
-                nearbyTalents.forEach((talent) => merged.set(talent.id, talent));
-                return [...merged.values()];
-              });
-            }
-
+            // The marketplace loader reacts to this distance map and fetches
+            // matching profiles by ID together with the current search query.
             setGpsMessage(Object.keys(distances).length
               ? 'Talent di sekitar Anda sudah diurutkan berdasarkan jarak perkiraan.'
               : 'Belum ada Talent aktif dalam radius layanan. Anda tetap bisa mencari berdasarkan kota.');
