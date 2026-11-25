@@ -4,8 +4,8 @@
   "description": "Marketplace teman aktivitas sosial dan mengobrol yang aman dan terpercaya di Indonesia.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAF8FC",
-  "theme_color": "#FAF8FC",
+  "background_color": "#24105F",
+  "theme_color": "#4B12B8",
   "lang": "id",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
