@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-gradient-to-br from-[#F8F4FF] via-white to-[#FFF8F1] md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
+      className="relative overflow-hidden bg-transparent"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
