@@ -57,12 +57,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   useEffect(() => {
     let mounted = true;
-    fetchHeroSlidesFromSupabase().then((rows) => {
-      if (!mounted) return;
-      setSlides(rows);
-      setSlidesLoaded(true);
-      writeCachedSlides(rows);
-    });
+    fetchHeroSlidesFromSupabase()
+      .then((rows) => {
+        if (!mounted) return;
+        setSlides(rows);
+        writeCachedSlides(rows);
+      })
+      .catch((error) => {
+        // Gangguan jaringan tidak boleh membuat area hero terus berada di skeleton.
+        // Pertahankan slide yang sudah ada di state/cache agar banner tetap terlihat.
+        console.warn('YUKU: gagal memuat slide hero dari Supabase.', error);
+        if (!mounted) return;
+        setSlides((current) => current.length > 0 ? current : readCachedSlides());
+      })
+      .finally(() => {
+        if (mounted) setSlidesLoaded(true);
+      });
     return () => {
       mounted = false;
     };
