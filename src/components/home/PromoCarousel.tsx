@@ -74,9 +74,9 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
 
   return (
     <section aria-label="Ruang Promosi YUKU" className="relative py-2 sm:py-6 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
-          <div className="w-full aspect-[16/9] md:max-w-[1000px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80" />
+          <div className="w-full aspect-[16/9] md:max-w-[860px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80" />
         ) : totalSlides === 0 ? (
           <div className="w-full min-h-[112px] sm:aspect-[21/6] rounded-2xl border border-slate-200 bg-gradient-to-r from-[#FAF8FC] via-purple-50/60 to-amber-50/50 px-3.5 py-4 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-start gap-3 sm:gap-4 max-w-2xl">
