@@ -139,8 +139,8 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         <div
           role="listbox"
           aria-label="Daftar kota di Indonesia"
-          style={{ top: dropdownTop }}
-          className="fixed z-[60] left-4 right-4 w-auto max-w-none bg-white rounded-2xl border border-slate-200 shadow-[0_18px_48px_-20px_rgba(15,23,42,0.35)] overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:mt-2 sm:top-auto sm:w-[min(22rem,calc(100vw-2rem))] sm:max-w-[calc(100vw-2rem)] sm:rounded-3xl sm:bg-white sm:border-white/80 sm:shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)]"
+          style={{ "--dropdown-top": `${dropdownTop}px` } as React.CSSProperties}
+          className="fixed top-[var(--dropdown-top)] z-[60] left-4 right-4 w-auto max-w-none bg-white rounded-2xl border border-slate-200 shadow-[0_18px_48px_-20px_rgba(15,23,42,0.35)] overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-[min(22rem,calc(100vw-2rem))] sm:max-w-[calc(100vw-2rem)] sm:rounded-3xl sm:bg-white sm:border-white/80 sm:shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)]"
         >
           {/* City Search Bar */}
           <div className="p-3 border-b border-slate-100 bg-violet-50">
