@@ -96,7 +96,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('/talent')}
-              className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-[#741CFF] to-[#5F13D6] hover:brightness-110 text-[#24105F] text-xs font-bold rounded-xl transition-all whitespace-nowrap shrink-0 cursor-pointer shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300"
+              className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-[#741CFF] to-[#5F13D6] hover:brightness-110 text-white text-xs font-bold rounded-xl transition-all whitespace-nowrap shrink-0 cursor-pointer shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D9CCFF]"
             >
               Jelajahi Talent
             </button>
@@ -139,7 +139,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                 const slideBody = (
                   <div className="relative w-full h-full">
                     {isBroken ? (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-950 via-[#2D1052] to-slate-900 flex flex-col items-center justify-center p-6 text-center text-[#24105F]">
+                      <div className="w-full h-full bg-gradient-to-br from-[#24105F] via-[#4B12B8] to-[#741CFF] flex flex-col items-center justify-center p-6 text-center text-white">
                         <Megaphone className="w-8 h-8 text-[#741CFF] mb-2" />
                         <p className="text-sm sm:text-base font-bold">{promo.title}</p>
                       </div>
