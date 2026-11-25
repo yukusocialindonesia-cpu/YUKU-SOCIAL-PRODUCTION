@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Loader2, RotateCcw, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { DEFAULT_ICON, DEFAULT_LOGO, refreshBranding } from '../../utils/branding';
@@ -74,17 +74,20 @@ const Slot: React.FC<SlotProps> = ({ title, hint, currentUrl, isCustom, busy, on
 };
 
 export const BrandingAdminPanel: React.FC = () => {
+  const loadRequestIdRef = useRef(0);
   const [paths, setPaths] = useState<{ logo: string | null; icon: string | null }>({ logo: null, icon: null });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     const { data } = await (supabase as any)
       .from('site_branding')
       .select('logo_path, icon_path')
       .eq('id', true)
       .maybeSingle();
+    if (requestId !== loadRequestIdRef.current) return;
     setPaths({ logo: data?.logo_path ?? null, icon: data?.icon_path ?? null });
   }, []);
 
