@@ -69,7 +69,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         role="button"
         tabIndex={0}
         aria-label={`Lihat profil ${talent.name}`}
-        className="yuku-depth-card yuku-talent-card group relative min-w-0 overflow-hidden rounded-[18px] border border-white/15 bg-white cursor-pointer shadow-[0_8px_22px_rgba(12,4,35,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BDA2FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#24105F]"
+        className="yuku-depth-card yuku-talent-card group relative min-w-0 overflow-hidden rounded-[18px] border border-[#E8E2F0] bg-white cursor-pointer shadow-[0_7px_20px_rgba(36,16,95,0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F7FC]"
       >
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#EEE8FF]">
           {hasRealPhoto ? (
