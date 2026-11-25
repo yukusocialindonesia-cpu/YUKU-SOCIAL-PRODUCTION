@@ -50,17 +50,17 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   };
 
   /* HP kecil: 2 kolom agar nama kategori lega; HP standar: 3 kolom agar tetap ringkas. */
-  const gridClass = 'grid grid-cols-2 min-[360px]:grid-cols-3 gap-2 sm:flex sm:gap-3 sm:overflow-x-auto sm:snap-x sm:pb-2 sm:-mx-4 sm:px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
+  const gridClass = 'grid grid-cols-3 min-[360px]:grid-cols-3 gap-2 sm:flex sm:gap-3 sm:overflow-x-auto sm:snap-x sm:pb-2 sm:-mx-4 sm:px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
 
   return (
-    <section className="relative py-10 sm:py-16 bg-[#FCFBFE]">
+    <section className="relative py-5 sm:py-9 bg-[#FCFBFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 sm:mb-7 gap-1 md:gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-2 sm:mb-5 gap-1 md:gap-4">
           <div>
             <span className="text-[11px] font-bold text-[#5b22c7] tracking-wider uppercase mb-0.5 block">
               Pilihan Pengalaman Sosial
             </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
               Aktivitas Seru Bersama Teman Baru
             </h2>
           </div>
@@ -110,9 +110,9 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 sm:py-4 min-h-[88px] rounded-[22px] border border-[#eee9f8] bg-white shadow-[0_8px_24px_rgba(36,16,95,0.045)] hover:border-[#d8c9f5] hover:shadow-[0_16px_34px_rgba(36,16,95,0.09)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-3 min-h-[72px] rounded-[18px] border border-[#eee9f8] bg-white shadow-[0_8px_24px_rgba(36,16,95,0.045)] hover:border-[#d8c9f5] hover:shadow-[0_16px_34px_rgba(36,16,95,0.09)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
                 >
-                  <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] flex items-center justify-center shadow-none ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
+                  <span className={`w-8 h-8 sm:w-11 sm:h-11 rounded-[15px] flex items-center justify-center shadow-none ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
                     {getIcon(cat.iconName)}
                   </span>
                   <h3 className="font-bold text-[13px] sm:text-[13px] leading-snug text-center text-slate-800 group-hover:text-[#5b22c7] transition-colors">
