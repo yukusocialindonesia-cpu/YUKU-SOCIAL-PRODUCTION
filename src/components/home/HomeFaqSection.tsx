@@ -14,7 +14,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
   };
 
   return (
-    <section className="py-5 md:py-12 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
+    <section className="py-5 md:py-12 bg-gradient-to-b from-[#eee5ff] via-[#f5efff] to-[#f8f4ff] border-t border-purple-200/70">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-3 md:mb-7">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
