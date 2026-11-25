@@ -611,11 +611,13 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                           {talent.name}
                           {talent.isVerified === true && <VerifiedBadge />}
                         </h1>
-                        <div className="flex items-center gap-1 text-sm font-bold text-slate-800 tabular-nums">
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                          <span>{effectiveReviewCount > 0 ? effectiveRating.toFixed(1) : 'Baru'}</span>
-                          <span className="text-xs text-slate-500 font-normal">({effectiveReviewCount} ulasan)</span>
-                        </div>
+                        {effectiveReviewCount > 0 && (
+                          <div className="flex items-center gap-1 text-sm font-bold text-slate-800 tabular-nums">
+                            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                            <span>{effectiveRating.toFixed(1)}</span>
+                            <span className="text-xs text-slate-500 font-normal">({effectiveReviewCount} ulasan)</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Semua info singkat dalam satu kelompok chip yang rapat */}
@@ -625,10 +627,12 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                             <Star className="w-3.5 h-3.5 fill-purple-700" /> Talent Baru
                           </span>
                         )}
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
-                          <Clock className="w-3.5 h-3.5 text-purple-700" />
-                          {talent.completedHours ?? 0} jam selesai
-                        </span>
+                        {(talent.completedHours ?? 0) > 0 && (
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                            <Clock className="w-3.5 h-3.5 text-purple-700" />
+                            {talent.completedHours} jam selesai
+                          </span>
+                        )}
                         {talent.city && (
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
                             <MapPin className="w-3.5 h-3.5 text-purple-700" />
