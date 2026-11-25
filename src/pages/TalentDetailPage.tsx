@@ -570,7 +570,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-0 sm:mx-0 rounded-none sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[58vh] sm:max-h-none bg-[#24105F] shadow-[0_18px_44px_rgba(36,16,95,0.24)]">
+                    <div className="relative mx-0 sm:mx-0 rounded-none sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[58vh] sm:max-h-none bg-[#24105F] shadow-[0_22px_52px_rgba(36,16,95,0.30)]">
                       {heroUrl && !avatarFailed ? (
                         <PhotoLightbox
                           src={heroUrl}
@@ -590,7 +590,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         type="button"
                         onClick={() => onNavigate('/talent')}
                         aria-label="Kembali"
-                        className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/95 shadow flex items-center justify-center text-slate-800 cursor-pointer sm:hidden"
+                        className="absolute top-4 left-4 w-10 h-10 rounded-full border border-white/70 bg-white/90 shadow-[0_6px_18px_rgba(0,0,0,0.18)] backdrop-blur-md flex items-center justify-center text-slate-800 cursor-pointer sm:hidden"
                       >
                         <ArrowLeft className="w-5 h-5" />
                       </button>
@@ -598,13 +598,13 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         type="button"
                         onClick={handleShare}
                         aria-label="Bagikan"
-                        className="absolute top-[4.5rem] right-4 md:top-4 w-10 h-10 rounded-full bg-purple-900/70 text-white flex items-center justify-center cursor-pointer"
+                        className="absolute top-[4.5rem] right-4 md:top-4 w-10 h-10 rounded-full border border-white/25 bg-purple-950/65 text-white shadow-[0_6px_18px_rgba(0,0,0,0.2)] backdrop-blur-md flex items-center justify-center cursor-pointer"
                       >
                         <Share2 className="w-5 h-5" />
                       </button>
                     </div>
 
-                    <div className="relative -mt-6 mx-2 rounded-2xl border border-slate-200 bg-white px-4 pt-5 pb-4 shadow-sm space-y-3">
+                    <div className="relative -mt-7 mx-2 rounded-[22px] border border-white bg-white/95 px-4 pt-5 pb-4 shadow-[0_16px_36px_rgba(36,16,95,0.16)] ring-1 ring-purple-100/80 backdrop-blur-xl space-y-3">
                       {/* Nama + rating */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
@@ -1262,7 +1262,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
+      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 border-t border-white/70 bg-white/95 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-12px_32px_rgba(36,16,95,0.12)] backdrop-blur-xl">
         <div className="max-w-7xl mx-auto flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between gap-2 min-[360px]:gap-3">
           <div className="min-w-0 w-full min-[360px]:w-auto">
             <div className="text-lg min-[360px]:text-xl font-black text-[#1E0938] tabular-nums truncate">
@@ -1273,7 +1273,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
-            className="min-h-11 w-full min-[360px]:w-auto px-4 min-[360px]:px-5 py-3.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+            className="min-h-11 w-full min-[360px]:w-auto px-4 min-[360px]:px-5 py-3.5 bg-gradient-to-r from-[#351078] via-[#5B21B6] to-[#7926C7] hover:from-[#28105B] hover:to-[#6517B5] text-white font-bold text-sm rounded-xl shadow-[0_8px_18px_rgba(91,33,182,0.28)] transition-all flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Calendar className="w-4 h-4" />
             <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}</span>
