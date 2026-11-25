@@ -192,8 +192,13 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           >
             <ChevronRight className="w-5 h-5" />
           </button>
+          <div className="mb-1 flex items-center justify-between px-0.5 text-[10px] font-semibold text-fuchsia-100/75 sm:hidden">
+            <span>Profil pilihan untuk kamu</span>
+            <span className="inline-flex items-center gap-1">Geser <ChevronRight className="h-3 w-3" /></span>
+          </div>
           <div
             ref={scrollRef}
+            aria-label="Daftar talent pilihan, geser untuk melihat profil lainnya"
             className="flex gap-2.5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-3 sm:pb-5 pt-0 -mx-4 px-4 scroll-px-4 sm:mx-0 sm:gap-4 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleTalents.map((talent, i) => (
