@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   if (isAuthLoading) {
     return (
       <header
-        className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-[#FCFAFF] xl:bg-white/90 backdrop-blur-xl xl:backdrop-blur-2xl border-b xl:border border-violet-100 xl:border-violet-100/90 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.24)] xl:shadow-[0_16px_42px_-20px_rgba(55,18,112,0.24)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
+        className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] yuku-glass-shell bg-[#FCFAFF] xl:bg-white/90 backdrop-blur-xl xl:backdrop-blur-2xl border-b xl:border border-violet-100 xl:border-violet-100/90 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.24)] xl:shadow-[0_16px_42px_-20px_rgba(55,18,112,0.24)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-[#FCFAFF] xl:bg-white/92 backdrop-blur-xl xl:backdrop-blur-xl border-b xl:border border-violet-100 xl:border-violet-100/90 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.20)] xl:shadow-[0_12px_36px_rgba(55,18,112,0.12)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
+    <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] yuku-glass-shell bg-[#FCFAFF] xl:bg-white/92 backdrop-blur-xl xl:backdrop-blur-xl border-b xl:border border-violet-100 xl:border-violet-100/90 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.20)] xl:shadow-[0_12px_36px_rgba(55,18,112,0.12)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
         <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 min-[1440px]:h-[76px]">
