@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-gradient-to-br from-[#F8F4FF] via-white to-[#FFF8F1] md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
+      className="relative overflow-hidden bg-[#FCFBFE]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-4 mt-1 h-[clamp(140px,42vw,190px)] sm:h-[clamp(220px,34vw,300px)] rounded-[26px] overflow-hidden border border-white shadow-[0_16px_36px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.06)] ring-1 ring-purple-100/80 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-4 mt-3 h-[clamp(150px,42vw,210px)] sm:h-[clamp(240px,34vw,340px)] rounded-[28px] overflow-hidden border border-white shadow-[0_18px_50px_rgba(36,16,95,0.12)] ring-1 ring-[#eee9f8] md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
               >
                 {broken[slide.id] ? (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#351080] via-[#741cff] to-[#ed1688]" />
                 ) : (
                   <picture>
                     {slide.mobile_image_url && (
@@ -237,7 +237,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               type="button"
               onClick={prev}
               aria-label="Slide sebelumnya"
-              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-purple-900 shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#24105f] shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -259,25 +259,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-purple-700">
+          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#5b22c7]">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-            <span>Social Experience & Paid Companionship</span>
+            <span>Temukan Teman & Pengalaman</span>
           </p>
-          <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-purple-200/80 rounded-full text-purple-900 text-xs font-semibold mb-5">
+          <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-[#e9e1f7] rounded-full text-purple-900 text-xs font-semibold mb-5">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-purple-700" />
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[clamp(1.75rem,5.2vw,3.75rem)] leading-[1.06] font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
+          <h1 className="text-[clamp(1.75rem,5.2vw,3.75rem)] leading-[1.06] font-black text-[#24105f] tracking-tight mb-1 md:mb-4">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
-            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
+            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#4b12b8] via-[#741cff] to-[#ed1688] bg-clip-text text-transparent">
               Real Moments.
             </span>
           </h1>
 
           <p className="max-w-2xl text-[14px] leading-relaxed sm:text-base md:text-lg md:leading-relaxed text-slate-700">
-            Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
+            Temukan orang, aktivitas, dan pengalaman yang membuat setiap momen lebih berarti.
           </p>
         </div>
 
@@ -292,7 +292,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <button
               type="button"
               onClick={onRegisterCustomerClick}
-              className="basis-full mt-0 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2 md:py-1.5 rounded-full border border-purple-300 bg-white/90 hover:bg-white font-bold text-purple-800 hover:text-purple-950 shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="basis-full mt-0 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2 md:py-1.5 rounded-full border border-purple-300 bg-white font-bold text-[#4b12b8] hover:text-[#24105f] shadow-sm border-[#e6ddf4] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
             >
               Daftar gratis
             </button>
