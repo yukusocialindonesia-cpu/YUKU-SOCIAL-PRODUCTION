@@ -12,12 +12,12 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
           <div className="mb-2.5">
-            <span className="mb-1 block text-[9px] font-extrabold uppercase tracking-[0.18em] text-fuchsia-200/90">Dua cara terhubung</span>
+            <span className="mb-1 block text-[9px] font-extrabold uppercase tracking-[0.18em] text-fuchsia-200/90">PILIH JENIS LAYANAN</span>
             <h2 className="text-base font-extrabold tracking-tight text-white">
-              Pilih Teman
+              Pilih cara beraktivitas
             </h2>
             <p className="mt-0.5 text-[11px] leading-relaxed text-violet-100/80">
-              Mau bertemu langsung atau ngobrol online?
+              Tentukan pengalaman yang kamu inginkan.
             </p>
           </div>
 
@@ -62,13 +62,13 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
         <div className="hidden sm:block">
           <div className="mb-2 sm:mb-4">
             <span className="text-[11px] font-bold text-fuchsia-200 tracking-wider uppercase">
-              Pilih Cara Menemani
+              PILIH JENIS LAYANAN
             </span>
             <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-white tracking-tight">
-              Mau Teman Offline atau Online?
+              Pilih layanan Offline atau Online
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-violet-100/75">
-              Pilih layanan yang sesuai dengan kebutuhanmu.
+              Tentukan cara beraktivitas yang paling sesuai untukmu.
             </p>
           </div>
 
