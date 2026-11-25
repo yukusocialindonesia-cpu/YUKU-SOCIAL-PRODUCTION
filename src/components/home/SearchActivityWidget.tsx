@@ -57,7 +57,7 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
             </select>
           </div>
         </div>
-        <button type="submit" disabled={loading} className="col-span-2 sm:col-span-1 inline-flex min-h-[42px] sm:min-h-[58px] items-center justify-center gap-2 rounded-[13px] sm:rounded-[18px] bg-yuku-gradient px-5 sm:px-7 text-sm font-extrabold text-white shadow-[0_10px_24px_rgba(83,28,184,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(83,28,184,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#d9c9ff] disabled:cursor-not-allowed disabled:opacity-50">
+        <button type="submit" disabled={loading} className="col-span-2 sm:col-span-1 inline-flex min-h-[48px] sm:min-h-[58px] items-center justify-center gap-2 rounded-[14px] sm:rounded-[18px] bg-yuku-gradient px-5 sm:px-7 text-sm font-extrabold text-white shadow-[0_10px_24px_rgba(83,28,184,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(83,28,184,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#d9c9ff] disabled:cursor-not-allowed disabled:opacity-50">
           <Search className="h-4 w-4" /><span>Jelajahi</span>
         </button>
       </div>
