@@ -388,8 +388,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         </section>
 
-        <div aria-hidden="true" className="sm:hidden" style={{ height: mobilePinnedHeight }} />
-        <div ref={mobilePinnedRef} className="fixed inset-x-0 top-14 min-[376px]:top-[60px] min-[431px]:top-16 z-30 w-full bg-[#FAF8FC] px-4 pb-1 pt-0 shadow-[0_8px_20px_rgba(76,29,149,0.06)] backdrop-blur-none sm:static sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none sm:backdrop-blur-none">
+        <div aria-hidden="true" className="hidden" />
+        <div ref={mobilePinnedRef} className="relative z-10 w-full bg-[#FAF8FC] px-4 pb-1 pt-0 sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none">
         <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
