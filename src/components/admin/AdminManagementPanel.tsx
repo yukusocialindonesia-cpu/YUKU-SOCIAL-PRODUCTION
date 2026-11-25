@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Loader2, MailPlus, RefreshCw, Save, ShieldCheck, UserX, UserCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -29,20 +29,24 @@ export const AdminManagementPanel: React.FC = () => {
   const [inviting, setInviting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const loadRequestIdRef = useRef(0);
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true);
     setError(null);
     try {
       const { data, error: loadError } = await supabase.rpc('list_admin_accounts');
       if (loadError) throw loadError;
+      if (requestId !== loadRequestIdRef.current) return;
       const rows = (data || []) as AdminAccountRow[];
       setAccounts(rows);
       setDraftPermissions(Object.fromEntries(rows.map((row) => [row.user_id, row.permissions || []])));
     } catch (err: any) {
+      if (requestId !== loadRequestIdRef.current) return;
       setError(err?.message || 'Gagal memuat daftar Admin.');
     } finally {
-      setLoading(false);
+      if (requestId === loadRequestIdRef.current) setLoading(false);
     }
   }, []);
 

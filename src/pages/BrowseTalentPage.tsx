@@ -158,6 +158,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setLoading(true);
     setErrorMsg(null);
     setLoadMoreError(null);
+    // Invalidate any pagination request started for the previous search/filter state.
+    loadingMoreRef.current = false;
+    setLoadingMoreTalents(false);
     setVisibleTalentCount(TALENT_DISPLAY_STEP);
     setTalents([]);
     setHasMoreTalents(false);
@@ -202,6 +205,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   useEffect(() => {
+    // Invalidate in-flight pagination immediately, including during the search debounce.
+    searchRequestRef.current += 1;
     const timer = window.setTimeout(() => {
       void loadMarketplaceData(searchQuery);
     }, searchQuery.trim() ? 350 : 0);
@@ -230,11 +235,15 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
       }
       setHasMoreTalents(nextBatch.length === TALENT_BATCH_SIZE);
     } catch (error: any) {
+      if (requestId !== searchRequestRef.current || requestedSearch !== activeSearchQueryRef.current) return;
       console.warn('Batch Talent berikutnya gagal dimuat:', error);
       setLoadMoreError(error?.message || 'Talent berikutnya gagal dimuat.');
     } finally {
-      loadingMoreRef.current = false;
-      setLoadingMoreTalents(false);
+      // An outdated request must not clear the loading state of a newer request.
+      if (requestId === searchRequestRef.current) {
+        loadingMoreRef.current = false;
+        setLoadingMoreTalents(false);
+      }
     }
   };
 
