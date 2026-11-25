@@ -1709,7 +1709,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   }
 
   return (
-    <div className="relative isolate py-4 sm:py-8 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.34),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F6F3FA_100%)] min-h-screen overflow-x-hidden">
+    <div className="relative isolate py-4 sm:py-8 bg-[radial-gradient(ellipse_75%_34%_at_50%_0%,rgba(109,40,217,0.24),transparent_72%),radial-gradient(ellipse_42%_24%_at_100%_12%,rgba(217,70,239,0.10),transparent_72%),linear-gradient(180deg,#EEE5FF_0%,#F7F2FF_38%,#FFFFFF_100%)] min-h-screen overflow-x-hidden">
       {pendingProfileAvatarFile && <PhotoCropEditor file={pendingProfileAvatarFile} title="Atur Foto Profil Talent" onCancel={() => setPendingProfileAvatarFile(null)} onApply={(cropped) => { setProfileAvatarFile(cropped); setPendingProfileAvatarFile(null); }} />}
       {pendingGalleryPhotoFile && <PhotoCropEditor file={pendingGalleryPhotoFile} title="Atur Foto Galeri" aspectRatio={4 / 5} onCancel={() => setPendingGalleryPhotoFile(null)} onApply={(cropped) => { setMediaFile(cropped); setPendingGalleryPhotoFile(null); }} />}
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-4 sm:space-y-6 min-w-0">
@@ -1745,7 +1745,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         )}
 
         {/* Talent Profile Header Card */}
-        <div className="relative bg-white/85 rounded-[30px] border border-white/90 p-4 sm:p-6 shadow-[0_20px_48px_-24px_rgba(76,29,149,0.22)] ring-1 ring-purple-100/80 backdrop-blur-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 min-w-0">
+        <div className="relative bg-white/90 rounded-[30px] border border-white p-4 sm:p-6 shadow-[0_22px_54px_-24px_rgba(76,29,149,0.30)] ring-1 ring-violet-200/80 backdrop-blur-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 min-w-0">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full md:w-auto">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-purple-50 border-2 border-purple-200 shrink-0 relative flex items-center justify-center">
               {profile?.avatar_url ? (
