@@ -39,7 +39,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
       <Navbar currentPath={currentPath} onNavigate={onNavigate} />
       <div aria-hidden="true" className="h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 xl:hidden" />
 
-      <main className="flex-1">{children}</main>
+      <main className={`yuku-route-stage relative isolate flex-1 route-${currentPath.replaceAll("/", "-").replaceAll(":", "") || "home"}`}>{children}</main>
 
       {currentPath !== '/' && <SafetyPledgeBanner />}
 
