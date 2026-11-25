@@ -502,7 +502,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
               className="relative col-span-6 md:hidden min-h-11 inline-flex items-center justify-center gap-2 rounded-lg border border-purple-200 bg-purple-50 px-3 text-sm font-semibold text-purple-800 active:bg-purple-100"
             >
-              <SlidersHorizontal className="h-4 w-4" />\n              <span>Filter tambahan</span>
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Filter tambahan</span>
               {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
             </button>
 
