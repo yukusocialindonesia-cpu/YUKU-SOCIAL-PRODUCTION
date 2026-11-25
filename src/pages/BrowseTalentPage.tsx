@@ -395,19 +395,19 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
 
   return (
-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
+    <div className="min-h-screen py-0 sm:py-8 bg-[radial-gradient(ellipse_at_top,_rgba(91,33,182,0.16),_transparent_42%),linear-gradient(180deg,#F2EAFF_0%,#FAF8FF_42%,#FFFFFF_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
-        <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
-          <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-purple-200/30 blur-3xl" />
+        <section className="relative mb-2 sm:mb-7 -mx-4 sm:mx-0 overflow-hidden rounded-none sm:rounded-[28px] border-0 sm:border border-violet-300/30 bg-gradient-to-br from-[#28105B] via-[#4813A5] to-[#7624C9] px-5 py-5 sm:px-8 sm:py-7 text-white shadow-[0_18px_42px_rgba(55,18,112,0.24)]">
+          <div className="pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full bg-fuchsia-400/25 blur-3xl" /><div className="pointer-events-none absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-violet-300/20 blur-3xl" />
           <div className="relative max-w-3xl">
-            <span className="hidden sm:inline-flex items-center rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2.5 shadow-sm">
+            <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-violet-100 tracking-[0.16em] uppercase mb-2.5">
               {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
             </span>
-            <h1 className="text-lg leading-tight sm:text-4xl font-extrabold text-[#1E0938] tracking-tight">
+            <h1 className="text-2xl leading-tight sm:text-4xl font-extrabold text-white tracking-tight">
               {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
             </h1>
-            <p className="hidden sm:block mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="mt-2 max-w-2xl text-xs sm:text-sm text-violet-100 leading-relaxed">
               {selectedMode === 'offline'
                 ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
                 : selectedMode === 'online'
