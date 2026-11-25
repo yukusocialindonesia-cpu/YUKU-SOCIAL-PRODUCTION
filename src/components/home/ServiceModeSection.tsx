@@ -25,15 +25,15 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="yuku-depth-card group flex min-h-[76px] min-w-0 items-center gap-2.5 rounded-2xl border border-fuchsia-100/20 bg-gradient-to-br from-white/[0.16] to-white/[0.06] p-3 text-left shadow-[0_8px_22px_rgba(8,2,25,0.18),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-md transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="yuku-depth-card group flex min-h-[88px] min-w-0 items-center gap-2.5 rounded-2xl border border-fuchsia-100/20 bg-gradient-to-br from-white/[0.16] to-white/[0.06] p-3 text-left shadow-[0_8px_22px_rgba(8,2,25,0.18),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-md transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
-              <span className="yuku-icon-orb flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#a78bfa] to-[#ec4899] text-white">
+              <span className="yuku-icon-orb flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#a78bfa] to-[#ec4899] text-white">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] font-bold text-white">Offline</span>
                 <span className="mt-0.5 block text-[11px] leading-snug text-purple-100">
-                  Bertemu langsung
+                  Temui Talent secara langsung
                 </span>
               </span>
               <ArrowRight className="h-4 w-4 shrink-0 text-fuchsia-200 transition-transform group-hover:translate-x-0.5" />
@@ -50,7 +50,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] font-bold text-white">Online</span>
                 <span className="mt-0.5 block text-[11px] leading-snug text-violet-100/75">
-                  Ngobrol dari mana saja
+                  Tanpa perlu bertemu langsung
                 </span>
               </span>
               <ArrowRight className="h-4 w-4 shrink-0 text-fuchsia-200 transition-transform group-hover:translate-x-0.5" />
