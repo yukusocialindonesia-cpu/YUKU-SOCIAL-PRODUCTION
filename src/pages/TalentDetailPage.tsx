@@ -531,7 +531,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   }
 
   return (
-    <div className="pt-0 sm:pt-8 pb-28 lg:pb-12 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="pt-0 sm:pt-8 pb-[160px] lg:pb-12 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Link */}
         <button
@@ -1262,7 +1262,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
+      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-4 pt-3 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="text-xl font-black text-[#1E0938] tabular-nums truncate">
