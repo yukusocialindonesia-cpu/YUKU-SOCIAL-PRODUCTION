@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CheckCircle2, Image as ImageIcon, Loader2, Mic, RefreshCw, Video, XCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -15,6 +15,7 @@ const statusLabel: Record<ModerationStatus, string> = {
 
 export const TalentMediaModerationPanel: React.FC = () => {
   const [items, setItems] = useState<MediaRow[]>([]);
+  const loadRequestIdRef = useRef(0);
   const [filter, setFilter] = useState<ModerationStatus | 'all'>('pending');
   const [loading, setLoading] = useState(true);
   const [workingId, setWorkingId] = useState<string | null>(null);
@@ -36,18 +37,21 @@ export const TalentMediaModerationPanel: React.FC = () => {
   };
 
   const loadItems = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true); setError(null);
     try {
       const { data, error: queryError } = await supabase.from('talent_media')
         .select('id,talent_id,media_type,media_url,storage_path,caption,created_at,moderation_status,moderation_reason')
         .order('created_at', { ascending: false }).limit(100);
       if (queryError) throw queryError;
+      if (requestId !== loadRequestIdRef.current) return;
       const rows = (data || []) as MediaRow[];
       const talentIds = Array.from(new Set(rows.map((row) => row.talent_id)));
       const { data: profiles, error: profileError } = talentIds.length
         ? await supabase.from('talent_profiles').select('id,display_name,city').in('id', talentIds)
         : { data: [], error: null };
       if (profileError) throw profileError;
+      if (requestId !== loadRequestIdRef.current) return;
       const profileMap = new Map((profiles || []).map((profile) => [profile.id, profile]));
       const enriched = await Promise.all(rows.map(async (row) => {
         let signedUrl: string | null = null;
@@ -57,10 +61,11 @@ export const TalentMediaModerationPanel: React.FC = () => {
         }
         return { ...row, signed_url: signedUrl, talent_name: profileMap.get(row.talent_id)?.display_name || 'Talent' };
       }));
-      setItems(enriched);
+      if (requestId === loadRequestIdRef.current) setItems(enriched);
     } catch (err) {
+      if (requestId !== loadRequestIdRef.current) return;
       setError(err instanceof Error ? err.message : 'Gagal memuat antrean moderasi media.');
-    } finally { setLoading(false); }
+    } finally { if (requestId === loadRequestIdRef.current) setLoading(false); }
   }, []);
 
   useEffect(() => { void loadItems(); }, [loadItems]);
