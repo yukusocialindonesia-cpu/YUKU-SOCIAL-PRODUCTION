@@ -162,7 +162,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     loadingMoreRef.current = false;
     setLoadingMoreTalents(false);
     setVisibleTalentCount(TALENT_DISPLAY_STEP);
-    setTalents([]);
+    // Pertahankan kartu yang sudah tampil selama pencarian/filter berikutnya berjalan.
+    // Hasil baru akan menggantikan daftar lama setelah request terbaru berhasil.
     setHasMoreTalents(false);
     nextTalentOffsetRef.current = 0;
     try {
