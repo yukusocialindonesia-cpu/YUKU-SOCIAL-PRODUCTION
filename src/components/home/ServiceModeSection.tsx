@@ -7,12 +7,12 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-10 sm:py-16 bg-white">
+    <section className="relative overflow-hidden py-5 sm:py-9 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
           <div className="mb-2">
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">
+            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">
               Pilih Teman
             </h2>
             <p className="mt-0.5 text-[13px] leading-relaxed text-slate-600">
@@ -24,7 +24,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="group flex min-h-[72px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-[#d8c9f5] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
                 <MapPin className="h-4 w-4" />
@@ -59,7 +59,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
 
         {/* Tampilan desktop dipertahankan seperti desain sebelumnya */}
         <div className="hidden sm:block">
-          <div className="mb-2 sm:mb-6">
+          <div className="mb-2 sm:mb-4">
             <span className="text-[11px] font-bold text-[#5b22c7] tracking-wider uppercase">
               Pilih Cara Menemani
             </span>
@@ -71,7 +71,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
