@@ -23,29 +23,33 @@ export const BankTransferAdminPanel: React.FC = () => {
   const load = useCallback(async () => {
     const requestId = ++loadRequestIdRef.current;
     const db = supabase as any;
-    const [{ data: cfg, error: cfgError }, { data: submissions, error: submissionsError }] = await Promise.all([
-      db.from('bank_transfer_settings').select('*').eq('id', true).maybeSingle(),
-      db.from('bank_transfer_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,admin_notes,created_at,reviewed_at').order('created_at', { ascending: false }).limit(50),
-    ]);
-    if (cfgError) { if (requestId === loadRequestIdRef.current) throw cfgError; return; }
-    if (submissionsError) { if (requestId === loadRequestIdRef.current) throw submissionsError; return; }
-    if (requestId !== loadRequestIdRef.current) return;
-    setRows((submissions || []).filter((r: any) => r.status === 'pending_review').reverse());
-    setHistory((submissions || []).filter((r: any) => r.status !== 'pending_review'));
-    if (cfg) {
-      setBankName(cfg.bank_name || ''); setAccountNumber(cfg.account_number || '');
-      setAccountHolder(cfg.account_holder || ''); setInstructions(cfg.instructions || '');
-      setActive(!!cfg.is_active);
-    }
-    const ids = Array.from(new Set((submissions || []).map((r: any) => r.booking_id)));
-    if (ids.length) {
-      const { data, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
-      if (statusError) { if (requestId === loadRequestIdRef.current) throw statusError; return; }
-      if (requestId !== loadRequestIdRef.current) return;
+    try {
+      const [{ data: cfg, error: cfgError }, { data: submissions, error: submissionsError }] = await Promise.all([
+        db.from('bank_transfer_settings').select('*').eq('id', true).maybeSingle(),
+        db.from('bank_transfer_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,admin_notes,created_at,reviewed_at').order('created_at', { ascending: false }).limit(50),
+      ]);
+      if (cfgError) throw cfgError;
+      if (submissionsError) throw submissionsError;
+      const currentSubmissions = submissions || [];
+      const ids = Array.from(new Set(currentSubmissions.map((r: any) => r.booking_id)));
       const map: Record<string, string> = {};
-      (data || []).forEach((b: any) => { map[b.id] = b.status; });
+      if (ids.length) {
+        const { data, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
+        if (statusError) throw statusError;
+        (data || []).forEach((b: any) => { map[b.id] = b.status; });
+      }
+      if (requestId !== loadRequestIdRef.current) return;
+      setRows(currentSubmissions.filter((r: any) => r.status === 'pending_review').reverse());
+      setHistory(currentSubmissions.filter((r: any) => r.status !== 'pending_review'));
+      if (cfg) {
+        setBankName(cfg.bank_name || ''); setAccountNumber(cfg.account_number || '');
+        setAccountHolder(cfg.account_holder || ''); setInstructions(cfg.instructions || '');
+        setActive(!!cfg.is_active);
+      }
       setBookingStatus(map);
-    } else setBookingStatus({});
+    } catch (error) {
+      if (requestId === loadRequestIdRef.current) throw error;
+    }
   }, []);
 
   useEffect(() => { load().catch((e: any) => setError(e?.message || 'Gagal memuat data transfer bank.')); }, [load]);
