@@ -60,7 +60,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
         <div className="mt-4 sm:mt-8 text-center">
           <button
             onClick={onViewAllFaqClick}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold text-[#d7b8ff] hover:text-purple-900 hover:bg-purple-50 transition-colors cursor-pointer"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold text-[#741CFF] hover:text-[#24105F] hover:bg-purple-50 transition-colors cursor-pointer"
           >
             <span>Buka Pusat Bantuan & FAQ Lengkap</span>
             <ArrowRight className="w-4 h-4" />
