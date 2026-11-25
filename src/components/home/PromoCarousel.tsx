@@ -73,21 +73,21 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
   };
 
   return (
-    <section aria-label="Ruang Promosi YUKU" className="relative py-2 sm:py-6 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section aria-label="Ruang Promosi YUKU" className="relative border-t border-white/[0.06] bg-gradient-to-b from-[#1b073b] via-[#24094a] to-[#1b073b] py-4 sm:py-7">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
-          <div className="w-full aspect-[16/9] md:max-w-[860px] md:mx-auto rounded-[22px] sm:rounded-3xl bg-gradient-to-br from-purple-50 to-slate-100 animate-pulse border border-purple-100/80" />
+          <div className="w-full aspect-[16/9] md:max-w-[860px] md:mx-auto rounded-[20px] sm:rounded-3xl bg-white/10 animate-pulse border border-white/10" />
         ) : totalSlides === 0 ? (
-          <div className="w-full min-h-[112px] sm:aspect-[21/6] rounded-2xl border border-slate-200 bg-gradient-to-r from-[#FAF8FC] via-purple-50/60 to-amber-50/50 px-3.5 py-4 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="w-full min-h-[112px] sm:aspect-[21/6] rounded-2xl border border-white/10 bg-gradient-to-r from-[#2b1053] via-[#351064] to-[#4a126f] px-3.5 py-4 sm:px-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 shadow-[0_14px_38px_rgba(8,2,25,0.22)]">
             <div className="flex items-start gap-3 sm:gap-4 max-w-2xl">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-purple-950 text-amber-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/10 text-amber-300 ring-1 ring-white/10 flex items-center justify-center shrink-0">
                 <Megaphone className="w-5 h-5" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm sm:text-base font-bold text-[#1E0938]">
+                <h3 className="text-sm sm:text-base font-bold text-white">
                   Etalase Poster Promosi Resmi
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p className="text-xs sm:text-sm text-violet-100/80 leading-relaxed">
                   Belum ada poster promosi aktif saat ini. Penawaran spesial, kampanye komunitas, dan pengumuman resmi YUKU akan tampil berjalan otomatis di sini.
                 </p>
               </div>
@@ -96,7 +96,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('/talent')}
-              className="w-full sm:w-auto px-4 py-2.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-xl transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 hover:brightness-110 text-white text-xs font-bold rounded-xl transition-all whitespace-nowrap shrink-0 cursor-pointer shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300"
             >
               Jelajahi Talent
             </button>
@@ -126,7 +126,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
           >
             {/* Kotak mengikuti rasio asli poster yang sedang tampil (dibatasi 3:2 sampai 3:1), jadi poster tidak terpotong. */}
             <div
-              className="w-full rounded-[22px] sm:rounded-[28px] overflow-hidden border border-white/90 bg-slate-900 relative shadow-[0_12px_32px_rgba(76,29,149,0.13)] sm:shadow-[0_20px_48px_rgba(76,29,149,0.16)] ring-1 ring-purple-100/80 touch-pan-y"
+              className="w-full rounded-[20px] sm:rounded-[28px] overflow-hidden border border-white/15 bg-[#120522] relative shadow-[0_16px_42px_rgba(0,0,0,0.32)] ring-1 ring-white/[0.06] touch-pan-y"
               style={{ aspectRatio: String(frameRatio) }}
             >
               {promotions.map((promo, index) => {
