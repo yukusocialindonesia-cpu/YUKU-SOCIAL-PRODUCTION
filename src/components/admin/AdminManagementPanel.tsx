@@ -139,7 +139,7 @@ export const AdminManagementPanel: React.FC = () => {
           <label className="block space-y-1.5">
             <span className="text-xs font-bold text-slate-700">Email Admin</span>
             <input type="email" required value={email} onChange={(event) => setEmail(event.target.value)}
-              placeholder="nama@email.com" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-purple-500" />
+              placeholder="nama@email.com" className="min-h-11 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-purple-500" />
           </label>
           <div>
             <p className="mb-2 text-xs font-bold text-slate-700">Pilih izin menu</p>
@@ -158,7 +158,7 @@ export const AdminManagementPanel: React.FC = () => {
             </div>
           </div>
           <button type="submit" disabled={inviting || invitePermissions.length === 0}
-            className="inline-flex items-center gap-2 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">
+            className="inline-flex items-center gap-2 min-h-11 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">
             {inviting ? <Loader2 className="h-4 w-4 animate-spin" /> : <MailPlus className="h-4 w-4" />}
             Kirim Undangan Admin
           </button>
@@ -171,7 +171,7 @@ export const AdminManagementPanel: React.FC = () => {
             <h3 className="font-extrabold text-slate-900">Daftar Akun Admin</h3>
             <p className="text-xs text-slate-500">Atur beberapa izin sekaligus atau nonaktifkan akses Admin.</p>
           </div>
-          <button onClick={() => void load()} disabled={loading} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
+          <button onClick={() => void load()} disabled={loading} className="inline-flex items-center gap-1.5 min-h-11 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
             <RefreshCw className={'h-3.5 w-3.5' + (loading ? ' animate-spin' : '')} /> Segarkan
           </button>
         </div>
@@ -224,12 +224,12 @@ export const AdminManagementPanel: React.FC = () => {
                       <div className="flex flex-wrap gap-2">
                         <button onClick={() => void handleSavePermissions(account)}
                           disabled={!account.is_active || busyId === account.user_id}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">
+                          className="inline-flex items-center gap-1.5 min-h-11 rounded-lg bg-purple-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">
                           {busyId === account.user_id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                           Simpan Izin
                         </button>
                         <button onClick={() => void handleToggleActive(account)} disabled={busyId === account.user_id}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
+                          className="inline-flex items-center gap-1.5 min-h-11 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
                           {account.is_active ? <UserX className="h-3.5 w-3.5" /> : <UserCheck className="h-3.5 w-3.5" />}
                           {account.is_active ? 'Nonaktifkan' : 'Aktifkan'}
                         </button>
