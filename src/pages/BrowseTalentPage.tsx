@@ -39,7 +39,7 @@ const PromotionBannerVisual: React.FC<{ imageUrl: string; title: string }> = ({ 
       loading="eager"
       decoding="async"
       onError={() => setImageFailed(true)}
-      className="block h-[clamp(150px,34vw,220px)] w-full bg-white object-contain object-center"
+      className="block h-[92px] w-full bg-white object-contain sm:h-[144px]"
     />
   );
 };
@@ -464,7 +464,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         <div className="sticky top-[64px] min-[431px]:top-[68px] lg:top-[72px] xl:static z-30 -mx-4 bg-white/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
-        <div className="relative bg-white p-2 sm:p-5 rounded-2xl sm:rounded-[26px] border border-slate-200/80 shadow-[0_5px_18px_rgba(30,9,56,0.06)] mb-2 sm:mb-8 space-y-2 sm:space-y-4">
+        <div className="relative bg-white p-2.5 sm:p-5 rounded-2xl sm:rounded-[26px] border border-slate-200/80 shadow-[0_5px_18px_rgba(30,9,56,0.06)] mb-2 sm:mb-8 space-y-2 sm:space-y-4">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search and city selector share one pill, matching the mobile reference */}
@@ -477,7 +477,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   aria-label="Cari talent berdasarkan nama atau minat"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-xs shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-12 sm:pl-11 sm:text-sm"
+                  className="h-12 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-xs shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-12 sm:pl-11 sm:text-sm"
                 />
               </div>
               <div className="h-7 w-px shrink-0 bg-slate-200" />
@@ -497,7 +497,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-2 md:hidden min-h-11 inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-12 inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
               <span className="sr-only">Filter tambahan</span>
