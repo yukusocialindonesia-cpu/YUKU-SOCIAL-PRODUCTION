@@ -26,7 +26,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               onClick={() => onSelectMode('offline')}
               className="yuku-depth-card group flex min-h-[62px] min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 p-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
             >
-              <span className="yuku-icon-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2edff] text-[#5b22c7]">
+              <span className="yuku-icon-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#a78bfa] to-[#ec4899] text-white">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
@@ -47,7 +47,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                 <MessageCircle className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-bold text-slate-900">Online</span>
+                <span className="block text-[13px] font-bold text-white">Online</span>
                 <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">
                   Ngobrol dari mana saja
                 </span>
