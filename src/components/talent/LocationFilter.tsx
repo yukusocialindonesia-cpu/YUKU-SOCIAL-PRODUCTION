@@ -130,7 +130,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         <div
           role="listbox"
           aria-label="Daftar kota di Indonesia"
-          className="absolute z-40 left-0 right-0 mt-2 bg-white/95 rounded-3xl border border-white/80 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)] ring-1 ring-slate-200/70 backdrop-blur-2xl overflow-hidden w-full max-w-[calc(100vw-2rem)]"
+          className="absolute z-50 right-0 mt-2 w-[min(22rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] bg-white/95 rounded-3xl border border-white/80 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)] ring-1 ring-slate-200/70 backdrop-blur-2xl overflow-hidden"
         >
           {/* City Search Bar */}
           <div className="p-3 border-b border-slate-100/80 bg-gradient-to-r from-violet-50/80 to-fuchsia-50/50">
