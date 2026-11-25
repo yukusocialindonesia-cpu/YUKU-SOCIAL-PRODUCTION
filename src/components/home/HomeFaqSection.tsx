@@ -38,7 +38,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
                 type="button"
                 onClick={() => toggleItem(idx)}
                 aria-expanded={openIndex === idx}
-                className="w-full min-h-[52px] py-3 sm:py-4 px-4 sm:px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-white hover:bg-purple-50/40"
+                className="w-full min-h-14 py-3 sm:py-4 px-4 sm:px-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-purple-700 transition-colors cursor-pointer bg-white hover:bg-purple-50/40"
               >
                 <span className="text-sm sm:text-base leading-snug">{item.q}</span>
                 <ChevronDown
@@ -60,7 +60,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
         <div className="mt-4 sm:mt-8 text-center">
           <button
             onClick={onViewAllFaqClick}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold text-purple-700 hover:text-purple-900 hover:bg-purple-50 transition-colors cursor-pointer"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold text-purple-700 hover:text-purple-900 hover:bg-purple-50 transition-colors cursor-pointer"
           >
             <span>Buka Pusat Bantuan & FAQ Lengkap</span>
             <ArrowRight className="w-4 h-4" />
