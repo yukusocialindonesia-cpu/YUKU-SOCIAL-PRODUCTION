@@ -1,0 +1,49 @@
+diff -ru a/src/components/talent/TalentCard.tsx src/components/talent/TalentCard.tsx
+--- a/src/components/talent/TalentCard.tsx	2026-11-25 13:47:21.484113945 +0000
++++ b/src/components/talent/TalentCard.tsx	2026-11-25 13:47:21.575737750 +0000
+@@ -74,7 +74,7 @@
+         role="button"
+         tabIndex={0}
+         aria-label={`Lihat profil ${talent.name}`}
+-        className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.12)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
++        className="group relative min-w-0 overflow-hidden rounded-[24px] bg-white shadow-[0_10px_26px_rgba(91,18,201,0.22)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+       >
+         <div className="relative aspect-[0.92/1] w-full overflow-hidden bg-purple-100">
+           {hasRealPhoto ? (
+@@ -92,7 +92,7 @@
+               <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
+             </div>
+           )}
+-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
++          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#1a0838]/85 via-black/25 to-transparent" />
+           {isNew && (
+             <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-extrabold text-amber-950 shadow">
+               BARU
+diff -ru a/src/index.css src/index.css
+--- a/src/index.css	2026-11-25 13:47:21.484381773 +0000
++++ b/src/index.css	2026-11-25 13:47:21.574667321 +0000
+@@ -36,8 +36,10 @@
+ body {
+   background-color: #FAF8FC;
+   background-image:
+-    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
+-    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
++    radial-gradient(ellipse at 12% 0%, rgba(167,139,250,0.38), transparent 40%),
++    radial-gradient(ellipse at 92% 12%, rgba(232,121,249,0.26), transparent 36%),
++    radial-gradient(ellipse at 6% 100%, rgba(244,114,182,0.18), transparent 40%),
++    linear-gradient(180deg, #F5EEFF 0%, #FAF8FC 45%, #FFF8FC 100%);
+   background-attachment: scroll;
+ }
+ 
+diff -ru a/src/pages/BrowseTalentPage.tsx src/pages/BrowseTalentPage.tsx
+--- a/src/pages/BrowseTalentPage.tsx	2026-11-25 13:47:21.486453727 +0000
++++ b/src/pages/BrowseTalentPage.tsx	2026-11-25 13:47:21.575242289 +0000
+@@ -395,7 +395,7 @@
+   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
+ 
+   return (
+-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
++    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top_left,_rgba(167,139,250,0.45),_transparent_45%),radial-gradient(ellipse_at_top_right,_rgba(232,121,249,0.30),_transparent_42%),radial-gradient(ellipse_at_bottom_left,_rgba(244,114,182,0.20),_transparent_45%),linear-gradient(180deg,#F5EEFF_0%,#FBF8FF_55%,#FFF8FC_100%)]">
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+         {/* Header Jelajah */}
+         <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
