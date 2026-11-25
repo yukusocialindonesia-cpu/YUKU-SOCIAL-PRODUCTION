@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Clock, Loader2, RefreshCw, Save, XCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../utils/formatters';
 
 export const BankTransferAdminPanel: React.FC = () => {
+  const loadRequestIdRef = useRef(0);
   const [rows, setRows] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [bookingStatus, setBookingStatus] = useState<Record<string, string>>({});
@@ -20,13 +21,15 @@ export const BankTransferAdminPanel: React.FC = () => {
   const [message, setMessage] = useState('');
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     const db = supabase as any;
     const [{ data: cfg, error: cfgError }, { data: submissions, error: submissionsError }] = await Promise.all([
       db.from('bank_transfer_settings').select('*').eq('id', true).maybeSingle(),
       db.from('bank_transfer_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,admin_notes,created_at,reviewed_at').order('created_at', { ascending: false }).limit(50),
     ]);
-    if (cfgError) throw cfgError;
-    if (submissionsError) throw submissionsError;
+    if (cfgError) { if (requestId === loadRequestIdRef.current) throw cfgError; return; }
+    if (submissionsError) { if (requestId === loadRequestIdRef.current) throw submissionsError; return; }
+    if (requestId !== loadRequestIdRef.current) return;
     setRows((submissions || []).filter((r: any) => r.status === 'pending_review').reverse());
     setHistory((submissions || []).filter((r: any) => r.status !== 'pending_review'));
     if (cfg) {
@@ -37,7 +40,8 @@ export const BankTransferAdminPanel: React.FC = () => {
     const ids = Array.from(new Set((submissions || []).map((r: any) => r.booking_id)));
     if (ids.length) {
       const { data, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
-      if (statusError) throw statusError;
+      if (statusError) { if (requestId === loadRequestIdRef.current) throw statusError; return; }
+      if (requestId !== loadRequestIdRef.current) return;
       const map: Record<string, string> = {};
       (data || []).forEach((b: any) => { map[b.id] = b.status; });
       setBookingStatus(map);
