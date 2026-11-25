@@ -268,7 +268,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[1.75rem] leading-[1.06] sm:text-5xl md:text-6xl font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
+          <h1 className="text-[clamp(1.75rem,5.2vw,3.75rem)] leading-[1.06] font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
             <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
