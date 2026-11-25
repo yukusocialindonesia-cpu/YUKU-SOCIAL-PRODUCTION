@@ -36,8 +36,10 @@ body,
 body {
   background-color: #FAF8FC;
   background-image:
-    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
-    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
+    radial-gradient(ellipse at 12% 0%, rgba(167,139,250,0.38), transparent 40%),
+    radial-gradient(ellipse at 92% 12%, rgba(232,121,249,0.26), transparent 36%),
+    radial-gradient(ellipse at 6% 100%, rgba(244,114,182,0.18), transparent 40%),
+    linear-gradient(180deg, #F5EEFF 0%, #FAF8FC 45%, #FFF8FC 100%);
   background-attachment: scroll;
 }
 
