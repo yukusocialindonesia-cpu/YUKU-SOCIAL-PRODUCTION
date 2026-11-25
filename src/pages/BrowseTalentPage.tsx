@@ -419,7 +419,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                           type="button"
                           onClick={() => setActivePromotionIndex((current) => (current - 1 + promotions.length) % promotions.length)}
                           aria-label="Promosi sebelumnya"
-                          className="absolute left-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:left-3 sm:h-10 sm:w-10"
+                          className="absolute left-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:left-3 sm:h-10 sm:w-10"
                         >
                           ‹
                         </button>
@@ -427,7 +427,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                           type="button"
                           onClick={() => setActivePromotionIndex((current) => (current + 1) % promotions.length)}
                           aria-label="Promosi berikutnya"
-                          className="absolute right-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:right-3 sm:h-10 sm:w-10"
+                          className="absolute right-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:right-3 sm:h-10 sm:w-10"
                         >
                           ›
                         </button>
@@ -465,7 +465,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 aria-label="Cari talent berdasarkan nama atau minat"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-10 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
+                className="w-full min-h-11 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
               />
             </div>
 
@@ -481,7 +481,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 onClick={handleUseMyLocation}
                 disabled={gpsLoading}
                 aria-label="Gunakan lokasi GPS saya"
-                className="mt-1.5 inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-2 text-[11px] font-semibold text-purple-800 transition-colors hover:bg-purple-100 disabled:cursor-wait disabled:opacity-60 sm:min-h-10 sm:text-xs"
+                className="mt-1.5 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-2 text-[11px] font-semibold text-purple-800 transition-colors hover:bg-purple-100 disabled:cursor-wait disabled:opacity-60 sm:min-h-10 sm:text-xs"
               >
                 <MapPin className="h-3.5 w-3.5 shrink-0" />
                 {gpsLoading ? 'Mencari lokasi...' : customerLocation ? 'Lokasi Saya Aktif' : 'Gunakan Lokasi Saya'}
@@ -607,7 +607,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="md:hidden min-h-9 w-full rounded-xl border border-purple-100 bg-white px-3 text-[11px] font-semibold text-slate-600"
+              className="md:hidden min-h-11 w-full rounded-xl border border-purple-100 bg-white px-3 text-[11px] font-semibold text-slate-600"
             >
               Reset semua filter
             </button>
@@ -621,7 +621,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               type="button"
               onClick={() => setSelectedActivity('all')}
               aria-pressed={selectedActivity === 'all'}
-              className={`min-h-9 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+              className={`min-h-11 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
             >
               Semua
             </button>
@@ -631,7 +631,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 type="button"
                 onClick={() => setSelectedActivity(cat.id)}
                 aria-pressed={selectedActivity === cat.id}
-                className={`min-h-9 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+                className={`min-h-11 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
               >
                 {cat.title}
               </button>
