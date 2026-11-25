@@ -186,7 +186,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}
         {total > 0 && (
-          <div className="hidden md:block absolute inset-0 pointer-events-none md:bg-gradient-to-r md:from-white/90 md:via-white/55 md:to-transparent md:w-[62%]" />
+          <div className="hidden md:block absolute inset-0 pointer-events-none md:bg-gradient-to-r md:from-[#210847]/95 md:via-[#3b0d78]/75 md:to-transparent md:w-[72%]" />
         )}
 
         {/* Area klik slide (di belakang konten) */}
