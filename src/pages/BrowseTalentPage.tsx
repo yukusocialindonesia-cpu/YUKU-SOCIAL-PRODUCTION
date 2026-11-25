@@ -415,22 +415,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                     )}
                     {promotions.length > 1 && (
                       <>
-                        <button
-                          type="button"
-                          onClick={() => setActivePromotionIndex((current) => (current - 1 + promotions.length) % promotions.length)}
-                          aria-label="Promosi sebelumnya"
-                          className="absolute left-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:left-3 sm:h-10 sm:w-10"
-                        >
-                          ‹
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setActivePromotionIndex((current) => (current + 1) % promotions.length)}
-                          aria-label="Promosi berikutnya"
-                          className="absolute right-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-black/60 sm:right-3 sm:h-10 sm:w-10"
-                        >
-                          ›
-                        </button>
                         <div className="absolute bottom-2 right-3 z-20 flex items-center gap-1.5 sm:bottom-3 sm:right-5">
                           {promotions.map((item, index) => (
                             <button
