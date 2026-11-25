@@ -262,7 +262,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
               </label>
             </div>
             <div className="text-center sm:text-left min-w-0">
-              <h2 className="font-extrabold text-lg text-slate-900">{displayName || 'Customer YUKU'}</h2>
+              <h2 className="break-words font-extrabold text-lg text-slate-900">{displayName || 'Customer YUKU'}</h2>
               <p className="text-xs text-slate-500 mt-1">Foto JPG, PNG, atau WEBP. Maksimal 2 MB.</p>
               {avatarFile && <p className="text-xs text-purple-700 mt-2 break-all">Foto baru: {avatarFile.name}</p>}
             </div>
