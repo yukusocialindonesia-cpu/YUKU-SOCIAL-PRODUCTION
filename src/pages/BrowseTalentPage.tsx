@@ -460,26 +460,27 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
-            {/* Search Input */}
-            <div className="col-span-5 md:col-span-5 relative min-w-0">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Cari talent..."
-                aria-label="Cari talent berdasarkan nama atau minat"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-11 sm:min-h-0 pl-9 pr-2 sm:pr-4 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border border-slate-200/80 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all"
-              />
-            </div>
-
-            {/* Dynamic Regional Location Filter */}
-            <div className="col-span-5 md:col-span-4 min-w-0">
-              <LocationFilter
-                selectedCity={selectedCity}
-                talentCities={talentCities}
-                onChangeCity={setSelectedCity}
-              />
+            {/* Search and city selector share one pill, matching the mobile reference */}
+            <div className="col-span-10 md:col-span-9 flex min-w-0 items-center overflow-visible rounded-full border border-slate-200/80 bg-white shadow-sm">
+              <div className="relative min-w-0 flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 sm:left-4" />
+                <input
+                  type="text"
+                  placeholder="Cari talent..."
+                  aria-label="Cari talent berdasarkan nama atau minat"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-11 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-xs shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-12 sm:pl-11 sm:text-sm"
+                />
+              </div>
+              <div className="h-7 w-px shrink-0 bg-slate-200" />
+              <div className="relative min-w-0 flex-1">
+                <LocationFilter
+                  selectedCity={selectedCity}
+                  talentCities={talentCities}
+                  onChangeCity={setSelectedCity}
+                />
+              </div>
             </div>
 
             <button
