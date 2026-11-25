@@ -331,14 +331,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
           className={`xl:hidden border-t px-4 pt-4 pb-6 backdrop-blur-2xl max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] min-[376px]:max-h-[calc(100dvh-3.75rem-4rem-env(safe-area-inset-bottom))] min-[431px]:max-h-[calc(100dvh-4rem-4rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-4rem)] lg:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 ${isHomePage ? "border-white/10 bg-[#1b073b]/[0.98] shadow-[0_24px_50px_-28px_rgba(12,3,28,0.8)]" : "border-purple-100/70 bg-white shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)]"}` }
         >
           {currentUser && (
-            <div className="mb-4 p-3.5 bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 rounded-2xl flex items-center justify-between border border-purple-100/80 shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]">
+            <div className={`mb-4 p-3.5 rounded-2xl flex items-center justify-between border ${isHomePage ? "bg-white/[0.07] border-white/10" : "bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 border-purple-100/80"} shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]`}>
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-purple-700 text-white flex items-center justify-center text-xs font-bold">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-purple-950">{displayName}</div>
-                  <div className="text-[11px] text-slate-500 truncate max-w-[180px]">
+                  <div className={`text-xs font-bold ${isHomePage ? "text-white" : "text-purple-950"}`}>{displayName}</div>
+                  <div className={`text-[11px] truncate max-w-[180px] ${isHomePage ? "text-white/55" : "text-slate-500"}`}>
                     {currentUser.email}
                   </div>
                 </div>
@@ -434,8 +434,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onClick={() => handleLinkClick(link.href)}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${
                   currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
-                    ? 'bg-purple-50 text-purple-900 font-bold'
-                    : 'text-slate-700 hover:bg-slate-50'
+                    ? (isHomePage ? 'bg-white/12 text-white font-bold' : 'bg-purple-50 text-purple-900 font-bold')
+                    : (isHomePage ? 'text-white/75 hover:bg-white/[0.07] hover:text-white' : 'text-slate-700 hover:bg-slate-50')
                 }`}
               >
                 {link.label}
