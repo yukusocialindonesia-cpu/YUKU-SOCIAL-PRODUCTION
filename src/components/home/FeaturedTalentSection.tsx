@@ -110,7 +110,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden border-t border-white/[0.06] py-5 md:py-10 bg-gradient-to-br from-[#1b073b] via-[#2a0b59] to-[#421078] text-white">
+    <section ref={sectionRef} className="relative overflow-hidden border-t border-white/[0.06] py-4 md:py-10 bg-gradient-to-br from-[#1b073b] via-[#2a0b59] to-[#421078] text-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
@@ -194,12 +194,12 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </button>
           <div
             ref={scrollRef}
-            className="flex gap-3 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-4 sm:pb-5 pt-0 -mx-4 px-4 sm:mx-0 sm:gap-4 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex gap-2.5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-4 sm:pb-5 pt-0 -mx-4 px-4 sm:mx-0 sm:gap-4 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[44vw] max-w-[168px] sm:w-[190px] lg:w-[calc((100%-4rem)/5)] rounded-[20px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[42vw] max-w-[160px] sm:w-[190px] lg:w-[calc((100%-4rem)/5)] rounded-[20px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
