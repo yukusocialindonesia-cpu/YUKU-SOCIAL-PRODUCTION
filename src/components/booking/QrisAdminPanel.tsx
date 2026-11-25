@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Clock, Loader2, RefreshCw, Upload, XCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../utils/formatters';
 
 export const QrisAdminPanel: React.FC = () => {
+  const loadRequestIdRef = useRef(0);
   const [config, setConfig] = useState<any>(null); const [rows, setRows] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null); const [merchant, setMerchant] = useState(''); const [identifier, setIdentifier] = useState('');
   const [instructions, setInstructions] = useState('Scan QRIS, bayar sesuai nominal, lalu unggah bukti pembayaran.');
@@ -11,6 +12,7 @@ export const QrisAdminPanel: React.FC = () => {
   const [dialog, setDialog] = useState<{ row: any; approve: boolean } | null>(null); const [dialogNotes, setDialogNotes] = useState(''); const [dialogRef, setDialogRef] = useState(''); const [dialogError, setDialogError] = useState('');
   const [active, setActive] = useState(false); const [busy, setBusy] = useState(false); const [loading, setLoading] = useState(false); const [loadError, setLoadError] = useState(''); const [message, setMessage] = useState(''); const [error, setError] = useState('');
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     const db = supabase as any;
     setLoading(true);
     try {
@@ -20,6 +22,7 @@ export const QrisAdminPanel: React.FC = () => {
       ]);
       if (cfgResult.error) throw cfgResult.error;
       if (submissionsResult.error) throw submissionsResult.error;
+      if (requestId !== loadRequestIdRef.current) return;
       const cfg = cfgResult.data;
       const submissions = submissionsResult.data || [];
       const ids = Array.from(new Set(submissions.map((r: any) => r.booking_id)));
@@ -27,15 +30,17 @@ export const QrisAdminPanel: React.FC = () => {
       if (ids.length > 0) {
         const { data: bks, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
         if (statusError) throw statusError;
+        if (requestId !== loadRequestIdRef.current) return;
         (bks || []).forEach((b: any) => { map[b.id] = b.status; });
       }
       setConfig(cfg); setRows(submissions); setBookingStatus(map);
       if (cfg) { setMerchant(cfg.merchant_name || ''); setIdentifier(cfg.merchant_identifier || ''); setInstructions(cfg.instructions || ''); setActive(!!cfg.is_active); }
       setLoadError('');
     } catch (e: any) {
+      if (requestId !== loadRequestIdRef.current) return;
       setLoadError(e?.message || 'Gagal memuat data QRIS. Periksa koneksi dan coba muat ulang.');
     } finally {
-      setLoading(false);
+      if (requestId === loadRequestIdRef.current) setLoading(false);
     }
   }, []);
   useEffect(() => { load(); }, [load]);
