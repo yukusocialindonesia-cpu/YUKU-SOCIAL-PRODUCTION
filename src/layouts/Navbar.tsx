@@ -82,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 min-[1440px]:h-[76px]">
             <div className="shrink-0 flex items-center">
-              <BrandLogo size="md" showTagline={false} className="[&>img]:h-9 min-[376px]:[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 min-[1440px]:[&>img]:h-[60px]" onClick={() => onNavigate('/')} />
+              <BrandLogo size="md" showTagline={false} className="[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 xl:[&>img]:h-12" onClick={() => onNavigate('/')} />
             </div>
           </div>
         </div>
@@ -100,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <BrandLogo
               size="md"
               showTagline={false}
-              className="[&>img]:h-9 min-[376px]:[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 min-[1440px]:[&>img]:h-[60px]"
+              className="[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 xl:[&>img]:h-12"
               onClick={() => handleLinkClick('/')}
             />
           </div>
