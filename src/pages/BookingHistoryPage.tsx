@@ -687,7 +687,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
           <button
             onClick={loadBookings}
             disabled={isLoading}
-            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-4 py-2.5 bg-white/90 border border-white rounded-xl text-xs font-bold text-slate-700 hover:bg-white shadow-[0_8px_22px_-12px_rgba(30,9,56,0.28)] ring-1 ring-slate-200/70 cursor-pointer disabled:opacity-50 transition-all"
+            className="min-h-11 self-start sm:self-auto inline-flex items-center gap-1.5 px-4 py-2.5 bg-white/90 border border-white rounded-xl text-xs font-bold text-slate-700 hover:bg-white shadow-[0_8px_22px_-12px_rgba(30,9,56,0.28)] ring-1 ring-slate-200/70 cursor-pointer disabled:opacity-50 transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
             <span>Muat Ulang Data</span>
@@ -701,7 +701,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
               <button
                 type="button"
                 onClick={() => setRoleFilter('customer')}
-                className={`min-w-0 flex-1 whitespace-normal text-center px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                className={`min-h-11 min-w-0 flex-1 whitespace-normal text-center px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                   roleFilter === 'customer'
                     ? 'bg-white text-purple-900 shadow-[0_6px_18px_-8px_rgba(76,29,149,0.35)] ring-1 ring-purple-100'
                     : 'text-slate-600 hover:text-slate-900'
