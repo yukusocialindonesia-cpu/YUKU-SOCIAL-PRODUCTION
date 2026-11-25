@@ -90,16 +90,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
       />
 
+      {/* Aktivitas menjadi pintu masuk utama setelah hero */}
+      <ActivityCategories onSelectCategory={handleSelectCategory} />
+
+      {/* Pilih cara beraktivitas sebelum melihat rekomendasi orang */}
+      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+
       <PeopleDiscoveryStrip
         onSelectTalent={handleSelectTalent}
         onViewAll={() => onNavigate('/talent')}
       />
-
-      {/* Pilihan layanan dalam dua kartu ringkas */}
-      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
-
-      {/* Kategori aktivitas ringkas */}
-      <ActivityCategories onSelectCategory={handleSelectCategory} />
 
       {/* Talent ditampilkan lebih awal setelah pilihan aktivitas */}
       <FeaturedTalentSection
