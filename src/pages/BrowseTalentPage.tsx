@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, MapPin, Flame, ChevronDown, Activity, CalendarDays, Music2, Heart, Utensils, Dumbbell, Gamepad2, Sparkles, Star } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, MapPin, ChevronDown, Activity, CalendarDays, Music2, Heart, Utensils, Dumbbell, Gamepad2, Sparkles, Star } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
@@ -409,10 +409,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </h1>
             <p className="mt-2 max-w-2xl text-xs sm:text-sm text-violet-100 leading-relaxed">
               {selectedMode === 'offline'
-                ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
+                ? 'Temukan Talent untuk menemani aktivitas secara langsung.'
                 : selectedMode === 'online'
-                  ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
-                  : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
+                  ? 'Temukan Talent untuk menemani aktivitas online dari mana saja.'
+                  : 'Pilih profil berdasarkan aktivitas, lokasi, dan layanan yang kamu inginkan.'}
             </p>
           </div>
         </section>
@@ -660,9 +660,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
         <div className="sm:hidden mb-2 flex items-center justify-between">
-          <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
+          <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Profil Talent</h2>
           <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
-            <Flame className="h-3.5 w-3.5 fill-purple-600 text-purple-600" />
+            
             <select aria-label="Urutkan talent" value={sortBy} onChange={(event) => setSortBy(event.target.value as 'popular' | 'rating' | 'newest')} className="min-h-9 appearance-none rounded-full border border-purple-100 bg-white py-1 pl-2 pr-6 text-[10px] font-semibold text-purple-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
               <option value="popular">Terpopuler</option>
               <option value="rating">Rating tertinggi</option>
@@ -675,7 +675,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         {/* Desktop results toolbar */}
         <div className="hidden sm:flex items-center justify-between gap-4 mb-4 rounded-2xl border border-white/90 bg-white/80 px-4 py-3 shadow-[0_8px_24px_rgba(76,29,149,0.06)] ring-1 ring-purple-100/60 backdrop-blur-xl">
           <div className="min-w-0">
-            <h2 className="text-base font-extrabold tracking-tight text-[#32134F]">Temukan teman aktivitasmu</h2>
+            <h2 className="text-base font-extrabold tracking-tight text-[#32134F]">Temukan profil yang sesuai dengan kebutuhanmu</h2>
             <p className="mt-0.5 text-xs text-slate-500">
               {loading ? 'Sedang memuat profil...' : `${filteredTalents.length} profil cocok dengan pilihanmu`}
             </p>
