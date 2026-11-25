@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, Eye, EyeOff, ImagePlus, Loader2, Trash2, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { HeroSlideRow } from '../../types/database';
@@ -29,6 +29,7 @@ async function uploadTo(folder: string, file: File) {
 
 export const HeroSlidesAdminPanel: React.FC = () => {
   const [slides, setSlides] = useState<HeroSlideRow[]>([]);
+  const loadRequestIdRef = useRef(0);
   const [loading, setLoading] = useState(true);
   const [migrationMissing, setMigrationMissing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -44,12 +45,14 @@ export const HeroSlidesAdminPanel: React.FC = () => {
   const [mobilePreview, setMobilePreview] = useState('');
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true);
     const { data, error: err } = await supabase
       .from('hero_slides')
       .select('*')
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false });
+    if (requestId !== loadRequestIdRef.current) return;
     if (err) {
       setMigrationMissing(err.code === '42P01' || err.message.includes('hero_slides'));
       setSlides([]);
@@ -57,7 +60,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
       setMigrationMissing(false);
       setSlides((data as HeroSlideRow[]) || []);
     }
-    setLoading(false);
+    if (requestId === loadRequestIdRef.current) setLoading(false);
   }, []);
 
   useEffect(() => {
