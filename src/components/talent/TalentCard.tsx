@@ -94,7 +94,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           )}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
           {isNew && (
-            <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2 py-1 text-[9px] font-extrabold text-amber-950 shadow">
+            <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2 py-1 text-[10px] font-extrabold text-amber-950 shadow">
               BARU
             </span>
           )}
