@@ -316,7 +316,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
       {isMobileMenuOpen && (
         <div
           id="yuku-mobile-navigation"
-          className="xl:hidden border-t border-purple-100/70 bg-white backdrop-blur-none px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem)] md:max-h-[calc(100dvh-3.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
+          className="xl:hidden border-t border-purple-100/70 bg-white backdrop-blur-none px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] min-[376px]:max-h-[calc(100dvh-3.75rem-4rem-env(safe-area-inset-bottom))] min-[431px]:max-h-[calc(100dvh-4rem-4rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-4rem)] lg:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
         >
           {currentUser && (
             <div className="mb-4 p-3.5 bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 rounded-2xl flex items-center justify-between border border-purple-100/80 shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]">
