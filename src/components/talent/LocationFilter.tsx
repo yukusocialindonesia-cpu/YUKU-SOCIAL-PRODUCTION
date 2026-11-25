@@ -93,7 +93,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
-          className={`w-full min-h-10 sm:min-h-[46px] pl-8 sm:pl-9 pr-8 sm:pr-14 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border rounded-xl text-left shadow-sm transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
+          className={`w-full min-h-11 sm:min-h-[46px] pl-8 sm:pl-9 pr-8 sm:pr-14 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border rounded-xl text-left shadow-sm transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
             isOpen
               ? 'border-purple-400 bg-white shadow-[0_12px_28px_-16px_rgba(124,58,237,0.55)]'
               : selectedCity !== 'Semua Kota'
@@ -113,7 +113,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               onChangeCity('Semua Kota');
             }}
             aria-label="Hapus filter kota"
-            className="absolute right-7 top-1/2 -translate-y-1/2 w-9 h-9 inline-flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-md cursor-pointer"
+            className="absolute right-7 top-1/2 -translate-y-1/2 w-11 h-11 inline-flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-md cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -149,7 +149,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                   type="button"
                   onClick={() => setCitySearch('')}
                   aria-label="Bersihkan pencarian kota"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 inline-flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 inline-flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -164,7 +164,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               role="option"
               aria-selected={selectedCity === 'Semua Kota'}
               onClick={() => handleSelect('Semua Kota')}
-              className={`w-full min-h-10 px-3 py-2 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+              className={`w-full min-h-11 px-3 py-2 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                 selectedCity === 'Semua Kota'
                   ? 'bg-purple-50 text-purple-900 font-bold'
                   : 'text-slate-700 hover:bg-slate-50 font-medium'
@@ -190,7 +190,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                         role="option"
                         aria-selected={isSelected}
                         onClick={() => handleSelect(item.name)}
-                        className={`w-full min-h-10 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+                        className={`w-full min-h-11 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                           isSelected
                             ? 'bg-purple-50 text-purple-900 font-bold'
                             : 'text-slate-700 hover:bg-slate-50'
@@ -228,7 +228,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
                           role="option"
                           aria-selected={isSelected}
                           onClick={() => handleSelect(item.name)}
-                          className={`w-full min-h-10 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+                          className={`w-full min-h-11 px-3 py-2.5 sm:py-1.5 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
                             isSelected
                               ? 'bg-purple-50 text-purple-900 font-bold'
                               : 'text-slate-700 hover:bg-slate-50'
