@@ -116,7 +116,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
           <div>
             <span className="text-[10.5px] sm:text-xs font-bold text-fuchsia-200 tracking-wider uppercase mb-0.5 sm:mb-1 block">
-              Temukan teman untuk aktivitasmu
+              PROFIL UNTUK BERBAGAI AKTIVITAS
             </span>
             <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
               Talent Pilihan YUKU
@@ -193,7 +193,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             <ChevronRight className="w-5 h-5" />
           </button>
           <div className="mb-1 flex items-center justify-between px-0.5 text-[10px] font-semibold text-fuchsia-100/75 sm:hidden">
-            <span>Profil pilihan untuk kamu</span>
+            <span>Talent pilihan YUKU</span>
             <span className="inline-flex items-center gap-1">Geser <ChevronRight className="h-3 w-3" /></span>
           </div>
           <div
