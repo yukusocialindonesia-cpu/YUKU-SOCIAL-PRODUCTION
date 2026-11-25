@@ -115,9 +115,17 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   <span className={`relative flex h-[66px] w-[66px] items-center justify-center rounded-[21px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} ring-1 ring-white/25 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[72px] sm:w-[72px] sm:rounded-[23px]`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <span className="line-clamp-2 text-[13px] font-extrabold leading-tight text-white sm:text-[14px]">
+                  <span className="line-clamp-1 text-[13px] font-extrabold leading-tight text-white sm:text-[14px]">
                     {cat.title}
                   </span>
+                  <span className="line-clamp-2 min-h-[28px] text-[10px] leading-snug text-violet-100/75 sm:text-[11px]">
+                    {cat.description}
+                  </span>
+                  {cat.isOnlineAvailable && (
+                    <span className="rounded-full border border-fuchsia-200/20 bg-fuchsia-300/10 px-2 py-0.5 text-[9px] font-bold text-fuchsia-100">
+                      Online tersedia
+                    </span>
+                  )}
                 </button>
               );
             })}
