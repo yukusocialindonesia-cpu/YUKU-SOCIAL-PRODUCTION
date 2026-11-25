@@ -166,7 +166,7 @@ export const PromoCarousel: React.FC<PromoCarouselProps> = ({
                     )}
 
                     {(isInternal || isExternal) && (
-                      <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl bg-slate-950/80 text-[#24105F] text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-xs">
+                      <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl bg-slate-950/80 text-white text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-xs">
                         <span>Lihat Promo</span>
                         <ArrowUpRight className="w-3.5 h-3.5 text-[#741CFF]" />
                       </div>
