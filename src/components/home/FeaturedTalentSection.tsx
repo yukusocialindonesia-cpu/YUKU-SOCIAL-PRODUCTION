@@ -110,21 +110,21 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section ref={sectionRef} className="relative py-4 md:py-10 bg-[#f8f4ff]">
+    <section ref={sectionRef} className="relative overflow-hidden py-5 md:py-10 bg-gradient-to-br from-[#180638] via-[#2a0b59] to-[#421078] text-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
           <div>
-            <span className="text-[10.5px] sm:text-xs font-bold text-purple-700 tracking-wider uppercase mb-0.5 sm:mb-1 block">
+            <span className="text-[10.5px] sm:text-xs font-bold text-fuchsia-200 tracking-wider uppercase mb-0.5 sm:mb-1 block">
               Temukan teman untuk aktivitasmu
             </span>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
               Talent Pilihan YUKU
             </h2>
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-purple-800 hover:text-purple-950 transition-colors cursor-pointer"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-fuchsia-200 hover:text-white transition-colors cursor-pointer"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua Talent</span>
@@ -141,7 +141,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {loading ? (
           <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[360px] w-[76vw] max-w-[280px] shrink-0 rounded-2xl bg-slate-200 animate-pulse sm:h-72 sm:w-[240px]" />
+              <div key={i} className="h-[360px] w-[76vw] max-w-[280px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:h-72 sm:w-[240px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -159,12 +159,12 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             </button>
           </div>
         ) : talents.length === 0 ? (
-          <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-xs text-slate-500">
+          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-purple-100">
             <Users className="w-8 h-8 text-slate-400 mx-auto mb-2" />
             <p>Belum ada profil Talent aktif yang terdaftar di Supabase.</p>
           </div>
         ) : visibleTalents.length === 0 ? (
-          <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-xs text-slate-500">
+          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-purple-100">
             <p className="mb-3">Belum ada talent yang cocok dengan filter ini.</p>
             <button
               type="button"
