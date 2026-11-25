@@ -141,7 +141,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {loading ? (
           <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-[3/4] h-auto w-[46vw] max-w-[184px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:w-[196px]" />
+              <div key={i} className="aspect-[3/4] h-auto w-[43vw] max-w-[168px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:w-[196px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -199,12 +199,12 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           <div
             ref={scrollRef}
             aria-label="Daftar talent pilihan, geser untuk melihat profil lainnya"
-            className="flex gap-2.5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-3 sm:pb-5 pt-0 -mx-4 px-4 scroll-px-4 sm:mx-0 sm:gap-4 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex gap-2 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-3 sm:pb-5 pt-0 -mx-4 px-4 scroll-px-4 sm:mx-0 sm:gap-4 sm:px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[44vw] max-w-[168px] sm:w-[190px] lg:w-[calc((100%-5rem)/6)] rounded-[20px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[42vw] max-w-[160px] sm:w-[190px] lg:w-[calc((100%-5rem)/6)] rounded-[20px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
