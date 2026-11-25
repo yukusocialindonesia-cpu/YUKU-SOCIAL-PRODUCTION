@@ -21,7 +21,6 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
   const [citySearch, setCitySearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const [dropdownTop, setDropdownTop] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const groupedCities: DynamicCityGroup[] = useMemo(
@@ -80,25 +79,6 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
       setCitySearch('');
     }
   }, [isOpen]);
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const updateDropdownPosition = () => {
-      if (triggerRef.current) {
-        setDropdownTop(triggerRef.current.getBoundingClientRect().bottom + 8);
-      }
-    };
-
-    updateDropdownPosition();
-    window.addEventListener('scroll', updateDropdownPosition, { passive: true });
-    window.addEventListener('resize', updateDropdownPosition);
-
-    return () => {
-      window.removeEventListener('scroll', updateDropdownPosition);
-      window.removeEventListener('resize', updateDropdownPosition);
-    };
-  }, [isOpen]);
-
   const handleSelect = (city: string) => {
     onChangeCity(city);
     setIsOpen(false);
@@ -110,13 +90,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         <button
           ref={triggerRef}
           type="button"
-          onClick={() => {
-            if (!isOpen && triggerRef.current) {
-              const rect = triggerRef.current.getBoundingClientRect();
-              setDropdownTop(rect.bottom + 8);
-            }
-            setIsOpen((prev) => !prev);
-          }}
+          onClick={() => setIsOpen((prev) => !prev)}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
@@ -157,8 +131,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         <div
           role="listbox"
           aria-label="Daftar kota di Indonesia"
-          style={{ "--dropdown-top": `${dropdownTop}px` } as React.CSSProperties}
-          className="fixed top-[var(--dropdown-top)] z-[60] left-4 right-4 w-auto max-w-none bg-white rounded-2xl border border-slate-200 shadow-[0_18px_48px_-20px_rgba(15,23,42,0.35)] overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-[min(22rem,calc(100vw-2rem))] sm:max-w-[calc(100vw-2rem)] sm:rounded-3xl sm:bg-white sm:border-white/80 sm:shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)]"
+          className="absolute left-0 right-0 top-full z-[60] mt-2 w-[min(22rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] bg-white rounded-2xl border border-slate-200 shadow-[0_18px_48px_-20px_rgba(15,23,42,0.35)] overflow-hidden sm:left-auto sm:right-0 sm:rounded-3xl sm:border-white/80 sm:shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)]"
         >
           {/* City Search Bar */}
           <div className="p-3 border-b border-slate-100 bg-violet-50">
