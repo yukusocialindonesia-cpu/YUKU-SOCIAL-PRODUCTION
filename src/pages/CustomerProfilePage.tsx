@@ -235,7 +235,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   return (
     <>
     {pendingAvatarFile && <PhotoCropEditor file={pendingAvatarFile} title="Atur Foto Profil" onCancel={() => setPendingAvatarFile(null)} onApply={(cropped) => { setAvatarFile(cropped); setPendingAvatarFile(null); }} />}
-    <div className="min-h-[65vh] bg-[radial-gradient(ellipse_at_top,_rgba(237,233,254,0.72),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F5FB_100%)] px-4 py-6 sm:py-12">
+    <div className="min-h-[65vh] bg-[radial-gradient(ellipse_at_top_left,_rgba(91,33,182,0.16),_transparent_40%),linear-gradient(180deg,#F1E9FF_0%,#FBFAFF_52%,#FFFFFF_100%)] px-4 py-6 sm:py-12">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-bold text-purple-800">
@@ -247,7 +247,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
         </div>
 
         <form onSubmit={handleSave} className="bg-white/85 backdrop-blur-xl rounded-[24px] sm:rounded-[30px] border border-white shadow-[0_24px_60px_-28px_rgba(76,29,149,0.3)] ring-1 ring-violet-100/80 overflow-hidden">
-          <div className="p-5 sm:p-8 border-b border-violet-100/80 bg-gradient-to-br from-white via-violet-50/70 to-indigo-50/60 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          <div className="p-5 sm:p-8 border-b border-violet-100/80 bg-gradient-to-br from-[#F7F1FF] via-white to-[#F5EEFF] flex flex-col sm:flex-row items-center sm:items-start gap-4">
             <div className="relative shrink-0">
               <div className="w-24 h-24 rounded-full bg-purple-100 border-[5px] border-white shadow-[0_12px_28px_rgba(76,29,149,0.24)] ring-1 ring-violet-200 overflow-hidden flex items-center justify-center">
                 {currentAvatar ? (
