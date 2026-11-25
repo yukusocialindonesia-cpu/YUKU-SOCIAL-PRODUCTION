@@ -372,7 +372,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
 
   return (
-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
         <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
@@ -455,7 +455,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
-        <div className="sticky top-14 min-[376px]:top-[60px] min-[431px]:top-16 lg:top-[72px] xl:static z-30 -mx-4 bg-[#FAF8FC]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
+        <div className="sticky top-14 min-[376px]:top-[60px] min-[431px]:top-16 lg:top-[72px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
