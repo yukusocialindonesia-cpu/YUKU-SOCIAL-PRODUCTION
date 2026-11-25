@@ -106,6 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Menghindari state usang saat dua pemuatan role bertumpuk.
   const requestIdRef = useRef(0);
   const currentUserIdRef = useRef<string | null>(null);
+  // Mencegah hasil getSession() awal yang terlambat menimpa event auth yang lebih baru.
+  const authEventVersionRef = useRef(0);
 
   const applySession = useCallback(async (nextUser: User | null, forceRoleReload = false) => {
     const requestId = ++requestIdRef.current;
@@ -171,14 +173,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let isMounted = true;
 
     // Pemulihan awal dari localStorage.
+    // Jika event auth baru datang sebelum getSession() selesai, abaikan hasil
+    // pemulihan awal agar sesi lama/null tidak menimpa sesi login yang lebih baru.
+    const initialAuthEventVersion = authEventVersionRef.current;
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
-        if (isMounted) void applySession(session?.user ?? null);
+        if (!isMounted || authEventVersionRef.current !== initialAuthEventVersion) return;
+        void applySession(session?.user ?? null);
       })
       .catch((error) => {
         console.error('YUKU: gagal memulihkan sesi', error);
-        if (isMounted) void applySession(null);
+        if (isMounted && authEventVersionRef.current === initialAuthEventVersion) {
+          void applySession(null);
+        }
       });
 
     // Perubahan berikutnya (login, logout, refresh token).
@@ -187,7 +195,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') return; // sudah ditangani getSession()
+      if (event === 'INITIAL_SESSION') return; // pemulihan awal ditangani getSession()
+      authEventVersionRef.current += 1;
       window.setTimeout(() => {
         if (!isMounted) return;
         void applySession(session?.user ?? null, event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED');
