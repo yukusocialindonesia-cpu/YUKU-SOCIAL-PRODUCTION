@@ -703,16 +703,25 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               </p>
             )}
             <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-              {displayTalents.slice(0, visibleTalentCount).map((talent) => (
-                <TalentCard
-                  key={talent.id}
-                  talent={talent}
-                  showPrice={false}
-                  compact
-                  priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
-                  onSelect={(id) => onNavigate('/talent/:id', { id })}
-                />
-              ))}
+              {displayTalents.slice(0, visibleTalentCount).map((talent, index, visibleTalents) => {
+                const centerLastCard = visibleTalents.length % 2 === 1 && index === visibleTalents.length - 1;
+                return (
+                  <div
+                    key={talent.id}
+                    className={centerLastCard ? 'col-span-2 flex justify-center' : 'min-w-0'}
+                  >
+                    <div className={centerLastCard ? 'w-full max-w-[calc(50%-0.375rem)]' : 'w-full'}>
+                      <TalentCard
+                        talent={talent}
+                        showPrice={false}
+                        compact
+                        priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
+                        onSelect={(id) => onNavigate('/talent/:id', { id })}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <div ref={loadMoreSentinelRef} aria-hidden="true" className="h-2 w-full" />
             {(loadingMoreTalents || loadMoreError) && (
