@@ -93,19 +93,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* Aktivitas menjadi pintu masuk utama setelah hero */}
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      {/* Pilih cara beraktivitas sebelum melihat rekomendasi orang */}
-      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
-
+      {/* Alur discovery: kenalan, lihat profil pilihan, lalu tentukan mode aktivitas. */}
       <PeopleDiscoveryStrip
         onSelectTalent={handleSelectTalent}
         onViewAll={() => onNavigate('/talent')}
       />
 
-      {/* Talent ditampilkan lebih awal setelah pilihan aktivitas */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
+
+      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
 
       {/* Ruang Promosi Poster Berjalan */}
       <div ref={promoSectionRef}>
