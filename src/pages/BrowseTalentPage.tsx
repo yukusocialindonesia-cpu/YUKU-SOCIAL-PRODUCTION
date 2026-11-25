@@ -670,13 +670,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Results Grid */}
-        {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
+        {loading && talents.length === 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6" aria-label="Memuat Talent">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
             ))}
           </div>
-        ) : errorMsg ? (
+        ) : errorMsg && talents.length === 0 ? (
           <div className="p-4 sm:p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
@@ -692,6 +692,16 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         ) : filteredTalents.length > 0 ? (
           <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
+            {loading && (
+              <p className="text-center text-[11px] font-medium text-slate-400" role="status">
+                Memperbarui hasil...
+              </p>
+            )}
+            {errorMsg && (
+              <p className="text-center text-[11px] text-amber-700" role="status">
+                Data belum berhasil diperbarui. Menampilkan hasil sebelumnya.
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
               {displayTalents.slice(0, visibleTalentCount).map((talent) => (
                 <TalentCard
