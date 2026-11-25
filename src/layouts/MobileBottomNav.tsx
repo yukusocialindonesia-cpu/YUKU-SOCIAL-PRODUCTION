@@ -65,7 +65,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   ];
 
   const navShell =
-    'md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+8px)] z-40 mx-auto w-[calc(100%-16px)] sm:w-[calc(100%-24px)] max-w-[480px] rounded-[20px] sm:rounded-[24px] border border-purple-100/90 bg-gradient-to-r from-[#f3edff]/95 via-white/96 to-[#fff0f8]/95 px-1.5 sm:px-2 py-0.5 shadow-[0_14px_38px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.07)] backdrop-blur-2xl';
+    'yuku-glass-shell md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+8px)] z-40 mx-auto w-[calc(100%-16px)] sm:w-[calc(100%-24px)] max-w-[480px] rounded-[20px] sm:rounded-[24px] border border-purple-100/90 bg-gradient-to-r from-[#f3edff]/95 via-white/96 to-[#fff0f8]/95 px-1.5 sm:px-2 py-0.5 shadow-[0_14px_38px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.07)] backdrop-blur-2xl';
 
   if (isAuthLoading) {
     return (
