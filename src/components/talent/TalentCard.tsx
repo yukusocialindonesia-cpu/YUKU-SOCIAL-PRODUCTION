@@ -74,7 +74,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         role="button"
         tabIndex={0}
         aria-label={`Lihat profil ${talent.name}`}
-        className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.12)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+        className="group relative min-w-0 overflow-hidden rounded-[24px] bg-white shadow-[0_10px_26px_rgba(91,18,201,0.22)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
       >
         <div className="relative aspect-[0.92/1] w-full overflow-hidden bg-purple-100">
           {hasRealPhoto ? (
@@ -92,7 +92,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
             </div>
           )}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#1a0838]/85 via-black/25 to-transparent" />
           {isNew && (
             <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-extrabold text-amber-950 shadow">
               BARU
