@@ -436,9 +436,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         {/* Filter Bar Controls */}
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-6 md:grid-cols-12 gap-2 sm:gap-3">
+          <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="col-span-3 md:col-span-5 relative min-w-0">
+            <div className="col-span-5 md:col-span-5 relative min-w-0">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -451,27 +451,12 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Dynamic Regional Location Filter */}
-            <div className="col-span-3 md:col-span-4 min-w-0">
+            <div className="col-span-5 md:col-span-4 min-w-0">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
                 onChangeCity={setSelectedCity}
               />
-              <button
-                type="button"
-                onClick={handleUseMyLocation}
-                disabled={gpsLoading}
-                aria-label="Gunakan lokasi GPS saya"
-                className="mt-1.5 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-2 text-[11px] font-semibold text-purple-800 transition-colors hover:bg-purple-100 disabled:cursor-wait disabled:opacity-60 sm:min-h-10 sm:text-xs"
-              >
-                <MapPin className="h-3.5 w-3.5 shrink-0" />
-                {gpsLoading ? 'Mencari lokasi...' : customerLocation ? 'Lokasi Saya Aktif' : 'Gunakan Lokasi Saya'}
-              </button>
-              {gpsMessage && (
-                <p role="status" aria-live="polite" className="mt-1 text-[10px] leading-snug text-slate-600 sm:text-xs">
-                  {gpsMessage}
-                </p>
-              )}
             </div>
 
             <button
@@ -481,10 +466,10 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-6 md:hidden min-h-11 inline-flex items-center justify-center gap-2 rounded-lg border border-purple-200 bg-purple-50 px-3 text-sm font-semibold text-purple-800 active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-11 inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
-              <span>Filter tambahan</span>
+              <span className="sr-only">Filter tambahan</span>
               {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
             </button>
 
@@ -502,6 +487,23 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
 
           <div id="jelajah-advanced-filters" className={`${showMoreFilters ? "block" : "hidden"} md:block space-y-1.5 sm:space-y-4`}>
+          <div className="rounded-xl border border-purple-100 bg-purple-50/70 p-2 sm:p-3">
+            <button
+              type="button"
+              onClick={handleUseMyLocation}
+              disabled={gpsLoading}
+              aria-label="Gunakan lokasi GPS saya"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold text-purple-800 transition-colors hover:bg-purple-100 disabled:cursor-wait disabled:opacity-60"
+            >
+              <MapPin className="h-4 w-4 shrink-0" />
+              {gpsLoading ? 'Mencari lokasi...' : customerLocation ? 'Lokasi Saya Aktif' : 'Gunakan Lokasi Saya'}
+            </button>
+            {gpsMessage && (
+              <p role="status" aria-live="polite" className="mt-1 text-center text-[10px] leading-snug text-slate-600 sm:text-xs">
+                {gpsMessage}
+              </p>
+            )}
+          </div>
           {/* Row 2: Activity Categories Buttons */}
           <div className="hidden sm:block pt-2 sm:pt-4 border-t border-purple-100/80">
             <div className="flex flex-nowrap overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap gap-1.5">
