@@ -395,7 +395,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
 
   return (
-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
+    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top_left,_rgba(167,139,250,0.45),_transparent_45%),radial-gradient(ellipse_at_top_right,_rgba(232,121,249,0.30),_transparent_42%),radial-gradient(ellipse_at_bottom_left,_rgba(244,114,182,0.20),_transparent_45%),linear-gradient(180deg,#F5EEFF_0%,#FBF8FF_55%,#FFF8FC_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Jelajah */}
         <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
