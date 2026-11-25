@@ -531,7 +531,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   }
 
   return (
-    <div className="pt-0 sm:pt-8 pb-[160px] lg:pb-12 bg-[radial-gradient(ellipse_at_top,_rgba(233,213,255,0.42),_transparent_48%),linear-gradient(180deg,#FAF8FC_0%,#F7F4FC_100%)]">
+    <div className="pt-0 sm:pt-7 pb-[160px] lg:pb-12 bg-[radial-gradient(ellipse_at_top,_rgba(91,33,182,0.16),_transparent_42%),linear-gradient(180deg,#F1E9FF_0%,#FAF8FF_36%,#FFFFFF_100%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Link */}
         <button
@@ -570,7 +570,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-0 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[65vh] sm:max-h-none bg-slate-900 shadow-md">
+                    <div className="relative mx-0 sm:mx-0 rounded-none sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[58vh] sm:max-h-none bg-[#24105F] shadow-[0_18px_44px_rgba(36,16,95,0.24)]">
                       {heroUrl && !avatarFailed ? (
                         <PhotoLightbox
                           src={heroUrl}
@@ -724,7 +724,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
               })()}
             </div>
             {/* Header Card (desktop) */}
-            <div className="hidden lg:block bg-white/85 rounded-[28px] border border-white/90 p-4 sm:p-6 md:p-8 shadow-[0_18px_44px_rgba(76,29,149,0.09),0_3px_12px_rgba(76,29,149,0.04)] ring-1 ring-purple-100/70 backdrop-blur-xl">
+            <div className="hidden lg:block bg-white rounded-[28px] border border-violet-100 p-5 sm:p-7 md:p-8 shadow-[0_22px_55px_rgba(55,18,112,0.12)] ring-1 ring-white/80">
               <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                 {/* Avatar */}
                 <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-[24px] overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-[0_12px_28px_rgba(76,29,149,0.18)] ring-1 ring-purple-200/80 relative flex items-center justify-center">
