@@ -37,7 +37,7 @@ export const PeopleDiscoveryStrip: React.FC<PeopleDiscoveryStripProps> = ({ onSe
               <p className="text-[10px] text-violet-200">Temukan orang baru untuk aktivitasmu</p>
             </div>
           </div>
-          <button type="button" onClick={onViewAll} className="inline-flex shrink-0 items-center gap-1 text-[11px] font-bold text-fuchsia-200 transition hover:text-white">
+          <button type="button" onClick={onViewAll} className="inline-flex shrink-0 items-center gap-1 text-[11px] font-bold text-fuchsia-200 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b]">
             Lihat semua <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -56,7 +56,7 @@ export const PeopleDiscoveryStrip: React.FC<PeopleDiscoveryStripProps> = ({ onSe
               className="group flex w-[68px] shrink-0 snap-start flex-col items-center gap-1.5 text-center"
               aria-label={`Lihat profil ${talent.name}`}
             >
-              <span className="relative block h-[60px] w-[60px] rounded-full bg-gradient-to-br from-fuchsia-400 via-violet-500 to-amber-300 p-[2px] shadow-[0_5px_18px_rgba(0,0,0,0.25)] transition duration-200 group-hover:scale-105">
+              <span className="relative block h-[60px] w-[60px] rounded-full bg-gradient-to-br from-fuchsia-400 via-violet-500 to-amber-300 p-[2px] shadow-[0_5px_18px_rgba(0,0,0,0.25)] transition duration-200 group-hover:scale-105 group-focus-visible:ring-2 group-focus-visible:ring-fuchsia-200 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-[#1b073b]">
                 <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-[#1b073b] bg-[#3a1a65] text-lg font-extrabold text-white">
                   {talent.avatarUrl ? (
                     <img src={talent.avatarUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
