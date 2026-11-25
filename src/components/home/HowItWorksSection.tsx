@@ -77,7 +77,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
 
             <button
               onClick={onLearnMoreClick}
-              className="mt-3 sm:mt-5 min-h-11 inline-flex items-center gap-2 text-sm font-bold text-[#741CFF] hover:text-white transition-colors cursor-pointer"
+              className="mt-3 sm:mt-5 min-h-11 inline-flex items-center gap-2 text-sm font-bold text-[#741CFF] hover:text-[#24105F] transition-colors cursor-pointer"
             >
               <span>Pelajari Pedoman Etika & Panduan Lengkap</span>
               <ArrowRight className="w-4 h-4" />
@@ -96,7 +96,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMor
             <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-3">
               {TRUST_ITEMS.map(({ label, Icon }) => (
                 <div key={label} className="flex flex-col lg:flex-row items-center lg:gap-3 text-center lg:text-left">
-                  <span className="w-9 h-9 md:w-12 md:h-12 shrink-0 rounded-2xl bg-white/[0.08] border border-white/15 text-[#741CFF] shadow-[0_8px_20px_rgba(0,0,0,0.12)] flex items-center justify-center">
+                  <span className="w-9 h-9 md:w-12 md:h-12 shrink-0 rounded-2xl bg-[#EEE8FF] border border-[#E8E2F0] text-[#741CFF] shadow-[0_4px_12px_rgba(36,16,95,0.06)] flex items-center justify-center">
                     <Icon className="w-5 h-5 md:w-6 md:h-6" />
                   </span>
                   <span className="mt-1.5 lg:mt-0 text-xs lg:text-sm font-semibold text-[#625B70] leading-tight">{label}</span>
