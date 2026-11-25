@@ -1266,21 +1266,22 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 border-t border-white/70 bg-white/95 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-12px_32px_rgba(36,16,95,0.12)] backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between gap-2 min-[360px]:gap-3">
-          <div className="min-w-0 w-full min-[360px]:w-auto">
-            <div className="text-lg min-[360px]:text-xl font-black text-[#1E0938] tabular-nums truncate">
+      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 border-t border-white/80 bg-white/95 px-3 pt-2.5 pb-3 shadow-[0_-12px_32px_rgba(36,16,95,0.12)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2.5">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">Tarif per jam · {bookingMode === 'online' ? 'Online' : 'Offline'}</p>
+            <div className="truncate text-base font-extrabold leading-tight text-[#1E0938] tabular-nums">
               {selectedHourlyRate ? formatRupiah(selectedHourlyRate) : 'Disesuaikan'}
-              {selectedHourlyRate ? <span className="text-xs min-[360px]:text-sm font-normal text-slate-500"> / jam {bookingMode === 'online' ? 'online' : 'offline'}</span> : null}
             </div>
           </div>
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
-            className="min-h-11 w-full min-[360px]:w-auto px-4 min-[360px]:px-5 py-3.5 bg-gradient-to-r from-[#351078] via-[#5B21B6] to-[#7926C7] hover:from-[#28105B] hover:to-[#6517B5] text-white font-bold text-sm rounded-xl shadow-[0_8px_18px_rgba(91,33,182,0.28)] transition-all flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+            aria-label={isPaymentCheckoutEnabled ? 'Ajukan booking' : 'Lihat detail booking'}
+            className="min-h-12 shrink-0 rounded-xl bg-gradient-to-r from-[#351078] via-[#5B21B6] to-[#7926C7] px-3.5 min-[360px]:px-5 text-[12px] min-[360px]:text-sm font-bold text-white shadow-[0_8px_18px_rgba(91,33,182,0.28)] transition-all flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer"
           >
-            <Calendar className="w-4 h-4" />
-            <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}</span>
+            <Calendar className="h-4 w-4" />
+            <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail'}</span>
           </button>
         </div>
       </div>
