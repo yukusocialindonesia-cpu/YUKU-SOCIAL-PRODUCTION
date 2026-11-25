@@ -66,8 +66,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
-  const [mobilePinnedHeight, setMobilePinnedHeight] = useState(0);
-  const mobilePinnedRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -225,21 +223,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     }
   };
 
-  // Pin the Jelajah controls to the viewport on mobile; reserve their measured height in the document flow.
-  useEffect(() => {
-    const element = mobilePinnedRef.current;
-    if (!element) return;
-    const updateHeight = () => setMobilePinnedHeight(Math.ceil(element.getBoundingClientRect().height));
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(element);
-    window.addEventListener('resize', updateHeight);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', updateHeight);
-    };
-  }, []);
-
   // Promosi dimuat terpisah agar gangguan tabel promosi tidak menghambat katalog Talent.
   useEffect(() => {
     let isMounted = true;
@@ -389,7 +372,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </section>
 
         <div aria-hidden="true" className="hidden" />
-        <div ref={mobilePinnedRef} className="relative z-10 w-full bg-[#FAF8FC] px-4 pb-1 pt-0 sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none">
+        <div className="relative z-10 w-full bg-[#FAF8FC] px-4 pb-1 pt-0 sm:mx-0 sm:w-auto sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:shadow-none">
         <div className="mx-auto max-w-7xl sm:max-w-none">
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
@@ -452,6 +435,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
+        <div className="sticky top-14 min-[376px]:top-[60px] min-[431px]:top-16 lg:top-[72px] xl:static z-30 -mx-4 bg-[#FAF8FC]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
@@ -638,8 +622,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             ))}
           </div>
         </section>
-
         </div>
+
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
