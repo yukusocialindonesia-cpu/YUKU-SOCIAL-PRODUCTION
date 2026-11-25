@@ -60,11 +60,11 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   ];
 
   return (
-    <section className="relative overflow-hidden border-t border-white/[0.06] bg-[#1b073b] py-6 sm:py-9">
+    <section className="relative overflow-hidden border-t border-white/[0.06] bg-[#1b073b] py-5 sm:py-9">
       <div className="pointer-events-none absolute -left-24 top-0 h-64 w-64 rounded-full bg-violet-700/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-fuchsia-600/15 blur-3xl" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-4 flex items-end justify-between gap-3 sm:mb-6">
+        <div className="mb-3 flex items-end justify-between gap-3 sm:mb-6">
           <div>
             <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-fuchsia-300 sm:text-[11px]">
               Temukan keseruanmu
@@ -82,9 +82,9 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[174px] animate-pulse rounded-[22px] border border-white/10 bg-white/[0.07] sm:h-[184px]" />
+              <div key={i} className="h-[160px] animate-pulse rounded-[20px] border border-white/10 bg-white/[0.07] sm:h-[184px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -102,7 +102,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
             Aktivitas belum tersedia. Coba lagi beberapa saat.
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
             {categories.map((cat, idx) => {
               const tone = tones[idx % tones.length];
               return (
@@ -110,12 +110,12 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[174px] cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-[22px] border border-white/[0.12] bg-gradient-to-br from-[#35105f]/90 via-[#28104c]/90 to-[#1d0b3a] px-3 py-4 text-center shadow-[0_12px_30px_rgba(5,0,20,0.24)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/45 hover:from-[#421477] hover:to-[#28104c] sm:min-h-[184px] sm:rounded-[24px]"
+                  className="group relative flex min-h-[160px] cursor-pointer flex-col items-center justify-center gap-2.5 overflow-hidden rounded-[20px] border border-white/[0.12] bg-gradient-to-br from-[#35105f]/90 via-[#28104c]/90 to-[#1d0b3a] px-2.5 py-3 text-center shadow-[0_12px_30px_rgba(5,0,20,0.24)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/45 hover:from-[#421477] hover:to-[#28104c] sm:min-h-[184px] sm:rounded-[24px]"
                 >
-                  <span className={`relative flex h-[66px] w-[66px] items-center justify-center rounded-[21px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} ring-1 ring-white/25 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[72px] sm:w-[72px] sm:rounded-[23px]`}>
+                  <span className={`relative flex h-[58px] w-[58px] items-center justify-center rounded-[21px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} ring-1 ring-white/25 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[72px] sm:w-[72px] sm:rounded-[23px]`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <span className="line-clamp-1 text-[13px] font-extrabold leading-tight text-white sm:text-[14px]">
+                  <span className="line-clamp-1 text-[12px] font-extrabold leading-tight text-white sm:text-[14px]">
                     {cat.title}
                   </span>
                   <span className="line-clamp-2 min-h-[28px] text-[10px] leading-snug text-violet-100/75 sm:text-[11px]">
