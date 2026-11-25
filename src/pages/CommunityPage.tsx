@@ -198,13 +198,13 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.20),_transparent_42%),linear-gradient(180deg,#FCFAFF_0%,#F8F5FC_48%,#FFFFFF_100%)] pb-8">
-      <section className="relative isolate overflow-hidden border-b border-white/80 bg-gradient-to-br from-white/95 via-[#F7F0FF] to-[#FFF3F7] text-slate-900 shadow-[0_16px_45px_rgba(76,29,149,0.07)]">
-        <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_rgba(91,33,182,0.18),_transparent_38%),linear-gradient(180deg,#F1E9FF_0%,#FAF8FF_46%,#FFFFFF_100%)] pb-8">
+      <section className="relative isolate overflow-hidden border-b border-violet-300/20 bg-gradient-to-br from-[#24105F] via-[#45149A] to-[#7624C9] text-white shadow-[0_20px_48px_rgba(55,18,112,0.22)]">
+        <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-violet-300/20 blur-3xl" />
         <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-7 sm:px-6 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-white/85 px-3 py-1.5 text-[11px] font-bold tracking-wide text-purple-800 shadow-sm">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold tracking-wide text-violet-100 shadow-sm">
               <Sparkles className="h-3.5 w-3.5 text-amber-500" /> RUANG KOMUNITAS YUKU
             </div>
             <h1 className="text-3xl font-black leading-tight tracking-tight text-[#1E0938] sm:text-4xl md:text-5xl">
