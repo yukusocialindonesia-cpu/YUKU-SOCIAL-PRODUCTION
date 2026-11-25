@@ -278,7 +278,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                     disabled={busy || i === 0}
                     onClick={() => move(i, -1)}
                     aria-label="Geser ke atas"
-                    className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
+                    className="h-11 w-11 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
                   >
                     <ArrowUp className="w-4 h-4" />
                   </button>
@@ -287,7 +287,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                     disabled={busy || i === slides.length - 1}
                     onClick={() => move(i, 1)}
                     aria-label="Geser ke bawah"
-                    className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
+                    className="h-11 w-11 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
                   >
                     <ArrowDown className="w-4 h-4" />
                   </button>
@@ -295,7 +295,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                     type="button"
                     disabled={busy}
                     onClick={() => toggleActive(s)}
-                    className="px-3 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+                    className="min-h-11 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     {s.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     {s.is_active ? 'Sembunyikan' : 'Tampilkan'}
@@ -306,14 +306,14 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                         type="button"
                         disabled={busy}
                         onClick={() => handleDelete(s)}
-                        className="px-3 h-9 rounded-lg bg-rose-600 text-white text-xs font-bold cursor-pointer"
+                        className="min-h-11 px-3 rounded-lg bg-rose-600 text-white text-xs font-bold cursor-pointer"
                       >
                         Ya, hapus
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmDeleteId(null)}
-                        className="px-3 h-9 rounded-lg bg-slate-100 text-xs font-bold cursor-pointer"
+                        className="min-h-11 px-3 rounded-lg bg-slate-100 text-xs font-bold cursor-pointer"
                       >
                         Batal
                       </button>
@@ -324,7 +324,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                       disabled={busy}
                       onClick={() => setConfirmDeleteId(s.id)}
                       aria-label="Hapus slide"
-                      className="w-9 h-9 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 inline-flex items-center justify-center cursor-pointer"
+                      className="h-11 w-11 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 inline-flex items-center justify-center cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
