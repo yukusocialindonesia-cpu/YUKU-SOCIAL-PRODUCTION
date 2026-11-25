@@ -8,18 +8,22 @@ Status: **belum production-ready**. Centang hanya setelah diverifikasi sendiri.
 - [ ] Hosting memakai fallback SPA (`vercel.json` / `public/_redirects` sudah disediakan). Uji refresh pada `/admin` dan `/talent/<id>`.
 
 ## B. Database (staging dulu)
-- [ ] Buat proyek Supabase staging KOSONG. Terapkan migrasi `01` s/d `23` berurutan.
-- [ ] Jalankan `tests/stage_a`, `stage_b` (perbarui fixture, lihat README migrasi), dan `stage_c`. Semua PASS.
-- [ ] Jalankan `ops/post_deploy_checks.sql`. Semua baris PASS.
-- [ ] Aktifkan `pg_cron`, terapkan migration 33; konfirmasi job `release-escrow-completed-bookings` dan `expire-stale-bookings` terdaftar di `cron.job`.
+- [ ] Buat proyek Supabase staging KOSONG. Terapkan migration sesuai urutan dan prosedur terbaru di `supabase/migrations/README.md`; jangan mengandalkan rentang nomor historis atau `FULL_MIGRATION_V20.sql`.
+- [ ] Cocokkan migration history staging dengan file migration dan skema aktual sebelum menjalankan test.
+- [ ] Jalankan test Stage A, B, C, dan skenario payment-route Stage D setelah fixture disiapkan. Catatan: `stage_d_payment_route_lock_tests.sql` saat ini adalah spesifikasi komentar, bukan test SQL executable; jangan tandai lulus sebelum test assertions ditulis dan dijalankan.
+- [ ] Jalankan `ops/post_deploy_checks.sql`, lalu tinjau WARN/INFO secara manual. Skrip tersebut perlu diperbarui untuk mencakup tabel, fungsi, dan kebijakan migration terbaru.
+- [ ] Verifikasi `pg_cron` dan job escrow/expire dari database aktual; jangan menganggap nomor migration 33 selalu menjadi versi aktif.
 - [ ] Buat akun admin HANYA lewat `SELECT public.provision_admin_user('<uuid>')` di SQL Editor.
 - [ ] Ulangi urutan yang sama di produksi hanya setelah staging bersih.
 
-## C. Pembayaran (Xendit)
-- [ ] Deploy `create-checkout` dan `xendit-webhook --no-verify-jwt`; set secrets `XENDIT_SECRET_KEY`, `XENDIT_CALLBACK_TOKEN`, `APP_BASE_URL`.
-- [ ] Daftarkan URL callback invoice di dashboard Xendit.
-- [ ] Uji sandbox: bayar sukses, nominal tidak cocok (ditolak), callback token salah (401), callback ganda (idempotent), invoice kedaluwarsa.
-- [ ] Baru setelah lulus: set `system_feature_flags.payment_checkout = TRUE` dan `VITE_PAYMENT_CHECKOUT_ENABLED=true` pada hosting.
+## C. Pembayaran (QRIS / transfer bank manual; Xendit ditahan untuk checkout baru)
+- [ ] Pastikan migration payment-route, QRIS, dan manual bank transfer benar-benar diterapkan pada staging; verifikasi function definition dan storage policies dari database aktual.
+- [ ] Uji QRIS end-to-end: metode aktif/nonaktif, upload bukti, file tidak valid/terlalu besar, nominal tidak cocok, pengajuan ganda, review Finance approve/reject, dan settlement/ledger hanya sekali.
+- [ ] Uji transfer bank end-to-end: snapshot rekening per booking, upload bukti, nominal tidak cocok, referensi transaksi ganda, review Finance approve/reject, file privat/signed URL, dan settlement/ledger hanya sekali.
+- [ ] Uji route lock: Xendit ditolak untuk booking baru; metode manual yang tidak aktif ditolak; route yang sudah terkunci tidak dapat diganti; legacy Xendit hanya menyelesaikan transaksi lama yang sudah terkunci.
+- [ ] Pastikan booking expired, cancellation, refund, dispute, dan escrow tidak dapat disalahgunakan untuk mengesahkan pembayaran atau membayar dua kali.
+- [ ] Xendit: jangan aktifkan `create-checkout`, webhook, atau flag checkout Xendit untuk booking baru sampai ada keputusan produk dan test sandbox terpisah. Jika Xendit akan diaktifkan lagi, buat migration/test yang secara eksplisit mengubah kebijakan route lock terlebih dahulu.
+- [ ] Aktifkan flag booking/checkout hanya setelah alur manual, konfigurasi QRIS/rekening, prosedur rekonsiliasi, dan akses Finance diverifikasi pada staging.
 
 ## D. Data pribadi & hukum (perlu peninjauan profesional)
 - [ ] Kebijakan Privasi/Syarat mencerminkan praktik nyata: NIK dan rekening disimpan sebagai teks di database; foto KTP di bucket privat. Klaim "terenkripsi" sudah dihapus dari UI. Jika ingin enkripsi kolom, rancang dengan Supabase Vault/pgsodium dan uji alur review admin.
