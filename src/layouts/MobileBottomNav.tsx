@@ -80,9 +80,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
       <ul className="grid grid-cols-5 gap-0.5 sm:gap-1">
         {items.map((item) => {
           const active =
-            item.route !== null &&
-            (currentPath === item.route ||
-              (item.route !== '/' && currentPath.startsWith(item.route)));
+            (item.route !== null &&
+              (currentPath === item.route ||
+                (item.route !== '/' && currentPath.startsWith(item.route)))) ||
+            (item.label === 'Profil' && role === 'customer' && currentPath === '/profil-saya');
 
           return (
             <li key={item.label} className="min-w-0">
