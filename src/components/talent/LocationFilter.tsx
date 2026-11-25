@@ -106,7 +106,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex items-center">
+      <div className="flex h-12 items-center">
         <button
           ref={triggerRef}
           type="button"
@@ -120,15 +120,15 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
-          className={`w-full min-h-11 sm:min-h-[46px] pl-8 sm:pl-9 pr-8 sm:pr-14 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white border rounded-xl text-left shadow-sm transition-all duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 ${
+          className={`h-12 min-h-12 w-full min-w-0 rounded-none border-0 bg-transparent pl-9 pr-8 py-0 text-[13px] sm:text-sm text-left shadow-none transition-colors duration-200 cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-600 ${
             isOpen
-              ? 'border-purple-400 bg-white shadow-[0_12px_28px_-16px_rgba(124,58,237,0.55)]'
+              ? 'bg-purple-50/60'
               : selectedCity !== 'Semua Kota'
-              ? 'border-purple-300/80 bg-gradient-to-r from-violet-50/90 to-fuchsia-50/70 text-purple-950 font-semibold'
-              : 'border-slate-200 hover:bg-slate-100/70 text-slate-700'
+              ? 'text-purple-950 font-semibold'
+              : 'text-slate-700 hover:bg-slate-50/70'
           }`}
         >
-          <MapPin className="w-4 h-4 text-purple-700 absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <MapPin className="w-4 h-4 text-purple-700 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <span className="truncate">{selectedCity}</span>
         </button>
 
