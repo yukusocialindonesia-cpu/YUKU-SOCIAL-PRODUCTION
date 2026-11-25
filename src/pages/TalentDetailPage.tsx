@@ -1262,18 +1262,18 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-4 pt-3 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="text-xl font-black text-[#1E0938] tabular-nums truncate">
+      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
+        <div className="max-w-7xl mx-auto flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between gap-2 min-[360px]:gap-3">
+          <div className="min-w-0 w-full min-[360px]:w-auto">
+            <div className="text-lg min-[360px]:text-xl font-black text-[#1E0938] tabular-nums truncate">
               {selectedHourlyRate ? formatRupiah(selectedHourlyRate) : 'Disesuaikan'}
-              {selectedHourlyRate ? <span className="text-sm font-normal text-slate-500"> / jam {bookingMode === 'online' ? 'online' : 'offline'}</span> : null}
+              {selectedHourlyRate ? <span className="text-xs min-[360px]:text-sm font-normal text-slate-500"> / jam {bookingMode === 'online' ? 'online' : 'offline'}</span> : null}
             </div>
           </div>
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
-            className="px-5 py-3.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+            className="min-h-11 w-full min-[360px]:w-auto px-4 min-[360px]:px-5 py-3.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Calendar className="w-4 h-4" />
             <span>{isPaymentCheckoutEnabled ? 'Ajukan Booking' : 'Lihat Detail Booking'}</span>
