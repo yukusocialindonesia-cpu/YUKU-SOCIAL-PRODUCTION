@@ -110,8 +110,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </div>
 
-      {/* Konten edukasi/marketing tetap tersedia di desktop; beranda HP fokus ke aktivitas aplikasi. */}
-      <div className="hidden md:block">
+      {/* Semua informasi utama tetap tersedia di Beranda HP dan desktop. */}
+      <div>
         <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
         <SafetySection />
         <TalentCtaSection
