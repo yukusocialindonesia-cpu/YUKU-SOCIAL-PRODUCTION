@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown } from 'lucide-react';
+import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown, Bell } from 'lucide-react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { AppRoute } from '../types/navigation';
@@ -132,12 +132,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
           {/* Zone 3: Shared notification + responsive account actions */}
           <div className="flex items-center gap-2 xl:gap-3 shrink-0">
-            {currentUser && (
+            {currentUser ? (
               <NotificationBell
                 userId={currentUser.id}
                 userRole={userRole}
                 onNavigate={handleLinkClick}
               />
+            ) : (
+              <button
+                type="button"
+                onClick={() => handleLinkClick('/login')}
+                aria-label="Masuk untuk melihat notifikasi"
+                title="Masuk untuk melihat notifikasi"
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-100/80 bg-white/85 text-slate-700 shadow-sm transition hover:border-purple-200 hover:bg-purple-50 hover:text-purple-900"
+              >
+                <Bell className="h-4 w-4" />
+              </button>
             )}
             <div className="hidden xl:flex items-center gap-3">
             {currentUser ? (
