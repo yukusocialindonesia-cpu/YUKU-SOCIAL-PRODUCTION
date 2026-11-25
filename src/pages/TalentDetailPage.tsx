@@ -1345,7 +1345,12 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleBookingSubmit} className="space-y-4 text-xs">
+              <form onSubmit={handleBookingSubmit} className="space-y-5 text-xs">
+                <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-purple-700">Rencana aktivitas</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-900">Atur sesi yang paling sesuai</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">Pilih aktivitas, waktu, dan metode pertemuan sebelum mengirim permintaan.</p>
+                </div>
                 {bookingError && (
                   <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-2.5">
                     <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
@@ -1380,6 +1385,8 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 )}
 
                 {/* Activity & Booking Mode */}
+                <section className="space-y-2.5">
+                  <div><p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">01 · Layanan</p><p className="mt-0.5 text-sm font-bold text-slate-900">Pilih aktivitas dan metode</p></div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">
@@ -1427,8 +1434,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     </select>
                   </div>
                 </div>
+                </section>
 
                 {/* Date & Time Picker */}
+                <section className="space-y-2.5">
+                <div><p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">02 · Jadwal</p><p className="mt-0.5 text-sm font-bold text-slate-900">Tentukan tanggal dan jam</p></div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">
@@ -1468,6 +1478,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     </select>
                   </div>
                 </div>
+                </section>
 
                 {(() => {
                   const availCheck = checkBookingAgainstAvailability(
@@ -1500,6 +1511,8 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 })()}
 
                 {/* Duration & Price Estimate */}
+                <section className="space-y-2.5">
+                <div><p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">03 · Estimasi</p><p className="mt-0.5 text-sm font-bold text-slate-900">Durasi dan biaya layanan</p></div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">
@@ -1522,13 +1535,17 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                     <label className="block font-bold text-slate-700 mb-1">
                       Perkiraan Total Biaya
                     </label>
-                    <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-lg font-black text-purple-900 text-sm">
-                      {formatRupiah((selectedHourlyRate || 0) * durationHours)}
+                    <div className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-2.5">
+                      <div className="text-sm font-extrabold text-purple-950 tabular-nums">{selectedHourlyRate ? formatRupiah(selectedHourlyRate * durationHours) : "Tarif belum tersedia"}</div>
+                      <div className="mt-1 text-[10px] leading-relaxed text-purple-800">{selectedHourlyRate ? `${formatRupiah(selectedHourlyRate)} × ${durationHours} jam` : "Silakan konfirmasi tarif sebelum melanjutkan."}</div>
                     </div>
                   </div>
                 </div>
+                </section>
 
                 {/* Meeting location or online platform */}
+                <section className="space-y-2.5">
+                <div><p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">04 · Lokasi</p><p className="mt-0.5 text-sm font-bold text-slate-900">{bookingMode === "offline" ? "Tentukan tempat pertemuan" : "Tentukan kanal online"}</p></div>
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
                     {bookingMode === 'offline'
@@ -1564,19 +1581,21 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   </div>
                 )}
 
-                <div className="pt-3 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2">
+                </section>
+
+                <div className="sticky bottom-0 -mx-1 border-t border-slate-200 bg-white/95 px-1 pt-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-sm flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2">
                   <button
                     type="button"
                     onClick={handleCloseModal}
                     disabled={isSubmittingBooking}
-                    className="w-full sm:w-auto px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg cursor-pointer"
+                    className="min-h-11 w-full sm:w-auto px-4 py-2.5 text-slate-600 font-semibold hover:bg-slate-100 rounded-xl cursor-pointer"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingBooking || !isPaymentCheckoutEnabled}
-                    className="w-full sm:w-auto px-5 py-2.5 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="min-h-12 w-full sm:w-auto px-5 py-3 bg-purple-700 text-white font-bold rounded-xl hover:bg-purple-800 shadow-sm cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmittingBooking ? (
                       <>
