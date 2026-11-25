@@ -135,7 +135,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-3 mt-2 h-[clamp(104px,27vw,136px)] sm:mx-4 sm:mt-3 sm:h-[clamp(240px,34vw,340px)] rounded-[18px] sm:rounded-[28px] overflow-hidden border border-white/20 shadow-[0_14px_38px_rgba(0,0,0,0.26)] ring-1 ring-white/10 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-3 mt-2 h-[clamp(128px,34vw,152px)] sm:mx-4 sm:mt-3 sm:h-[clamp(240px,34vw,340px)] rounded-[18px] sm:rounded-[28px] overflow-hidden border border-white/20 shadow-[0_14px_38px_rgba(0,0,0,0.26)] ring-1 ring-white/10 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
