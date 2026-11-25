@@ -37,19 +37,19 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
       case 'ShoppingBag':
         return <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />;
       case 'Film':
-        return <Film className="w-5 h-5" />;
+        return <Film className="w-5 h-5 sm:w-6 sm:h-6" />;
       case 'Sparkles':
-        return <Sparkles className="w-5 h-5" />;
+        return <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />;
       case 'Users':
-        return <Users className="w-5 h-5" />;
+        return <Users className="w-5 h-5 sm:w-6 sm:h-6" />;
       case 'MessageCircle':
-        return <MessageCircle className="w-5 h-5" />;
+        return <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />;
       default:
-        return <Coffee className="w-5 h-5" />;
+        return <Coffee className="w-5 h-5 sm:w-6 sm:h-6" />;
     }
   };
 
-  /* HP kecil: 2 kolom agar nama kategori lega; HP standar: 3 kolom agar tetap ringkas. */
+  /* Grid 3 kolom menjaga pilihan aktivitas langsung terlihat di layar HP. */
   const gridClass = 'grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-[repeat(auto-fit,minmax(132px,1fr))]';
 
   return (
