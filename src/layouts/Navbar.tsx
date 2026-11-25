@@ -312,7 +312,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className={`min-h-11 min-w-11 p-1.5 sm:p-2.5 inline-flex items-center justify-center rounded-xl border shadow-sm transition-all ${isHomePage ? 'border-white/15 bg-white/10 text-white hover:bg-white/20' : 'border-purple-100/80 bg-white/75 text-slate-600 hover:bg-purple-50 hover:text-purple-800'}`}
+              className="min-h-11 min-w-11 p-1.5 sm:p-2.5 inline-flex items-center justify-center rounded-xl border border-[#E8E2F0] bg-white text-slate-600 shadow-sm transition-all hover:bg-[#F8F7FC] hover:text-[#24105F]"
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="yuku-mobile-navigation"
@@ -328,17 +328,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
       {isMobileMenuOpen && (
         <div
           id="yuku-mobile-navigation"
-          className={`xl:hidden border-t px-4 pt-4 pb-6 backdrop-blur-2xl max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] min-[376px]:max-h-[calc(100dvh-3.75rem-4rem-env(safe-area-inset-bottom))] min-[431px]:max-h-[calc(100dvh-4rem-4rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-4rem)] lg:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 ${isHomePage ? "border-white/10 bg-[#1b073b]/[0.98] shadow-[0_24px_50px_-28px_rgba(12,3,28,0.8)]" : "border-purple-100/70 bg-white shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)]"}` }
+          className={`xl:hidden border-t px-4 pt-4 pb-6 backdrop-blur-2xl max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] min-[376px]:max-h-[calc(100dvh-3.75rem-4rem-env(safe-area-inset-bottom))] min-[431px]:max-h-[calc(100dvh-4rem-4rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-4rem)] lg:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 ${"border-[#EEEAF5] bg-white shadow-[0_24px_50px_-28px_rgba(36,16,95,0.18)]"}` }
         >
           {currentUser && (
-            <div className={`mb-4 p-3.5 rounded-2xl flex items-center justify-between border ${isHomePage ? "bg-white/[0.07] border-white/10" : "bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 border-purple-100/80"} shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]`}>
+            <div className={`mb-4 p-3.5 rounded-2xl flex items-center justify-between border ${"bg-[#F8F7FC] border-[#E8E2F0]"} shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]`}>
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-purple-700 text-white flex items-center justify-center text-xs font-bold">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div className={`text-xs font-bold ${isHomePage ? "text-white" : "text-purple-950"}`}>{displayName}</div>
-                  <div className={`text-[11px] truncate max-w-[180px] ${isHomePage ? "text-white/55" : "text-slate-500"}`}>
+                  <div className={`text-xs font-bold ${"text-[#24105F]"}`}>{displayName}</div>
+                  <div className={`text-[11px] truncate max-w-[180px] ${"text-slate-500"}`}>
                     {currentUser.email}
                   </div>
                 </div>
@@ -434,8 +434,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onClick={() => handleLinkClick(link.href)}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${
                   currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
-                    ? (isHomePage ? 'bg-white/12 text-white font-bold' : 'bg-purple-50 text-purple-900 font-bold')
-                    : (isHomePage ? 'text-white/75 hover:bg-white/[0.07] hover:text-white' : 'text-slate-700 hover:bg-slate-50')
+                    ? ('bg-[#EEE8FF] text-[#24105F] font-bold')
+                    : ('text-slate-700 hover:bg-[#F8F7FC] hover:text-[#24105F]')
                 }`}
               >
                 {link.label}
@@ -443,13 +443,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             ))}
             <button
               onClick={() => handleLinkClick('/bantuan')}
-              className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${isHomePage ? 'text-white/75 hover:bg-white/[0.07] hover:text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+              className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${'text-slate-700 hover:bg-[#F8F7FC] hover:text-[#24105F]'}`}
             >
               Pusat Bantuan
             </button>
           </div>
 
-          <div className={`pt-3 border-t flex flex-col gap-2 ${isHomePage ? 'border-white/10' : 'border-slate-100'}`}>
+          <div className={`pt-3 border-t flex flex-col gap-2 ${'border-[#EEEAF5]'}`}>
             {currentUser ? (
               <button
                 onClick={handleLogout}
@@ -462,19 +462,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               <>
                 <button
                   onClick={() => handleLinkClick('/login')}
-                  className={`w-full py-3 text-center text-sm font-bold rounded-lg transition-colors ${isHomePage ? 'text-white bg-white/10 hover:bg-white/15 border border-white/10' : 'text-slate-800 bg-slate-100 hover:bg-slate-200'}`}
+                  className={`w-full py-3 text-center text-sm font-bold rounded-lg transition-colors ${'text-[#24105F] bg-[#F8F7FC] hover:bg-[#EEE8FF] border border-[#E8E2F0]'}`}
                 >
                   Masuk ke Akun
                 </button>
                 <button
                   onClick={() => handleLinkClick('/register')}
-                  className="w-full py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-[#7427db] via-[#741cff] to-[#ed1688] rounded-xl shadow-[0_8px_20px_rgba(116,28,255,0.22)]"
+                  className="w-full py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-[#24105F] to-[#741CFF] rounded-xl shadow-[0_8px_20px_rgba(116,28,255,0.18)]"
                 >
                   Daftar Akun Customer
                 </button>
                 <button
                   onClick={() => handleLinkClick('/daftar-talent')}
-                  className={`w-full py-2 text-center text-xs font-semibold transition-colors ${isHomePage ? 'text-[#d7b8ff] hover:text-white' : 'text-purple-700 hover:text-purple-900'}`}
+                  className={`w-full py-2 text-center text-xs font-semibold transition-colors ${'text-[#741CFF] hover:text-[#24105F]'}`}
                 >
                   Ingin bergabung jadi Talent?
                 </button>
