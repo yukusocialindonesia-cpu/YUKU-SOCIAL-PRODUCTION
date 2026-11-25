@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Coffee, ShoppingBag, Film, Sparkles, Users, MessageCircle, RefreshCw, AlertCircle } from 'lucide-react';
+import { Coffee, ShoppingBag, Film, Sparkles, Users, MessageCircle, RefreshCw, AlertCircle, ArrowUpRight } from 'lucide-react';
 import { ActivityCategory, ActivityCategoryId } from '../../types/talent';
 import { fetchCategoriesFromSupabase } from '../../utils/supabaseMarketplace';
 
@@ -30,91 +30,94 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   }, []);
 
   const getIcon = (iconName: string) => {
+    const iconClass = 'w-6 h-6 sm:w-7 sm:h-7';
     switch (iconName) {
       case 'Coffee':
       case 'utensils':
-        return <Coffee className="w-4 h-4 sm:w-5 sm:h-5" />;
+        return <Coffee className={iconClass} />;
       case 'ShoppingBag':
-        return <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />;
+        return <ShoppingBag className={iconClass} />;
       case 'Film':
-        return <Film className="w-5 h-5 sm:w-6 sm:h-6" />;
+        return <Film className={iconClass} />;
       case 'Sparkles':
-        return <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />;
+        return <Sparkles className={iconClass} />;
       case 'Users':
-        return <Users className="w-5 h-5 sm:w-6 sm:h-6" />;
+        return <Users className={iconClass} />;
       case 'MessageCircle':
-        return <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />;
+        return <MessageCircle className={iconClass} />;
       default:
-        return <Coffee className="w-5 h-5 sm:w-6 sm:h-6" />;
+        return <Sparkles className={iconClass} />;
     }
   };
 
-  /* Grid 3 kolom menjaga pilihan aktivitas langsung terlihat di layar HP. */
-  const gridClass = 'grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-[repeat(auto-fit,minmax(132px,1fr))]';
+  const tones = [
+    { orb: 'from-violet-300 to-fuchsia-400', glow: 'shadow-[0_8px_24px_rgba(168,85,247,0.28)]' },
+    { orb: 'from-pink-300 to-rose-400', glow: 'shadow-[0_8px_24px_rgba(244,63,94,0.24)]' },
+    { orb: 'from-amber-200 to-orange-400', glow: 'shadow-[0_8px_24px_rgba(251,146,60,0.24)]' },
+    { orb: 'from-cyan-200 to-blue-400', glow: 'shadow-[0_8px_24px_rgba(56,189,248,0.22)]' },
+    { orb: 'from-emerald-200 to-teal-400', glow: 'shadow-[0_8px_24px_rgba(45,212,191,0.22)]' },
+    { orb: 'from-indigo-200 to-violet-400', glow: 'shadow-[0_8px_24px_rgba(129,140,248,0.24)]' },
+  ];
 
   return (
-    <section className="relative py-4 sm:py-9 bg-gradient-to-b from-[#eee5ff] via-[#f7f2ff] to-[#f9f6ff]">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 sm:mb-5 gap-1 md:gap-4">
+    <section className="relative overflow-hidden bg-[#17072f] py-6 sm:py-9">
+      <div className="pointer-events-none absolute -left-24 top-0 h-64 w-64 rounded-full bg-violet-700/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-fuchsia-600/15 blur-3xl" />
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-4 flex items-end justify-between gap-3 sm:mb-6">
           <div>
-            <span className="text-[10px] sm:text-[11px] font-extrabold text-[#741cff] tracking-[0.14em] uppercase mb-1 block">
-              Pilihan Pengalaman Sosial
+            <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-fuchsia-300 sm:text-[11px]">
+              Temukan keseruanmu
             </span>
-            <h2 className="text-lg sm:text-2xl font-extrabold text-[#24105f] tracking-tight">
-              Aktivitas Seru Bersama Teman Baru
+            <h2 className="text-xl font-black tracking-tight text-white sm:text-2xl">
+              Mau aktivitas apa hari ini?
             </h2>
+            <p className="mt-1 text-xs text-violet-200/75 sm:text-sm">
+              Pilih aktivitas, temukan teman yang cocok.
+            </p>
           </div>
-          {/* Teks penjelas hanya di layar lebar */}
-          <p className="hidden xl:block text-sm text-slate-500 max-w-md">
-            Mulai dari bersantai di kafe, berbelanja, menonton pertunjukan, hingga sesi mengobrol suportif online.
-          </p>
+          <span className="mb-1 hidden items-center gap-1 text-xs font-bold text-fuchsia-200 sm:flex">
+            Jelajahi <ArrowUpRight className="h-4 w-4" />
+          </span>
         </div>
 
         {loading ? (
-          <div className={gridClass}>
+          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-2xl border border-[#eee9f8] bg-white animate-pulse h-[100px] sm:h-[116px]" />
+              <div key={i} className="h-[116px] animate-pulse rounded-[20px] border border-white/10 bg-white/[0.07] sm:h-[132px]" />
             ))}
           </div>
         ) : errorMsg ? (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 rounded-2xl border border-rose-300/20 bg-rose-500/10 p-4 text-xs text-rose-100">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <AlertCircle className="h-5 w-5 shrink-0 text-rose-300" />
               <span>{errorMsg}</span>
             </div>
-            <button
-              onClick={loadCategories}
-              className="px-3 py-1.5 bg-rose-600 text-white rounded-lg font-bold flex items-center gap-1 hover:bg-rose-700 cursor-pointer shrink-0"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Coba Lagi</span>
+            <button onClick={loadCategories} className="flex shrink-0 cursor-pointer items-center gap-1 rounded-xl bg-rose-500 px-3 py-2 font-bold text-white hover:bg-rose-400">
+              <RefreshCw className="h-3.5 w-3.5" /> Coba Lagi
             </button>
           </div>
         ) : categories.length === 0 ? (
-          <div className="p-6 text-center bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-500">
-            Belum ada data kategori aktivitas aktif di Supabase.
+          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 text-center text-xs text-violet-100/70">
+            Aktivitas belum tersedia. Coba lagi beberapa saat.
           </div>
         ) : (
-          <div className={gridClass}>
+          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
             {categories.map((cat, idx) => {
-              const tones = [
-                'bg-gradient-to-br from-[#eee5ff] to-[#d9c4ff] text-[#5414bd] ring-[#d8c5ff]',
-                'bg-gradient-to-br from-[#ffe8f3] to-[#ffc9e2] text-[#bd2877] ring-[#ffd2e7]',
-                'bg-gradient-to-br from-[#fff1d8] to-[#ffdda0] text-[#9a5a00] ring-[#ffe4b5]',
-              ];
+              const tone = tones[idx % tones.length];
               return (
                 <button
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="yuku-depth-card group flex min-h-[100px] sm:min-h-[116px] flex-col items-center justify-center gap-2 rounded-[18px] bg-white/95 px-1.5 py-3 cursor-pointer"
+                  className="group relative flex min-h-[116px] cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-[20px] border border-white/[0.11] bg-gradient-to-b from-white/[0.13] to-white/[0.055] px-2 py-4 text-center shadow-[0_10px_28px_rgba(5,0,20,0.2)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/40 hover:from-white/[0.19] hover:to-white/[0.09] sm:min-h-[132px] sm:rounded-[22px]"
                 >
-                  <span className={`yuku-icon-orb w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] sm:rounded-[16px] flex items-center justify-center ring-1 ring-inset ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
+                  <span className={`relative flex h-12 w-12 items-center justify-center rounded-[17px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} transition duration-300 group-hover:scale-110 group-hover:rotate-3 sm:h-14 sm:w-14 sm:rounded-[19px]`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <h3 className="font-extrabold text-[11px] sm:text-[13px] leading-tight text-center text-[#302052] group-hover:text-[#5b22c7] transition-colors">
+                  <span className="line-clamp-2 text-[11px] font-extrabold leading-tight text-white sm:text-[13px]">
                     {cat.title}
-                  </h3>
+                  </span>
                 </button>
               );
             })}
