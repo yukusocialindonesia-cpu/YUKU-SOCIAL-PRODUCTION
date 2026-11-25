@@ -41,6 +41,59 @@ body {
   background-attachment: scroll;
 }
 
+/* Discovery page: brighter, layered YUKU lavender atmosphere without
+   changing the global look of booking, profile, or account pages. */
+.yuku-discovery-surface {
+  background:
+    radial-gradient(ellipse at 4% 7%, rgba(192, 132, 252, 0.30), transparent 26rem),
+    radial-gradient(ellipse at 96% 24%, rgba(232, 121, 249, 0.20), transparent 28rem),
+    radial-gradient(ellipse at 52% 62%, rgba(196, 181, 253, 0.20), transparent 34rem),
+    linear-gradient(180deg, #FCF9FF 0%, #F6EEFF 46%, #FBF8FF 100%);
+}
+
+.yuku-discovery-surface::before,
+.yuku-discovery-surface::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(2px);
+}
+
+.yuku-discovery-surface::before {
+  width: 19rem;
+  height: 19rem;
+  top: 34rem;
+  left: -13rem;
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.24), rgba(192, 132, 252, 0));
+}
+
+.yuku-discovery-surface::after {
+  width: 24rem;
+  height: 24rem;
+  top: 72rem;
+  right: -17rem;
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.16), rgba(217, 70, 239, 0));
+}
+
+.yuku-discovery-heading h2 {
+  text-shadow: 0 2px 12px rgba(126, 34, 206, 0.08);
+}
+
+.yuku-talent-grid > div {
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .yuku-discovery-surface {
+    background:
+      radial-gradient(ellipse at 8% 4%, rgba(192, 132, 252, 0.25), transparent 32rem),
+      radial-gradient(ellipse at 94% 20%, rgba(232, 121, 249, 0.16), transparent 34rem),
+      linear-gradient(180deg, #FCF9FF 0%, #F5EEFC 55%, #FBF9FF 100%);
+  }
+}
+
 #root {
   position: relative;
   isolation: isolate;
