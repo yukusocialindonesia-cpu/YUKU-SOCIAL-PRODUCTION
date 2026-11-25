@@ -80,7 +80,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-[#FCFBFE]">
-      {/* 2. Hero Section with Tagline ("Real Friends. Real Moments.") & 3. Tombol Jelajahi Talent */}
+      {/* Hero dan pencarian sebagai satu area pembuka */}
       {/* 4. Pencarian berdasarkan aktivitas dan lokasi */}
       <HeroSection
         onExploreClick={() => onNavigate('/talent')}
@@ -89,13 +89,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
       />
 
-      {/* Pilihan layanan utama: offline dan online */}
+      {/* Pilihan layanan dalam dua kartu ringkas */}
       <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
 
-      {/* Kategori Aktivitas */}
+      {/* Kategori aktivitas ringkas */}
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      {/* Talent Pilihan dari profil publik Supabase */}
+      {/* Talent ditampilkan lebih awal setelah pilihan aktivitas */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
