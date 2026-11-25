@@ -650,6 +650,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         <div className="sm:hidden mb-0 flex items-center justify-between">
           <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
           <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
+            <Flame className="h-3.5 w-3.5 fill-purple-600 text-purple-600" />
             <select aria-label="Urutkan talent" value={sortBy} onChange={(event) => setSortBy(event.target.value as 'popular' | 'rating' | 'newest')} className="min-h-9 appearance-none rounded-full border border-purple-100 bg-white py-1 pl-2 pr-6 text-[10px] font-semibold text-purple-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
               <option value="popular">Terpopuler</option>
               <option value="rating">Rating tertinggi</option>
