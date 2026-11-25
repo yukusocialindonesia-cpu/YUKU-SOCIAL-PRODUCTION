@@ -4,6 +4,7 @@ import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
 import { ActivityCategories } from '../components/home/ActivityCategories';
 import { FeaturedTalentSection } from '../components/home/FeaturedTalentSection';
+import { PeopleDiscoveryStrip } from '../components/home/PeopleDiscoveryStrip';
 import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { SafetySection } from '../components/home/SafetySection';
 import { TalentCtaSection } from '../components/home/TalentCtaSection';
@@ -87,6 +88,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSearch={handleSearch}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
+      />
+
+      <PeopleDiscoveryStrip
+        onSelectTalent={handleSelectTalent}
+        onViewAll={() => onNavigate('/talent')}
       />
 
       {/* Pilihan layanan dalam dua kartu ringkas */}
