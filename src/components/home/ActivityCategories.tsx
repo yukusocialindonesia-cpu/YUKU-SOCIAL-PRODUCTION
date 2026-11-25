@@ -110,22 +110,30 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[136px] cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-white/[0.14] bg-gradient-to-br from-[#39116a] via-[#2a1050] to-[#1d0b3a] px-2.5 py-3 text-center shadow-[0_12px_30px_rgba(5,0,20,0.28)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/50 hover:from-[#48177d] hover:to-[#28104c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b] sm:min-h-[184px] sm:rounded-[24px]"
+                  className="group relative flex min-h-[126px] cursor-pointer flex-col items-start justify-between overflow-hidden rounded-[20px] border border-white/[0.14] bg-gradient-to-br from-[#39116a] via-[#2a1050] to-[#1d0b3a] p-3 text-left shadow-[0_12px_30px_rgba(5,0,20,0.28)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/50 hover:from-[#48177d] hover:to-[#28104c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b] sm:min-h-[184px] sm:rounded-[24px] sm:p-4"
                 >
-                  <span className={`relative flex h-[54px] w-[54px] items-center justify-center rounded-[19px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} ring-1 ring-white/30 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[72px] sm:w-[72px] sm:rounded-[23px]`}>
-                    {getIcon(cat.iconName)}
-                  </span>
-                  <span className="line-clamp-1 text-[11px] font-extrabold leading-tight text-white sm:text-[14px]">
-                    {cat.title}
-                  </span>
-                  <span className="line-clamp-2 min-h-[26px] text-[9.5px] leading-snug text-violet-100/75 sm:text-[11px]">
-                    {cat.description}
-                  </span>
-                  {cat.isOnlineAvailable && (
-                    <span className="rounded-full border border-fuchsia-200/20 bg-fuchsia-300/10 px-2 py-0.5 text-[9px] font-bold text-fuchsia-100">
-                      Online tersedia
+                  <span className={`pointer-events-none absolute -right-5 -top-6 h-24 w-24 rounded-full bg-gradient-to-br ${tone.orb} opacity-[0.13] blur-2xl transition duration-300 group-hover:opacity-25`} />
+                  <span className="relative flex w-full items-start justify-between gap-2">
+                    <span className={`flex h-[46px] w-[46px] items-center justify-center rounded-[16px] bg-gradient-to-br ${tone.orb} text-[#281044] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-white/30 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[62px] sm:w-[62px] sm:rounded-[20px]`}>
+                      {getIcon(cat.iconName)}
                     </span>
-                  )}
+                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.07] text-violet-100/80 transition duration-300 group-hover:border-fuchsia-200/40 group-hover:bg-fuchsia-300/15 group-hover:text-white">
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </span>
+                  </span>
+                  <span className="relative mt-2 block w-full">
+                    <span className="block line-clamp-1 text-[12px] font-extrabold leading-tight text-white sm:text-[14px]">
+                      {cat.title}
+                    </span>
+                    <span className="mt-1 block line-clamp-2 min-h-[25px] text-[9.5px] leading-snug text-violet-100/75 sm:text-[11px]">
+                      {cat.description}
+                    </span>
+                    {cat.isOnlineAvailable && (
+                      <span className="mt-1.5 inline-flex rounded-full border border-fuchsia-200/20 bg-fuchsia-300/10 px-2 py-0.5 text-[9px] font-bold text-fuchsia-100">
+                        Online tersedia
+                      </span>
+                    )}
+                  </span>
                 </button>
               );
             })}
