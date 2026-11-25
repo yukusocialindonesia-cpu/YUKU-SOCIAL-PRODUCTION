@@ -527,7 +527,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedActivity('all')}
-                className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                className={`min-h-11 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   selectedActivity === 'all'
                     ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
                     : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
@@ -540,7 +540,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedActivity(cat.id)}
-                  className={`min-h-10 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`min-h-11 sm:min-h-0 px-3.5 py-2 text-xs font-semibold rounded-full transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                     selectedActivity === cat.id
                       ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-md shadow-purple-300/40 ring-1 ring-white/30'
                       : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
@@ -690,7 +690,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 {loadMoreError && (
                   <>
                     <span role="alert" className="text-xs text-rose-600">{loadMoreError}</span>
-                    <button type="button" onClick={() => void loadNextTalentBatch()} className="min-h-10 rounded-lg bg-purple-700 px-4 text-xs font-semibold text-white">
+                    <button type="button" onClick={() => void loadNextTalentBatch()} className="min-h-11 rounded-lg bg-purple-700 px-4 text-xs font-semibold text-white">
                       Coba muat lagi
                     </button>
                   </>
@@ -722,7 +722,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   type="button"
                   onClick={() => void loadNextTalentBatch()}
                   disabled={loadingMoreTalents}
-                  className="min-h-10 px-4 text-xs font-semibold text-purple-700 disabled:opacity-50"
+                  className="min-h-11 px-4 text-xs font-semibold text-purple-700 disabled:opacity-50"
                 >
                   {loadingMoreTalents ? 'Memuat...' : 'Cari Talent berikutnya'}
                 </button>
