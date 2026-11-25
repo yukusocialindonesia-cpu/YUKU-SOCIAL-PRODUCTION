@@ -124,7 +124,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#741CFF] hover:text-[#24105F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F7FC]"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#741CFF] hover:text-[#24105F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F7FC]"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua Talent</span>
@@ -164,7 +164,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             <p>Belum ada profil Talent aktif yang terdaftar di Supabase.</p>
           </div>
         ) : visibleTalents.length === 0 ? (
-          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-[#E8E0FA]">
+          <div className="p-8 text-center bg-white rounded-2xl border border-[#E8E2F0] text-xs text-[#625B70]">
             <p className="mb-3">Belum ada talent yang cocok dengan filter ini.</p>
             <button
               type="button"
