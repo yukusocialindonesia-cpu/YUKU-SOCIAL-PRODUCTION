@@ -30,6 +30,18 @@
 html,
 body,
 #root {
+  min-height: 100%;
+}
+
+body {
+  background-color: #FAF8FC;
+  background-image:
+    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
+    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
+  background-attachment: scroll;
+}
+
+#root {
   position: relative;
   isolation: isolate;
 }
@@ -53,7 +65,7 @@ body,
 }
 
 /* Keep the app UI above the decorative watermark without blocking interaction. */
-#root > * {
+:where(#root) > * {
   position: relative;
   z-index: 1;
 }

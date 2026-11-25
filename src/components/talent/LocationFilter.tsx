@@ -80,6 +80,24 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
       setCitySearch('');
     }
   }, [isOpen]);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateDropdownPosition = () => {
+      if (triggerRef.current) {
+        setDropdownTop(triggerRef.current.getBoundingClientRect().bottom + 8);
+      }
+    };
+
+    updateDropdownPosition();
+    window.addEventListener('scroll', updateDropdownPosition, { passive: true });
+    window.addEventListener('resize', updateDropdownPosition);
+
+    return () => {
+      window.removeEventListener('scroll', updateDropdownPosition);
+      window.removeEventListener('resize', updateDropdownPosition);
+    };
+  }, [isOpen]);
 
   const handleSelect = (city: string) => {
     onChangeCity(city);

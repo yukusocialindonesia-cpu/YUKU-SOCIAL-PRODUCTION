@@ -9,6 +9,11 @@ import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 import { useAuth } from '../contexts/AuthContext';
 
+const getCreatedAtTimestamp = (createdAt?: string) => {
+  const timestamp = Date.parse(createdAt || '');
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
 const PromotionBannerVisual: React.FC<{ imageUrl: string; title: string }> = ({ imageUrl, title }) => {
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -350,7 +355,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     const items = [...filteredTalents];
     if (customerLocation && nearestTalentDistances && selectedMode !== 'online' && Object.keys(nearestTalentDistances).length > 0) return items;
     return items.sort((a, b) => {
-      if (sortBy === 'newest') return Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '');
+      if (sortBy === 'newest') return getCreatedAtTimestamp(b.createdAt) - getCreatedAtTimestamp(a.createdAt);
       if (sortBy === 'popular') return (b.reviewCount ?? 0) - (a.reviewCount ?? 0) || (b.rating ?? 0) - (a.rating ?? 0);
       return (b.rating ?? 0) - (a.rating ?? 0) || (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
     });
