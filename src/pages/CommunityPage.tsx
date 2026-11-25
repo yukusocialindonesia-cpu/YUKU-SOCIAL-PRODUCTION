@@ -267,13 +267,13 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                       <label className="text-[11px] font-bold text-slate-500" htmlFor="community-topic">Topik</label>
                       <select id="community-topic" value={draftTopic}
                         onChange={(event) => setDraftTopic(event.target.value as CommunityTopic)}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100">
+                        className="min-h-11 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100">
                         {topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
                       </select>
                     </div>
                     <button type="button" onClick={() => void publishPost()}
                       disabled={!draft.trim() || isSubmitting}
-                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">
+                      className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">
                       <Send className="h-3.5 w-3.5" /> {isSubmitting ? 'Mengirim...' : 'Bagikan'}
                     </button>
                   </div>
@@ -304,7 +304,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
                 return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
-                  className={`shrink-0 rounded-full border px-4 py-3 text-[11px] font-bold shadow-sm transition ${active
+                  className={`min-h-11 shrink-0 rounded-full border px-4 py-3 text-[11px] font-bold shadow-sm transition ${active
                     ? 'border-purple-700 bg-purple-700 text-white shadow-sm'
                     : 'border-purple-100 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-800'}`}>
                   {topic}
@@ -371,18 +371,18 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{post.body}</p>
                   <div className="mt-4 flex items-center gap-4 border-t border-purple-50 pt-3 sm:gap-5">
                     <button type="button" onClick={() => void handleLike(post)} disabled={busyLikeIds.includes(post.id)} aria-pressed={post.likedByMe}
-                      className={`inline-flex items-center gap-1.5 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
+                      className={`inline-flex min-h-11 items-center gap-2 pr-2 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
                       <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes_count} Suka
                     </button>
                     <button type="button" onClick={() => setOpenComments((current) => current === post.id ? null : post.id)}
                       aria-expanded={openComments === post.id}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 transition hover:text-purple-700">
+                      className="inline-flex min-h-11 items-center gap-2 pr-2 text-xs font-bold text-slate-500 transition hover:text-purple-700">
                       <MessageCircle className="h-4 w-4" /> {post.comments_count} Komentar
                     </button>
                     <button type="button" onClick={() => {
                       if (!requireLogin()) return;
                       setReportingPostId((current) => current === post.id ? null : post.id);
-                    }} className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-rose-600">
+                    }} className="ml-auto inline-flex min-h-11 items-center gap-2 pl-2 text-xs font-semibold text-slate-400 hover:text-rose-600">
                       <Flag className="h-3.5 w-3.5" /> Laporkan
                     </button>
                   </div>
@@ -390,11 +390,11 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                     <div className="mt-3 flex flex-wrap gap-2 rounded-xl bg-rose-50 p-3">
                       <select value={reportReasonsByPost[post.id] || 'Konten tidak pantas'}
                         onChange={(event) => setReportReasonsByPost((current) => ({ ...current, [post.id]: event.target.value }))}
-                        className="min-w-0 flex-1 rounded-lg border border-rose-100 bg-white px-3 py-2 text-xs">
+                        className="min-h-11 min-w-0 flex-1 rounded-lg border border-rose-100 bg-white px-3 py-2 text-xs">
                         {reportReasons.map((reason) => <option key={reason} value={reason}>{reason}</option>)}
                       </select>
                       <button type="button" onClick={() => void submitReport(post.id)} disabled={busyReportPostIds.includes(post.id)}
-                        className="rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white">Kirim laporan</button>
+                        className="min-h-11 rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white">Kirim laporan</button>
                     </div>
                   )}
                   {openComments === post.id && (
@@ -420,12 +420,12 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                               <div className="mt-2 flex flex-wrap gap-2 rounded-lg bg-rose-50 p-2">
                                 <select value={reportReasonsByComment[comment.id] || 'Konten tidak pantas'}
                                   onChange={(event) => setReportReasonsByComment((current) => ({ ...current, [comment.id]: event.target.value }))}
-                                  className="min-w-0 flex-1 rounded-lg border border-rose-100 bg-white px-2.5 py-2 text-[11px]">
+                                  className="min-h-11 min-w-0 flex-1 rounded-lg border border-rose-100 bg-white px-2.5 py-2 text-[11px]">
                                   {reportReasons.map((reason) => <option key={reason} value={reason}>{reason}</option>)}
                                 </select>
                                 <button type="button" onClick={() => void submitCommentReport(comment.id)}
                                   disabled={busyReportCommentIds.includes(comment.id)}
-                                  className="rounded-lg bg-rose-600 px-3 py-2 text-[11px] font-bold text-white disabled:opacity-50">
+                                  className="min-h-11 rounded-lg bg-rose-600 px-3 py-2 text-[11px] font-bold text-white disabled:opacity-50">
                                   {busyReportCommentIds.includes(comment.id) ? 'Mengirim...' : 'Kirim laporan'}
                                 </button>
                               </div>
