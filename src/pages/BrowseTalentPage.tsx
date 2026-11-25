@@ -455,9 +455,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         {/* Filter Bar Controls */}
         <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-12 md:grid-cols-12 gap-1.5 sm:gap-3">
+          <div className="grid grid-cols-6 md:grid-cols-12 gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="col-span-5 md:col-span-5 relative min-w-0">
+            <div className="col-span-3 md:col-span-5 relative min-w-0">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -470,7 +470,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             </div>
 
             {/* Dynamic Regional Location Filter */}
-            <div className="col-span-5 md:col-span-4 min-w-0">
+            <div className="col-span-3 md:col-span-4 min-w-0">
               <LocationFilter
                 selectedCity={selectedCity}
                 talentCities={talentCities}
@@ -500,9 +500,9 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-2 md:hidden min-h-10 inline-flex items-center justify-center rounded-lg border border-purple-200 bg-purple-50 text-purple-800 active:bg-purple-100"
+              className="relative col-span-6 md:hidden min-h-11 inline-flex items-center justify-center gap-2 rounded-lg border border-purple-200 bg-purple-50 px-3 text-sm font-semibold text-purple-800 active:bg-purple-100"
             >
-              <SlidersHorizontal className="h-4 w-4" />
+              <SlidersHorizontal className="h-4 w-4" />\n              <span>Filter tambahan</span>
               {hasAdvancedFilters && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fuchsia-600 ring-2 ring-purple-50" />}
             </button>
 
