@@ -14,9 +14,9 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
   };
 
   return (
-    <section className="py-5 md:py-20 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
+    <section className="py-5 md:py-12 bg-gradient-to-b from-[#F8F5FF] via-white to-[#FCFAFF] border-t border-purple-100/70">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-4 md:mb-12">
+        <div className="text-center mb-3 md:mb-7">
           <span className="text-xs font-bold text-purple-700 tracking-wider uppercase mb-2 block">
             Pertanyaan Umum
           </span>
@@ -28,7 +28,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
           </p>
         </div>
 
-        <div className="space-y-2.5 sm:space-y-3">
+        <div className="space-y-2 sm:space-y-2.5">
           {FAQ_ITEMS.slice(0, 5).map((item, idx) => (
             <div
               key={item.q}
