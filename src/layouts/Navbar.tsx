@@ -443,13 +443,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             ))}
             <button
               onClick={() => handleLinkClick('/bantuan')}
-              className="text-left px-3 py-3 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${isHomePage ? 'text-white/75 hover:bg-white/[0.07] hover:text-white' : 'text-slate-700 hover:bg-slate-50'}`}
             >
               Pusat Bantuan
             </button>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <div className={`pt-3 border-t flex flex-col gap-2 ${isHomePage ? 'border-white/10' : 'border-slate-100'}`}>
             {currentUser ? (
               <button
                 onClick={handleLogout}
@@ -462,19 +462,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               <>
                 <button
                   onClick={() => handleLinkClick('/login')}
-                  className="w-full py-3 text-center text-sm font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  className={`w-full py-3 text-center text-sm font-bold rounded-lg transition-colors ${isHomePage ? 'text-white bg-white/10 hover:bg-white/15 border border-white/10' : 'text-slate-800 bg-slate-100 hover:bg-slate-200'}`}
                 >
                   Masuk ke Akun
                 </button>
                 <button
                   onClick={() => handleLinkClick('/register')}
-                  className="w-full py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-xs"
+                  className="w-full py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-[#7427db] via-[#741cff] to-[#ed1688] rounded-xl shadow-[0_8px_20px_rgba(116,28,255,0.22)]"
                 >
                   Daftar Akun Customer
                 </button>
                 <button
                   onClick={() => handleLinkClick('/daftar-talent')}
-                  className="w-full py-2 text-center text-xs font-semibold text-purple-700 hover:text-purple-900 transition-colors"
+                  className={`w-full py-2 text-center text-xs font-semibold transition-colors ${isHomePage ? 'text-[#d7b8ff] hover:text-white' : 'text-purple-700 hover:text-purple-900'}`}
                 >
                   Ingin bergabung jadi Talent?
                 </button>
