@@ -465,7 +465,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-2 pt-2 backdrop-blur-md sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/95 p-2.5 sm:p-5 rounded-2xl sm:rounded-[26px] border border-purple-100/80 shadow-[0_10px_28px_rgba(76,29,149,0.08)] ring-1 ring-white/80 mb-2 sm:mb-8 space-y-3 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
+        <div className="relative bg-white/95 p-2 sm:p-4 rounded-2xl sm:rounded-[26px] border border-purple-100/80 shadow-[0_8px_22px_rgba(76,29,149,0.07)] ring-1 ring-white/80 mb-2 sm:mb-6 space-y-2 sm:space-y-3 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
           <div className="grid grid-cols-12 md:grid-cols-12 gap-2.5 sm:gap-3">
             {/* Search and city selector share one pill, matching the mobile reference */}
@@ -478,7 +478,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   aria-label="Cari talent berdasarkan nama atau minat"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-12 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-[13px] shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-12 sm:pl-11 sm:text-sm"
+                  className="h-11 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-[13px] shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-11 sm:pl-11 sm:text-sm"
                 />
               </div>
               <div className="h-7 w-px shrink-0 bg-slate-200" />
@@ -498,7 +498,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-2 md:hidden min-h-12 inline-flex items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm transition-colors active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-11 inline-flex items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm transition-colors active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
               <span className="sr-only">Filter tambahan</span>
@@ -630,13 +630,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
-        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-4 -mx-1">
-          <div className="flex items-center gap-2 overflow-x-auto px-1 pb-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-3 -mx-1">
+          <div className="flex items-center gap-2 overflow-x-auto px-1 pb-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
               onClick={() => setSelectedActivity('all')}
               aria-pressed={selectedActivity === 'all'}
-              className={`min-h-11 shrink-0 rounded-full px-4 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+              className={`min-h-10 shrink-0 rounded-full px-3.5 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
             >
               <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 fill-current" />Semua</span>
             </button>
@@ -671,7 +671,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Results Grid */}
         {loading && talents.length === 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6" aria-label="Memuat Talent">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4" aria-label="Memuat Talent">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-80 rounded-[28px] border border-white bg-white/70 shadow-[0_12px_34px_rgba(76,29,149,0.07)] animate-pulse" />
             ))}
@@ -693,8 +693,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         ) : filteredTalents.length > 0 ? (
           <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
             {loading && (
-              <p className="text-center text-[11px] font-medium text-slate-400" role="status">
-                Memperbarui hasil...
+              <p className="text-center text-[11px] font-medium text-slate-500" role="status" aria-live="polite">
+                Memuat hasil terbaru. Kartu yang masih terlihat mungkin berasal dari pencarian sebelumnya.
               </p>
             )}
             {errorMsg && (
@@ -702,26 +702,18 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 Data belum berhasil diperbarui. Menampilkan hasil sebelumnya.
               </p>
             )}
-            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-              {displayTalents.slice(0, visibleTalentCount).map((talent, index, visibleTalents) => {
-                const centerLastCard = visibleTalents.length % 2 === 1 && index === visibleTalents.length - 1;
-                return (
-                  <div
-                    key={talent.id}
-                    className={centerLastCard ? 'col-span-2 flex justify-center' : 'min-w-0'}
-                  >
-                    <div className={centerLastCard ? 'w-full max-w-[calc(50%-0.375rem)]' : 'w-full'}>
-                      <TalentCard
-                        talent={talent}
-                        showPrice={false}
-                        compact
-                        priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
-                        onSelect={(id) => onNavigate('/talent/:id', { id })}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:gap-5 xl:grid-cols-4">
+              {displayTalents.slice(0, visibleTalentCount).map((talent) => (
+                <div key={talent.id} className="min-w-0">
+                  <TalentCard
+                    talent={talent}
+                    showPrice={false}
+                    compact
+                    priceMode={selectedMode === 'online' || selectedMode === 'offline' ? selectedMode : 'all'}
+                    onSelect={(id) => onNavigate('/talent/:id', { id })}
+                  />
+                </div>
+              ))}
             </div>
             <div ref={loadMoreSentinelRef} aria-hidden="true" className="h-2 w-full" />
             {(loadingMoreTalents || loadMoreError) && (
