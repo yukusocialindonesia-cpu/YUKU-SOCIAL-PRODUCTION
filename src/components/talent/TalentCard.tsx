@@ -105,17 +105,17 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 {talent.name}
               </h3>
               {talent.isVerified === true && <VerifiedBadge />}
-              {talent.age && <span className="shrink-0 text-[10px] font-semibold text-white/90">, {talent.age}</span>}
+              {talent.age && <span className="shrink-0 text-[11px] font-semibold text-white/90">, {talent.age}</span>}
             </div>
               {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
-                <span className="inline-flex shrink-0 items-center gap-0.5 text-[10px] font-bold drop-shadow">
+                <span className="inline-flex shrink-0 items-center gap-0.5 text-[11px] font-bold drop-shadow">
                   <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
                   {talent.rating.toFixed(1)}
                 </span>
               )}
             </div>
             {talent.city && (
-              <p className="mt-1 flex items-center gap-1 truncate text-[10px] font-medium text-white/90">
+              <p className="mt-1 flex items-center gap-1 truncate text-[11px] font-medium text-white/90">
                 <MapPin className="h-3 w-3 shrink-0" />
                 {talent.city}
               </p>
@@ -171,7 +171,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 flex items-center justify-between text-white text-[10px] sm:text-xs font-medium">
           <span className="inline-flex min-w-0 flex-col">
             {talent.city && <span className="inline-flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />{talent.city}</span>}
-            {talent.distanceKm != null && <span className="text-[10px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari Anda</span>}
+            {talent.distanceKm != null && <span className="text-[11px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari Anda</span>}
           </span>
           {talent.serviceMode && (
             <span className="text-[11px] bg-white/20 backdrop-blur-sm border border-white/30 px-2 py-0.5 rounded-full">
@@ -214,7 +214,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       {/* Isi */}
       <div className="p-3.5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 sm:gap-3">
-          <h3 className="font-extrabold text-[#1E0938] text-[13px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
+          <h3 className="font-extrabold text-[#1E0938] text-[14px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
