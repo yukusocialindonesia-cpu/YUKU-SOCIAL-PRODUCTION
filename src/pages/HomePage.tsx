@@ -79,7 +79,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="yuku-home-canvas relative isolate flex min-h-screen flex-col overflow-hidden">
+    <div className="yuku-home-canvas relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F8F7FC]">
       {/* Hero dan pencarian sebagai satu area pembuka */}
       {/* 4. Pencarian berdasarkan aktivitas dan lokasi */}
       <HeroSection
