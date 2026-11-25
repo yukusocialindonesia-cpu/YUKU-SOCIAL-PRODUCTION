@@ -70,7 +70,30 @@ export async function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]>
     return [];
   }
 
-  return data.map(mapSupabaseCategory);
+  const categories = data.map(mapSupabaseCategory);
+
+  // Urutkan berdasarkan jumlah talent yang menawarkan aktivitas tersebut.
+  // Jika statistik layanan tidak dapat dibaca, tetap tampilkan semua kategori
+  // dengan urutan nama yang stabil agar katalog tidak gagal dimuat.
+  const { data: serviceRows, error: serviceCountError } = await supabase
+    .from('talent_services')
+    .select('activity_category_id');
+
+  if (serviceCountError || !serviceRows) {
+    return categories.sort((a, b) => a.title.localeCompare(b.title, 'id'));
+  }
+
+  const popularity = new Map<string, number>();
+  serviceRows.forEach((service) => {
+    const categoryId = service.activity_category_id;
+    popularity.set(categoryId, (popularity.get(categoryId) || 0) + 1);
+  });
+
+  return categories.sort((a, b) => {
+    const popularityDifference =
+      (popularity.get(b.id) || 0) - (popularity.get(a.id) || 0);
+    return popularityDifference || a.title.localeCompare(b.title, 'id');
+  });
 }
 
 /**
