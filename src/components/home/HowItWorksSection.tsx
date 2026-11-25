@@ -18,7 +18,7 @@ interface HowItWorksSectionProps {
 export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onLearnMoreClick }) => {
   return (
     <section className="py-4 md:py-10 bg-gradient-to-b from-[#f8f4ff] via-[#f1e9ff] to-[#eee5ff]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10">
           {/* Cara Kerja */}
           <div className="lg:col-span-8">
