@@ -74,9 +74,9 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         </div>
 
         {loading ? (
-          <div className="flex gap-2.5 overflow-x-auto overscroll-x-contain pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:gap-3.5 sm:overflow-visible sm:pb-0 lg:grid-cols-6">
+          <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[112px] w-[128px] shrink-0 snap-start animate-pulse rounded-[18px] border border-[#e9e0f0] bg-white sm:h-[184px] sm:w-auto sm:rounded-[20px]" />
+              <div key={i} className="h-[64px] min-w-0 animate-pulse rounded-[10px] border border-[#e9e0f0] bg-white sm:h-[184px] sm:rounded-[20px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -102,11 +102,11 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[76px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border border-[#e8def1] bg-gradient-to-br from-white via-white to-[#f7f1fc] px-0.5 py-2 text-center shadow-[0_5px_14px_rgba(48,25,70,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] transition duration-300 hover:-translate-y-1 hover:border-[#cdb5e5] hover:shadow-[0_14px_28px_rgba(48,25,70,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9b6bc7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8f4fb] sm:min-h-[184px] sm:items-start sm:justify-between sm:gap-0 sm:rounded-[24px] sm:p-4 sm:text-left"
+                  className="group relative flex min-h-[64px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-[10px] border border-[#e8def1] bg-gradient-to-br from-white via-white to-[#f7f1fc] px-0.5 py-1.5 text-center shadow-[0_4px_10px_rgba(48,25,70,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] transition duration-300 hover:-translate-y-1 hover:border-[#cdb5e5] hover:shadow-[0_14px_28px_rgba(48,25,70,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9b6bc7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8f4fb] sm:min-h-[184px] sm:items-start sm:justify-between sm:gap-0 sm:rounded-[24px] sm:p-4 sm:text-left"
                 >
                   <span className={`pointer-events-none absolute -right-5 -top-6 h-24 w-24 rounded-full bg-gradient-to-br ${tone.orb} opacity-[0.20] blur-2xl transition duration-300 group-hover:opacity-35`} />
                   <span className="relative flex w-full items-center justify-center sm:items-start sm:justify-between sm:gap-2">
-                    <span className={`flex h-[30px] w-[30px] items-center justify-center rounded-[10px] bg-gradient-to-br ${tone.orb} text-[#281044] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-white/30 transition duration-300 group-hover:scale-[1.03] sm:h-[62px] sm:w-[62px] sm:rounded-[20px]`}>
+                    <span className={`flex h-[24px] w-[24px] items-center justify-center rounded-[8px] bg-gradient-to-br ${tone.orb} text-[#281044] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-white/30 transition duration-300 group-hover:scale-[1.03] sm:h-[62px] sm:w-[62px] sm:rounded-[20px]`}>
                       {getIcon(cat.iconName)}
                     </span>
                     <span className="mt-0.5 hidden h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#e9e0f0] bg-[#f6f0fb] text-[#76558f] transition duration-300 group-hover:border-[#d6c1e8] group-hover:bg-[#eee3f7] group-hover:text-[#4c2670] sm:flex">
@@ -114,7 +114,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                     </span>
                   </span>
                   <span className="relative block w-full sm:mt-1.5">
-                    <span className="block line-clamp-2 break-words text-[8px] font-extrabold leading-tight tracking-tight text-[#28183a] sm:line-clamp-1 sm:text-[14px]">
+                    <span className="block line-clamp-2 break-words text-[7px] font-extrabold leading-[1.1] tracking-tight text-[#28183a] sm:line-clamp-1 sm:text-[14px]">
                       {cat.title}
                     </span>
                     <span className="mt-0.5 hidden min-h-[24px] text-[11px] leading-snug text-[#786b83] sm:block sm:line-clamp-2">
