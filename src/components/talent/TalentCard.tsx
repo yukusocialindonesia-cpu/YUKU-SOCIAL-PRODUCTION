@@ -147,19 +147,11 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 </span>
               </div>
             )}
-            <div className="mt-2 flex items-end justify-between gap-1 border-t border-white/20 pt-1.5">
-              {showPrice ? (
-                <div className="min-w-0">
-                  <span className="block text-[8px] font-medium text-white/70">Mulai dari</span>
-                  <span className="block truncate text-[11px] font-extrabold tabular-nums text-white">
-                    {displayedRate ? formatRupiah(displayedRate) : 'Tanya harga'}
-                    {displayedRate ? <span className="ml-0.5 text-[8px] font-medium text-white/75">/jam</span> : null}
-                  </span>
-                </div>
-              ) : <span />}
-              <span className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/20 shadow-sm backdrop-blur-md">
+            <div className="mt-2 flex justify-end border-t border-white/20 pt-1.5">
+              <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/20 shadow-sm backdrop-blur-md">
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
+            </div>
             </div>
           </div>
         </div>
