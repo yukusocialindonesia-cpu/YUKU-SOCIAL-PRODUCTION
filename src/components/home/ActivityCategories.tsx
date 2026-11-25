@@ -50,14 +50,8 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
     }
   };
 
-  const tones = [
-    { orb: 'from-violet-300 to-fuchsia-400', glow: 'shadow-[0_8px_24px_rgba(168,85,247,0.28)]' },
-    { orb: 'from-pink-300 to-rose-400', glow: 'shadow-[0_8px_24px_rgba(244,63,94,0.24)]' },
-    { orb: 'from-amber-200 to-orange-400', glow: 'shadow-[0_8px_24px_rgba(251,146,60,0.24)]' },
-    { orb: 'from-cyan-200 to-blue-400', glow: 'shadow-[0_8px_24px_rgba(56,189,248,0.22)]' },
-    { orb: 'from-emerald-200 to-teal-400', glow: 'shadow-[0_8px_24px_rgba(45,212,191,0.22)]' },
-    { orb: 'from-indigo-200 to-violet-400', glow: 'shadow-[0_8px_24px_rgba(129,140,248,0.24)]' },
-  ];
+  // Satu palet konsisten terasa lebih eksklusif daripada ikon dengan enam warna berbeda.
+  const tones = [{ orb: 'from-[#e5d5ff] to-[#a78bda]' }];
 
   return (
     <section className="relative overflow-hidden border-t border-white/[0.06] bg-[radial-gradient(ellipse_at_50%_0%,rgba(126,34,206,0.28),transparent_58%),linear-gradient(180deg,#1b073b_0%,#200846_100%)] py-5 sm:py-10">
@@ -67,7 +61,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         <div className="mb-3 flex items-end justify-between gap-3 sm:mb-6">
           <div>
             <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-fuchsia-300/20 bg-fuchsia-300/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-fuchsia-200 sm:text-[10px]">
-              <Sparkles className="h-3 w-3" /> Explore YUKU
+              <Sparkles className="h-3 w-3" /> PILIH PENGALAMAN
             </span>
             <h2 className="text-[21px] font-black tracking-tight text-white sm:text-3xl">
               Mau ngapain hari ini?
@@ -76,9 +70,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
               Pilih aktivitas. YUKU bantu temukan teman yang cocok.
             </p>
           </div>
-          <span className="mb-1 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 text-[10px] font-bold text-violet-100 sm:text-xs">
-            {categories.length || 0} aktivitas <ArrowUpRight className="h-3.5 w-3.5" />
-          </span>
+
         </div>
 
         {loading ? (
@@ -104,7 +96,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         ) : (
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
             {categories.map((cat, idx) => {
-              const tone = tones[idx % tones.length];
+              const tone = tones[0];
               return (
                 <button
                   type="button"
@@ -114,7 +106,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                 >
                   <span className={`pointer-events-none absolute -right-5 -top-6 h-24 w-24 rounded-full bg-gradient-to-br ${tone.orb} opacity-[0.13] blur-2xl transition duration-300 group-hover:opacity-25`} />
                   <span className="relative flex w-full items-start justify-between gap-2">
-                    <span className={`flex h-[58px] w-[58px] items-center justify-center rounded-[18px] bg-gradient-to-br ${tone.orb} text-[#281044] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-white/30 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[62px] sm:w-[62px] sm:rounded-[20px]`}>
+                    <span className={`flex h-[58px] w-[58px] items-center justify-center rounded-[18px] bg-gradient-to-br ${tone.orb} text-[#281044] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-white/30 transition duration-300 group-hover:scale-[1.03] sm:h-[62px] sm:w-[62px] sm:rounded-[20px]`}>
                       {getIcon(cat.iconName)}
                     </span>
                     <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.07] text-violet-100/80 transition duration-300 group-hover:border-fuchsia-200/40 group-hover:bg-fuchsia-300/15 group-hover:text-white">
