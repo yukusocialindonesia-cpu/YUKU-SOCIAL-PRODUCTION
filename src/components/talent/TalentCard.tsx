@@ -101,7 +101,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <div className="absolute inset-x-2 bottom-2 text-white">
             <div className="flex items-center justify-between gap-1">
             <div className="flex min-w-0 items-center gap-1">
-              <h3 className="min-w-0 truncate text-[13px] font-extrabold leading-tight drop-shadow">
+              <h3 className="min-w-0 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">
                 {talent.name}
               </h3>
               {talent.isVerified === true && <VerifiedBadge />}
@@ -121,7 +121,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               </p>
             )}
             {talent.distanceKm != null && (
-              <p className="mt-0.5 text-[11px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari lokasi Anda</p>
+              <p className="mt-0.5 truncate text-[10px] min-[390px]:text-[11px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari lokasi Anda</p>
             )}
           </div>
         </div>
