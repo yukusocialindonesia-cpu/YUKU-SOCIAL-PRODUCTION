@@ -148,7 +148,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
               >
                 {broken[slide.id] ? (
-                  <div className="w-full h-full bg-gradient-to-br from-[#351080] via-[#741cff] to-[#ed1688]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#24105F] via-[#4B12B8] to-[#741CFF]" />
                 ) : (
                   <picture>
                     {slide.mobile_image_url && (
@@ -187,7 +187,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             />
           </div>
         ) : (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400 opacity-90 md:rounded-l-[8rem]" />
+          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-[#24105F] via-[#4B12B8] to-[#741CFF] opacity-90 md:rounded-l-[8rem]" />
         )}
 
         {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}
@@ -277,7 +277,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <h1 className="text-[1.05rem] leading-tight font-extrabold text-[#24105F] tracking-tight mb-1 md:text-[clamp(1.75rem,5.2vw,3.75rem)] md:text-white md:leading-[1.06] md:mb-4">
             <span className="md:hidden">Temukan Teman &amp; Aktivitas</span>
             <span className="hidden md:inline hero-slogan-enter">Real Friends. </span>
-            <span className="hidden md:inline hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#d7b8ff] via-[#f0d5ff] to-[#ffb3dc] bg-clip-text text-transparent">Real Moments.</span>
+            <span className="hidden md:inline hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#D9CCFF] to-white bg-clip-text text-transparent">Real Moments.</span>
           </h1>
 
           <p className="hidden md:block max-w-2xl text-base md:text-lg md:leading-relaxed text-purple-100">
@@ -291,8 +291,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
           <div className="hidden md:flex mt-1 flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-snug whitespace-nowrap text-purple-100 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[#e5b8ff]" />Ruang publik & aman</span>
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
+            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[#741CFF]" />Bukan aplikasi kencan</span>
+            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[#741CFF]" />Verifikasi 18+</span>
             <button
               type="button"
               onClick={onRegisterCustomerClick}
