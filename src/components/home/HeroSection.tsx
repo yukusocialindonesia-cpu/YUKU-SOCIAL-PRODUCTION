@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-gradient-to-br from-[#210847] via-[#3b0d78] to-[#5416a6] text-white"
+      className="relative overflow-hidden bg-[#1b073b] text-white"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-4 mt-3 h-[clamp(116px,31vw,156px)] sm:h-[clamp(240px,34vw,340px)] rounded-[20px] sm:rounded-[28px] overflow-hidden border border-white shadow-[0_18px_50px_rgba(36,16,95,0.12)] ring-1 ring-[#eee9f8] md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-4 mt-3 h-[clamp(116px,31vw,156px)] sm:h-[clamp(240px,34vw,340px)] rounded-[20px] sm:rounded-[28px] overflow-hidden border border-white/20 shadow-[0_18px_50px_rgba(0,0,0,0.28)] ring-1 ring-white/10 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
@@ -255,7 +255,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Konten tetap di depan slide */}
       <div
-        className="relative z-10 pointer-events-none max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-3 md:pt-16 md:pb-16"
+        className="relative z-10 pointer-events-none max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-4 md:pt-16 md:pb-16"
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
