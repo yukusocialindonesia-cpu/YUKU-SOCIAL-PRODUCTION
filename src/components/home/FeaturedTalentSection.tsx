@@ -110,21 +110,21 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden border-t border-white/[0.06] py-4 md:py-10 bg-[#24105F] text-white">
+    <section ref={sectionRef} className="relative overflow-hidden border-y border-[#EEEAF5] py-4 md:py-10 bg-[#F8F7FC] text-[#24105F]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-2 md:mb-5 gap-2 md:gap-4">
           <div>
-            <span className="text-[10.5px] sm:text-xs font-bold text-[#D9CCFF] tracking-wider uppercase mb-0.5 sm:mb-1 block">
+            <span className="text-[10.5px] sm:text-xs font-bold text-[#741CFF] tracking-wider uppercase mb-0.5 sm:mb-1 block">
               PROFIL UNTUK BERBAGAI AKTIVITAS
             </span>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-[#24105F] tracking-tight">
               Talent Pilihan YUKU
             </h2>
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#D9CCFF] hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#24105F]"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#741CFF] hover:text-[#24105F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F7FC]"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua Talent</span>
@@ -141,7 +141,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {loading ? (
           <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-[3/4] h-auto w-[43vw] max-w-[168px] shrink-0 rounded-2xl bg-white/10 animate-pulse sm:w-[196px]" />
+              <div key={i} className="aspect-[3/4] h-auto w-[43vw] max-w-[168px] shrink-0 rounded-2xl bg-[#EDE8F5] animate-pulse sm:w-[196px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -159,8 +159,8 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             </button>
           </div>
         ) : talents.length === 0 ? (
-          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-[#E8E0FA]">
-            <Users className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+          <div className="p-8 text-center bg-white rounded-2xl border border-[#E8E2F0] text-xs text-[#625B70]">
+            <Users className="w-8 h-8 text-[#9A91A8] mx-auto mb-2" />
             <p>Belum ada profil Talent aktif yang terdaftar di Supabase.</p>
           </div>
         ) : visibleTalents.length === 0 ? (
@@ -192,7 +192,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           >
             <ChevronRight className="w-5 h-5" />
           </button>
-          <div className="mb-1 flex items-center justify-between px-0.5 text-[10px] font-semibold text-[#D9CCFF]/80 sm:hidden">
+          <div className="mb-1 flex items-center justify-between px-0.5 text-[10px] font-semibold text-[#786F86] sm:hidden">
             <span>Talent pilihan YUKU</span>
             <span className="inline-flex items-center gap-1">Geser <ChevronRight className="h-3 w-3" /></span>
           </div>
@@ -204,7 +204,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[46vw] max-w-[184px] sm:w-[190px] lg:w-[calc((100%-5rem)/6)] rounded-[20px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[46vw] max-w-[210px] sm:w-[210px] lg:w-[calc((100%-5rem)/6)] rounded-[20px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
