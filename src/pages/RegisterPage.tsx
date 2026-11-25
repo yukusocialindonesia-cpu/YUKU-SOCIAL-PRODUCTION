@@ -57,8 +57,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="relative isolate py-12 sm:py-16 px-4 flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-100/80 via-transparent to-fuchsia-50/70">
-      <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/90 bg-white/85 p-6 shadow-[0_28px_80px_-30px_rgba(76,29,149,0.32)] ring-1 ring-purple-100/80 backdrop-blur-2xl sm:p-8 space-y-6">
+    <div className="relative isolate py-12 sm:py-16 px-4 flex items-center justify-center bg-[radial-gradient(ellipse_at_top_left,_rgba(91,33,182,0.24),_transparent_42%),linear-gradient(145deg,#F0E8FF_0%,#FBF9FF_52%,#FCEEFF_100%)]">
+      <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white bg-white p-6 shadow-[0_30px_85px_-30px_rgba(55,18,112,0.34)] ring-1 ring-violet-200/80 backdrop-blur-2xl sm:p-8 space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <BrandLogo size="md" showTagline={false} />
