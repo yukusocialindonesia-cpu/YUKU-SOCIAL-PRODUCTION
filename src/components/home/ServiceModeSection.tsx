@@ -98,7 +98,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-white/15 bg-white p-2.5 sm:p-5 backdrop-blur-md text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF]"
+              className="yuku-depth-card group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-[#E8E2F0] bg-white p-2.5 sm:p-5 backdrop-blur-md text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#741CFF]"
             >
               <span className="yuku-icon-orb mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#741CFF] text-white">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
