@@ -139,12 +139,23 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
                 <span className="min-w-0 truncate">{talent.city}</span>
               </p>
             )}
-            <div className="mt-1.5 flex items-center justify-between gap-1">
-              {availableToday ? (
-                <span className="inline-flex min-w-0 items-center gap-1 rounded-full border border-emerald-200/30 bg-emerald-400/20 px-2 py-0.5 text-[9px] min-[390px]:text-[10px] font-bold text-emerald-100 backdrop-blur-sm">
+            {availableToday && (
+              <div className="mt-1.5">
+                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-emerald-200/30 bg-emerald-400/20 px-2 py-0.5 text-[9px] font-bold text-emerald-100 backdrop-blur-sm">
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
                   <span className="truncate">Tersedia hari ini</span>
                 </span>
+              </div>
+            )}
+            <div className="mt-2 flex items-end justify-between gap-1 border-t border-white/20 pt-1.5">
+              {showPrice ? (
+                <div className="min-w-0">
+                  <span className="block text-[8px] font-medium text-white/70">Mulai dari</span>
+                  <span className="block truncate text-[11px] font-extrabold tabular-nums text-white">
+                    {displayedRate ? formatRupiah(displayedRate) : 'Tanya harga'}
+                    {displayedRate ? <span className="ml-0.5 text-[8px] font-medium text-white/75">/jam</span> : null}
+                  </span>
+                </div>
               ) : <span />}
               <span className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/20 shadow-sm backdrop-blur-md">
                 <ArrowRight className="h-3.5 w-3.5" />
