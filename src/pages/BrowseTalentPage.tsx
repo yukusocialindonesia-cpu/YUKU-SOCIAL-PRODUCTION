@@ -396,7 +396,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Satu banner promosi tampil bergantian otomatis; katalog tetap aman jika promosi kosong. */}
         {promotions.length > 0 && (
-          <section aria-label="Promosi YUKU" className="mb-1 sm:mb-7">
+          <section aria-label="Promosi YUKU" className="mb-3 sm:mb-7">
             {(() => {
               const promotion = promotions[activePromotionIndex] || promotions[0];
               const safeLink = promotion.link_url?.trim() || '';
@@ -623,12 +623,12 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
         <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-1 -mx-1">
-          <div className="flex items-center gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
               onClick={() => setSelectedActivity('all')}
               aria-pressed={selectedActivity === 'all'}
-              className={`min-h-11 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+              className={`min-h-11 shrink-0 rounded-full px-4 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
             >
               <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 fill-current" />Semua</span>
             </button>
@@ -638,7 +638,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 type="button"
                 onClick={() => setSelectedActivity(cat.id)}
                 aria-pressed={selectedActivity === cat.id}
-                className={`min-h-11 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+                className={`min-h-11 shrink-0 rounded-full px-4 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
               >
                 <span className="inline-flex items-center gap-1.5">{getActivityIcon(cat)}{cat.title}</span>
               </button>
@@ -648,7 +648,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-0 flex items-center justify-between">
+        <div className="sm:hidden mb-2 flex items-center justify-between">
           <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
           <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
             <Flame className="h-3.5 w-3.5 fill-purple-600 text-purple-600" />
@@ -684,7 +684,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </div>
         ) : filteredTalents.length > 0 ? (
           <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
-            <div className="grid grid-cols-2 gap-1.5 sm:gap-5 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
               {displayTalents.slice(0, visibleTalentCount).map((talent) => (
                 <TalentCard
                   key={talent.id}
