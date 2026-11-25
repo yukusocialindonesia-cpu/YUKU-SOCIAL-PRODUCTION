@@ -33,10 +33,10 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
         aria-modal="true"
       >
         <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100/90 bg-white/70 shrink-0">
-          <h3 className="font-bold text-base sm:text-lg text-slate-900 pr-2">{title}</h3>
+          <h3 className="min-w-0 flex-1 break-words font-bold text-base sm:text-lg text-slate-900 pr-2">{title}</h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100/90 transition-colors cursor-pointer shrink-0"
+            className="h-11 w-11 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100/90 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center"
             aria-label="Tutup modal"
           >
             <X className="w-5 h-5" />
