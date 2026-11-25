@@ -114,7 +114,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-[#1b073b] text-white"
+      className="relative overflow-hidden bg-[#F8F7FC] text-[#24105F] md:bg-[#24105F] md:text-white"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -135,7 +135,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-3 mt-2 h-[clamp(88px,24vw,108px)] sm:mx-4 sm:mt-3 sm:h-[clamp(240px,34vw,340px)] rounded-[18px] sm:rounded-[28px] overflow-hidden border border-white/20 shadow-[0_14px_38px_rgba(0,0,0,0.26)] ring-1 ring-white/10 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-3 mt-2 h-[clamp(64px,18vw,78px)] sm:mx-4 sm:mt-3 sm:h-[clamp(240px,34vw,340px)] rounded-[18px] sm:rounded-[28px] overflow-hidden border border-[#E7E0F1] shadow-[0_5px_16px_rgba(36,16,95,0.10)] ring-0 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
@@ -265,7 +265,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-0.5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#e6d5ff]">
+          <p className="md:hidden flex items-center gap-1.5 mb-0.5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#741CFF]">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Temukan Teman & Pengalaman</span>
           </p>
@@ -274,12 +274,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[1.2rem] leading-[1.08] font-black text-white tracking-tight mb-1 md:text-[clamp(1.75rem,5.2vw,3.75rem)] md:leading-[1.06] md:mb-4">
-            <span className="hero-slogan-enter">Real Friends.</span>{' '}
-            <br className="md:hidden" />
-            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#d7b8ff] via-[#f0d5ff] to-[#ffb3dc] bg-clip-text text-transparent">
-              Real Moments.
-            </span>
+          <h1 className="text-[1.05rem] leading-tight font-extrabold text-[#24105F] tracking-tight mb-1 md:text-[clamp(1.75rem,5.2vw,3.75rem)] md:text-white md:leading-[1.06] md:mb-4">
+            <span className="md:hidden">Temukan Teman &amp; Aktivitas</span>
+            <span className="hidden md:inline hero-slogan-enter">Real Friends. </span>
+            <span className="hidden md:inline hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#d7b8ff] via-[#f0d5ff] to-[#ffb3dc] bg-clip-text text-transparent">Real Moments.</span>
           </h1>
 
           <p className="hidden md:block max-w-2xl text-base md:text-lg md:leading-relaxed text-purple-100">
@@ -287,7 +285,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </p>
         </div>
 
-        <div className="mt-0.5 md:mt-8 md:max-w-3xl pointer-events-auto">
+        <div className="mt-2 md:mt-8 md:max-w-3xl pointer-events-auto">
           <SearchActivityWidget onSearch={onSearch} />
           {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
