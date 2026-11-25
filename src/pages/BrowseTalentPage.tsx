@@ -196,6 +196,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   };
 
   useEffect(() => {
+    // Invalidate in-flight pagination immediately, including during the search debounce.
+    searchRequestRef.current += 1;
     const timer = window.setTimeout(() => {
       void loadMarketplaceData(searchQuery);
     }, searchQuery.trim() ? 350 : 0);
