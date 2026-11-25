@@ -93,13 +93,13 @@ export const TalentMediaModerationPanel: React.FC = () => {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div><h3 className="text-base font-black text-slate-900">Moderasi Galeri Talent</h3>
             <p className="mt-1 text-xs text-slate-500">Foto, video, dan audio baru hanya tampil di profil publik setelah disetujui Admin Talent.</p></div>
-          <button type="button" onClick={() => void loadItems()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
+          <button type="button" onClick={() => void loadItems()} disabled={loading} className="inline-flex items-center justify-center gap-2 min-h-11 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
             <RefreshCw className={loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} /> Muat ulang
           </button>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {(['pending', 'approved', 'rejected', 'all'] as const).map((value) => (
-            <button key={value} type="button" onClick={() => setFilter(value)} className={'rounded-xl border px-3 py-2 text-xs font-bold ' + (filter === value ? 'border-purple-600 bg-purple-50 text-purple-800' : 'border-slate-200 text-slate-600')}>
+            <button key={value} type="button" onClick={() => setFilter(value)} className={'min-h-11 rounded-xl border px-3 py-2 text-xs font-bold ' + (filter === value ? 'border-purple-600 bg-purple-50 text-purple-800' : 'border-slate-200 text-slate-600')}>
               {(value === 'all' ? 'Semua' : statusLabel[value]) + ' (' + (value === 'all' ? items.length : counts[value]) + ')'}
             </button>
           ))}
@@ -135,12 +135,12 @@ export const TalentMediaModerationPanel: React.FC = () => {
                 {item.moderation_status === 'approved' ? (
                   <div className="space-y-2 pt-1">
                     <div className="flex items-center gap-1 text-[11px] text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" /> Disetujui; tampil jika profil Talent juga aktif dan disetujui</div>
-                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Cabut persetujuan</button>
+                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex w-full items-center justify-center gap-1 min-h-11 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Cabut persetujuan</button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2 pt-1">
-                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'approved')} className="inline-flex items-center justify-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-3.5 w-3.5" /> Setujui</button>
-                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex items-center justify-center gap-1 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Tolak</button>
+                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'approved')} className="inline-flex items-center justify-center gap-1 min-h-11 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-3.5 w-3.5" /> Setujui</button>
+                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex items-center justify-center gap-1 min-h-11 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Tolak</button>
                   </div>
                 )}
               </div>
