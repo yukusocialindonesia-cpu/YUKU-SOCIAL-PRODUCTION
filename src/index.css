@@ -77,3 +77,15 @@ html, body, #root { min-height: 100%; }
     linear-gradient(180deg, #f3edff 0%, #fbfaff 42%, #ffffff 100%);
   }
 }
+
+
+/* App-like mobile workspace: compact canvas, native-feeling scroll and safe areas. */
+@media (max-width: 767px) {
+  html { background: #f6f0ff; }
+  body { overscroll-behavior-y: contain; }
+  .yuku-route-stage {
+    min-height: calc(100dvh - 56px);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .yuku-route-stage > :first-child { min-height: inherit; }
+}
