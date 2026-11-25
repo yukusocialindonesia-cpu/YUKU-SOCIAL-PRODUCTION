@@ -36,9 +36,9 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
   );
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-4xl rounded-[20px] border border-white/90 bg-white p-2 shadow-[0_12px_30px_rgba(38,16,95,0.16)] ring-1 ring-[#eee9f8] sm:rounded-[26px] sm:p-3">
+    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-3xl rounded-[20px] border border-white/90 bg-white p-2 shadow-[0_12px_30px_rgba(38,16,95,0.16)] ring-1 ring-[#eee9f8] sm:rounded-[26px] sm:p-3">
       <div className="grid grid-cols-2 items-center gap-2 sm:grid-cols-[1fr_1fr_auto] sm:gap-3">
-        <div className="flex min-h-[48px] min-w-0 items-center gap-2 rounded-[14px] border border-[#f0edf6] bg-[#fcfbfe] px-2.5 py-1.5 sm:px-4 sm:py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
+        <div className="flex min-h-[48px] min-w-0 items-center gap-2 rounded-[14px] border border-[#f0edf6] bg-[#fcfbfe] px-2.5 py-1.5 sm:min-h-[58px] sm:px-4 sm:py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
           <Coffee className="h-4 w-4 shrink-0 text-[#5b22c7] sm:h-5 sm:w-5" />
           <div className="min-w-0 flex-1 text-left">
             <label htmlFor="search-activity" className="mb-0 block text-[9px] sm:mb-0.5 sm:text-[10px] font-extrabold uppercase tracking-[.13em] text-[#827b91]">Aktivitas</label>
@@ -48,11 +48,11 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
             </select>
           </div>
         </div>
-        <div className="flex min-h-[58px] min-w-0 items-center gap-3 rounded-[18px] border border-[#f0edf6] bg-[#fcfbfe] px-4 py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
-          <MapPin className="h-5 w-5 shrink-0 text-[#5b22c7]" />
+        <div className="flex min-h-[48px] min-w-0 items-center gap-2 rounded-[14px] border border-[#f0edf6] bg-[#fcfbfe] px-2.5 py-1.5 sm:min-h-[58px] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
+          <MapPin className="h-4 w-4 shrink-0 text-[#5b22c7] sm:h-5 sm:w-5" />
           <div className="min-w-0 flex-1 text-left">
-            <label htmlFor="search-city" className="mb-0.5 block text-[10px] font-extrabold uppercase tracking-[.13em] text-[#827b91]">Lokasi</label>
-            <select id="search-city" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} className="w-full cursor-pointer bg-transparent text-sm font-bold text-[#24105f] outline-none">
+            <label htmlFor="search-city" className="mb-0 block text-[9px] font-extrabold uppercase tracking-[.13em] sm:mb-0.5 sm:text-[10px] text-[#827b91]">Lokasi</label>
+            <select id="search-city" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} className="w-full cursor-pointer bg-transparent text-[12px] font-bold text-[#24105f] outline-none sm:text-sm">
               {availableCities.map((city) => <option key={city} value={city}>{city}</option>)}
             </select>
           </div>
