@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, CheckCircle2, ClipboardCheck, Loader2, RefreshCw, Search, ShieldAlert, UserCheck, UserX } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -48,8 +48,10 @@ export const AccountManagementPanel: React.FC = () => {
   const [preflightResults, setPreflightResults] = useState<Record<string, AccountPreflight>>({});
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const loadRequestIdRef = useRef(0);
 
   const load = useCallback(async (targetPage = 1) => {
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true);
     setError(null);
     try {
@@ -58,13 +60,15 @@ export const AccountManagementPanel: React.FC = () => {
       });
       if (invokeError) throw invokeError;
       if (!data?.success || !Array.isArray(data.accounts) || !data.pagination) throw new Error(data?.error || 'Daftar akun tidak dapat dimuat.');
+      if (requestId !== loadRequestIdRef.current) return;
       setAccounts(data.accounts as ManagedAccount[]);
       setPage(data.pagination.page);
       setTotalAccounts(data.pagination.total);
     } catch (err: any) {
+      if (requestId !== loadRequestIdRef.current) return;
       setError(err?.message || 'Gagal memuat daftar akun.');
     } finally {
-      setLoading(false);
+      if (requestId === loadRequestIdRef.current) setLoading(false);
     }
   }, []);
 
