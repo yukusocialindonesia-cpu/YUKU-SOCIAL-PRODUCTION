@@ -286,7 +286,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
                 <button
                   onClick={() => handleLinkClick('/register')}
-                  className="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 rounded-lg shadow-xs hover:shadow transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+                  className="min-h-11 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 rounded-lg shadow-xs hover:shadow transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5"
                 >
                   <User className="w-3.5 h-3.5" />
                   <span>Daftar Sekarang</span>
