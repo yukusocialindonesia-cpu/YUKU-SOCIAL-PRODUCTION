@@ -4,135 +4,62 @@ import { ActivityCategory, TalentProfile } from '../../types/talent';
 import { fetchCategoriesFromSupabase, fetchTalentsFromSupabase } from '../../utils/supabaseMarketplace';
 import { buildCityFilterOptions } from '../../utils/cities';
 
-interface SearchActivityWidgetProps {
-  onSearch: (activity: string, city: string) => void;
-}
+interface SearchActivityWidgetProps { onSearch: (activity: string, city: string) => void; }
 
 export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSearch }) => {
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
   const [selectedActivity, setSelectedActivity] = useState<string>('all');
   const [selectedCity, setSelectedCity] = useState<string>('Semua Kota');
 
   const loadSearchData = async () => {
-    setLoading(true);
-    setErrorMsg(null);
+    setLoading(true); setErrorMsg(null);
     try {
-      const [catsData, talentsData] = await Promise.all([
-        fetchCategoriesFromSupabase(),
-        fetchTalentsFromSupabase(),
-      ]);
-      setCategories(catsData);
-      setTalents(talentsData);
+      const [catsData, talentsData] = await Promise.all([fetchCategoriesFromSupabase(), fetchTalentsFromSupabase()]);
+      setCategories(catsData); setTalents(talentsData);
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal memuat pilihan pencarian dari Supabase.');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    loadSearchData();
-  }, []);
+  useEffect(() => { loadSearchData(); }, []);
+  const availableCities = useMemo(() => buildCityFilterOptions(talents.map((t) => t.city)), [talents]);
+  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); onSearch(selectedActivity, selectedCity); };
 
-  const availableCities = useMemo(() => {
-    return buildCityFilterOptions(talents.map((t) => t.city));
-  }, [talents]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(selectedActivity, selectedCity);
-  };
-
-  if (errorMsg) {
-    return (
-      <div className="bg-rose-50 border border-rose-200 p-3 rounded-2xl max-w-4xl mx-auto text-xs text-rose-900 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-        <button
-          type="button"
-          onClick={loadSearchData}
-          className="px-3 py-1 bg-rose-600 text-white rounded-lg font-bold flex items-center gap-1 cursor-pointer"
-        >
-          <RefreshCw className="w-3 h-3" />
-          <span>Coba Lagi</span>
-        </button>
-      </div>
-    );
-  }
+  if (errorMsg) return (
+    <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-white p-4 text-sm text-rose-800 shadow-sm">
+      <div className="flex items-center gap-2"><AlertCircle className="h-4 w-4 shrink-0" /><span>{errorMsg}</span></div>
+      <button type="button" onClick={loadSearchData} className="inline-flex items-center gap-1 rounded-xl bg-rose-600 px-3 py-2 font-bold text-white"><RefreshCw className="h-3 w-3" /> Coba Lagi</button>
+    </div>
+  );
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-gradient-to-br from-white via-white to-purple-50/70 p-2 md:p-4 rounded-[22px] shadow-[0_12px_30px_rgba(76,29,149,0.10)] border border-purple-100 max-w-4xl mx-auto"
-    >
-      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-12 gap-2 md:gap-3 items-center">
-        {/* Aktivitas Selector */}
-        <div className="min-w-0 md:col-span-5 flex items-center gap-3 px-3 md:px-3 py-2.5 md:py-3 min-h-[56px] bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
-          <Coffee className="hidden md:block w-5 h-5 text-purple-700 shrink-0" />
-          <div className="flex-1 min-w-0 text-left">
-            <label htmlFor="search-activity" className="block text-[11px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              <span className="md:hidden">Aktivitas</span>
-              <span className="hidden md:inline">Pilihan Aktivitas</span>
-            </label>
-            <select
-              id="search-activity"
-              value={selectedActivity}
-              disabled={loading}
-              onChange={(e) => setSelectedActivity(e.target.value)}
-              className="w-full bg-transparent text-sm font-semibold text-slate-800 focus:outline-none cursor-pointer disabled:opacity-50"
-            >
-              <option value="all">
-                {loading ? 'Memuat Kategori...' : 'Semua Aktivitas'}
-              </option>
-              {categories.map((act) => (
-                <option key={act.id} value={act.id}>
-                  {act.title}
-                </option>
-              ))}
+    <form onSubmit={handleSubmit} className="mx-auto max-w-4xl rounded-[26px] border border-white/80 bg-white p-2.5 shadow-[0_20px_60px_rgba(38,16,95,0.13)] ring-1 ring-[#eee9f8] sm:p-3">
+      <div className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_auto] sm:gap-3">
+        <div className="flex min-h-[58px] min-w-0 items-center gap-3 rounded-[18px] border border-[#f0edf6] bg-[#fcfbfe] px-4 py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
+          <Coffee className="h-5 w-5 shrink-0 text-[#5b22c7]" />
+          <div className="min-w-0 flex-1 text-left">
+            <label htmlFor="search-activity" className="mb-0.5 block text-[10px] font-extrabold uppercase tracking-[.13em] text-[#827b91]">Aktivitas</label>
+            <select id="search-activity" value={selectedActivity} disabled={loading} onChange={(e) => setSelectedActivity(e.target.value)} className="w-full cursor-pointer bg-transparent text-sm font-bold text-[#24105f] outline-none disabled:opacity-50">
+              <option value="all">{loading ? 'Memuat kategori...' : 'Semua aktivitas'}</option>
+              {categories.map((act) => <option key={act.id} value={act.id}>{act.title}</option>)}
             </select>
           </div>
         </div>
-
-        {/* Kota Selector */}
-        <div className="min-w-0 md:col-span-4 flex items-center gap-3 px-3 md:px-3 py-2.5 md:py-3 min-h-[56px] bg-white hover:bg-purple-50/50 rounded-xl border border-purple-100 shadow-sm transition-colors">
-          <MapPin className="hidden md:block w-5 h-5 text-amber-600 shrink-0" />
-          <div className="flex-1 min-w-0 text-left">
-            <label htmlFor="search-city" className="block text-[11px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              <span className="md:hidden">Kota</span>
-              <span className="hidden md:inline">Lokasi Kota</span>
-            </label>
-            <select
-              id="search-city"
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="w-full bg-transparent text-sm font-semibold text-slate-800 focus:outline-none cursor-pointer"
-            >
-              {availableCities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
+        <div className="flex min-h-[58px] min-w-0 items-center gap-3 rounded-[18px] border border-[#f0edf6] bg-[#fcfbfe] px-4 py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
+          <MapPin className="h-5 w-5 shrink-0 text-[#5b22c7]" />
+          <div className="min-w-0 flex-1 text-left">
+            <label htmlFor="search-city" className="mb-0.5 block text-[10px] font-extrabold uppercase tracking-[.13em] text-[#827b91]">Lokasi</label>
+            <select id="search-city" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} className="w-full cursor-pointer bg-transparent text-sm font-bold text-[#24105f] outline-none">
+              {availableCities.map((city) => <option key={city} value={city}>{city}</option>)}
             </select>
           </div>
         </div>
-
-        {/* Submit Button */}
-        <div className="col-span-1 min-[360px]:col-span-2 md:col-span-3">
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full min-h-11 md:min-h-12 py-2 md:py-3 px-5 bg-gradient-to-r from-purple-800 via-purple-700 to-fuchsia-600 hover:from-purple-900 hover:to-fuchsia-700 text-white font-bold text-sm rounded-xl shadow-[0_8px_18px_rgba(109,40,217,0.24)] hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            <Search className="w-4 h-4" />
-            <span>Cari Talent</span>
-          </button>
-        </div>
+        <button type="submit" disabled={loading} className="inline-flex min-h-[58px] items-center justify-center gap-2 rounded-[18px] bg-yuku-gradient px-7 text-sm font-extrabold text-white shadow-[0_10px_24px_rgba(83,28,184,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(83,28,184,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#d9c9ff] disabled:cursor-not-allowed disabled:opacity-50">
+          <Search className="h-4 w-4" /><span>Jelajahi</span>
+        </button>
       </div>
     </form>
   );
