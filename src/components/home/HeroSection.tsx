@@ -57,12 +57,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   useEffect(() => {
     let mounted = true;
-    fetchHeroSlidesFromSupabase().then((rows) => {
-      if (!mounted) return;
-      setSlides(rows);
-      setSlidesLoaded(true);
-      writeCachedSlides(rows);
-    });
+    fetchHeroSlidesFromSupabase()
+      .then((rows) => {
+        if (!mounted) return;
+        setSlides(rows);
+        setSlidesLoaded(true);
+        writeCachedSlides(rows);
+      })
+      .catch(() => {
+        // Jika jaringan/Supabase gagal, pertahankan cache terakhir dan tampilkan fallback.
+        // Jangan biarkan hero terus berada di skeleton tanpa batas.
+        if (mounted) setSlidesLoaded(true);
+      });
     return () => {
       mounted = false;
     };
