@@ -126,7 +126,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 placeholder="nama@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-9 pr-3 py-3 bg-white/80 border border-slate-200/80 rounded-2xl shadow-inner shadow-purple-950/[0.025] focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100/80 text-xs transition-all"
+                className="min-h-11 w-full pl-9 pr-3 py-3 bg-white/80 border border-slate-200/80 rounded-2xl shadow-inner shadow-purple-950/[0.025] focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100/80 text-xs transition-all"
               />
             </div>
           </div>
@@ -143,14 +143,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 text-xs"
+                className="min-h-11 w-full pl-9 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-600 text-xs"
               />
             </div>
             <div className="flex justify-end mt-1.5">
               <button
                 type="button"
                 onClick={() => onNavigate('/lupa-sandi')}
-                className="text-[11px] font-bold text-purple-700 hover:text-fuchsia-700 hover:underline transition-colors cursor-pointer"
+                className="min-h-11 inline-flex items-center text-[11px] font-bold text-purple-700 hover:text-fuchsia-700 hover:underline transition-colors cursor-pointer"
               >
                 Lupa kata sandi?
               </button>
