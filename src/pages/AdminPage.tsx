@@ -1496,15 +1496,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-amber-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Talent menunggu review</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Talent menunggu review</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700"><Clock className="h-4 w-4" /></span>
                 </div>
                 <div className="text-2xl font-black tracking-tight text-amber-700 tabular-nums sm:text-3xl">{talents.filter((t) => !t.is_approved).length}</div>
-                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Belum disetujui atau belum terverifikasi e-KTP.</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">Belum disetujui atau belum terverifikasi e-KTP.</p>
               </div>
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-violet-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Antrean pencairan</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Antrean pencairan</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700"><CreditCard className="h-4 w-4" /></span>
                 </div>
                 <div className="text-2xl font-black tracking-tight text-violet-800 tabular-nums sm:text-3xl">{payouts.filter((p) => p.payout_status === 'requested').length}</div>
@@ -1512,19 +1512,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-emerald-100/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Pendapatan platform · 20%</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Pendapatan platform · 20%</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"><TrendingUp className="h-4 w-4" /></span>
                 </div>
                 <div className="break-words text-xl font-black tracking-tight text-emerald-800 tabular-nums sm:text-2xl">{formatRupiah(platformRevenueFee)}</div>
-                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Dari {completedBookings.length} order selesai.</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">Dari {completedBookings.length} order selesai.</p>
               </div>
               <div className="min-w-0 rounded-[26px] border border-white/90 bg-white/85 p-3.5 shadow-[0_16px_38px_-22px_rgba(76,29,149,0.22)] ring-1 ring-slate-200/80 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 sm:p-5">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-[10px]">Nilai transaksi · GMV</span>
+                  <span className="text-[11px] font-black uppercase leading-tight tracking-wide text-slate-500 sm:text-xs">Nilai transaksi · GMV</span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-200 text-slate-700"><DollarSign className="h-4 w-4" /></span>
                 </div>
                 <div className="break-words text-xl font-black tracking-tight text-slate-900 tabular-nums sm:text-2xl">{formatRupiah(grossMarketplaceVolume)}</div>
-                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">Akumulasi transaksi di sistem escrow.</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">Akumulasi transaksi di sistem escrow.</p>
               </div>
             </div>
           </section>
