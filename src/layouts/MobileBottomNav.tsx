@@ -70,7 +70,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   if (isAuthLoading) {
     return (
       <nav aria-hidden="true" className={navShell}>
-        <div className="grid min-h-[48px] grid-cols-5" />
+        <div className="grid min-h-[52px] grid-cols-5" />
       </nav>
     );
   }
