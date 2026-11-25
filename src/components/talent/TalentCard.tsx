@@ -106,6 +106,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             )}
           </div>
           <div className="absolute inset-x-2 bottom-2 text-white">
+            {(hasVoice || hasVideo || hasPhoto) && (
+              <div className="mb-1.5 flex items-center gap-1">
+                {hasVoice && <span className="inline-flex h-5 items-center gap-1 rounded-full border border-white/25 bg-black/35 px-1.5 text-[9px] font-bold text-white backdrop-blur-sm"><Mic className="h-3 w-3" /> Voice</span>}
+                {hasVideo && <span className="inline-flex h-5 items-center gap-1 rounded-full border border-white/25 bg-black/35 px-1.5 text-[9px] font-bold text-white backdrop-blur-sm"><Video className="h-3 w-3" /> Video</span>}
+                {hasPhoto && <span className="inline-flex h-5 items-center gap-1 rounded-full border border-white/25 bg-black/35 px-1.5 text-[9px] font-bold text-white backdrop-blur-sm"><ImageIcon className="h-3 w-3" /> Foto</span>}
+              </div>
+            )}
             <div className="flex items-center justify-between gap-1">
               <div className="flex min-w-0 items-center gap-1">
                 <h3 className="min-w-0 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">
