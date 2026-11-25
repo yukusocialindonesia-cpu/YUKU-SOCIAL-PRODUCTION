@@ -48,8 +48,8 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
             </select>
           </div>
         </div>
-        <div className="flex min-h-[44px] min-w-0 items-center gap-1.5 rounded-[13px] border border-[#eee8f8] bg-[#f8f5ff] px-2 py-1 sm:min-h-[58px] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
-          <MapPin className="h-4 w-4 shrink-0 text-[#5b22c7] sm:h-5 sm:w-5" />
+        <div className="flex min-h-[44px] min-w-0 items-center gap-1.5 rounded-[13px] border border-[#E8E2F0] bg-[#F8F7FC] px-2 py-1 sm:min-h-[58px] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-2 transition focus-within:border-[#741CFF] focus-within:bg-white">
+          <MapPin className="h-4 w-4 shrink-0 text-[#741CFF] sm:h-5 sm:w-5" />
           <div className="min-w-0 flex-1 text-left">
             <label htmlFor="search-city" className="mb-0 block text-[9px] font-extrabold uppercase tracking-[.13em] sm:mb-0.5 sm:text-[10px] text-[#827b91]">Lokasi</label>
             <select id="search-city" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} className="w-full cursor-pointer bg-transparent text-[12px] font-bold text-[#24105f] outline-none sm:text-sm">
