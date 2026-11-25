@@ -20,6 +20,8 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [citySearch, setCitySearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [dropdownTop, setDropdownTop] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const groupedCities: DynamicCityGroup[] = useMemo(
@@ -88,8 +90,15 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
     <div ref={containerRef} className="relative">
       <div className="flex items-center">
         <button
+          ref={triggerRef}
           type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => {
+            if (!isOpen && triggerRef.current) {
+              const rect = triggerRef.current.getBoundingClientRect();
+              setDropdownTop(rect.bottom + 8);
+            }
+            setIsOpen((prev) => !prev);
+          }}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label="Filter lokasi kota"
@@ -130,10 +139,10 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         <div
           role="listbox"
           aria-label="Daftar kota di Indonesia"
-          className="absolute z-50 right-0 mt-2 w-[min(22rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] bg-white/95 rounded-3xl border border-white/80 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)] ring-1 ring-slate-200/70 backdrop-blur-2xl overflow-hidden"
+          style={{ top: dropdownTop }}\n          className="fixed z-[60] left-4 right-4 w-auto max-w-none bg-white rounded-2xl border border-slate-200 shadow-[0_18px_48px_-20px_rgba(15,23,42,0.35)] overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:mt-2 sm:top-auto sm:w-[min(22rem,calc(100vw-2rem))] sm:max-w-[calc(100vw-2rem)] sm:rounded-3xl sm:bg-white sm:border-white/80 sm:shadow-[0_24px_60px_-24px_rgba(15,23,42,0.42)]"
         >
           {/* City Search Bar */}
-          <div className="p-3 border-b border-slate-100/80 bg-gradient-to-r from-violet-50/80 to-fuchsia-50/50">
+          <div className="p-3 border-b border-slate-100 bg-violet-50">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
