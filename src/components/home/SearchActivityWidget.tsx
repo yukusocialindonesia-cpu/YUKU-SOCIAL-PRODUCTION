@@ -36,10 +36,10 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
   );
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-3xl rounded-[18px] border border-white/80 bg-white/[0.97] p-1.5 shadow-[0_14px_34px_rgba(12,3,28,0.30)] ring-1 ring-white/20 sm:rounded-[26px] sm:p-3">
+    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-3xl rounded-[18px] border border-[#E8E2F0] bg-white p-1.5 shadow-[0_5px_18px_rgba(36,16,95,0.08)] ring-0 sm:rounded-[26px] sm:p-3">
       <div className="grid grid-cols-2 items-center gap-1.5 sm:grid-cols-[1fr_1fr_auto] sm:gap-3">
-        <div className="flex min-h-[44px] min-w-0 items-center gap-1.5 rounded-[13px] border border-[#eee8f8] bg-[#f8f5ff] px-2 py-1 sm:min-h-[58px] sm:px-4 sm:py-2 transition focus-within:border-[#bca4f5] focus-within:bg-white">
-          <Coffee className="h-4 w-4 shrink-0 text-[#5b22c7] sm:h-5 sm:w-5" />
+        <div className="flex min-h-[44px] min-w-0 items-center gap-1.5 rounded-[13px] border border-[#E8E2F0] bg-[#F8F7FC] px-2 py-1 sm:min-h-[58px] sm:px-4 sm:py-2 transition focus-within:border-[#741CFF] focus-within:bg-white">
+          <Coffee className="h-4 w-4 shrink-0 text-[#741CFF] sm:h-5 sm:w-5" />
           <div className="min-w-0 flex-1 text-left">
             <label htmlFor="search-activity" className="mb-0 block text-[9px] sm:mb-0.5 sm:text-[10px] font-extrabold uppercase tracking-[.13em] text-[#827b91]">Aktivitas</label>
             <select id="search-activity" value={selectedActivity} disabled={loading} onChange={(e) => setSelectedActivity(e.target.value)} className="w-full cursor-pointer bg-transparent text-[12px] font-bold text-[#24105f] sm:text-sm outline-none disabled:opacity-50">
@@ -57,7 +57,7 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
             </select>
           </div>
         </div>
-        <button type="submit" disabled={loading} className="col-span-2 sm:col-span-1 inline-flex min-h-[48px] sm:min-h-[58px] items-center justify-center gap-2 rounded-[14px] sm:rounded-[18px] bg-yuku-gradient px-5 sm:px-7 text-sm font-extrabold text-white shadow-[0_10px_24px_rgba(83,28,184,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(83,28,184,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#d9c9ff] disabled:cursor-not-allowed disabled:opacity-50">
+        <button type="submit" disabled={loading} className="col-span-2 sm:col-span-1 inline-flex min-h-[48px] sm:min-h-[58px] items-center justify-center gap-2 rounded-[14px] sm:rounded-[18px] bg-[#741CFF] px-5 sm:px-7 text-sm font-extrabold text-white shadow-[0_5px_14px_rgba(116,28,255,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#5F13D6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#D9CCFF] disabled:cursor-not-allowed disabled:opacity-50">
           <Search className="h-4 w-4" /><span>Jelajahi</span>
         </button>
       </div>
