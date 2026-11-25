@@ -13,6 +13,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const isHomePage = currentPath === '/';
   const { user: currentUser, role: userRole, isAuthLoading, signOut } = useAuth();
 
   useEffect(() => {
@@ -76,13 +77,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   if (isAuthLoading) {
     return (
       <header
-        className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] yuku-glass-shell bg-[#FCFAFF] xl:bg-white/90 backdrop-blur-xl xl:backdrop-blur-2xl border-b xl:border border-violet-100 xl:border-violet-100/90 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.24)] xl:shadow-[0_16px_42px_-20px_rgba(55,18,112,0.24)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
+        className={`fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] yuku-glass-shell ${isHomePage ? 'bg-[#1b073b] border-b border-white/10 shadow-[0_8px_28px_-18px_rgba(15,4,35,0.65)] xl:bg-white/90 xl:border-violet-100 xl:shadow-[0_16px_42px_-20px_rgba(55,18,112,0.24)]' : 'bg-[#FCFAFF] border-b border-violet-100 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.24)] xl:bg-white/90 xl:border-violet-100 xl:shadow-[0_16px_42px_-20px_rgba(55,18,112,0.24)]'} backdrop-blur-xl xl:backdrop-blur-2xl xl:border xl:border-violet-100/90 xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto`}
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 min-[1440px]:h-[76px]">
             <div className="shrink-0 flex items-center">
-              <BrandLogo size="md" showTagline={false} className="[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 xl:[&>img]:h-12" onClick={() => onNavigate('/')} />
+              <BrandLogo size="md" showTagline={false} inverted={isHomePage} className="[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 xl:[&>img]:h-12" onClick={() => onNavigate('/')} />
             </div>
           </div>
         </div>
@@ -91,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] yuku-glass-shell bg-[#FCFAFF] xl:bg-white/92 backdrop-blur-xl xl:backdrop-blur-xl border-b xl:border border-violet-100 xl:border-violet-100/90 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.20)] xl:shadow-[0_12px_36px_rgba(55,18,112,0.12)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
+    <header className={`fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] yuku-glass-shell ${isHomePage ? 'bg-[#1b073b] border-b border-white/10 shadow-[0_8px_28px_-18px_rgba(15,4,35,0.65)] xl:bg-white/92 xl:border-violet-100 xl:shadow-[0_12px_36px_rgba(55,18,112,0.12)]' : 'bg-[#FCFAFF] border-b border-violet-100 shadow-[0_8px_28px_-18px_rgba(55,18,112,0.20)] xl:bg-white/92 xl:border-violet-100 xl:shadow-[0_12px_36px_rgba(55,18,112,0.12)]'} backdrop-blur-xl xl:backdrop-blur-xl xl:border xl:border-violet-100/90 xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
         <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 min-[1440px]:h-[76px]">
@@ -100,6 +101,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <BrandLogo
               size="md"
               showTagline={false}
+              inverted={isHomePage}
               className="[&>img]:h-9 min-[431px]:[&>img]:h-10 lg:[&>img]:h-11 xl:[&>img]:h-12"
               onClick={() => handleLinkClick('/')}
             />
@@ -144,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onClick={() => handleLinkClick('/login')}
                 aria-label="Masuk untuk melihat notifikasi"
                 title="Masuk untuk melihat notifikasi"
-                className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-100/80 bg-white/85 text-slate-700 shadow-sm transition hover:border-purple-200 hover:bg-purple-50 hover:text-purple-900"
+                className={`relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border shadow-sm transition ${isHomePage ? 'border-white/15 bg-white/10 text-white hover:bg-white/20' : 'border-purple-100/80 bg-white/85 text-slate-700 hover:border-purple-200 hover:bg-purple-50 hover:text-purple-900'}`}
               >
                 <Bell className="h-4 w-4" />
               </button>
@@ -310,7 +312,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className="min-h-11 min-w-11 p-1.5 sm:p-2.5 inline-flex items-center justify-center rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
+              className={`min-h-11 min-w-11 p-1.5 sm:p-2.5 inline-flex items-center justify-center rounded-xl border shadow-sm transition-all ${isHomePage ? 'border-white/15 bg-white/10 text-white hover:bg-white/20' : 'border-purple-100/80 bg-white/75 text-slate-600 hover:bg-purple-50 hover:text-purple-800'}`}
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="yuku-mobile-navigation"
