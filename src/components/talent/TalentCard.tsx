@@ -132,10 +132,10 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   return (
     <article
       onClick={() => onSelect(talent.id)}
-      className="group relative h-full min-w-0 bg-white/95 rounded-xl sm:rounded-[26px] overflow-hidden border border-white shadow-[0_8px_24px_rgba(76,29,149,0.09)] hover:shadow-[0_18px_38px_rgba(76,29,149,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
+      className="group relative h-full min-w-0 bg-white rounded-2xl sm:rounded-[26px] overflow-hidden border border-violet-100 shadow-[0_10px_28px_rgba(55,18,112,0.10)] hover:shadow-[0_20px_44px_rgba(55,18,112,0.18)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-white"
     >
       {/* Media */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100">
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#eee5fb]">
         {hasRealPhoto ? (
           <img
             src={talent.avatarUrl}
@@ -253,7 +253,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
           <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
             {showPrice && <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
-              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
+              <div className="text-sm sm:text-base font-black text-[#351078] tabular-nums leading-tight">
                 {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
                 {displayedRate ? (
                   <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
@@ -263,7 +263,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
             <button
               type="button"
-              className={`inline-flex min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 ${showPrice ? "text-[10px] sm:text-xs shrink-0" : "w-full justify-center text-xs"} font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
+              className={`inline-flex min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 ${showPrice ? "text-[10px] sm:text-xs shrink-0" : "w-full justify-center text-xs"} font-bold text-white bg-gradient-to-r from-[#351078] via-[#5B21B6] to-[#7926C7] group-hover:from-[#28105B] group-hover:to-[#6517B5] rounded-full shadow-md shadow-violet-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
