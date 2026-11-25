@@ -32,7 +32,7 @@ export const HomeFaqSection: React.FC<HomeFaqSectionProps> = ({ onViewAllFaqClic
           {FAQ_ITEMS.slice(0, 5).map((item, idx) => (
             <div
               key={item.q}
-              className={`border border-purple-100/80 rounded-2xl overflow-hidden bg-white shadow-[0_6px_20px_rgba(76,29,149,0.06)] transition-all duration-200 ${idx >= 4 ? 'hidden md:block' : ''}`}
+              className="border border-purple-100/80 rounded-2xl overflow-hidden bg-white shadow-[0_6px_20px_rgba(76,29,149,0.06)] transition-all duration-200"
             >
               <button
                 type="button"
