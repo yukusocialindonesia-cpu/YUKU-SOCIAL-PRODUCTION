@@ -110,7 +110,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-[18px] border border-white/[0.12] bg-gradient-to-br from-[#35105f]/90 via-[#28104c]/90 to-[#1d0b3a] px-2 py-2.5 text-center shadow-[0_12px_30px_rgba(5,0,20,0.24)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/45 hover:from-[#421477] hover:to-[#28104c] sm:min-h-[184px] sm:rounded-[24px]"
+                  className="group relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-[18px] border border-white/[0.12] bg-gradient-to-br from-[#35105f]/90 via-[#28104c]/90 to-[#1d0b3a] px-2 py-2.5 text-center shadow-[0_12px_30px_rgba(5,0,20,0.24)] transition duration-300 hover:-translate-y-1 hover:border-fuchsia-300/45 hover:from-[#421477] hover:to-[#28104c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b073b] sm:min-h-[184px] sm:rounded-[24px]"
                 >
                   <span className={`relative flex h-[50px] w-[50px] items-center justify-center rounded-[18px] bg-gradient-to-br ${tone.orb} text-[#281044] ${tone.glow} ring-1 ring-white/25 transition duration-300 group-hover:scale-105 group-hover:-rotate-2 sm:h-[72px] sm:w-[72px] sm:rounded-[23px]`}>
                     {getIcon(cat.iconName)}
