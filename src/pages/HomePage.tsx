@@ -4,7 +4,6 @@ import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
 import { ActivityCategories } from '../components/home/ActivityCategories';
 import { FeaturedTalentSection } from '../components/home/FeaturedTalentSection';
-import { PeopleDiscoveryStrip } from '../components/home/PeopleDiscoveryStrip';
 import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { SafetySection } from '../components/home/SafetySection';
 import { TalentCtaSection } from '../components/home/TalentCtaSection';
@@ -97,12 +96,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
-      />
-
-      {/* Kenali orang di YUKU menjadi lapisan discovery lanjutan. */}
-      <PeopleDiscoveryStrip
-        onSelectTalent={handleSelectTalent}
-        onViewAll={() => onNavigate('/talent')}
       />
 
       <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
