@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, MapPin } from 'lucide-react';
+import { Search, Users, RotateCcw, AlertCircle, RefreshCw, SlidersHorizontal, MapPin, Flame, ChevronDown, Activity, CalendarDays, Music2, Heart, Utensils, Dumbbell, Gamepad2, Sparkles, Star } from 'lucide-react';
 import { TalentProfile, ActivityCategory, GenderType } from '../types/talent';
 import { TalentCard } from '../components/talent/TalentCard';
 import { LocationFilter } from '../components/talent/LocationFilter';
@@ -78,6 +78,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsMessage, setGpsMessage] = useState<string | null>(null);
   const [nearestTalentDistances, setNearestTalentDistances] = useState<Record<string, number> | null>(null);
+  const [sortBy, setSortBy] = useState<'rating' | 'reviews' | 'newest'>('rating');
 
   const handleUseMyLocation = () => {
     // A failed or denied new GPS attempt must not leave an older location active.
@@ -336,6 +337,28 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
     setVisibleTalentCount(TALENT_DISPLAY_STEP);
   }, [selectedActivity, selectedCity, selectedGender, selectedMode, searchQuery]);
 
+  const displayTalents = useMemo(() => {
+    const items = [...filteredTalents];
+    if (customerLocation && nearestTalentDistances && selectedMode !== 'online' && Object.keys(nearestTalentDistances).length > 0) return items;
+    return items.sort((a, b) => {
+      if (sortBy === 'newest') return Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '');
+      if (sortBy === 'reviews') return (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
+      return (b.rating ?? 0) - (a.rating ?? 0) || (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
+    });
+  }, [filteredTalents, sortBy, customerLocation, nearestTalentDistances, selectedMode]);
+
+  const getActivityIcon = (category: ActivityCategory) => {
+    const key = `${category.iconName} ${category.title}`.toLowerCase();
+    if (/run|sport|olahraga|fitness|gym/.test(key)) return <Dumbbell className="h-4 w-4" />;
+    if (/event|calendar|acara|meeting/.test(key)) return <CalendarDays className="h-4 w-4" />;
+    if (/music|musik|karaoke|hiburan/.test(key)) return <Music2 className="h-4 w-4" />;
+    if (/food|kuliner|makan|coffee|kopi/.test(key)) return <Utensils className="h-4 w-4" />;
+    if (/game|gaming|permainan/.test(key)) return <Gamepad2 className="h-4 w-4" />;
+    if (/social|sosial|friend|teman|heart/.test(key)) return <Heart className="h-4 w-4" />;
+    if (/activity|aktivitas/.test(key)) return <Activity className="h-4 w-4" />;
+    return <Sparkles className="h-4 w-4" />;
+  };
+
   const hasAdvancedFilters = selectedActivity !== 'all' || selectedCity !== 'Semua Kota' || selectedGender !== 'Semua' || selectedMode !== 'all' || searchQuery.trim().length > 0;
 
   const handleResetFilters = () => {
@@ -529,7 +552,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                       : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50 hover:border-purple-200 shadow-sm'
                   }`}
                 >
-                  {cat.title}
+                  <span className="inline-flex items-center gap-1.5">{getActivityIcon(cat)}{cat.title}</span>
                 </button>
               ))}
             </div>
@@ -606,7 +629,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-pressed={selectedActivity === 'all'}
               className={`min-h-11 shrink-0 rounded-full px-3 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === 'all' ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
             >
-              Semua
+              <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 fill-current" />Semua</span>
             </button>
             {categories.map((cat) => (
               <button
@@ -625,8 +648,15 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
         <div className="sm:hidden mb-0 flex items-center justify-between">
-          <h2 className="text-sm font-extrabold tracking-tight text-[#32134F]">Jelajahi Talent</h2>
-          <span className="text-[10px] font-medium text-slate-500">{filteredTalents.length} tersedia</span>
+          <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
+          <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
+            <select aria-label="Urutkan talent" value={sortBy} onChange={(event) => setSortBy(event.target.value as 'rating' | 'reviews' | 'newest')} className="min-h-9 appearance-none rounded-full border border-purple-100 bg-white py-1 pl-2 pr-6 text-[10px] font-semibold text-purple-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
+              <option value="rating">Rating tertinggi</option>
+              <option value="reviews">Ulasan terbanyak</option>
+              <option value="newest">Terbaru</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2 h-3 w-3" />
+          </label>
         </div>
 
         {/* Results Grid */}
@@ -653,7 +683,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         ) : filteredTalents.length > 0 ? (
           <section aria-label="Daftar Talent" className="space-y-2 pb-3 sm:pb-0">
             <div className="grid grid-cols-2 gap-1.5 sm:gap-5 lg:grid-cols-3">
-              {filteredTalents.slice(0, visibleTalentCount).map((talent) => (
+              {displayTalents.slice(0, visibleTalentCount).map((talent) => (
                 <TalentCard
                   key={talent.id}
                   talent={talent}
