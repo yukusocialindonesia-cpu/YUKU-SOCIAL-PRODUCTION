@@ -168,7 +168,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         ) : !slidesLoaded ? (
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-slate-200/70 animate-pulse motion-reduce:animate-none"
+            className="absolute inset-0 bg-gradient-to-br from-[#28105a] via-[#3b147d] to-[#1b073b] animate-pulse motion-reduce:animate-none"
           />
         ) : fallbackOk ? (
           <div className="absolute top-0 right-0 h-full w-full md:w-[60%]">
