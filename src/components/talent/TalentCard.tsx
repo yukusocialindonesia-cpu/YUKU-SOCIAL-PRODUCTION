@@ -76,7 +76,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         aria-label={`Lihat profil ${talent.name}`}
         className="yuku-depth-card yuku-talent-card group relative min-w-0 overflow-hidden rounded-[18px] bg-white cursor-pointer"
       >
-        <div className="relative aspect-[0.92/1] w-full overflow-hidden bg-purple-100">
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-purple-100">
           {hasRealPhoto ? (
             <img
               src={talent.avatarUrl}
