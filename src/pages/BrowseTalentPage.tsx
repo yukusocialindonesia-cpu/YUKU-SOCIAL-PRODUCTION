@@ -463,11 +463,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
-        <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
+        <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-2 pt-2 backdrop-blur-md sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}
-        <div className="relative bg-white/90 p-1 sm:p-5 rounded-xl sm:rounded-[26px] border border-white/90 shadow-[0_8px_24px_rgba(76,29,149,0.07)] ring-1 ring-purple-100/70 mb-1 sm:mb-8 space-y-1 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
+        <div className="relative bg-white/95 p-2.5 sm:p-5 rounded-2xl sm:rounded-[26px] border border-purple-100/80 shadow-[0_10px_28px_rgba(76,29,149,0.08)] ring-1 ring-white/80 mb-2 sm:mb-8 space-y-3 sm:space-y-4 backdrop-blur-none sm:backdrop-blur-xl">
           {/* Row 1: Search & City & Reset */}
-          <div className="grid grid-cols-12 md:grid-cols-12 gap-2 sm:gap-3">
+          <div className="grid grid-cols-12 md:grid-cols-12 gap-2.5 sm:gap-3">
             {/* Search and city selector share one pill, matching the mobile reference */}
             <div className="col-span-10 md:col-span-9 flex min-w-0 items-center overflow-visible rounded-full border border-slate-200/80 bg-white shadow-sm">
               <div className="relative min-w-0 flex-1">
@@ -478,7 +478,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   aria-label="Cari talent berdasarkan nama atau minat"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-xs shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-12 sm:pl-11 sm:text-sm"
+                  className="h-12 w-full min-w-0 rounded-l-full border-0 bg-transparent py-2 pl-9 pr-2 text-[13px] shadow-none transition-all placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:h-12 sm:pl-11 sm:text-sm"
                 />
               </div>
               <div className="h-7 w-px shrink-0 bg-slate-200" />
@@ -498,7 +498,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               aria-controls="jelajah-advanced-filters"
               aria-label={showMoreFilters ? "Tutup filter lainnya" : hasAdvancedFilters ? "Buka filter lainnya, ada filter aktif" : "Buka filter lainnya"}
               title={showMoreFilters ? "Tutup filter" : "Filter lainnya"}
-              className="relative col-span-2 md:hidden min-h-11 inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm active:bg-purple-100"
+              className="relative col-span-2 md:hidden min-h-12 inline-flex items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 px-1 text-purple-800 shadow-sm transition-colors active:bg-purple-100"
             >
               <SlidersHorizontal className="h-4 w-4" />
               <span className="sr-only">Filter tambahan</span>
@@ -630,8 +630,8 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
-        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-1 -mx-1">
-          <div className="flex items-center gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-4 -mx-1">
+          <div className="flex items-center gap-2 overflow-x-auto px-1 pb-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
               onClick={() => setSelectedActivity('all')}
@@ -656,7 +656,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Judul ringkas khusus mobile, tepat sebelum kartu talent */}
-        <div className="sm:hidden mb-2 flex items-center justify-between">
+        <div className="sm:hidden mb-3 flex items-center justify-between border-b border-purple-100/80 pb-2">
           <h2 className="inline-flex items-center gap-1.5 text-sm font-extrabold tracking-tight text-[#32134F]"><Flame className="h-4 w-4 fill-orange-500 text-orange-500" />Jelajahi Talent</h2>
           <label className="relative inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700">
             <Flame className="h-3.5 w-3.5 fill-purple-600 text-purple-600" />
