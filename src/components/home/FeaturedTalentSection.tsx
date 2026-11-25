@@ -124,7 +124,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-fuchsia-200 hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#24105F]"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#D9CCFF] hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#24105F]"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua Talent</span>
@@ -164,7 +164,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             <p>Belum ada profil Talent aktif yang terdaftar di Supabase.</p>
           </div>
         ) : visibleTalents.length === 0 ? (
-          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-purple-100">
+          <div className="p-8 text-center bg-white/10 rounded-2xl border border-white/10 text-xs text-[#E8E0FA]">
             <p className="mb-3">Belum ada talent yang cocok dengan filter ini.</p>
             <button
               type="button"
@@ -192,7 +192,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
           >
             <ChevronRight className="w-5 h-5" />
           </button>
-          <div className="mb-1 flex items-center justify-between px-0.5 text-[10px] font-semibold text-fuchsia-100/75 sm:hidden">
+          <div className="mb-1 flex items-center justify-between px-0.5 text-[10px] font-semibold text-[#D9CCFF]/80 sm:hidden">
             <span>Talent pilihan YUKU</span>
             <span className="inline-flex items-center gap-1">Geser <ChevronRight className="h-3 w-3" /></span>
           </div>
@@ -204,7 +204,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[42vw] max-w-[160px] sm:w-[190px] lg:w-[calc((100%-5rem)/6)] rounded-[20px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[46vw] max-w-[184px] sm:w-[190px] lg:w-[calc((100%-5rem)/6)] rounded-[20px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
