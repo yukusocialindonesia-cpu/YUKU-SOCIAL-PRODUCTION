@@ -629,7 +629,11 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
         </div>
 
         {/* Jenis aktivitas ditampilkan langsung di bawah pencarian pada mobile. */}
-        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-1 -mx-1">
+        <section aria-label="Pilih jenis aktivitas" className="sm:hidden mb-2 -mx-1">
+          <div className="mb-1.5 flex items-center justify-between px-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#65428B]">Pilih aktivitas</span>
+            <span className="text-[10px] font-medium text-slate-400">Geser untuk melihat lainnya</span>
+          </div>
           <div className="flex items-center gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
@@ -645,7 +649,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                 type="button"
                 onClick={() => setSelectedActivity(cat.id)}
                 aria-pressed={selectedActivity === cat.id}
-                className={`min-h-11 shrink-0 rounded-full px-4 text-[11px] font-semibold whitespace-nowrap transition-colors ${selectedActivity === cat.id ? 'bg-purple-700 text-white shadow-sm' : 'border border-purple-100 bg-white text-slate-700'}`}
+                className={`min-h-11 shrink-0 rounded-full px-4 text-[11px] font-semibold whitespace-nowrap transition-all ${selectedActivity === cat.id ? 'bg-gradient-to-r from-[#5420A5] to-[#7B35D1] text-white shadow-[0_5px_14px_rgba(91,33,182,0.24)] ring-1 ring-white' : 'border border-purple-100/90 bg-white/90 text-slate-700 shadow-[0_2px_7px_rgba(76,29,149,0.05)] active:bg-purple-50'}`}
               >
                 <span className="inline-flex items-center gap-1.5">{getActivityIcon(cat)}{cat.title}</span>
               </button>
