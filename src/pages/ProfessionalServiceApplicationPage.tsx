@@ -240,6 +240,9 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         admin_note: null,
         reviewed_by: null,
         reviewed_at: null,
+        verification_note: null,
+        verification_checked_by: null,
+        verification_checked_at: null,
       };
       if (editingApplicationId) {
         const { data: updatedApplication, error: updateError } = await supabase
