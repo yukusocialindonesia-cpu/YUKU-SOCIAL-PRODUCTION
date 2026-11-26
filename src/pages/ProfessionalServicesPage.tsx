@@ -17,7 +17,16 @@ interface ServiceGroup {
   icon_name: string;
   professional_service_subcategories: ServiceItem[];
 }
-interface ProviderItem {\n  id: string;\n  service_description: string;\n  rate_amount: number;\n  pricing_unit: string;\n  delivery_modes: string[];\n  provider: { id: string; display_name: string; avatar_url: string; city: string; headline: string; rating_average: number; review_count: number; is_approved: boolean };\n  subcategory: { id: string; title: string; category_id: string };\n}\ninterface Props {
+interface ProviderItem {
+  id: string;
+  service_description: string;
+  rate_amount: number;
+  pricing_unit: string;
+  delivery_modes: string[];
+  provider: { id: string; display_name: string; avatar_url: string; city: string; headline: string; rating_average: number; review_count: number; is_approved: boolean };
+  subcategory: { id: string; title: string; category_id: string };
+}
+interface Props {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
 }
 const verificationLabel: Record<string, string> = {
@@ -28,7 +37,8 @@ const verificationLabel: Record<string, string> = {
 };
 
 export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
-  const [groups, setGroups] = useState<ServiceGroup[]>([]);\n  const [providers, setProviders] = useState<ProviderItem[]>([]);
+  const [groups, setGroups] = useState<ServiceGroup[]>([]);
+  const [providers, setProviders] = useState<ProviderItem[]>([]);
   const [selectedGroup, setSelectedGroup] = useState('all');
   const [mode, setMode] = useState<'all' | 'online' | 'offline'>('all');
   const [query, setQuery] = useState('');
