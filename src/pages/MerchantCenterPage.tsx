@@ -87,6 +87,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [locations, setLocations] = useState<MerchantLocation[]>([]);
   const [activeBusinessId, setActiveBusinessId] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showCreateBusinessForm, setShowCreateBusinessForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -288,6 +289,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (rpcError) setError(rpcError.message);
     else {
       setActiveBusinessId(String(data));
+      setShowCreateBusinessForm(false);
       setSuccess('Profil bisnis berhasil dibuat sebagai draft. Tambahkan lokasi usaha sebelum mengajukan verifikasi.');
       await refreshRole();
       await load();
@@ -469,7 +471,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   return (
     <main className="min-h-[70vh] bg-[radial-gradient(circle_at_top_left,_rgba(233,213,255,0.55),_transparent_35%),linear-gradient(180deg,#faf8ff_0%,#fff_55%)] px-4 py-7 sm:py-10">
       <div className="mx-auto max-w-5xl">
-        <button onClick={() => onNavigate('/')} className="mb-5 inline-flex items-center gap-2 text-xs font-bold text-purple-800 hover:text-purple-950"><ArrowLeft className="h-4 w-4" /> Kembali ke Beranda</button>
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3"><button onClick={() => onNavigate('/')} className="inline-flex items-center gap-2 text-xs font-bold text-purple-800 hover:text-purple-950"><ArrowLeft className="h-4 w-4" /> Kembali ke Beranda</button>{businesses.length > 0 && !showCreateBusinessForm && <button type="button" onClick={() => setShowCreateBusinessForm(true)} className="inline-flex items-center gap-2 rounded-xl bg-purple-800 px-4 py-2.5 text-xs font-bold text-white"><Plus className="h-4 w-4" /> Tambah Bisnis</button>}</div>
         <div className="mb-7 rounded-3xl bg-gradient-to-br from-[#261044] via-[#45206f] to-[#741c70] p-5 text-white shadow-xl sm:p-8">
           <div className="flex items-start gap-4">
             <div className="rounded-2xl border border-white/15 bg-white/10 p-3"><Store className="h-7 w-7 text-fuchsia-200" /></div>
@@ -491,9 +493,9 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
 
         {loading ? (
           <div className="flex min-h-40 items-center justify-center gap-2 text-sm text-slate-500"><Loader2 className="h-4 w-4 animate-spin" /> Memuat Merchant Center...</div>
-        ) : businesses.length === 0 ? (
-          <form onSubmit={createBusiness} className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm sm:p-7">
-            <h2 className="text-lg font-extrabold text-slate-900">Daftarkan bisnis pertama</h2>
+        ) : businesses.length === 0 || showCreateBusinessForm ? (
+          <form onSubmit={createBusiness className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm sm:p-7">
+            <div className="flex items-center justify-between gap-3"><h2 className="text-lg font-extrabold text-slate-900">{businesses.length === 0 ? 'Daftarkan bisnis pertama' : 'Tambah bisnis Merchant Partner'}</h2>{businesses.length > 0 && <button type="button" onClick={() => setShowCreateBusinessForm(false)} className="text-xs font-bold text-slate-500">Batal</button>}</div>
             <p className="mb-5 mt-1 text-xs leading-5 text-slate-500">Gunakan nama dan informasi bisnis yang benar. Pengajuan akan berstatus draft sampai lokasi ditambahkan dan dikirim untuk verifikasi.</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <label><span className={labelClass}>Nama bisnis *</span><input className={inputClass} value={businessName} onChange={(e) => setBusinessName(e.target.value)} maxLength={120} required placeholder="Contoh: Kopi Senja" /></label>
