@@ -1,6 +1,8 @@
 import React from 'react';
 
 type Props = {
+  bookingId: string;
+  amount: number;
   bookingStatus: string;
   paymentRoute?: string | null;
 };
