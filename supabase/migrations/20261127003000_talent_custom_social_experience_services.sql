@@ -4,6 +4,12 @@ ALTER TABLE public.talent_services
   ADD COLUMN IF NOT EXISTS custom_title VARCHAR(80),
   ADD COLUMN IF NOT EXISTS custom_description VARCHAR(500);
 
+ALTER TABLE public.talent_service_change_log
+  DROP CONSTRAINT IF EXISTS talent_service_change_log_change_type_check;
+ALTER TABLE public.talent_service_change_log
+  ADD CONSTRAINT talent_service_change_log_change_type_check
+  CHECK (change_type IN ('submitted','activated','deactivated','price_changed','approved','rejected','disabled_by_admin'));
+
 ALTER TABLE public.talent_services
   ADD CONSTRAINT talent_services_custom_title_length
     CHECK (custom_title IS NULL OR char_length(trim(custom_title)) BETWEEN 3 AND 80),
