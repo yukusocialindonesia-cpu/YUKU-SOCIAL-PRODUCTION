@@ -47,7 +47,13 @@ AS $$
 DECLARE
   v_service public.talent_services%ROWTYPE;
   v_category_title TEXT;
+  v_requested_service_id UUID;
 BEGIN
+  v_requested_service_id := NULLIF(pg_catalog.current_setting('yuku.booking_service_id', TRUE), '')::UUID;
+  IF NEW.service_id IS NULL AND v_requested_service_id IS NOT NULL THEN
+    NEW.service_id := v_requested_service_id;
+  END IF;
+
   IF NEW.service_id IS NULL THEN
     SELECT ts.* INTO v_service
     FROM public.talent_services ts
@@ -168,8 +174,12 @@ BEGIN
     RAISE EXCEPTION 'Selected Social Experience service is not available';
   END IF;
 
+  -- Carry the exact offer identity into the legacy insert trigger for this transaction.
+  -- The GUC is transaction-local and the trigger verifies the ID belongs to this Talent/category.
+  PERFORM pg_catalog.set_config('yuku.booking_service_id', p_service_id::TEXT, TRUE);
+
   -- Reuse the established eligibility, KTP, schedule, feature-flag, pricing,
-  -- overlap and pending-payment checks. The insert trigger snapshots service_id.
+  -- overlap and pending-payment checks.
   RETURN QUERY
   SELECT *
   FROM public.create_booking(
