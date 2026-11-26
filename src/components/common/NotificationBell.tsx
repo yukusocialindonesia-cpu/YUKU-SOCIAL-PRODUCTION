@@ -319,7 +319,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 <Bell className="w-7 h-7 text-slate-300 mx-auto" />
                 <p className="text-xs font-bold text-slate-700">Belum ada notifikasi baru</p>
                 <p className="text-[11px] text-slate-400">
-                  Pembaruan status booking, verifikasi e-KTP, dan pencairan dana akan muncul di sini.
+                  Pembaruan booking, pengajuan jasa profesional, verifikasi e-KTP, dan pencairan dana akan muncul di sini.
                 </p>
               </div>
             ) : (
