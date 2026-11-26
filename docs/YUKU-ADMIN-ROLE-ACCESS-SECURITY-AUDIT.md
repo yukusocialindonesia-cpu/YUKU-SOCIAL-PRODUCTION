@@ -146,3 +146,20 @@ Commit: `e4ccbf2e067e889be53f4609ecb0a198ce804827`
 - Source was re-fetched after commit: old status comparisons are absent, all current lifecycle states are represented, scoped Admin RPC use remains present, and direct full-row booking access remains Super Admin-only.
 
 No application build or browser test has been run yet.
+
+## Follow-up implementation — scoped Admin summary RPCs
+
+Commit: `b2b6a25802ad94ebd99da1ad605150b82af42bd2`  
+Migration: `supabase/migrations/20261127000600_scope_admin_summary_rpcs.sql`
+
+Source-level finding:
+- `get_admin_user_summaries(uuid[])` previously accepted caller-supplied IDs and returned email, full name, account status, age-verification flag and role for any Customer/Talent when called by Support, or any Talent when called by Talent Admin. The UI supplied legitimate IDs, but the SECURITY DEFINER boundary itself did not enforce those record relationships.
+- `get_admin_report_booking_summaries(uuid[])` accepted arbitrary booking IDs from Support and returned booking code/status without requiring a linked report.
+
+Implemented on the feature branch:
+- Talent Admin summaries are restricted to IDs backed by `talent_profiles` and the Talent role.
+- Support summaries are restricted to Customer identity records or users who are reporter/reported party in `reports_complaints`; the role remains limited to Customer/Talent.
+- Support booking summaries now require a booking linked to at least one report.
+- Existing function signatures and returned columns are preserved for current AdminPage callers; anon/PUBLIC execute remains revoked and authenticated execute remains granted.
+
+Static review confirms the current AdminPage call sites pass IDs from the corresponding Talent, Customer identity, and report datasets, so the narrowed conditions preserve the intended UI use. PostgreSQL replay and authenticated role-matrix tests have not been run. No Staging/Production database was modified.
