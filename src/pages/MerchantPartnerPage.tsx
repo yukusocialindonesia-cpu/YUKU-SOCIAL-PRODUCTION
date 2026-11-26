@@ -102,7 +102,12 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
 
   return <main className="min-h-[70vh] bg-[radial-gradient(circle_at_top_left,_rgba(233,213,255,0.55),_transparent_32%),linear-gradient(180deg,#faf8ff_0%,#fff_48%)] px-4 py-7 sm:py-10">
     <div className="mx-auto max-w-6xl">
-      <button onClick={()=>onNavigate('/talent')} className="mb-5 inline-flex items-center gap-2 text-xs font-bold text-purple-800"><ArrowLeft className="h-4 w-4"/> Kembali ke Jelajah</button>
+      <button onClick={()=>onNavigate('/talent')} className="mb-3 inline-flex items-center gap-2 text-xs font-bold text-purple-800"><ArrowLeft className="h-4 w-4"/> Kembali ke Jelajah</button>
+      <nav aria-label="Pilih katalog YUKU" className="mb-5 grid grid-cols-3 gap-1 rounded-xl border border-purple-100 bg-white p-1 shadow-sm">
+        <button type="button" onClick={()=>onNavigate('/talent')} className="min-h-10 rounded-lg px-2 text-[10px] font-bold text-slate-600 hover:bg-purple-50 sm:text-xs">Teman Aktivitas</button>
+        <button type="button" onClick={()=>onNavigate('/jasa-profesional')} className="min-h-10 rounded-lg px-2 text-[10px] font-bold text-slate-600 hover:bg-purple-50 sm:text-xs">Jasa Profesional</button>
+        <button type="button" aria-current="page" className="min-h-10 rounded-lg bg-[#54217B] px-2 text-[10px] font-extrabold text-white shadow-sm sm:text-xs">Merchant</button>
+      </nav>
       <header className="mb-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#21103D] via-[#45206F] to-[#741C70] p-5 text-white shadow-xl sm:p-8">
         <div className="flex items-start gap-4"><span className="rounded-2xl border border-white/15 bg-white/10 p-3"><Store className="h-7 w-7 text-fuchsia-200"/></span><div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-fuchsia-200">YUKU Business Ecosystem</p><h1 className="mt-1 text-2xl font-black sm:text-3xl">Merchant Partner</h1><p className="mt-2 max-w-2xl text-xs leading-6 text-purple-100 sm:text-sm">Temukan bisnis, tempat aktivitas, dan merchant lokal yang telah diverifikasi YUKU. Hubungi merchant atau kunjungi lokasinya secara langsung.</p></div></div>
         <div className="mt-5 flex flex-wrap gap-2 text-[10px] font-semibold text-purple-100"><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">Bisnis terverifikasi</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">Multi-lokasi</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">Bayar langsung ke merchant</span></div>
