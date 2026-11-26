@@ -189,3 +189,13 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] If loading the business rows fails after membership lookup, Merchant Center clears the selected business and all dependent workspace data instead of rendering stale locations, offers, team members, or review history.
 - [ ] After a membership is revoked or an invitation is declined/expired, refreshing Merchant Center removes the business workspace and any stale invitation action.
 - [ ] Switching between two businesses never displays the previous business's locations, offers, team roster, or review history under the newly selected business, including during loading.
+
+## Customer profile and booking multi-profile acceptance
+- [ ] An account with Customer + Talent capabilities can open and edit Customer Profile; the legacy users.role = talent value must not redirect it away when the server capability snapshot grants Customer.
+- [ ] An account with Customer + Professional Provider or Customer + Merchant membership can open Customer Profile without losing its other workspace access.
+- [ ] An account whose snapshot explicitly says Customer unavailable cannot load or save Customer Profile; legacy fallback applies only while the snapshot RPC is unavailable.
+- [ ] When the authenticated user changes or signs out while Customer Profile is mounted, the previous user's profile fields and avatar are cleared before the next profile is shown.
+- [ ] A booking submission requires a signed-in account with Customer capability; a Talent/Professional/Merchant-only account without Customer capability is stopped in the UI.
+- [ ] Customer capability is not treated as identity/KTP verification: server-side create_booking checks remain authoritative and unverified/ineligible customers are rejected.
+- [ ] Customer-facing discovery cards and homepage companion cards continue hiding prices; prices are visible only after opening the Talent detail page.
+- [ ] Customer + Talent accounts can still view both their customer-side and talent-side booking records in Booking History, with the role filter selecting the correct side.
