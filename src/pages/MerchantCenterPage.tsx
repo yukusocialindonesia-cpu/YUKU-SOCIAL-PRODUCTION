@@ -129,6 +129,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const teamRequestRef = useRef(0);
   const reviewHistoryRequestRef = useRef(0);
   const offerHistoryRequestRef = useRef(0);
+  const workspaceRef = useRef<{ userId: string | null; businessId: string | null }>({ userId: null, businessId: null });
 
   const activeBusiness = useMemo(
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
@@ -136,6 +137,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   );
   const memberships = accessSnapshot?.capabilities.merchantMemberships || [];
   const activeMembership = memberships.find((membership) => membership.businessId === activeBusiness?.id);
+  workspaceRef.current = { userId: user?.id ?? null, businessId: activeBusiness?.id ?? null };
+  const captureWorkspace = () => ({ userId: user?.id ?? null, businessId: activeBusiness?.id ?? null });
+  const isWorkspaceCurrent = (snapshot: { userId: string | null; businessId: string | null }) =>
+    workspaceRef.current.userId === snapshot.userId && workspaceRef.current.businessId === snapshot.businessId;
 
   useEffect(() => {
     setEditingLocationId(null);
@@ -499,32 +504,37 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   };
 
   const acceptInvitation = async () => {
-    if (!activeBusiness) return;
+    if (!activeBusiness || !user) return;
+    const workspace = captureWorkspace();
     const membershipId = pendingInvitationIds[activeBusiness.id];
     if (!membershipId) return;
     setSaving(true); setError(''); setSuccess('');
     const { data, error: acceptError } = await supabase.rpc('accept_merchant_invitation', {
       p_membership_id: membershipId,
     });
+    if (!isWorkspaceCurrent(workspace)) return;
     if (acceptError) setError(acceptError.message);
     else if (data !== true) setError('Undangan tidak lagi tersedia atau sudah diproses.');
     else {
       setSuccess('Undangan diterima. Akses bisnis sekarang aktif.');
       await refreshRole();
-      await load();
+      if (isWorkspaceCurrent(workspace)) await load(workspace.businessId || undefined);
     }
-    setSaving(false);
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const inviteMember = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!activeBusiness || !inviteEmail.trim()) return;
+    if (!activeBusiness || !user || !inviteEmail.trim()) return;
+    const workspace = captureWorkspace();
+    const businessId = activeBusiness.id;
     setSaving(true); setError(''); setSuccess('');
     const { error: inviteError } = await supabase.rpc('invite_merchant_member_by_email', {
-      p_business_id: activeBusiness.id,
+      p_business_id: businessId,
       p_email: inviteEmail.trim(),
       p_member_role: inviteRole,
     });
+    if (!isWorkspaceCurrent(workspace)) return;
     if (inviteError) setError(inviteError.message);
     else {
       setInviteEmail('');
@@ -532,23 +542,26 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       await loadTeam();
       await refreshRole();
     }
-    setSaving(false);
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const revokeMember = async (member: MerchantMember) => {
-    if (!activeBusiness || !window.confirm(`Cabut akses ${member.email || 'anggota ini'} dari bisnis?`)) return;
+    if (!activeBusiness || !user || !window.confirm(`Cabut akses ${member.email || 'anggota ini'} dari bisnis?`)) return;
+    const workspace = captureWorkspace();
+    const businessId = activeBusiness.id;
     setSaving(true); setError(''); setSuccess('');
     const { error: revokeError } = await supabase.rpc('revoke_merchant_business_member', {
-      p_business_id: activeBusiness.id,
+      p_business_id: businessId,
       p_membership_id: member.membership_id,
     });
+    if (!isWorkspaceCurrent(workspace)) return;
     if (revokeError) setError(revokeError.message);
     else {
       setSuccess('Akses anggota berhasil dicabut.');
       await loadTeam();
       await refreshRole();
     }
-    setSaving(false);
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   if (!user) {
