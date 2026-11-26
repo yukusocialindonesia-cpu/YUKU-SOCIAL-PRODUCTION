@@ -493,8 +493,8 @@ Read-only production inspection. No financial records were changed and no payout
 ### Confirmed release blocker (reconfirmed)
 
 - Live `payout_requests` still has an authenticated owner INSERT RLS policy and column-level INSERT grants. The trigger checks minimum amount and available ledger balance and reserves funds, but it does not repeat the payout RPC's eligibility checks (active Talent role, approved Talent profile, age verification and verified KTP). A caller can therefore bypass the stronger `request_talent_payout(...)` validation by inserting directly, subject to the balance/minimum constraints.
-- Required remediation remains: revoke authenticated direct INSERT on `payout_requests`, remove the owner INSERT policy, and retain the SECURITY DEFINER payout RPC as the only client entry point. Keep the balance/reservation trigger as defense in depth. Add tests proving unverified, pending, suspended and non-Talent accounts cannot create payout requests by either route.
-- This was observed in production metadata but was not changed in production or this audit pass.
+- Remediation has now been implemented in the feature branch migration `20261126190000_harden_payout_request_insert_access.sql`: direct table/column INSERT privileges are revoked, the owner INSERT policy is dropped, and the eligibility-checking RPC remains the authenticated entry point. Production remains unchanged until the migration is reviewed and validated in staging.
+- Remaining validation: prove direct INSERT denial; prove the RPC succeeds for eligible Talent and rejects unverified, pending, suspended and non-Talent accounts; verify Finance processing, allocation, idempotency and concurrent requests.
 
 ### Additional controls to tighten
 
