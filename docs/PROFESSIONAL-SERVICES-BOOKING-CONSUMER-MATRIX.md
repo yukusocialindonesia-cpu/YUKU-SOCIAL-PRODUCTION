@@ -348,3 +348,48 @@ No payment code, Edge Function, schema, production setting, or payment flag was 
 - Specifically test that Finance/Support/Booking Admin cannot exploit the broad trigger bypass in migration 62 to update unrelated booking columns or status through any direct table or RPC path.
 
 No access policy, RPC, UI, production data, or Admin account was changed by this audit.
+
+
+## Customer–Talent communication and notification audit (2026-11-26)
+
+### Confirmed flow
+
+- Chat is intended to open after payment is secured in escrow (`paid_held_in_escrow`), before Talent confirmation, so both sides can discuss distance, meeting point, time and service details. It remains sendable after Talent confirmation and while in progress.
+- Chat history remains readable after completion and during an active dispute; sending is disabled in those states. Cancelled/expired bookings are not exposed by the current chat component status allowlist.
+- Database policy, not only UI, checks booking participant identity and allowed status for message SELECT/INSERT. Authenticated clients may INSERT only `booking_id`, `sender_id`, `message`; message ID, timestamp and read state cannot be forged. UPDATE is limited to `is_read`, and only the other participant can mark a message read.
+- Booking messages are in Supabase Realtime publication. Notifications are also in Realtime publication. A chat message trigger creates an in-app notification for the other participant, with deep link to the relevant Customer or Talent page.
+- Booking status triggers notify payment held, Talent confirmation, session start, completion, cancellation and dispute hold. Additional triggers notify QRIS rejection, refund processing, payout state, report state and professional-service application status.
+- Notification reads and read-state changes are scoped to the current user's `user_id`. The bell displays latest 20 notifications and marks one or all read.
+
+### Fix completed on this branch
+
+- Chat push/in-app notification previously copied the first 120 characters of the private chat message into the notification body. Push notification previews may appear on a lock screen or device notification surface. Changed the message to generic text (“Anda menerima pesan baru pada booking … Buka YUKU untuk membaca percakapan.”), keeping booking/message metadata and route while not copying private chat content into notification payloads.
+- File: `supabase/migrations/43_booking_chat_push_notifications.sql`.
+- This is a branch-only migration edit; it has not been applied to Production or replayed against staging.
+
+### Findings requiring follow-up
+
+1. **Professional-service chat context is still activity-shaped.** `ChatBookingSummary` requires `start_time`, `duration_hours`, and `meeting_location_name`; UI always renders date + “j”. Per-day/per-session/per-project bookings need kind-aware snapshots and context rendering. Do not fake a one-hour schedule for professional services.
+2. **Notification deep links are page-level, not booking-level.** Chat notification metadata contains `booking_id`, but the notification bell only navigates to `/dashboard-talent` or `/riwayat-booking`; it does not open the exact booking/chat. Improve by validating a booking ID and opening the correct detail/chat only after the destination page loads and confirms current-user participation.
+3. **Admin notifications go to all Admin accounts.** Migration 42 helper `notify_all_admins` targets every non-suspended/non-banned Admin, not active module permission recipients. This may send Finance, KTP, report, and Talent review alerts to Admins who cannot action them. Replace with permission-aware recipient targeting (Finance→finance; KTP Customer/report→support; Talent/KTP Talent→talent; booking moderation→booking; Super Admin receives all) and avoid leaking sensitive metadata in notification body.
+4. **Realtime presence and typing are convenience signals, not trusted identity.** The chat client broadcasts a `user_id` field and tracks presence. Never use typing/online payloads to authorize actions or infer verified identity; verify actual sender and booking membership through authenticated database policies. Consider private Realtime channels and explicit Realtime authorization policies before relying on presence privacy.
+5. **Read receipts are broad per booking.** Opening chat marks every unread message from the other participant as read, which is acceptable for a two-party conversation but would need redesign if group chat/admin participants are introduced.
+6. **Chat message content limits need server-side validation.** UI limits text to 1,000 characters, but the database policy currently validates participant/status/column permissions, not message length or empty/whitespace-only content. Add a DB CHECK/trigger or RPC validation so direct API clients cannot bypass the UI limit.
+7. **Chat component has no kind-aware support/contact escalation.** For disputes, the read-only history remains available, but the UI should provide a safe “Hubungi Bantuan” route and preserve message evidence. Do not reopen chat or allow edits after completion/dispute.
+8. **Booking lifecycle notifications use legacy activity wording.** Current messages say “sesi aktivitas”, “jadwal”, and “80% compensation” for generic booking statuses. New professional-service bookings need copy based on booking_kind and service unit; project/day work should not be described as a one-hour session.
+9. **Admin alert recipient scoping and notification routing need tests.** Current bell trusts server-created `metadata.route` when it begins with `/`; continue to ensure clients cannot insert or modify notification metadata. Test all notification triggers with Customer, Talent, each scoped Admin, Super Admin, suspended user and banned user.
+10. **Notification delivery is best-effort in some triggers.** Professional application notification trigger intentionally catches errors so an application submission/review is not rolled back. Keep the business action authoritative in database state/history; notification is an alert, not proof that a user has seen or accepted the action.
+
+### Required regression tests
+
+- Before payment: no chat UI and no SELECT/INSERT access to booking_messages.
+- After escrow: only Customer and booked Talent can read/send; verify sender_id spoofing, booking_id substitution, other-user access and invalid status transitions are rejected.
+- After completion/dispute: history readable to participants, message INSERT denied, message content immutable, only recipient read receipt can change.
+- Cancelled/refunded/expired: chat inaccessible through both UI and direct API.
+- Notification for chat: recipient only; no message body in notification or push payload; route correct for Customer and Talent; duplicate realtime delivery does not duplicate rows.
+- Message length/blank validation is enforced server-side, not only by textarea.
+- Admin notifications are sent only to Admins who can action the corresponding module, plus Super Admin; no KTP/document/bank details or private chat text in notifications.
+- Professional booking notifications and chat context use immutable service snapshots and unit-aware labels, not legacy activity fields.
+- Verify read receipts, reconnect/realtime failure, multiple open tabs, logout/account switch, and notification deep-link access.
+
+No Production settings, database records, or deployed functions were changed by this audit.
