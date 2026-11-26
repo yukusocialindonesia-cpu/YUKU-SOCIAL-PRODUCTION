@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, BadgeCheck, BriefcaseBusiness, CalendarDays, MapPin, Monitor, ShieldCheck, Star, UserRound, AlertCircle } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, BriefcaseBusiness, CalendarDays, MapPin, Monitor, ShieldCheck, Star, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AppRoute } from '../types/navigation';
 
