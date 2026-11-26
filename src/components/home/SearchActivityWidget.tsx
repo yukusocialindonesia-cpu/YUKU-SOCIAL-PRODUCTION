@@ -3,6 +3,7 @@ import { Search, MapPin, Coffee, AlertCircle, RefreshCw } from 'lucide-react';
 import { ActivityCategory } from '../../types/talent';
 import { fetchCategoriesFromSupabase } from '../../utils/supabaseMarketplace';
 import { buildCityFilterOptions } from '../../utils/cities';
+import { supabase } from '../../lib/supabase';
 
 interface SearchActivityWidgetProps {
   onSearch: (activity: string, city: string) => void;
@@ -10,6 +11,7 @@ interface SearchActivityWidgetProps {
 
 export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSearch }) => {
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
+  const [talentCities, setTalentCities] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -20,8 +22,17 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
     setLoading(true);
     setErrorMsg(null);
     try {
-      const catsData = await fetchCategoriesFromSupabase();
+      const [catsData, citiesResult] = await Promise.all([
+        fetchCategoriesFromSupabase(),
+        supabase.from('talent_profiles').select('city').not('city', 'is', null),
+      ]);
       setCategories(catsData);
+      if (citiesResult.error) {
+        console.info('YUKU: daftar kota Talent tidak tersedia; memakai direktori kota Indonesia.', citiesResult.error.message);
+        setTalentCities([]);
+      } else {
+        setTalentCities((citiesResult.data ?? []).map((row) => row.city).filter((city): city is string => Boolean(city?.trim())));
+      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal memuat pilihan pencarian dari Supabase.');
     } finally {
@@ -33,9 +44,9 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
     loadSearchData();
   }, []);
 
-  // Kota berasal dari direktori statis Indonesia; jangan memuat seluruh profil Talent
-  // hanya untuk membangun opsi lokasi di widget pencarian Beranda.
-  const availableCities = useMemo(() => buildCityFilterOptions([]), []);
+  // Ambil hanya kolom kota, bukan seluruh profil Talent beserta layanan terkait.
+  // Direktori statis tetap menjadi fallback dan kota khusus tetap dapat dicari.
+  const availableCities = useMemo(() => buildCityFilterOptions(talentCities), [talentCities]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
