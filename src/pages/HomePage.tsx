@@ -23,8 +23,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
   const promoSectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Pertahankan posisi poster setelah Talent dan Keamanan. Data dimuat
-  // ketika bagian promosi mendekati layar agar beban awal Beranda tetap ringan.
+  // Poster tetap tersedia di desktop; pada HP bagian promosi dipindahkan dari
+  // alur utama agar Beranda fokus pada pencarian dan penemuan layanan.
   useEffect(() => {
     const target = promoSectionRef.current;
     if (!target) return;
@@ -81,7 +81,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
-      {/* Alur lama dipertahankan: pengunjung memahami layanan sebelum memilih Talent. */}
+      {/* Urutan inti HP: cari -> pilih mode -> pilih aktivitas -> lihat katalog -> lihat Talent. */}
       <HeroSection
         onExploreClick={() => onNavigate('/talent')}
         onSearch={handleSearch}
@@ -93,35 +93,31 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      {/* Katalog jasa profesional ditambahkan tanpa menggantikan kategori aktivitas lama. */}
       <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
-
-      {/* Cara kerja tetap muncul sebelum daftar Talent, sesuai alur Beranda lama. */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
 
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Keamanan tetap diperlihatkan sebelum ruang promosi. */}
-      <SafetySection />
-
-      <div ref={promoSectionRef}>
-        <PromoCarousel
-          promotions={promotions}
-          isLoading={isLoadingPromotions}
-          onNavigate={onNavigate}
+      {/* Konten pendukung tetap ada di desktop; tidak menumpuk di Beranda HP. */}
+      <div className="hidden sm:block">
+        <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+        <SafetySection />
+        <div ref={promoSectionRef}>
+          <PromoCarousel
+            promotions={promotions}
+            isLoading={isLoadingPromotions}
+            onNavigate={onNavigate}
+          />
+        </div>
+        <TalentCtaSection
+          onExploreClick={() => onNavigate('/talent')}
+          onRegisterCustomerClick={() => onNavigate('/register')}
+          onRegisterClick={() => onNavigate('/daftar-talent')}
         />
+        <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
       </div>
-
-      <TalentCtaSection
-        onExploreClick={() => onNavigate('/talent')}
-        onRegisterCustomerClick={() => onNavigate('/register')}
-        onRegisterClick={() => onNavigate('/daftar-talent')}
-      />
-
-      <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
     </div>
   );
 };
