@@ -469,7 +469,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const selectedHourlyRate = selectedActivity && serviceRateOverrides[selectedActivity] != null
     ? serviceRateOverrides[selectedActivity]
     : selectedBaseHourlyRate;
-  const selectedServiceId = selectedActivity ? serviceIdsByCategory[selectedActivity] : undefined;
 
   if (loading) {
     return (
