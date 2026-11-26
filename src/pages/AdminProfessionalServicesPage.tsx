@@ -136,6 +136,18 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
   }, [role, adminAccess, isAuthLoading, load]);
 
   const review = async (id: string, decision: 'under_review' | 'approved' | 'rejected' | 'needs_revision') => {
+    const application = rows.find((row) => row.id === id);
+    if (decision === 'approved' && application) {
+      const requiredCredentialMissing = ['credential', 'license'].includes(application.subcategory?.verification_level)
+        && (!application.credential_document_path || !application.credential_url || application.credential_url_error);
+      const attachedEvidenceUnavailable =
+        (!!application.credential_document_path && (!application.credential_url || application.credential_url_error))
+        || (!!application.supporting_document_path && (!application.supporting_url || application.supporting_url_error));
+      if (requiredCredentialMissing || attachedEvidenceUnavailable) {
+        setError('Persetujuan diblokir: dokumen yang diwajibkan atau dilampirkan belum dapat dibuka melalui tautan aman. Periksa akses Storage dan muat ulang antrean sebelum menyetujui.');
+        return;
+      }
+    }
     setActingId(id);
     setError('');
     const { error: actionError } = await supabase.rpc('admin_review_professional_service_application', {
@@ -186,7 +198,7 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
               {row.status !== 'approved' && row.status !== 'rejected' && <div className="mt-3 flex flex-wrap gap-2">
                 <button disabled={!!actingId} onClick={() => void review(row.id,'under_review')} className="rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-700 disabled:opacity-50"><Clock3 className="mr-1 inline h-3 w-3"/> Tandai diproses</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'needs_revision')} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-800 disabled:opacity-50">Minta revisi</button>
-                <button disabled={!!actingId || !row.provider?.is_approved || (verificationNotes[row.id] || '').trim().length < 20 || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && (!row.credential_document_path || !row.credential_url || row.credential_url_error))} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
+                <button disabled={!!actingId || !row.provider?.is_approved || (verificationNotes[row.id] || '').trim().length < 20 || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && (!row.credential_document_path || !row.credential_url || row.credential_url_error)) || (!!row.credential_document_path && (!row.credential_url || row.credential_url_error)) || (!!row.supporting_document_path && (!row.supporting_url || row.supporting_url_error))} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'rejected')} className="rounded-lg bg-rose-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-50"><XCircle className="mr-1 inline h-3 w-3"/> Tolak</button>
               </div>}
               {actingId === row.id && <p className="mt-2 flex items-center gap-2 text-[10px] text-slate-500"><Loader2 className="h-3 w-3 animate-spin"/> Menyimpan keputusan...</p>}
