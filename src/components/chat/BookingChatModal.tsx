@@ -111,6 +111,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
   const loadMessages = useCallback(
     async (bookingId: string) => {
       setIsLoadingMessages(true);
+      setMigrationMissing(false);
       setErrorMsg(null);
       try {
         const { data, error } = await supabase
@@ -455,11 +456,9 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
                 <span>Tabel Chat Belum Diaktifkan di Supabase</span>
               </div>
               <p className="text-amber-800 leading-relaxed">
-                Jalankan file migrasi{' '}
-                <code className="font-mono bg-amber-100 px-1.5 py-0.5 rounded">
-                  supabase/migrations/17_booking_chat_messages.sql
-                </code>{' '}
-                di Supabase SQL Editor untuk mengaktifkan chat real-time per booking.
+                Layanan chat belum tersedia karena struktur database belum siap atau belum tersinkron.
+                Coba muat ulang beberapa saat lagi. Jika masalah berlanjut, hubungi tim bantuan YUKU.
+                Jangan menjalankan file SQL secara manual dari aplikasi.
               </p>
             </div>
           ) : isLoadingMessages ? (
