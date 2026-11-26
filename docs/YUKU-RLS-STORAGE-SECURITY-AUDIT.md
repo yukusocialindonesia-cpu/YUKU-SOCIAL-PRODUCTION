@@ -196,3 +196,62 @@ Review whether public review cards need raw `customer_id` or `booking_id`. Prefe
 7. Re-run effective ACL, RLS, Storage policy and role-matrix checks after rollout. Static migration presence on the feature branch is not proof of Production deployment.
 
 No Production grants, policies, buckets, rows, files, users, or settings were changed during this audit.
+
+
+## Public bucket inventory & lifecycle follow-up — 26 November 2026
+
+Scope: branch migration/client source review, compared with the previously captured read-only Production bucket inventory. No object content or object names were inspected.
+
+### Public buckets and intended purpose
+
+- `avatars`: public profile photos. Current clients in Customer profile, Talent registration, and Talent dashboard upload to this bucket and persist `getPublicUrl`. Public readability is intentional, but users must be told profile photos are public and must not upload KTP/selfies/private images here.
+- `promotions`: public Jelajah promo artwork. Admin uploads public URLs and stores them in `public.promotions`. Intended public.
+- `hero`: public homepage desktop/mobile slides. `HeroSlidesAdminPanel.tsx` uses versioned unique paths and public URLs. Intended public.
+- `branding`: public logo/icon assets referenced by `site_branding`. Intended public.
+- `qris-payment-display`: public QRIS display image, required for Customers to scan. Intended public; distinct from private `qris-payment-proofs`.
+- `portfolios`: public bucket created by early migration 06 with public SELECT and owner upload/update. No current frontend `storage.from('portfolios')` usage was found in branch source search. Prior Production inventory also listed it as public. Treat as legacy/unused until object/path references and database URLs are inventoried; do not flip it private without checking live references.
+
+### Lifecycle and integrity findings
+
+1. **Avatar replacement leaves old objects behind (P2).**
+   - Customer, Talent registration and Talent dashboard use unique paths with `upsert: false`, then save a public URL.
+   - When an avatar is replaced, the new URL is saved but the old object is not removed. This accumulates publicly accessible orphan images. Implement a delayed, server-side cleanup based on paths no longer referenced by any profile; do not delete client-supplied arbitrary paths.
+
+2. **Branding upload can orphan a public object (P2).**
+   - `BrandingAdminPanel.tsx` uploads a unique object, then updates `site_branding`. If the database update fails, the uploaded object remains publicly readable but unreferenced.
+   - Replaced logo/icon paths are not cleaned up. Cleanup must first verify no branding/profile record references the path.
+
+3. **Hero slide upload is not compensating (P2).**
+   - Desktop object is uploaded first, then optional mobile object, then the `hero_slides` row. If mobile upload or row INSERT fails, earlier uploaded object(s) remain.
+   - Delete removes the row before attempting Storage removal; the returned Storage error is ignored. Public objects may remain reachable by URL after the slide is deleted.
+   - Use exact-path cleanup with checked results and a retryable cleanup queue. Do not remove a path while another active slide row references it.
+
+4. **Promotion deletion/upload has similar orphan behavior (P2).**
+   - Poster upload precedes database INSERT. Failed INSERT leaves a public object.
+   - Delete removes the database row before Storage object; Storage removal errors are ignored.
+   - Keep cleanup separate from financial/booking flows and only delete exact unreferenced paths.
+
+5. **QRIS display uses immutable versioned path convention (positive control).**
+   - QRIS admin panel uploads unique versioned paths with `upsert: false`; the current settings row points to the selected image.
+   - Old versions may remain publicly reachable by design for rollback. Define retention and cleanup after checking that no current/rollback setting references them. Never place customer proof images in this public bucket; proofs belong in private `qris-payment-proofs`.
+
+### Access-control assessment
+
+- Public buckets are intentionally public-read; Storage object RLS does not make a public bucket private. Any person with the object URL can read it. Restrict uploads/updates/deletes independently to owners or the relevant Admin permission.
+- Branch migration 53 narrows write controls for `branding`, `hero`, and `promotions` to Super Admin. QRIS display write controls are Finance-scoped in the later manual-transfer migration; confirm product decision because an earlier audit note proposed Super Admin-only.
+- Bucket MIME/size limits are defense-in-depth, not content inspection. Client-side MIME checks are not sufficient to prove file bytes are safe. For public uploads, verify magic bytes server-side and consider image re-encoding/metadata stripping.
+- No current portfolio frontend consumer found; the legacy bucket remains a risk surface because public object URLs are durable and cannot be revoked merely by hiding a UI reference.
+
+### Required Staging tests / release actions
+
+- Inventory bucket visibility, size/MIME limits, every effective permissive Storage policy (policies OR together), and all current DB references before changing any public bucket.
+- Test anonymous download succeeds only for intentionally public asset buckets and fails for all private evidence buckets.
+- Test Customer/Talent can upload only to their own avatar folder; cannot update/delete another user's object or upload into `ktp-documents`, `qris-payment-proofs`, or Admin asset buckets.
+- Test Admin role matrix for branding/hero/promotion and Finance QRIS display upload/update/delete.
+- Simulate failed DB writes after each successful upload and failed Storage removal after DB delete; ensure cleanup is recorded and retried, and no referenced asset is deleted.
+- Confirm portfolio object/database references and decide explicitly to retain, migrate, or retire the bucket.
+- Add a user-facing warning that avatar images are publicly accessible; keep identity/KTP/selfie evidence in private buckets only.
+
+### Validation boundary
+
+The prior Production snapshot reported public buckets `portfolios`, `promotions`, `qris-payment-display`, `hero-slides`, `hero`, `avatars`, and `branding`; private evidence buckets were `ktp-documents`, `qris-payment-proofs`, `bank-transfer-payment-proofs`, and `talent-media`. This section validates source intent and client lifecycle, not current live object contents or effective live policy composition. No Production or Staging settings, buckets, policies, rows, or objects were changed.
