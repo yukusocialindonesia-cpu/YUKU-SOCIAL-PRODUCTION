@@ -230,8 +230,8 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     }
 
     // Identitas Talent harus siap diajukan untuk verifikasi sebelum data profil/layanan dibuat.
-    const normalizedKtpNumber = formData.ktpNumber.replace(/\\D/g, '');
-    if (!/^\\d{16}$/.test(normalizedKtpNumber)) {
+    const normalizedKtpNumber = formData.ktpNumber.replace(/\D/g, '');
+    if (!/^\d{16}$/.test(normalizedKtpNumber)) {
       setSubmitError('Nomor NIK wajib diisi tepat 16 digit sesuai KTP.');
       return;
     }
