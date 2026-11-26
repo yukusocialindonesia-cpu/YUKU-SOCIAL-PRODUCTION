@@ -418,6 +418,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Paid Companion</span>
               <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Online & Offline</span>
               <button type="button" onClick={() => onNavigate('/jasa-profesional')} className="rounded-lg border border-white/30 bg-white/15 px-2.5 py-1.5 text-[10px] font-bold text-white transition hover:bg-white/25">Cari Jasa Profesional</button>
+              <button type="button" onClick={() => onNavigate('/merchant-partner')} className="rounded-lg border border-amber-200/40 bg-amber-300/15 px-2.5 py-1.5 text-[10px] font-bold text-amber-50 transition hover:bg-amber-300/25">Merchant Partner</button>
             </div>
           </div>
         </section>
