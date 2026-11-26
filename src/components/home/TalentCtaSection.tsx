@@ -36,7 +36,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-xs sm:text-sm leading-tight">
-                    Profil Terkurasi & Terverifikasi
+                    Proses Verifikasi Penyedia
                   </strong>
                   <span className="text-purple-200/80 text-xs sm:text-xs leading-snug">
                     Penyedia mengikuti proses verifikasi sesuai jenis layanan dan kebijakan YUKU.
@@ -72,7 +72,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                 <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
-                    Pembayaran Terlindungi
+                    Cek Detail Sebelum Memesan
                   </strong>
                   <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
                     Periksa detail layanan, jadwal, dan biaya sebelum melanjutkan proses pemesanan.
