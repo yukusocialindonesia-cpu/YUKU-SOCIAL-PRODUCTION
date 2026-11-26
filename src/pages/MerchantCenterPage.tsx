@@ -136,7 +136,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   );
   const canSubmitForReview = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (preferredBusinessId?: string) => {
     if (!user) { setLoading(false); return; }
     setLoading(true);
     setError('');
@@ -170,7 +170,8 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     }
     const rows = (data || []) as MerchantBusiness[];
     setBusinesses(rows);
-    const nextId = rows.some((row) => row.id === activeBusinessId) ? activeBusinessId : rows[0]?.id || '';
+    const preferredId = preferredBusinessId || activeBusinessId;
+    const nextId = rows.some((row) => row.id === preferredId) ? preferredId : rows[0]?.id || '';
     setActiveBusinessId(nextId);
     if (nextId) {
       const { data: locationRows, error: locationError } = await supabase
@@ -292,7 +293,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       setShowCreateBusinessForm(false);
       setSuccess('Profil bisnis berhasil dibuat sebagai draft. Tambahkan lokasi usaha sebelum mengajukan verifikasi.');
       await refreshRole();
-      await load();
+      await load(String(data));
     }
     setSaving(false);
   };
