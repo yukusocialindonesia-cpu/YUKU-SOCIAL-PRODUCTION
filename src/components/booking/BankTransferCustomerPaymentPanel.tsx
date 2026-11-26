@@ -70,6 +70,7 @@ export const BankTransferCustomerPaymentPanel: React.FC<Props> = ({
   const countdown = left === null ? '' : `${String(Math.floor(left / 60)).padStart(2, '0')}:${String(left % 60).padStart(2, '0')}`;
 
   const submit = async () => {
+    if (left !== null && left <= 0) { setError('Waktu pembayaran sudah habis. Buat booking baru untuk melanjutkan.'); return; }
     if (!file) { setError('Pilih bukti transfer terlebih dahulu.'); return; }
     setBusy(true); setError(''); setSuccess('');
     let uploadedPath = '';
@@ -113,12 +114,12 @@ export const BankTransferCustomerPaymentPanel: React.FC<Props> = ({
     </div>}
     {submission?.status === 'rejected' && <div className="rounded-lg bg-rose-50 p-3 text-xs text-rose-800"><strong>Bukti perlu diperbaiki.</strong>{submission.admin_notes && <p className="mt-1">{submission.admin_notes}</p>}</div>}
     <label className="block text-xs font-bold text-slate-700">Bukti transfer (JPG/PNG/WebP/PDF, maks. 5 MB)
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="mt-2 block w-full text-xs" onChange={e => { const selected = e.target.files?.[0] || null; setError(''); if (selected && (!ALLOWED_TYPES.includes(selected.type) || selected.size > MAX_PROOF_BYTES)) { setFile(null); setError('Format file tidak didukung atau ukuran melebihi 5 MB.'); } else setFile(selected); e.target.value = ''; }} />
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="mt-2 block w-full text-xs" disabled={busy || (left !== null && left <= 0)} onChange={e => { const selected = e.target.files?.[0] || null; setError(''); if (selected && (!ALLOWED_TYPES.includes(selected.type) || selected.size > MAX_PROOF_BYTES)) { setFile(null); setError('Format file tidak didukung atau ukuran melebihi 5 MB.'); } else setFile(selected); e.target.value = ''; }} />
     </label>
     {file && <p className="text-xs text-emerald-700">File dipilih: {file.name}</p>}
     <label className="block text-xs font-bold text-slate-700">Referensi transaksi (opsional)<input value={reference} onChange={e => setReference(e.target.value)} maxLength={100} className="mt-1 w-full rounded-lg border border-slate-200 p-2 font-normal" /></label>
     {error && <p className="text-xs text-rose-700">{error}</p>}{success && <p className="text-xs text-emerald-700">{success}</p>}
-    <button type="button" onClick={submit} disabled={busy || !file} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-700 px-4 py-3 text-xs font-extrabold text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}{busy ? 'Mengirim...' : 'Kirim Bukti Transfer'}</button>
+    <button type="button" onClick={submit} disabled={busy || !file || (left !== null && left <= 0)} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-700 px-4 py-3 text-xs font-extrabold text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}{busy ? 'Mengirim...' : 'Kirim Bukti Transfer'}</button>
     <p className="text-[10px] text-slate-500">Unggahan tidak otomatis mengesahkan pembayaran. Admin akan mencocokkan dana masuk sebelum booking masuk escrow.</p>
   </section>;
 };
