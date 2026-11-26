@@ -208,3 +208,41 @@ Recommended follow-up before relying on this as a high-assurance control:
 - set_admin_permissions() requires an authenticated Super Admin, prevents self-editing the primary Super Admin permissions, and only targets an active scoped Admin.
 
 No Production data, Admin permission, Auth ban state, Edge Function, migration, or account status was changed during this review.
+
+
+## Admin permission revocation and existing sessions — Production read-only verification, 26 November 2026
+
+### What happens when a scoped Admin is disabled or loses a permission
+
+The effective Production functions were inspected directly:
+- set_admin_active(uuid, boolean) is authenticated-only and requires public.is_super_admin(). It locks the target private.admin_accounts row, changes is_active, and writes an audit event in the same database transaction. It cannot target a Super Admin and the acting Super Admin cannot disable itself.
+- set_admin_permissions(uuid, text[]) is authenticated-only and Super Admin-only. It rejects self-edit and invalid permission keys, replaces the target permission rows and writes an audit event in the same transaction.
+- private.is_active_admin(uuid) checks the current database values: admin_accounts.is_active, public.users.role='admin', and public.users.account_status='active'.
+- private.has_admin_permission(uuid,text) and private.is_super_admin(uuid) derive from the same live private records. The internal helper functions have no direct EXECUTE grants to anon/authenticated/service_role; the public get_admin_access() wrapper is authenticated-only.
+- Production policy inventory: 43 policies reference the live Admin authorization helpers. Therefore a disabled Admin or removed permission loses access at the database authorization boundary on subsequent policy/RPC evaluation, even if their already-issued JWT has not yet expired.
+- The admin-management Edge Function checks the current get_admin_access() result before inviting another Admin. It does not trust a stale UI permission flag.
+
+### Existing Auth session is not proactively deleted
+
+set_admin_active only changes the Admin authorization record; it does not revoke/delete rows in auth.sessions or invalidate the user's JWT. This is not equivalent to immediate global sign-out:
+- Database RLS and guarded RPCs re-evaluate current Admin permission from the database, so the old JWT alone should not preserve Admin privileges for those paths.
+- Authenticated identity/session may remain valid for non-Admin functionality permitted to that account.
+- AuthContext refreshes role/Admin access on token refresh, USER_UPDATED and window focus. It does not receive a dedicated push event when another Super Admin changes this user's permissions, so the UI may show stale menu state until the next refresh/focus; server-side permission checks remain authoritative.
+- A connected Realtime private channel may have a different reauthorization/disconnect lifecycle than a new database request. Immediate revocation of an already joined socket was not demonstrated in this read-only audit and needs a dedicated Staging test.
+
+Production snapshot at audit time:
+- Two Admin profiles exist: one active Super Admin and one active scoped Admin.
+- No active auth.sessions rows were found for currently active Admin accounts in the queried snapshot; no disabled Admin sessions were found either. This is a point-in-time result, not proof that future sessions will be proactively revoked.
+- No Admin permissions were found attached to a private Admin account that was inactive or whose public role/account status was not active.
+
+### Recommendation / remaining hardening
+
+1. Treat the database helper checks as the authorization boundary; never rely on hiding Admin menu items alone.
+2. Add a revocation test with an active scoped Admin logged in on two clients: Super Admin removes one permission and disables the account; immediately attempt direct RPC, table/RLS read/write, Storage operation, Edge Function call, and existing Realtime channel activity from the still-open client.
+3. Confirm that the old JWT can still authenticate ordinary allowed user functions but cannot access any Admin-scoped surface after revocation.
+4. If policy requires immediate global session termination, implement a separate server-side session-revocation design and test it across browser tabs/mobile clients and Realtime sockets. Do not assume changing admin_accounts.is_active itself logs the user out.
+5. Test concurrent permission changes and account disablement, including duplicate requests and audit-log outcomes.
+
+Supabase Auth session documentation states that JWTs carry a session_id corresponding to auth.sessions, and that stronger post-sign-out guarantees can validate that session row. The current YUKU Admin authorization primarily uses live database permission helpers instead; it does not yet implement an explicit per-session revocation gate for already-issued tokens.
+
+No Admin account, permission, Auth session, JWT, Realtime setting, database object, or Production data was changed in this audit.
