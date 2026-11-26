@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, BadgeCheck, BriefcaseBusiness, CalendarDays, MapPin, Monitor, ShieldCheck, Star, AlertCircle } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, BriefcaseBusiness, CalendarDays, MapPin, Monitor, ShieldCheck, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AppRoute } from '../types/navigation';
 import { formatProfessionalRate } from '../lib/professionalServicePricing';
@@ -19,17 +19,13 @@ interface ProviderService {
   subcategory: { id: string; title: string; description: string; verification_level: string; category: { title: string } };
 }
 interface ProviderProfile {
-  id: string;
+  user_id: string;
   display_name: string;
-  avatar_url: string;
-  city: string;
-  headline: string;
-  bio: string;
-  rating_average: number;
-  review_count: number;
-  completed_hours: number;
-  languages: string[];
-  is_approved: boolean;
+  avatar_url: string | null;
+  city: string | null;
+  headline: string | null;
+  bio: string | null;
+  is_profile_complete: boolean;
 }
 const verificationLabel: Record<string, string> = { identity: 'Standar pemeriksaan identitas', reference: 'Standar pemeriksaan referensi', credential: 'Standar pemeriksaan kompetensi', license: 'Wajib pemeriksaan izin profesi' };
 
@@ -112,10 +108,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
               <p className="mt-2 flex items-center gap-1 text-[11px] text-violet-100"><MapPin className="h-3 w-3"/>{profile.city || 'Lokasi belum dicantumkan'}</p>
             </div>
           </div>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-[10px]"><Star className="h-3 w-3"/> {profile.review_count > 0 ? `${Number(profile.rating_average || 0).toFixed(1)} (${profile.review_count} ulasan)` : 'Belum ada ulasan'}</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-[10px]"><BriefcaseBusiness className="h-3 w-3"/> {profile.completed_hours || 0} jam pengalaman layanan tercatat</span>
-          </div>
+
         </div>
       </div>
 
