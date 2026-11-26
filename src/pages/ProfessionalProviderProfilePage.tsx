@@ -48,6 +48,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
         .from('professional_talent_services')
         .select('id, service_description, experience_years, service_city, delivery_modes, rate_amount, pricing_unit, subcategory:professional_service_subcategories!inner(id, title, description, verification_level, category:professional_service_categories!inner(title)), provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, bio, rating_average, review_count, completed_hours, languages, is_approved)')
         .eq('provider_id', providerId)
+        .eq('provider.is_approved', true)
         .eq('approval_status', 'approved')
         .eq('is_active', true);
 
