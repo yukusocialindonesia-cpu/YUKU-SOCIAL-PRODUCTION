@@ -186,14 +186,19 @@ export default function App() {
       setActiveTalentId(id);
       targetUrl = `/talent/${id}`;
     } else if (path === '/talent') {
-      if (params?.activity) setInitialActivityFilter(params.activity);
-      if (params?.city) setInitialCityFilter(params.city);
-      setInitialModeFilter(params?.mode === 'online' || params?.mode === 'offline' ? params.mode : 'all');
+      // Every new Jelajah entry starts from the requested filters, or clean defaults.
+      // This prevents a previous search from leaking into unrelated "Cari Companion" actions.
+      const activity = params?.activity || 'all';
+      const city = params?.city || 'Semua Kota';
+      const mode = params?.mode === 'online' || params?.mode === 'offline' ? params.mode : 'all';
+      setInitialActivityFilter(activity);
+      setInitialCityFilter(city);
+      setInitialModeFilter(mode);
 
       const qs = new URLSearchParams();
-      if (params?.activity && params.activity !== 'all') qs.set('activity', params.activity);
-      if (params?.city && params.city !== 'Semua Kota') qs.set('city', params.city);
-      if (params?.mode === 'online' || params?.mode === 'offline') qs.set('mode', params.mode);
+      if (activity !== 'all') qs.set('activity', activity);
+      if (city !== 'Semua Kota') qs.set('city', city);
+      if (mode !== 'all') qs.set('mode', mode);
       const queryString = qs.toString();
       targetUrl = queryString ? `/talent?${queryString}` : '/talent';
     }
