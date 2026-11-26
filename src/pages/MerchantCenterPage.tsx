@@ -256,7 +256,8 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       .from('merchant_offer_history')
       .select('id,offer_id,from_status,to_status,decision_note,created_at')
       .in('offer_id', offerIds)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(300);
     if (!historyError) setOfferHistoryRows((data || []) as MerchantOfferHistory[]);
     else setOfferHistoryRows([]);
   }, [activeBusiness?.id, isOwner, offers]);
