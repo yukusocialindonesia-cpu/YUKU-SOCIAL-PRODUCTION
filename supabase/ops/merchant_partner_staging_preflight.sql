@@ -108,6 +108,9 @@ begin
      or has_function_privilege('anon','public.admin_review_merchant_offer(uuid,text,text)','EXECUTE') then
     raise exception 'Merchant Partner preflight failed: anon can execute a privileged Merchant Partner RPC';
   end if;
+  if has_function_privilege('authenticated','public.invite_merchant_member(uuid,uuid,text)','EXECUTE') then
+    raise exception 'Merchant Partner preflight failed: legacy unaudited UUID invitation RPC is still executable';
+  end if;
 
   raise notice 'Merchant Partner staging preflight passed. Continue with role/JWT, cross-tenant, concurrency, notification, and UI acceptance tests.';
 end;
