@@ -126,6 +126,9 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
   // Prevent slower requests from a previous account/business from overwriting the current workspace.
   const loadRequestRef = useRef(0);
+  const teamRequestRef = useRef(0);
+  const reviewHistoryRequestRef = useRef(0);
+  const offerHistoryRequestRef = useRef(0);
 
   const activeBusiness = useMemo(
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
@@ -247,14 +250,19 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   useEffect(() => { void load(); }, [load]);
 
   const loadTeam = useCallback(async () => {
+    const requestId = ++teamRequestRef.current;
     if (!activeBusiness || !['owner','manager'].includes(activeMembership?.role || '') || activeMembership?.status !== 'active') {
       setTeamMembers([]);
+      setTeamLoading(false);
       return;
     }
+    const businessId = activeBusiness.id;
+    setTeamMembers([]);
     setTeamLoading(true);
     const { data, error: teamError } = await supabase.rpc('get_merchant_business_members', {
-      p_business_id: activeBusiness.id,
+      p_business_id: businessId,
     });
+    if (requestId !== teamRequestRef.current) return;
     if (teamError) {
       setError('Daftar anggota belum tersedia. Pastikan migrasi pengelolaan anggota sudah diterapkan di staging.');
       setTeamMembers([]);
@@ -262,30 +270,36 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       setTeamMembers((data || []) as MerchantMember[]);
     }
     setTeamLoading(false);
-  }, [activeBusiness?.id, activeMembership?.role, activeMembership?.status]);
+  }, [activeBusiness?.id, activeMembership?.role, activeMembership?.status, user?.id]);
 
   useEffect(() => { void loadTeam(); }, [loadTeam]);
 
   const loadReviewHistory = useCallback(async () => {
+    const requestId = ++reviewHistoryRequestRef.current;
     if (!activeBusiness || !isOwner) {
       setReviewHistory([]);
+      setReviewHistoryLoading(false);
       return;
     }
+    const businessId = activeBusiness.id;
+    setReviewHistory([]);
     setReviewHistoryLoading(true);
     const { data, error: historyError } = await supabase
       .from('merchant_business_review_history')
       .select('id,from_status,to_status,decision_note,actor_role,created_at')
-      .eq('business_id', activeBusiness.id)
+      .eq('business_id', businessId)
       .order('created_at', { ascending: false })
       .limit(10);
+    if (requestId !== reviewHistoryRequestRef.current) return;
     if (!historyError) setReviewHistory((data || []) as MerchantReviewEvent[]);
     else setReviewHistory([]);
     setReviewHistoryLoading(false);
-  }, [activeBusiness?.id, isOwner]);
+  }, [activeBusiness?.id, isOwner, user?.id]);
 
   useEffect(() => { void loadReviewHistory(); }, [loadReviewHistory]);
 
   const loadOfferHistory = useCallback(async () => {
+    const requestId = ++offerHistoryRequestRef.current;
     if (!activeBusiness || !isOwner) {
       setOfferHistoryRows([]);
       return;
@@ -295,15 +309,17 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       setOfferHistoryRows([]);
       return;
     }
+    setOfferHistoryRows([]);
     const { data, error: historyError } = await supabase
       .from('merchant_offer_history')
       .select('id,offer_id,from_status,to_status,decision_note,created_at')
       .in('offer_id', offerIds)
       .order('created_at', { ascending: false })
       .limit(300);
+    if (requestId !== offerHistoryRequestRef.current) return;
     if (!historyError) setOfferHistoryRows((data || []) as MerchantOfferHistory[]);
     else setOfferHistoryRows([]);
-  }, [activeBusiness?.id, isOwner, offers]);
+  }, [activeBusiness?.id, isOwner, offers, user?.id]);
 
   useEffect(() => { void loadOfferHistory(); }, [loadOfferHistory]);
 
