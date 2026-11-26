@@ -15,9 +15,8 @@ export interface ServiceCatalogCategory {
 
 // Static catalog keeps discovery usable before the professional-services database is deployed.
 export const PROFESSIONAL_SERVICES_CATALOG: ServiceCatalogCategory[] = [
-  { id: 'travel-tourism', title: 'Travel & Tourism', description: 'Pemandu wisata dan layanan pendamping perjalanan.', icon_name: 'MapPinned', professional_service_subcategories: [
+  { id: 'travel-tourism', title: 'Travel & Tourism', description: 'Pemandu wisata dan penerjemah profesional untuk kebutuhan perjalanan.', icon_name: 'MapPinned', professional_service_subcategories: [
     { id: 'tour-guide', title: 'Tour Guide', description: 'Pemandu wisata lokal dan destinasi.', verification_level: 'reference', delivery_modes: ['offline'] },
-    { id: 'travel-companion', title: 'Travel Companion', description: 'Pendamping perjalanan non-medis.', verification_level: 'identity', delivery_modes: ['offline'] },
     { id: 'interpreter-travel', title: 'Penerjemah Wisata', description: 'Bantuan bahasa selama perjalanan.', verification_level: 'credential', delivery_modes: ['online', 'offline'] },
   ]},
   { id: 'caregiving', title: 'Caregiving & Childcare', description: 'Layanan perawatan dan pendampingan sesuai kompetensi.', icon_name: 'HeartHandshake', professional_service_subcategories: [
