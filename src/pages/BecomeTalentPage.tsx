@@ -429,15 +429,11 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       const identityFields: Record<string, any> = {
         full_legal_name: formData.fullName.trim(),
         date_of_birth: formData.dateOfBirth,
+        ktp_number: normalizedKtpNumber,
+        ktp_storage_path: uploadedKtpPath,
+        selfie_storage_path: uploadedSelfiePath,
         emergency_contact_phone: formData.phone.trim(),
       };
-
-      if (formData.ktpNumber.trim()) {
-        identityFields.ktp_number = formData.ktpNumber.trim();
-      }
-      if (uploadedKtpPath) {
-        identityFields.ktp_storage_path = uploadedKtpPath;
-      }
 
       const { error: identityError } = existingIdentity
         ? await supabase.from('user_identities').update(identityFields).eq('id', activeUserId)
