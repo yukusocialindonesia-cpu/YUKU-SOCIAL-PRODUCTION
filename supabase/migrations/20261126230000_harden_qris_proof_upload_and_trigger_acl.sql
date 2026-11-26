@@ -26,7 +26,3 @@ CREATE POLICY qris_proof_upload_own_booking
     )
   );
 
--- PostgreSQL invokes trigger functions through the trigger; API roles do not need
--- EXECUTE on this function. The trigger remains attached to public.talent_media.
-REVOKE ALL ON FUNCTION public.guard_talent_media_moderation_fields()
-  FROM PUBLIC, anon, authenticated;
