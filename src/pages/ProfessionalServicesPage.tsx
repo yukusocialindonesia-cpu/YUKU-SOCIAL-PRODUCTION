@@ -257,7 +257,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {visibleProviders.map((item) => (
                 <button key={item.id} type="button" onClick={() => onNavigate('/jasa-profesional/:id', { id: item.provider.user_id })} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left transition hover:border-violet-300 hover:shadow-md">
-                  <img src={item.provider.avatar_url} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-slate-100 object-cover"/>
+                  <img src={item.provider.avatar_url || undefined} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-slate-100 object-cover"/>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1 text-xs font-extrabold text-slate-900">{item.provider.display_name}{item.provider.is_profile_complete && <BadgeCheck aria-label="Profil profesional lengkap" className="h-3 w-3 text-violet-600"/>}</span>
                     <span className="mt-1 block truncate text-[10px] text-slate-500">{item.subcategory.title} · {item.provider.city || 'Lokasi belum dicantumkan'}</span>
