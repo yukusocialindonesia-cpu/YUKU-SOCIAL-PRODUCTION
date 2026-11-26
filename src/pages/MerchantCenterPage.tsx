@@ -401,6 +401,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (!locationName.trim() || !address.trim()) { setError('Nama lokasi dan alamat wajib diisi.'); return; }
     const workspace = captureWorkspace();
     const businessId = activeBusiness.id;
+    setSaving(true); setError(''); setSuccess('');
     const locationPayload = {
       p_business_id: businessId,
       p_location_name: locationName.trim(),
@@ -519,7 +520,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     const businessId = activeBusiness.id;
     setSaving(true); setError(''); setSuccess('');
     const { error: rpcError } = await supabase.rpc('submit_merchant_business_for_review', {
-      p_business_id: activeBusiness.id,
+      p_business_id: businessId,
     });
     if (!isWorkspaceCurrent(workspace)) return;
     if (rpcError) setError(rpcError.message);
