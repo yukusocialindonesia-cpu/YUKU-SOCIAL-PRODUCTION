@@ -33,69 +33,70 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
     switch (iconName) {
       case 'Coffee':
       case 'utensils':
-        return <Coffee className="w-5 h-5" />;
+        return <Coffee className="h-4 w-4" />;
       case 'ShoppingBag':
-        return <ShoppingBag className="w-5 h-5" />;
+        return <ShoppingBag className="h-4 w-4" />;
       case 'Film':
-        return <Film className="w-5 h-5" />;
+        return <Film className="h-4 w-4" />;
       case 'Sparkles':
-        return <Sparkles className="w-5 h-5" />;
+        return <Sparkles className="h-4 w-4" />;
       case 'Users':
-        return <Users className="w-5 h-5" />;
+        return <Users className="h-4 w-4" />;
       case 'MessageCircle':
-        return <MessageCircle className="w-5 h-5" />;
+        return <MessageCircle className="h-4 w-4" />;
       default:
-        return <Coffee className="w-5 h-5" />;
+        return <Coffee className="h-4 w-4" />;
     }
   };
 
-  /* HP kecil: 2 kolom agar nama kategori lega; HP standar: 3 kolom agar tetap ringkas. */
-  const gridClass = 'grid grid-cols-2 min-[360px]:grid-cols-3 gap-2 sm:flex sm:gap-3 sm:overflow-x-auto sm:snap-x sm:pb-2 sm:-mx-4 sm:px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:overflow-visible';
+  // Satu baris horizontal di semua ukuran layar; kartu ringkas agar aktivitas
+  // terlihat tanpa membuat Beranda memanjang seperti katalog penuh.
+  const railClass = 'flex gap-2 overflow-x-auto overscroll-x-contain snap-x snap-mandatory pb-2 -mx-4 px-4 sm:mx-0 sm:px-0';
 
   return (
-    <section className="relative py-3.5 sm:py-12 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 sm:mb-7 gap-1 md:gap-4">
-          <div>
-            <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase mb-0.5 block">
+    <section className="relative bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF] py-3 sm:py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-purple-700">
               Pilihan Pengalaman Sosial
             </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-              Aktivitas Seru Bersama Teman Baru
+            <h2 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-2xl">
+              Pilihan Aktivitas
             </h2>
           </div>
-          {/* Teks penjelas hanya di layar lebar */}
-          <p className="hidden xl:block text-sm text-slate-500 max-w-md">
-            Mulai dari bersantai di kafe, berbelanja, menonton pertunjukan, hingga sesi mengobrol suportif online.
-          </p>
+          <span className="shrink-0 pb-0.5 text-[10px] font-medium text-slate-500 sm:text-xs">
+            Geser untuk lihat
+          </span>
         </div>
 
         {loading ? (
-          <div className={gridClass}>
+          <div className={railClass} aria-label="Memuat kategori aktivitas">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-2xl border border-purple-100/80 bg-gradient-to-br from-white to-purple-50/70 animate-pulse h-[88px] lg:h-20" />
+              <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-purple-100 bg-white sm:w-[104px]" />
             ))}
           </div>
         ) : errorMsg ? (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-900">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <AlertCircle className="h-5 w-5 shrink-0 text-rose-600" />
               <span>{errorMsg}</span>
             </div>
             <button
+              type="button"
               onClick={loadCategories}
-              className="px-3 py-1.5 bg-rose-600 text-white rounded-lg font-bold flex items-center gap-1 hover:bg-rose-700 cursor-pointer shrink-0"
+              className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg bg-rose-600 px-3 py-1.5 font-bold text-white hover:bg-rose-700"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="h-3.5 w-3.5" />
               <span>Coba Lagi</span>
             </button>
           </div>
         ) : categories.length === 0 ? (
-          <div className="p-6 text-center bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-500">
-            Belum ada data kategori aktivitas aktif di Supabase.
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-5 text-center text-xs text-slate-500">
+            Belum ada kategori aktivitas aktif.
           </div>
         ) : (
-          <div className={gridClass}>
+          <div className={railClass}>
             {categories.map((cat, idx) => {
               const tones = [
                 'bg-purple-100 text-purple-700',
@@ -110,14 +111,14 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group snap-start w-auto sm:shrink-0 sm:w-[104px] lg:w-auto flex flex-col items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 sm:py-4 min-h-[88px] rounded-[20px] border border-purple-100/80 bg-gradient-to-br from-white via-white to-purple-50/60 backdrop-blur-xl shadow-[0_8px_22px_rgba(76,29,149,0.07),inset_0_1px_0_rgba(255,255,255,0.95)] ring-1 ring-white/90 hover:border-purple-200 hover:shadow-[0_16px_30px_rgba(76,29,149,0.13)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-purple-600"
+                  className="group flex min-h-[76px] w-[88px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-xl border border-purple-100 bg-white px-2 py-2 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-purple-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 sm:min-h-[88px] sm:w-[104px] sm:gap-2 sm:rounded-2xl sm:py-3"
                 >
-                  <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[15px] flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.7),0_3px_8px_rgba(76,29,149,0.07)] ${tones[idx % tones.length]} group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300`}>
+                  <span className={`flex h-8 w-8 items-center justify-center rounded-xl sm:h-9 sm:w-9 ${tones[idx % tones.length]}`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <h3 className="font-bold text-[13px] sm:text-[13px] leading-snug text-center text-slate-800 group-hover:text-purple-700 transition-colors">
+                  <span className="line-clamp-2 text-[10px] font-bold leading-tight text-slate-800 group-hover:text-purple-700 sm:text-[11px]">
                     {cat.title}
-                  </h3>
+                  </span>
                 </button>
               );
             })}
