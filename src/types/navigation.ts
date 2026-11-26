@@ -7,6 +7,8 @@ export type AppRoute =
   | '/talent'
   | '/komunitas'
   | '/talent/:id'
+  | '/jasa-profesional'
+  | '/jasa-profesional/:id'
   | '/cara-kerja'
   | '/daftar-talent'
   | '/dashboard-talent'
