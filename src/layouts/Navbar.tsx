@@ -13,7 +13,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
-  const { user: currentUser, role: userRole, accessSnapshot, isAuthLoading, signOut } = useAuth();
+  const { user: currentUser, role: userRole, adminAccess, accessSnapshot, isAuthLoading, signOut } = useAuth();
   const customerAvailable = accessSnapshot?.capabilities.customer.available ?? (userRole === 'customer' || userRole === 'talent');
   const talentWorkspaceAvailable = accessSnapshot
     ? accessSnapshot.capabilities.talent?.status === 'approved'
@@ -52,6 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const navLinks: { label: string; href: AppRoute }[] = [
     { label: 'Beranda', href: '/' },
     { label: 'Jelajah', href: '/talent' },
+    { label: 'Merchant', href: '/merchant-partner' },
     { label: 'Komunitas', href: '/komunitas' },
     { label: 'Cara Kerja', href: '/cara-kerja' },
     { label: 'Tentang Kami', href: '/tentang' },
@@ -169,6 +170,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   >
                     <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
                     <span>Admin Panel</span>
+                  </button>
+                )}
+
+                {adminAccess?.isSuperAdmin && (
+                  <button
+                    onClick={() => handleLinkClick('/admin/merchant-partners')}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                      currentPath === '/admin/merchant-partners'
+                        ? 'bg-amber-500 text-slate-950 border-amber-500'
+                        : 'bg-amber-50 text-amber-950 border-amber-200 hover:bg-amber-100'
+                    }`}
+                    title="Review pengajuan Merchant Partner"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Review Merchant</span>
                   </button>
                 )}
 
@@ -391,6 +407,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   >
                     <ShieldCheck className="w-4 h-4 text-amber-700" />
                     <span>Admin Panel</span>
+                  </button>
+                )}
+
+                {adminAccess?.isSuperAdmin && (
+                  <button
+                    onClick={() => handleLinkClick('/admin/merchant-partners')}
+                    className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                      currentPath === '/admin/merchant-partners' ? 'bg-amber-100 text-amber-950' : 'bg-amber-50 text-amber-900 hover:bg-amber-100'
+                    }`}
+                  >
+                    <ShieldCheck className="w-4 h-4 text-amber-700" />
+                    <span>Review Merchant</span>
                   </button>
                 )}
 
