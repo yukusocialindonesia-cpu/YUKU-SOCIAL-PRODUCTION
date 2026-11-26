@@ -45,3 +45,11 @@ Frontend additions:
 - The profile intentionally has no booking/payment action. A YUKU profile approval badge is not a substitute for regulated professional license verification.
 
 The new provider-listing migration is also not applied to production. Validate both migrations in a disposable Supabase project before any production rollout.
+
+
+## Provider application intake
+The `professional_service_applications` migration adds a private application workflow. Signed-in users must first have a YUKU Talent profile, then submit one service per application with description, experience, service area, delivery mode, proposed rate, and applicable credentials. Applicants can read only their own submissions; users cannot set review outcomes. Admin read/review access is restricted to the existing Talent permission scope.
+
+Credential and supporting files are stored in a dedicated private Storage bucket (`professional-service-documents`), with a 10 MB limit and PDF/JPG/PNG/WebP MIME allowlist. The owner can access their own files; authorized Talent admins can read documents for review. No public bucket or public document URL is used.
+
+The application route is `/daftar-jasa-profesional`, linked from the professional-services discovery page. Approval is still a review state only; the next implementation step is the admin review UI and a controlled publication step that creates an approved listing. No booking/payment action is available.
