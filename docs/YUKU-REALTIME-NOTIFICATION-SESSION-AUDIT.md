@@ -168,3 +168,45 @@ Production privilege verification:
 Realtime project setting requirement:
 - Current Supabase documentation states that project-level Realtime Settings → **Allow public access** must be disabled to enforce private-only channels. The database migration and `private: true` client option do not change that project-level toggle.
 - The setting was not inspected or changed in this audit. Production remains unverified until an authorized operator checks it and disables public access after confirming all app Realtime channels are private/authorized.
+
+
+## Account-session enforcement verification — 26 November 2026
+
+### AuthContext source review correction
+
+The current AuthContext does in fact force a role/account-status reload on both `TOKEN_REFRESHED` and `USER_UPDATED` events, and also rechecks on window focus. The same-user fast path is bypassed for those events. The earlier note that token refresh did not trigger a status recheck would therefore be inaccurate; no AuthContext change is required on that point.
+
+If the user-row lookup fails, AuthContext retains the Supabase identity but clears role/Admin access and account status. This is fail-closed for role-gated UI, while database RLS remains the actual data-access boundary.
+
+### Production read-only checks
+
+A read-only query against Production confirmed:
+- `private.is_current_user_active()` exists.
+- The account-status write guard trigger is installed on 45 public tables and on `storage.objects`.
+- 44 restrictive `account_status_active_guard` policies exist on public tables; the users table is intentionally excluded so the owner can read their own status and AuthContext can detect suspension.
+- One restrictive account-status guard exists on Storage objects.
+- The snapshot contained 7 non-expired Auth sessions and 0 sessions belonging to Auth users with a currently active `banned_until` timestamp. These are aggregate counts only; no user identifiers or session tokens were queried.
+
+This confirms the database guard is present in Production at the time of inspection. It does not prove that already-open Realtime sockets are immediately disconnected; those remain subject to the previously documented Realtime reconnect/revocation tests.
+
+### Edge Function deployment configuration defect fixed in branch
+
+Finding:
+- `xendit-webhook` is an external-provider callback. Its handler authenticates with the Xendit `x-callback-token` using a constant-time comparison and does not receive a Supabase user JWT.
+- The source comment instructed deployment with `--no-verify-jwt`, but `supabase/config.toml` had no explicit `[functions.xendit-webhook] verify_jwt = false` entry. The default is `true`, so a normal deployment using the repository config could reject Xendit callbacks before the handler runs.
+
+Branch fix:
+- Added `[functions.xendit-webhook]\nverify_jwt = false` with a comment documenting that the handler verifies the provider callback token itself.
+- User-facing `create-checkout`, `account-management`, and `admin-management` remain on JWT verification (the default is true; account-management is explicitly true).
+- `yuku-push` remains verify_jwt=false because it validates user JWTs itself for subscribe/unsubscribe and a separate webhook secret for send.
+
+The Supabase documentation confirms that `verify_jwt` defaults to true and that external webhooks without a Supabase JWT require it to be disabled while validating the provider's own signature/secret in the handler. See <https://supabase.com/docs/guides/functions/function-configuration> and <https://supabase.com/docs/guides/functions/auth>.
+
+### Validation still required
+
+1. Confirm the deployed Production Edge Function config for `xendit-webhook` matches the branch config; this audit did not inspect or change the deployed function setting.
+2. Deploy the branch config only through the approved Staging/Production release flow and test a signed Xendit callback without a Supabase JWT, plus missing/incorrect callback-token rejection.
+3. Test account suspension with pre-existing sessions on multiple devices: Data API read/write, Storage, RPCs, Edge Functions, and already-open Realtime channels.
+4. Test account-management rollback when Auth ban or audit-log write fails.
+
+No Auth configuration, sessions, database rows, migrations, Edge Functions, or Production settings were changed in this follow-up.
