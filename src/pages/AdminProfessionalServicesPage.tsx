@@ -57,9 +57,12 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
     }
     const appRows = (data || []) as any[];
     const ids = [...new Set(appRows.map((row) => row.applicant_id))];
-    const { data: profiles } = ids.length
+    const { data: profiles, error: profileQueryError } = ids.length
       ? await supabase.from('talent_profiles').select('id,display_name,avatar_url,city,is_approved').in('id', ids)
-      : { data: [] as any[] };
+      : { data: [] as any[], error: null };
+    if (profileQueryError) {
+      setError('Pengajuan berhasil dimuat, tetapi data profil Talent gagal dimuat. Periksa izin baca talent_profiles sebelum melakukan review.');
+    }
     const profileMap = new Map((profiles || []).map((profile: any) => [profile.id, profile]));
     const hydrated = await Promise.all(appRows.map(async (row) => {
       const subcategory = Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory;
