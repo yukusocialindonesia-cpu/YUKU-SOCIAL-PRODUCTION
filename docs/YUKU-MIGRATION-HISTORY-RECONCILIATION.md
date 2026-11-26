@@ -118,3 +118,15 @@ Daftar Supabase development branches menunjukkan satu branch bernama `main`, den
 3. Periksa riwayat dan error `MIGRATIONS_FAILED` pada development branch tanpa reset/rebase.
 4. Susun baseline Staging baru hanya setelah estimasi biaya branch/project dikonfirmasi dan file migration canonical disepakati.
 5. Jalankan replay bersih dan regression suite pada Staging; Production tetap tidak disentuh.
+## Verifikasi lanjutan: file QRIS/escrow dibandingkan dengan Production
+
+Function dan trigger aktif diperiksa melalui katalog PostgreSQL read-only:
+
+- Production `close_qris_submissions_on_booking_inactive()` **tidak** menjalankan `status = 'closed'`. Definisi aktif menghapus baris `qris_payment_submissions` berstatus `pending_review` ketika booking berpindah ke `cancelled_by_customer`, `cancelled_by_talent`, `refunded`, atau `expired`.
+- Constraint Production yang mengizinkan hanya `pending_review`, `approved`, dan `rejected` konsisten dengan definisi function aktif tersebut. Jadi hipotesis awal bahwa trigger pasti gagal karena status `closed` **tidak terbukti**; file `36_close_stale_qris_submissions.sql` bukan definisi aktif yang sekarang berjalan dan harus diklasifikasikan sebagai stale/superseded source sampai provenance penggantinya ditemukan.
+- Ada risiko terpisah yang perlu dites: function aktif menghapus baris submission, bukan objek Storage. Jika bukti masih tersimpan di bucket, penghapusan baris dapat membuat object tidak lagi direferensikan. Audit Storage sebelumnya tidak menemukan orphan pada snapshot saat itu, tetapi belum membuktikan cleanup otomatis untuk kasus berikutnya.
+- Production `bookings_payment_route_check` saat ini mengizinkan `xendit`, `manual_qris`, dan `manual_bank_transfer`. Ini lebih baru/luas daripada constraint pada file `30_payment_route_lock_xendit_qris.sql` yang hanya mengizinkan `xendit` dan `manual_qris`; file 30 tidak boleh diperlakukan sebagai definisi akhir.
+- Production memiliki trigger `trg_auto_generate_booking_financial_ledgers`, `trg_notify_booking_message_insert`, `trg_notify_qris_proof_rejected`, dan `trg_close_qris_submissions_on_booking_inactive`.
+- Production `cron.job` memiliki job aktif `release-escrow-completed-bookings`, schedule `* * * * *`, command `select public.process_escrow_release()`.
+
+Implikasi: source file 28–43 bukan kumpulan migration yang dapat di-replay secara literal. Beberapa telah digantikan oleh definisi yang lebih baru, diperluas, atau dikerjakan di luar migration history. Perlu perbandingan penuh terhadap objek aktif sebelum canonical migration set ditetapkan.
