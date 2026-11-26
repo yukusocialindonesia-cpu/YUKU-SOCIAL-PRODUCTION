@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown, Bell } from 'lucide-react';
+import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown, Bell, Store } from 'lucide-react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { AppRoute } from '../types/navigation';
@@ -186,6 +186,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     <span>Dashboard Talent</span>
                   </button>
                 )}
+
+                <button
+                  onClick={() => handleLinkClick('/merchant-center')}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                    currentPath === '/merchant-center'
+                      ? 'bg-fuchsia-700 text-white border-fuchsia-700 shadow-xs'
+                      : 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-200 hover:bg-fuchsia-100'
+                  }`}
+                  title="Kelola atau daftarkan bisnis Merchant Partner"
+                >
+                  <Store className="w-3.5 h-3.5" />
+                  <span>{accessSnapshot?.capabilities.merchantMemberships.length ? 'Merchant Center' : 'Daftarkan Bisnis'}</span>
+                </button>
 
                 {professionalWorkspaceAvailable && (
                   <button
@@ -431,6 +444,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     </button>
                   </>
                 )}
+
+                <button
+                  onClick={() => handleLinkClick('/merchant-center')}
+                  className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                    currentPath === '/merchant-center' ? 'bg-fuchsia-100 text-fuchsia-900' : 'hover:bg-slate-50 text-slate-700'
+                  }`}
+                >
+                  <Store className="w-4 h-4 text-fuchsia-700" />
+                  <span>{accessSnapshot?.capabilities.merchantMemberships.length ? 'Merchant Center' : 'Daftarkan Bisnis'}</span>
+                </button>
 
                 <button
                   onClick={() => handleLinkClick('/ganti-sandi')}
