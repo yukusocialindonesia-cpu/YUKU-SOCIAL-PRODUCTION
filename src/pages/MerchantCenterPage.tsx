@@ -21,6 +21,7 @@ interface MerchantLocation {
   address_text: string;
   city: string | null;
   province: string | null;
+  public_phone: string | null;
   is_active: boolean;
   opening_hours: Record<string, unknown>;
 }
@@ -97,6 +98,8 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [locationName, setLocationName] = useState('Lokasi utama');
+  const [editingLocationId, setEditingLocationId] = useState<string | null>(null);
+  const [locationIsActive, setLocationIsActive] = useState(true);
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [province, setProvince] = useState('');
@@ -176,7 +179,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (nextId) {
       const { data: locationRows, error: locationError } = await supabase
         .from('merchant_locations')
-        .select('id,business_id,location_name,address_text,city,province,is_active,opening_hours')
+        .select('id,business_id,location_name,address_text,city,province,public_phone,is_active,opening_hours')
         .eq('business_id', nextId)
         .order('created_at', { ascending: true });
       if (locationError) setError('Profil bisnis terbaca, tetapi daftar lokasi belum dapat dimuat.');
@@ -320,7 +323,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (!activeBusiness) return;
     if (!locationName.trim() || !address.trim()) { setError('Nama lokasi dan alamat wajib diisi.'); return; }
     setSaving(true); setError(''); setSuccess('');
-    const { error: rpcError } = await supabase.rpc('add_merchant_location', {
+    const locationPayload = {
       p_business_id: activeBusiness.id,
       p_location_name: locationName.trim(),
       p_address_text: address.trim(),
@@ -328,14 +331,43 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       p_province: province || null,
       p_public_phone: locationPhone || null,
       p_opening_hours: openingHours.trim() ? { display: openingHours.trim() } : {},
-    });
+    };
+    const { error: rpcError } = editingLocationId
+      ? await supabase.rpc('update_merchant_location', {
+          ...locationPayload,
+          p_location_id: editingLocationId,
+          p_is_active: locationIsActive,
+        })
+      : await supabase.rpc('add_merchant_location', locationPayload);
     if (rpcError) setError(rpcError.message);
     else {
-      setAddress(''); setOpeningHours(''); setSuccess('Lokasi usaha berhasil ditambahkan.');
+      setEditingLocationId(null);
+      setLocationName('Lokasi utama'); setAddress(''); setCity(''); setProvince('');
+      setLocationPhone(''); setOpeningHours(''); setLocationIsActive(true);
+      setSuccess(editingLocationId ? 'Lokasi berhasil diperbarui.' : 'Lokasi usaha berhasil ditambahkan.');
       await load();
       await loadReviewHistory();
     }
     setSaving(false);
+  };
+
+  const editLocation = (location: MerchantLocation) => {
+    setEditingLocationId(location.id);
+    setLocationName(location.location_name);
+    setAddress(location.address_text);
+    setCity(location.city || '');
+    setProvince(location.province || '');
+    setLocationPhone(location.public_phone || '');
+    setOpeningHours(typeof location.opening_hours?.display === 'string' ? location.opening_hours.display : '');
+    setLocationIsActive(location.is_active);
+    setError('');
+    setSuccess('');
+  };
+
+  const cancelLocationEdit = () => {
+    setEditingLocationId(null);
+    setLocationName('Lokasi utama'); setAddress(''); setCity(''); setProvince('');
+    setLocationPhone(''); setOpeningHours(''); setLocationIsActive(true);
   };
 
   const createOffer = async (event: React.FormEvent) => {
@@ -542,20 +574,20 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                 </section>}
                 <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between"><div><h2 className="text-base font-extrabold text-slate-900">Lokasi & cabang</h2><p className="mt-1 text-[11px] text-slate-500">{locations.length} lokasi terdaftar</p></div><MapPin className="h-5 w-5 text-purple-700" /></div>
-                  {locations.map((location) => <div key={location.id} className="mb-2 rounded-xl border border-slate-100 bg-slate-50 p-3"><p className="text-xs font-bold text-slate-800">{location.location_name}</p><p className="mt-1 text-[11px] leading-5 text-slate-500">{location.address_text}{location.city ? `, ${location.city}` : ''}{location.province ? `, ${location.province}` : ''}</p>{typeof location.opening_hours?.display === 'string' && <p className="mt-1 text-[10px] text-slate-500">Jam operasional: {location.opening_hours.display}</p>}</div>)}
+                  {locations.map((location) => <div key={location.id} className="mb-2 flex items-start justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="text-xs font-bold text-slate-800">{location.location_name}</p><span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${location.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>{location.is_active ? 'Aktif' : 'Nonaktif'}</span></div><p className="mt-1 text-[11px] leading-5 text-slate-500">{location.address_text}{location.city ? `, ${location.city}` : ''}{location.province ? `, ${location.province}` : ''}</p>{location.public_phone && <p className="mt-1 text-[10px] text-slate-500">Telepon: {location.public_phone}</p>}{typeof location.opening_hours?.display === 'string' && <p className="mt-1 text-[10px] text-slate-500">Jam operasional: {location.opening_hours.display}</p>}</div>{canManageLocations && <button type="button" onClick={() => editLocation(location)} className="shrink-0 rounded-lg border border-purple-200 bg-white px-3 py-2 text-[10px] font-bold text-purple-800">Edit</button>}</div>)}
                   {activeBusiness.review_status === 'approved' && isOwner && <p className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[10px] leading-5 text-amber-900">Penambahan cabang pada bisnis yang sudah tayang akan mengirim ulang profil untuk pemeriksaan YUKU. Bisnis disembunyikan sementara sampai pemeriksaan selesai.</p>}
                   {activeBusiness.review_status === 'approved' && !isOwner && <p className="mb-3 rounded-xl bg-slate-50 p-3 text-[10px] leading-5 text-slate-500">Cabang baru pada bisnis yang sudah tayang hanya dapat ditambahkan Owner agar alamat baru diperiksa terlebih dahulu.</p>}
                   {canManageLocations && <form onSubmit={addLocation} className="mt-4 border-t border-slate-100 pt-4">
-                    <h3 className="mb-3 text-xs font-extrabold text-slate-800">Tambah lokasi</h3>
+                    <div className="mb-3 flex items-center justify-between gap-3"><h3 className="text-xs font-extrabold text-slate-800">{editingLocationId ? 'Edit lokasi' : 'Tambah lokasi'}</h3>{editingLocationId && <button type="button" onClick={cancelLocationEdit} className="text-[10px] font-bold text-slate-500">Batal edit</button>}</div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label><span className={labelClass}>Nama lokasi *</span><input className={inputClass} value={locationName} onChange={(e) => setLocationName(e.target.value)} maxLength={120} required /></label>
                       <label><span className={labelClass}>Nomor telepon lokasi</span><input className={inputClass} value={locationPhone} onChange={(e) => setLocationPhone(e.target.value)} maxLength={40} /></label>
                       <label className="sm:col-span-2"><span className={labelClass}>Alamat lengkap *</span><input className={inputClass} value={address} onChange={(e) => setAddress(e.target.value)} maxLength={500} required placeholder="Jalan, nomor, gedung, patokan..." /></label>
                       <label><span className={labelClass}>Kota / Kabupaten</span><input className={inputClass} value={city} onChange={(e) => setCity(e.target.value)} maxLength={100} /></label>
                       <label><span className={labelClass}>Provinsi</span><input className={inputClass} value={province} onChange={(e) => setProvince(e.target.value)} maxLength={100} /></label>
-                      <label className="sm:col-span-2"><span className={labelClass}>Jam operasional</span><input className={inputClass} value={openingHours} onChange={(e) => setOpeningHours(e.target.value)} maxLength={160} placeholder="Contoh: Setiap hari, 09.00–21.00" /></label>
+                      <label className="sm:col-span-2"><span className={labelClass}>Jam operasional</span><input className={inputClass} value={openingHours} onChange={(e) => setOpeningHours(e.target.value)} maxLength={160} placeholder="Contoh: Setiap hari, 09.00–21.00" /></label>{editingLocationId && <label className="sm:col-span-2 flex items-center gap-2 text-xs text-slate-700"><input type="checkbox" checked={locationIsActive} onChange={(e) => setLocationIsActive(e.target.checked)} /> Lokasi aktif dan ditampilkan kepada pelanggan</label>}
                     </div>
-                    <button disabled={saving} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900"><Plus className="h-4 w-4" /> Tambah Lokasi</button>
+                    <button disabled={saving} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900"><Plus className="h-4 w-4" /> {editingLocationId ? 'Simpan Perubahan' : 'Tambah Lokasi'}</button>
                   </form>}
                 </section>
                 {canSubmitForReview && <button onClick={submitForReview} disabled={saving || locations.length === 0} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-800 to-fuchsia-700 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-purple-900/15 disabled:cursor-not-allowed disabled:opacity-50"><Send className="h-4 w-4" /> Ajukan Verifikasi Bisnis</button>}
