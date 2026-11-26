@@ -1,0 +1,78 @@
+# YUKU Professional Services — Booking Consumer Matrix
+
+Audit date: 2026-11-26  
+Source: read-only inspection of production Supabase catalogs/function definitions and the current `main` frontend/Edge Function sources. The feature branch contains this document only; no production writes were performed.
+
+## Decision
+
+Professional booking must be a new kind inside the existing `public.bookings` aggregate, with an additive immutable snapshot contract. Do not create a parallel payments/earnings/payout system and do not route a professional listing through `create_booking()`.
+
+The first release must keep project bookings out of automatic escrow release until an explicit deliverable acceptance and timeout policy is designed.
+
+## Database trigger inventory — confirmed on `public.bookings`
+
+| Trigger | Timing | Compatibility work |
+|---|---|---|
+| `trg_calculate_booking_financials` / `calculate_booking_financials()` | BEFORE INSERT | Critical. Currently always reads legacy `talent_services`, `activity_categories`-related service rates and profile hourly rates; multiplies by `duration_hours`; writes 20%/80% financial snapshots. Must branch by booking kind and preserve the activity branch exactly. |
+| `trg_enforce_approved_talent_service_for_booking` / `enforce_approved_talent_service_for_booking()` | BEFORE INSERT or UPDATE of Talent/category | Critical. Currently requires an approved active legacy `talent_services` row. Add professional-listing validation without weakening the activity check. |
+| `trg_guard_booking_insert_status` / `guard_booking_insert_status()` | BEFORE INSERT | Keep all new bookings at pending-payment; professional RPC cannot set paid/approved state. |
+| `trg_guard_booking_status_actor` / `guard_booking_status_actor()` | BEFORE UPDATE | Audit actor rules and transition matrix for professional acceptance, cancellation, dispute, refund, and Admin actions. |
+| `trg_validate_booking_update` / `validate_booking_update()` | BEFORE UPDATE | Critical. Protects current financial fields, parties and legacy category, and freezes legacy schedule/location after payment. Extend to protect every professional snapshot, unit, quantity, scope, fee-policy version, delivery deadline, and amendment references. |
+| `trg_handle_booking_refund_financials` / `handle_booking_refund_financials()` | AFTER UPDATE | Critical. Reverses/holds Talent earnings and referral rewards based on booking status. Preserve allocation/payout guards for professional bookings. |
+| `trg_close_qris_submissions_on_booking_inactive` | AFTER UPDATE of status | Ensure professional status changes close pending payment proofs identically. |
+| `trg_log_booking_status_change` | AFTER INSERT or UPDATE of status | Reuse audit history; ensure booking-kind snapshots are available to support/admin views. |
+| `trg_notify_admin_on_new_booking`, `trg_notify_booking_status_change` | AFTER INSERT / status update | Add professional service title, unit and date context to notifications; do not expose private project/evidence data. |
+| `trg_set_booking_completion_timestamps` | BEFORE UPDATE | Current completed status schedules escrow release immediately. Must not auto-release a project booking merely because its due date elapsed. |
+| `trg_guard_active_account_write` | BEFORE INSERT/UPDATE/DELETE | Retain account suspension/banned-user protections for both booking kinds. |
+
+## Confirmed database RPC and ledger dependencies
+
+| Function | Existing behavior | Required professional behavior |
+|---|---|---|
+| `create_booking()` | Legacy activity-only RPC; category, hourly duration, schedule, Talent service and customer eligibility checks. | Leave unchanged for activity. Add separate `create_professional_service_booking()` with listing row lock, quantity/unit validation, eligibility, schedule/capacity, idempotency, and server-calculated totals. |
+| `claim_booking_payment_route()` | Locks one payment route on the booking; current code rejects selecting Xendit for a new booking when route is null. | Reuse route lock only after booking-kind checks and payment feature flag are explicit. Keep route immutability. |
+| `settle_booking_payment()` | Server/service-role-only settlement; writes `payments` and moves booking to escrow-held. | Reuse only against frozen gross and fee snapshots; enforce payment amount/provider/charge idempotency for each kind. |
+| `auto_generate_booking_financial_ledgers()` | On payment settlement, creates commission, Talent earning and optional referral reward using booking gross/platform fee/provider share; referral reward is currently calculated from platform fee. | Reuse the same ledgers, with professional fee-policy version and immutable fee/provider-share snapshots. Never recompute from current listing rate. |
+| `submit_qris_payment_proof()`, `submit_bank_transfer_payment_proof()` | Customer-owned proof submission; exact amount equals booking gross; private storage object must exist. | Reuse after booking kind is represented; ensure proofs remain scoped to the booking and amount snapshot. |
+| `admin_review_qris_payment()`, `admin_review_bank_transfer_payment()` | Locks submission/booking, verifies owner, exact amount, expiry and payment route, then settles manual payment. | Same checks for professional bookings; no special client-supplied amount authority. |
+| `confirm_booking_completion()` | Two-party confirmation for `in_progress` booking. | For hour/session/day, retain dual confirmation or documented policy. For project, add deliverable submission, included revision count, customer acceptance window, and dispute path. |
+| `admin_process_refund()`, `handle_booking_refund_financials()` | Refunds reconcile against payment, booking, cancellation case, earning and referral reward; guards against already allocated/paid earnings. | Reuse only with the original professional snapshots and allocation guards; project cancellation/refund must account for accepted milestones only if milestone support is later added. |
+| Payout RPCs and allocation triggers | Payouts consume available Talent earnings and affiliate earnings, locking rows and preventing overspend. | Professional earning entries must be indistinguishable ledger-safe rows tied to the same booking; no direct balance mutation. |
+
+## Confirmed frontend and Edge Function consumers
+
+| Consumer | Current assumption | Required work |
+|---|---|---|
+| `src/pages/BookingHistoryPage.tsx` | `activity_category_id` is required; every row enriches from `activity_categories` and renders start time/duration as hours. | Discriminated view model; category lookup only for activity; professional snapshot label/unit/quantity/date/scope. Preserve existing payment, cancel, report, refund, and review actions. |
+| `src/pages/TalentDashboardPage.tsx` | Booking model uses activity category, booking mode and duration; derives activity title and aggregates completed bookings. | Add professional snapshot display; ensure completed count and earnings aggregate both kinds without losing old activity display. |
+| `src/pages/AdminPage.tsx` | Admin booking rows and gross marketplace volume use generic bookings; service approval lists query legacy `talent_services`. | Show booking kind and snapshot details in support/finance views; include professional applications/listings in separate queue, not legacy service tables. |
+| `supabase/functions/create-checkout/index.ts` | Reads booking owner/status/gross, claims route, creates Xendit invoice. | Validate supported booking kind and exact snapshot amount; keep customer ownership, pending status and expiry checks. Current route-claim implementation rejects a new Xendit route when none is locked; preserve this deliberate current behavior unless payment configuration is separately approved. |
+| `supabase/functions/xendit-webhook/index.ts` | Reads booking gross and checks paid amount before calling server-only settlement RPC. | Confirm payment intent/booking kind, currency, provider charge uniqueness and idempotent replay behavior against the immutable snapshot. |
+| `account-management` Edge Function | Counts bookings/payments/refunds via `bookings` joins. | Keep aggregates booking-kind neutral; add kind-specific support detail only where needed. |
+| Payment panels, chat, reviews, reports, exports and finance pages | Not fully enumerated in this pass. | Search all booking consumers before schema changes; do not treat this matrix as exhaustive. |
+
+## New findings from this pass
+
+1. **Two booking insert triggers hard-code legacy activity service logic.** Updating only the RPC or nullable category FK is insufficient: `calculate_booking_financials()` and `enforce_approved_talent_service_for_booking()` must be branched before any professional row is inserted.
+2. **Financial snapshots are the ledger contract.** `auto_generate_booking_financial_ledgers()` reads `gross_amount`, `platform_fee_amount`, and `talent_gross_share` from the booking. The professional booking RPC must create those correctly and freeze them before payment settlement.
+3. **The current fee rule is 20% YUKU / 80% Talent in the legacy calculation.** Do not silently assume this is approved for every professional service class. Product/Finance must approve the professional fee policy; store a policy version with the booking snapshot.
+4. **Project acceptance is structurally different.** The current completion RPC requires `in_progress` and both customer and Talent confirmations; the completion timestamp trigger schedules escrow release immediately when status becomes completed. Project escrow needs a distinct reviewed acceptance path before it can be enabled.
+5. **Current Xendit route lock intentionally blocks new Xendit selection when payment_route is null.** Existing checkout Edge Function still calls that route-claim RPC. Treat this as current payment configuration, not a reason to bypass the route lock for professional services.
+6. **Frontend polymorphism is a broad migration.** Booking history and Talent dashboard are confirmed activity-specific; Admin and account-management views also consume generic booking rows. Chat, support, payment, export and finance consumers still need a complete repository-wide inventory.
+
+## Safe implementation order
+
+1. Finish the complete code/schema inventory (all `bookings` selects/updates, `bookings!` joins, triggers, RPCs, views, storage policies, Edge Functions, generated types, exports, chat and reports).
+2. Approve the professional fee policy and initial project acceptance/cancellation policy with Product/Finance.
+3. Add the booking discriminator and immutable snapshot fields additively; backfill all existing rows as `activity`. Do not drop NOT NULL from `activity_category_id` until every dependent object and client has migrated.
+4. Refactor the two insert triggers and update immutability/status guards with an explicit activity path and a professional path.
+5. Implement a dedicated idempotent professional booking RPC and booking-kind-aware availability/capacity locks.
+6. Update payment, ledger, refund, dispute, payout, notification, chat, review, history, Talent, Admin and finance consumers.
+7. Test both booking kinds, all four pricing units, concurrency, duplicate RPC requests, route locks, exact payment reconciliation, refunds and payout allocation in disposable Supabase.
+8. Keep professional checkout disabled until all gates pass.
+
+## Not done / not claimed
+
+- This pass did not enumerate every repository reference to `bookings`, every view, every Edge Function, every storage policy, or every frontend workflow. The inventory is a confirmed high-risk subset and a continuation checklist.
+- No migration, RPC, trigger, RLS policy, payment setting, or production row was changed.
+- No CI, staging migration, payment sandbox, or end-to-end test is claimed as passing.
