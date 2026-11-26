@@ -238,6 +238,12 @@ begin
     raise exception 'Offer is not ready for submission' using errcode = '55000';
   end if;
   if not exists (
+    select 1 from public.merchant_businesses mb
+     where mb.id = v_business_id and mb.review_status = 'approved'
+  ) then
+    raise exception 'Parent business must remain approved before an offer can be submitted' using errcode = '55000';
+  end if;
+  if not exists (
     select 1 from public.merchant_offers mo
      where mo.id = p_offer_id
        and (mo.ends_at is null or mo.ends_at > now())
