@@ -12,7 +12,7 @@ create table if not exists public.merchant_businesses (
   business_category text null check (business_category is null or char_length(business_category) <= 80),
   public_phone text null check (public_phone is null or char_length(public_phone) <= 40),
   website_url text null check (website_url is null or char_length(website_url) <= 500),
-  review_status text not null default 'pending_review'
+  review_status text not null default 'draft'
     check (review_status in ('draft','pending_review','needs_revision','approved','rejected','suspended')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
