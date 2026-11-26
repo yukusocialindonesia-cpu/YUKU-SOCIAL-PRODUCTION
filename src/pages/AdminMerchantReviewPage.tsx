@@ -129,7 +129,7 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
     const businessIds=[...new Set(offers.map((offer)=>offer.business_id))];
     const [{data:businessRows,error:businessError},{data:historyRows,error:historyError}]=await Promise.all([
       supabase.from('merchant_businesses').select('id,business_name').in('id',businessIds),
-      supabase.from('merchant_offer_history').select('id,offer_id,from_status,to_status,decision_note,actor_role,created_at').in('offer_id',offers.map((offer)=>offer.id)).order('created_at',{ascending:false}),
+      supabase.from('merchant_offer_history').select('id,offer_id,from_status,to_status,decision_note,actor_role,created_at').in('offer_id',offers.map((offer)=>offer.id)).order('created_at',{ascending:false}).limit(500),
     ]);
     const names=new Map((businessRows||[]).map((business:{id:string;business_name:string})=>[business.id,business.business_name]));
     setOfferRows(offers.map((offer)=>({...offer,business_name:names.get(offer.business_id)||'Merchant Partner'})));
