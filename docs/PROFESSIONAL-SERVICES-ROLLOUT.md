@@ -76,3 +76,7 @@ The latest PR head has successful GitHub Actions results for account-management 
 
 ## Public listing visibility guard
 A follow-up RLS migration now hides a professional listing unless its provider profile, listing, subcategory, and parent category are all currently approved/active. It also verifies that the listing's delivery modes remain a subset of the current subcategory taxonomy. This means deactivating a service type or changing its allowed modes immediately removes incompatible listings from public reads without deleting their records.
+
+
+## Reviewer verification attestation
+Publishing now requires a separate internal verification note of at least 20 characters, recorded with the reviewing admin and timestamp. The note should state what was checked, such as identity/name match, issuer, credential validity and scope, or employment references. This is an auditable reviewer attestation, not an automated validation of a license or certificate. Applicants cannot edit the verification note or reviewer identity/timestamp during revision. Regulated services still require a qualified human reviewer to confirm the applicable current authorization before approval.
