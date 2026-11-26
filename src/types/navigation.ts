@@ -16,6 +16,7 @@ export type AppRoute =
   | '/riwayat-booking'
   | '/profil-saya'
   | '/admin'
+  | '/admin/jasa-profesional'
   | '/tentang'
   | '/faq'
   | '/bantuan'
