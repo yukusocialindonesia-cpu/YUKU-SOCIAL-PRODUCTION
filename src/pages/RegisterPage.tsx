@@ -36,6 +36,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         email: email.trim(),
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/login`,
           data: {
             full_name: name,
             phone_number: phone,
