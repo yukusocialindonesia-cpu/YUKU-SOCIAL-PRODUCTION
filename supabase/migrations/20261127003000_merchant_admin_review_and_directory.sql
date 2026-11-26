@@ -44,6 +44,8 @@ set search_path = ''
 as $merchant$
 declare
   v_previous_status text;
+  v_owner_user_id uuid;
+  v_business_name text;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -143,6 +145,34 @@ begin
   ) values (
     p_business_id, v_previous_status, p_decision,
     nullif(trim(p_decision_note), ''), auth.uid(), 'admin'
+  );
+
+  select mb.owner_user_id,mb.business_name
+    into v_owner_user_id,v_business_name
+    from public.merchant_businesses mb
+   where mb.id = p_business_id;
+
+  perform public.create_in_app_notification(
+    v_owner_user_id,
+    case p_decision
+      when 'approved' then 'Merchant Partner Disetujui'
+      when 'needs_revision' then 'Merchant Partner Perlu Perbaikan'
+      when 'rejected' then 'Pengajuan Merchant Partner Belum Disetujui'
+      else 'Merchant Partner Dinonaktifkan'
+    end,
+    case p_decision
+      when 'approved' then 'Bisnis ' || v_business_name || ' telah disetujui dan dapat ditampilkan di direktori Merchant Partner.'
+      when 'needs_revision' then 'Bisnis ' || v_business_name || ' perlu diperbaiki. Catatan YUKU: ' || trim(p_decision_note)
+      when 'rejected' then 'Pengajuan bisnis ' || v_business_name || ' belum disetujui. Catatan YUKU: ' || trim(p_decision_note)
+      else 'Bisnis ' || v_business_name || ' sementara dinonaktifkan. Catatan YUKU: ' || trim(p_decision_note)
+    end,
+    'system_alert'::public.notification_type,
+    jsonb_build_object(
+      'route','/merchant-center',
+      'merchant_business_id',p_business_id,
+      'event','merchant_review_decision',
+      'decision',p_decision
+    )
   );
   return true;
 end;
