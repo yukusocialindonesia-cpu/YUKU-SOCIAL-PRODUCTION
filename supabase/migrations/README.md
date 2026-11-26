@@ -120,3 +120,15 @@ Pada rekonsiliasi repository terhadap riwayat Production yang dibaca pada 26 Nov
 - File lokal lain yang belum ada di riwayat Production tidak otomatis dianggap gagal atau aman untuk diterapkan. Sebagian adalah migration fitur baru, sebagian masih bernomor legacy. Periksa isi SQL dan status skema sebelum menentukan urutan penerapannya.
 
 **Penting:** kesamaan nama bukan bukti kesamaan isi SQL atau checksum. Perubahan nama file hanya memperbaiki pemetaan versi di repository; ini tidak mengubah riwayat Supabase dan tidak menjalankan SQL. Jangan menjalankan `supabase db push` ke Production sampai seluruh versi historis, urutan, checksum/isi, dan environment Preview direkonsiliasi.
+
+
+## Live reconciliation refresh — 27 November 2026
+
+A fresh read-only comparison with Production project `sbqvltqzzcsqzijgumld` reports:
+- 129 migration history entries; latest is `20261126124423` (`harden_professional_application_revision_attestation_fields`).
+- The current `chore/reconcile-supabase-migration-history` branch contains 125 SQL migration files.
+- 74 Production entries can be paired by exact version or normalized name.
+- 55 Production entries still have no confidently matched local SQL file.
+- 51 local files have version prefixes not present in Production.
+
+This live refresh supersedes the older 107-entry / 33-missing snapshot above. The exact unmatched list is in `RECONCILIATION.md`. Matching a filename is not checksum/content proof. No SQL was executed. Keep `db push`, `migration repair`, and Production changes blocked until the missing historical SQL is recovered and verified.
