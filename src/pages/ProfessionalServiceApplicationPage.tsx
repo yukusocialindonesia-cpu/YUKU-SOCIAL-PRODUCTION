@@ -9,6 +9,7 @@ interface Subcategory {
   title: string;
   description: string;
   verification_level: 'identity' | 'reference' | 'credential' | 'license';
+  delivery_modes: string[];
   category_id: string;
   category_title: string;
 }
@@ -78,7 +79,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     setLoading(true);
     const [{ data: categoryRows }, { data: applicationRows, error: applicationError }, { data: talentProfile }] = await Promise.all([
       supabase.from('professional_service_categories')
-        .select('id,title,professional_service_subcategories(id,title,description,verification_level,category_id)')
+        .select('id,title,professional_service_subcategories(id,title,description,verification_level,delivery_modes,category_id)')
         .eq('is_active', true)
         .order('sort_order', { ascending: true }),
       supabase.from('professional_service_applications')
@@ -254,7 +255,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         <form onSubmit={submit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
           <section><h2 className="text-sm font-extrabold text-slate-900">{editingApplicationId ? 'Perbaiki pengajuan layanan' : 'Informasi layanan'}</h2><p className="mt-1 text-[11px] text-slate-500">Pilih satu jenis jasa per pengajuan.</p></section>
           <label className="block text-xs font-bold text-slate-700">Jenis jasa
-            <select value={subcategoryId} onChange={(e) => setSubcategoryId(e.target.value)} required className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium">
+            <select value={subcategoryId} onChange={(e) => { const nextId = e.target.value; setSubcategoryId(nextId); const nextItem = categories.flatMap((category) => category.items).find((item) => item.id === nextId); setModes(nextItem?.delivery_modes || ['offline']); }} required className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium">
               <option value="">Pilih jenis jasa</option>
               {categories.map((category) => <optgroup key={category.id} label={category.title}>{category.items.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</optgroup>)}
             </select>
@@ -267,7 +268,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
             <label className="block text-xs font-bold text-slate-700">Pengalaman (tahun)<input type="number" min="0" max="80" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs"/></label>
             <label className="block text-xs font-bold text-slate-700">Kota/area layanan<input value={city} onChange={(e) => setCity(e.target.value)} maxLength={120} required placeholder="Contoh: Bogor" className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs"/></label>
           </div>
-          <fieldset><legend className="text-xs font-bold text-slate-700">Metode layanan</legend><div className="mt-2 flex gap-2">{['offline','online'].map((mode) => <label key={mode} className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-xs font-semibold ${modes.includes(mode) ? 'border-violet-400 bg-violet-50 text-violet-800' : 'border-slate-200 text-slate-600'}`}><input type="checkbox" checked={modes.includes(mode)} onChange={() => toggleMode(mode)}/>{mode === 'offline' ? 'Offline' : 'Online'}</label>)}</div></fieldset>
+          <fieldset><legend className="text-xs font-bold text-slate-700">Metode layanan</legend><div className="mt-2 flex gap-2">{(selectedSubcategory?.delivery_modes || ['offline']).map((mode) => <label key={mode} className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-xs font-semibold ${modes.includes(mode) ? 'border-violet-400 bg-violet-50 text-violet-800' : 'border-slate-200 text-slate-600'}`}><input type="checkbox" checked={modes.includes(mode)} onChange={() => toggleMode(mode)}/>{mode === 'offline' ? 'Offline' : 'Online'}</label>)}</div></fieldset>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block text-xs font-bold text-slate-700">Tarif (Rp)<input inputMode="numeric" value={rate} onChange={(e) => setRate(e.target.value.replace(/\D/g,''))} required placeholder="Contoh: 150000" className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs"/></label>
             <label className="block text-xs font-bold text-slate-700">Satuan tarif<select value={unit} onChange={(e) => setUnit(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs"><option value="per_hour">Per jam</option><option value="per_session">Per sesi</option><option value="per_day">Per hari</option><option value="per_project">Per proyek</option></select></label>
