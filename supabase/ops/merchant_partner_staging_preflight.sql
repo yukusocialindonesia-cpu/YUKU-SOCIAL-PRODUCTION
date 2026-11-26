@@ -105,10 +105,19 @@ begin
      or has_function_privilege('anon','public.update_merchant_business_profile(uuid,text,text,text,text,text)','EXECUTE')
      or has_function_privilege('anon','public.admin_review_merchant_business(uuid,text,text)','EXECUTE')
      or has_function_privilege('anon','public.save_merchant_offer(uuid,uuid,text,text,text,timestamptz,timestamptz,text,integer,text,text)','EXECUTE')
-     or has_function_privilege('anon','public.admin_review_merchant_offer(uuid,text,text)','EXECUTE') then
+     or has_function_privilege('anon','public.admin_review_merchant_offer(uuid,text,text)','EXECUTE')
+     or has_function_privilege('anon','public.submit_merchant_business_for_review(uuid)','EXECUTE')
+     or has_function_privilege('anon','public.get_merchant_business_members(uuid)','EXECUTE')
+     or has_function_privilege('anon','public.invite_merchant_member_by_email(uuid,text,text)','EXECUTE')
+     or has_function_privilege('anon','public.revoke_merchant_business_member(uuid,uuid)','EXECUTE')
+     or has_function_privilege('anon','public.accept_merchant_invitation(uuid)','EXECUTE')
+     or has_function_privilege('anon','public.add_merchant_location(uuid,text,text,text,text,text,jsonb)','EXECUTE')
+     or has_function_privilege('anon','public.update_merchant_location(uuid,uuid,text,text,text,text,text,jsonb,boolean)','EXECUTE')
+     or has_function_privilege('anon','public.submit_merchant_offer_for_review(uuid)','EXECUTE') then
     raise exception 'Merchant Partner preflight failed: anon can execute a privileged Merchant Partner RPC';
   end if;
-  if has_function_privilege('authenticated','public.invite_merchant_member(uuid,uuid,text)','EXECUTE') then
+  if has_function_privilege('authenticated','public.invite_merchant_member(uuid,uuid,text)','EXECUTE')
+     or has_function_privilege('anon','public.invite_merchant_member(uuid,uuid,text)','EXECUTE') then
     raise exception 'Merchant Partner preflight failed: legacy unaudited UUID invitation RPC is still executable';
   end if;
 
