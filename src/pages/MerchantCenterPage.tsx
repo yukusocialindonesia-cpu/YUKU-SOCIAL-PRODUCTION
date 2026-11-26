@@ -143,13 +143,16 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     workspaceRef.current.userId === snapshot.userId && workspaceRef.current.businessId === snapshot.businessId;
 
   useEffect(() => {
+    setSaving(false);
+    setError('');
+    setSuccess('');
     setEditingLocationId(null);
     setLocationName('Lokasi utama'); setAddress(''); setCity(''); setProvince('');
     setLocationPhone(''); setOpeningHours(''); setLocationIsActive(true);
     setEditingOfferId(null);
     setOfferTitle(''); setOfferDescription(''); setOfferStart(toLocalDateTimeInput(new Date().toISOString()));
     setOfferEnd(''); setOfferEligibility(''); setOfferQuota(''); setOfferTerms(''); setOfferInstructions('');
-  }, [activeBusiness?.id]);
+  }, [user?.id, activeBusiness?.id]);
 
   const isOwner = activeMembership?.role === 'owner' && activeMembership.status === 'active';
   const canEdit = isOwner && ['draft','needs_revision','approved'].includes(activeBusiness?.review_status || '');
