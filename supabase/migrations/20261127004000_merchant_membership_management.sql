@@ -225,6 +225,7 @@ declare
   v_target_user_id uuid;
   v_previous_role text;
   v_previous_status text;
+  v_business_name text;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -256,6 +257,21 @@ begin
   ) values (
     p_business_id,p_membership_id,v_target_user_id,auth.uid(),'revoked',
     v_previous_role,v_previous_role,v_previous_status,'revoked'
+  );
+
+  select mb.business_name into v_business_name
+    from public.merchant_businesses mb where mb.id = p_business_id;
+  perform public.create_in_app_notification(
+    v_target_user_id,
+    'Akses Merchant Partner Dicabut',
+    'Akses Anda ke bisnis ' || coalesce(v_business_name,'Merchant Partner')
+      || ' telah dicabut oleh Owner bisnis.',
+    'system_alert'::public.notification_type,
+    jsonb_build_object(
+      'route','/merchant-center',
+      'merchant_business_id',p_business_id,
+      'event','merchant_membership_revoked'
+    )
   );
   return true;
 end;
