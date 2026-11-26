@@ -205,6 +205,15 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
     let uploadedPath = '';
 
     try {
+      // Claim the route before uploading: the Storage INSERT policy only
+      // accepts proof objects for bookings already locked to manual_qris.
+      const { error: routeError } = await (supabase as any).rpc('claim_booking_payment_route', {
+        p_booking_id: bookingId,
+        p_route: 'manual_qris',
+      });
+      if (routeError) throw routeError;
+      onRouteClaimed?.('manual_qris');
+
       const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
       const path = `${bookingId}/${crypto.randomUUID()}.${ext}`;
 
