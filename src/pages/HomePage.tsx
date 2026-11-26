@@ -93,16 +93,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      {/* Katalog jasa profesional ditambahkan tanpa menggantikan kategori aktivitas lama. */}
-      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
-
-      {/* Cara kerja tetap muncul sebelum daftar Talent, sesuai alur Beranda lama. */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
-
+      {/* Companion adalah produk utama; tampilkan Talent sebelum layanan tambahan. */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
+
+      {/* Jasa Profesional tetap tersedia, tetapi menjadi akses layanan tambahan. */}
+      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
+
+      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
 
       {/* Keamanan tetap diperlihatkan sebelum ruang promosi. */}
       <SafetySection />
