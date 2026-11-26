@@ -9,11 +9,13 @@ interface ResendConfirmationProps {
   email: string;
   /** Mulai cooldown langsung (dipakai setelah pendaftaran, karena email baru saja terkirim). */
   startCooldown?: boolean;
+  redirectTo?: string;
 }
 
 export const ResendConfirmation: React.FC<ResendConfirmationProps> = ({
   email,
   startCooldown = false,
+  redirectTo,
 }) => {
   const [cooldown, setCooldown] = useState(startCooldown ? COOLDOWN_SECONDS : 0);
   const [sending, setSending] = useState(false);
@@ -35,6 +37,9 @@ export const ResendConfirmation: React.FC<ResendConfirmationProps> = ({
       const { error: resendError } = await supabase.auth.resend({
         type: 'signup',
         email: email.trim(),
+        options: {
+          emailRedirectTo: redirectTo || `${window.location.origin}/login`,
+        },
       });
       if (resendError) {
         setError(translateAuthError(resendError));
