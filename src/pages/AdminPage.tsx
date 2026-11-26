@@ -1438,6 +1438,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           )}
           {isSuperAdmin && (
           <button
+            type="button"
+            onClick={() => onNavigate('/admin/merchant-partners')}
+            className="h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 sm:h-24 sm:w-24"
+          >
+            <Building className="h-7 w-7 text-amber-600" />
+            <span className="text-[10px] font-semibold sm:text-[11px]">Review Merchant</span>
+          </button>
+          )}
+          {isSuperAdmin && (
+          <button
             onClick={() => setActiveTab('branding')}
             className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'branding' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
