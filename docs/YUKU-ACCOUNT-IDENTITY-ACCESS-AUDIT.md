@@ -196,3 +196,49 @@ However, the read-only Production function definition does not match this safe b
 6. Compare pg_get_functiondef, function grants, trigger definitions, and migration history between Staging and Production after rollout.
 
 No Production function, account, role, identity, or migration was modified. This is a read-only finding and must be treated as a release blocker until the deployed function is corrected and verified.
+
+
+## Upload, replacement, deletion & review lifecycle follow-up — 26 November 2026
+
+Scope: static review of the feature branch client flows and migrations. This is not a live Storage/RLS test.
+
+### Confirmed findings
+
+1. **Customer KTP + selfie are not a complete evidence pair yet (P1).**
+   - `VerifyKtpPage.tsx` requires both files and uploads them with unique paths and `upsert: false`.
+   - Only `ktp_storage_path` is persisted. The selfie is not associated with `user_identities`, so Admin cannot review it.
+   - `AdminPage.tsx` selects and creates a 300-second signed URL only for the KTP object.
+   - Uploads are parallel. If one upload succeeds and the other fails, or later identity lookup/save fails, the successful object is orphaned. Existing KTP is not retained for safe cleanup when a rejected submission replaces its path.
+   - The KTP bucket currently has owner/admin SELECT and owner INSERT in the reviewed migration chain, but no owner DELETE policy. Do not add broad owner delete merely to support rollback.
+
+2. **Talent application has a weaker KTP intake path than Customer verification (P1 workflow inconsistency).**
+   - `BecomeTalentPage.tsx` does not require a KTP file or NIK in its client validation.
+   - It uploads KTP only when a file was supplied and writes NIK/path only when present. It does not collect or upload a selfie.
+   - The identity trigger leaves the record `unsubmitted` unless both NIK and KTP path are present. This should prevent the Talent from passing the later KTP-approved/public-visibility gates, but the UI can still complete the application flow and create a Talent profile before the identity evidence is complete.
+   - Admin Talent review UI reads only the KTP path; no selfie is available to review.
+   - Decision required before implementation: enforce one KTP+selfie standard for both Customer and Talent, or explicitly define and document a role-based evidence standard. Do not silently treat the current Talent form as verified.
+
+3. **Talent media lifecycle has safer branch controls, subject to rollout (P1 until deployed and tested).**
+   - Migration 65 makes the bucket private, routes reads through `can_read_talent_media_object`, and requires short-lived signed URLs for public-approved media.
+   - Migration `20261127001300_make_talent_media_objects_immutable.sql` removes owner UPDATE on `storage.objects`; a replacement must use a new object path and a new pending moderation row.
+   - Migration 53 still permits owner/admin DELETE for Talent media. This is intentional for removing content, but needs a test that deleting an object does not leave a misleading approved `talent_media` row or broken gallery entry. Confirm application deletion order/cleanup behavior.
+   - `TalentMediaModerationPanel.tsx` creates 1800-second signed URLs for Admin previews. Public/customer gallery rendering must also use signed URLs once the bucket is private; audit every consumer before applying migration 65.
+
+4. **Professional-service evidence uploads are private and owner-folder scoped in branch migrations.**
+   - Upload policy requires authenticated active account, own UUID folder, and existing Talent profile.
+   - Bucket is private, 10 MiB, MIME allowlist PDF/JPEG/PNG/WebP.
+   - Reviewed source provides upload restriction and bucket creation; it does not establish a complete safe replacement/deletion lifecycle. Add owner/admin read authorization only for actual review flows and avoid broad public read.
+
+### Required fixes/tests before release
+
+- Add nullable `selfie_storage_path` and update Customer/Talent form types, uploads, Admin review UI, and scoped signed-URL creation in one coherent migration/client release.
+- Use a server-controlled cleanup mechanism for orphaned and superseded private evidence. Preserve the currently referenced evidence until the replacement row update commits; do not grant general client DELETE on the KTP bucket.
+- Make multi-object upload failure compensatable and idempotent; record the paths created by one submission and clean only those exact unreferenced paths through a narrowly authorized server-side operation.
+- Require the agreed evidence set before Talent application can be submitted as ready for review; show explicit incomplete-verification state otherwise.
+- For Talent media, test new upload => pending, approval => readable signed URL, rejection => not readable by public, overwrite/upsert => denied, new replacement => pending, owner delete => no stale gallery entry, unrelated user => denied.
+- For KTP, test Customer and Talent owner, unrelated Customer/Talent, Support Admin, Talent Admin, Super Admin, anon, and service-role boundaries; verify no public URL works and signed URLs expire.
+- Test partial upload failures, DB save failures, rejected resubmission, replacement path retention, and cleanup retry/idempotency on Staging.
+
+### Validation boundary
+
+Only branch source and migration text were inspected. No SQL was executed, no Storage objects were read or changed, no migration was applied, and no Production or Staging configuration was modified. The above findings are source-level until replayed against Staging and exercised through Storage API requests.
