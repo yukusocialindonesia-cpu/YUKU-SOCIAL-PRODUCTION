@@ -512,3 +512,13 @@ Read-only production inspection. No financial records were changed and no payout
 - Direct authenticated INSERT into payout_requests is denied after remediation; payout RPC enforces active Talent, approved profile, age and KTP checks.
 - Referral self-referral, second referral assignment, inactive/unapproved referrer (per policy), duplicate reward and duplicate affiliate-ledger creation are rejected.
 - Daily reconciliation: payout request amount equals reserved/settled allocations; each earning satisfies `allocated + paid_out <= earning amount`; commission arithmetic and referral reserve remain within platform commission.
+
+
+## Payout direct-insert remediation — branch implementation
+
+- Added `supabase/migrations/20261126190000_harden_payout_request_insert_access.sql` on the feature branch.
+- The migration revokes table-level and legacy column-level INSERT privileges from `authenticated`, drops `payout_requests_insert_talent`, and retains `request_talent_payout(BIGINT, TEXT, TEXT, TEXT, UUID)` as the authenticated request path.
+- Read-only inspection of the connected production function confirmed that the RPC is `SECURITY DEFINER`, owned by `postgres`, uses an empty search path, checks `auth.uid()`, active Talent role/account, approved Talent profile, age verification and verified KTP, validates minimum amount and bank details, enforces idempotency, and inserts through the existing balance-allocation trigger.
+- The function is currently executable by `authenticated` and not by `anon`; the migration explicitly preserves that intended grant while revoking inherited PUBLIC/anon execution.
+- This change is committed to the feature branch only. It has **not** been applied to production. A disposable/staging database test is still required to verify direct INSERT denial, eligible RPC success, ineligible RPC rejection, and that Finance processing and balance reservations continue to work.
+- No payout request, balance, ledger row, production policy, function or grant was modified during this pass.
