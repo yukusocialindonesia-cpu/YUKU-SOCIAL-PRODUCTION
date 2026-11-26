@@ -397,6 +397,17 @@ begin
           updated_at = now();
   end if;
 
+  -- A service returned for revision or rejected must not remain publicly bookable
+  -- from an earlier approved version of the same provider/category listing.
+  if p_decision in ('needs_revision','rejected') then
+    update public.professional_talent_services
+       set approval_status = case when p_decision = 'rejected' then 'rejected' else 'pending' end,
+           is_active = false,
+           updated_at = now()
+     where provider_id = v_application.applicant_id
+       and subcategory_id = v_application.subcategory_id;
+  end if;
+
   update public.professional_service_applications
      set status = p_decision,
          admin_note = nullif(trim(coalesce(p_admin_note,'')), ''),
