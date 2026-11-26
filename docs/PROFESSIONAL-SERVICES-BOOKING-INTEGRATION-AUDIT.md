@@ -155,3 +155,14 @@ No production writes were made during this pass. The schema check was read-only;
 ## Admin queue pagination follow-up
 
 The review page now applies the selected status filter in the database, retrieves 20 rows per page with an exact count, and uses created_at plus id as stable ordering keys. This replaces the previous newest-100 client-side filtering behavior. Concurrent inserts and review status transitions can still shift offset pages; a cursor-based pagination improvement may be appropriate at higher scale.
+
+
+## Notification and applicant status follow-up
+
+- Added an additive migration that uses the existing `public.notifications` table for new professional-service application confirmations, admin queue alerts, and applicant status-change notifications.
+- Applicant notifications link to `/daftar-jasa-profesional`, where the applicant can read the current status and Admin note. Admin alerts link to `/admin/jasa-profesional`.
+- Status notifications cover review started, needs revision, approval, rejection, and resubmission back to pending.
+- Notification trigger errors are caught and logged as warnings so a notification delivery problem cannot roll back an application submission or review.
+- The existing notification bell already subscribes to inserts on `public.notifications` and routes using metadata; its empty-state copy now includes professional-service application updates.
+- This is an in-app notification trail, not yet a dedicated immutable application-event ledger. A formal status-history timeline with actor and timestamp remains a separate enhancement if operations require audit-grade history.
+- The migration is committed to the draft branch only. It has not been applied to production Supabase; runtime notification delivery and RLS/realtime behavior still require disposable-environment validation.
