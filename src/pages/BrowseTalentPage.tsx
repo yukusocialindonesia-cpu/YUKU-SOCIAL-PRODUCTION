@@ -397,25 +397,30 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   // Seluruh hasil Jelajah memakai satu pola kartu agar konsisten saat pengguna scroll.
 
   return (
-    <div className="min-h-screen py-0 sm:py-10 bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.38),_transparent_48%),linear-gradient(180deg,#F8F3FF_0%,#F2ECFA_100%)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Jelajah */}
-        <section className="hidden sm:block relative mb-2 sm:mb-7 overflow-hidden rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/75 px-3 py-2 sm:px-7 sm:py-6 shadow-[0_10px_30px_rgba(76,29,149,0.06)] backdrop-blur-sm">
-          <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-purple-200/30 blur-3xl" />
-          <div className="relative max-w-3xl">
-            <span className="hidden sm:inline-flex items-center rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-purple-700 tracking-[0.16em] uppercase mb-2.5 shadow-sm">
-              {selectedMode === 'offline' ? 'Jasa Offline' : selectedMode === 'online' ? 'Jasa Online' : 'Katalog Sahabat Aktivitas'}
-            </span>
-            <h1 className="text-lg leading-tight sm:text-4xl font-extrabold text-[#1E0938] tracking-tight">
-              {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Jelajahi Talent YUKU'}
+    <div className="min-h-screen bg-[#f7f4fa] pb-24 pt-0 sm:py-8 sm:pb-10">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+        {/* Header Jelajah: mobile-first discovery hero */}
+        <section className="relative mb-3 sm:mb-5 overflow-hidden rounded-b-[24px] sm:rounded-[26px] border-x-0 border-b border-purple-900/10 sm:border bg-gradient-to-br from-[#32104f] via-[#4b1674] to-[#762b8f] px-4 pb-4 pt-4 text-white shadow-[0_14px_34px_rgba(58,19,87,0.18)] sm:px-7 sm:py-6">
+          <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-fuchsia-300/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 left-1/3 h-32 w-32 rounded-full bg-amber-300/10 blur-3xl" />
+          <div className="relative">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-purple-100">
+                <Sparkles className="h-3 w-3 text-amber-300" /> YUKU DISCOVERY
+              </span>
+              <span className="text-[10px] font-semibold text-purple-100/90">Online & Offline</span>
+            </div>
+            <h1 className="text-[22px] font-black leading-tight tracking-tight sm:text-4xl">
+              {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Mau cari layanan apa?'}
             </h1>
-            <p className="hidden sm:block mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {selectedMode === 'offline'
-                ? 'Pilih teman untuk bertemu langsung dan menikmati aktivitas bersama.'
-                : selectedMode === 'online'
-                  ? 'Pilih teman untuk mengobrol dan berinteraksi dari mana saja.'
-                  : 'Temukan teman untuk beraktivitas sosial, kulineran, olahraga, nonton bioskop, atau mengobrol santai.'}
+            <p className="mt-1.5 max-w-xl text-[11px] leading-relaxed text-purple-100 sm:mt-2 sm:text-sm">
+              Temukan talent, teman aktivitas, dan jasa profesional dalam satu tempat.
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Talent & aktivitas</span>
+              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Jasa profesional</span>
+              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Pilihan terkurasi</span>
+            </div>
           </div>
         </section>
 
@@ -464,17 +469,17 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
           </section>
         )}
 
-        {/* Katalog Jasa Profesional berada di halaman Jelajah yang sama; tetap tampil tanpa penyedia. */}
-        <section aria-labelledby="professional-service-catalog-title" className="mb-3 sm:mb-7 rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/90 p-3 sm:p-5 shadow-[0_8px_24px_rgba(76,29,149,0.06)]">
-          <div className="mb-3 flex items-end justify-between gap-3">
-            <div>
-              <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-purple-600">Katalog layanan</p>
-              <h2 id="professional-service-catalog-title" className="mt-1 text-sm sm:text-lg font-extrabold text-[#1E0938]">Jasa Profesional</h2>
-              <p className="mt-1 text-[10px] sm:text-xs text-slate-500">Pilih kategori untuk melihat jenis layanan yang tersedia di YUKU.</p>
+        {/* Katalog Jelajah: kategori selalu tersedia, termasuk saat belum ada penyedia */}
+        <section aria-labelledby="professional-service-catalog-title" className="mb-3 sm:mb-5 rounded-2xl border border-purple-100/80 bg-white p-3 shadow-[0_8px_24px_rgba(76,29,149,0.06)] sm:rounded-[24px] sm:p-5">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-purple-600">Jelajahi berdasarkan kategori</p>
+              <h2 id="professional-service-catalog-title" className="mt-0.5 text-base font-black tracking-tight text-[#28103f] sm:text-xl">Jasa Profesional</h2>
+              <p className="mt-0.5 text-[10px] text-slate-500 sm:text-xs">Pilih kategori untuk melihat jenis layanan.</p>
             </div>
-            <span className="shrink-0 rounded-full bg-purple-50 px-2.5 py-1 text-[9px] font-bold text-purple-700">12 kategori</span>
+            <span className="shrink-0 rounded-xl bg-[#f4edfb] px-2.5 py-2 text-[10px] font-extrabold text-purple-800">12 kategori</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PROFESSIONAL_SERVICES_CATALOG.map((category) => {
               const expanded = expandedServiceCategory === category.id;
               return (
@@ -483,22 +488,36 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
                   type="button"
                   aria-expanded={expanded}
                   onClick={() => setExpandedServiceCategory(expanded ? null : category.id)}
-                  className={`min-w-0 rounded-xl border p-2.5 text-left transition-colors sm:p-3 ${expanded ? 'border-purple-300 bg-purple-50 shadow-sm' : 'border-slate-100 bg-white hover:border-purple-200 hover:bg-purple-50/60'}`}
+                  className={`min-h-[62px] w-[132px] shrink-0 rounded-xl border px-3 py-2 text-left transition-all sm:w-[156px] ${expanded ? 'border-purple-500 bg-[#f5edfc] shadow-[0_4px_14px_rgba(76,29,149,0.12)]' : 'border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50/60'}`}
                 >
-                  <span className="block text-[11px] font-extrabold leading-snug text-slate-800 sm:text-xs">{category.title}</span>
-                  <span className="mt-1 block text-[9px] leading-relaxed text-slate-500">{category.professional_service_subcategories.length} jenis layanan</span>
-                  {expanded && (
-                    <span className="mt-2 block border-t border-purple-100 pt-2">
-                      {category.professional_service_subcategories.map((service) => (
-                        <span key={service.id} className="mb-1 block text-[10px] font-medium text-purple-800">• {service.title}</span>
-                      ))}
-                    </span>
-                  )}
+                  <span className={`mb-1 flex h-6 w-6 items-center justify-center rounded-lg text-[11px] font-black ${expanded ? 'bg-purple-700 text-white' : 'bg-purple-50 text-purple-700'}`}>{category.title.charAt(0)}</span>
+                  <span className="block text-[10px] font-extrabold leading-snug text-slate-800 sm:text-[11px]">{category.title}</span>
+                  <span className="mt-0.5 block text-[9px] text-slate-500">{category.professional_service_subcategories.length} layanan</span>
                 </button>
               );
             })}
           </div>
-          <p className="mt-3 text-[10px] leading-relaxed text-slate-500">Kategori tetap dapat dilihat meskipun penyedia jasa belum tersedia. Profil penyedia hanya muncul setelah aktif dan disetujui.</p>
+          {expandedServiceCategory && (() => {
+            const selectedCategory = PROFESSIONAL_SERVICES_CATALOG.find((item) => item.id === expandedServiceCategory);
+            if (!selectedCategory) return null;
+            return (
+              <div className="mt-2 rounded-xl border border-purple-100 bg-[#faf7fd] p-3">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <h3 className="text-xs font-extrabold text-purple-950">{selectedCategory.title}</h3>
+                  <button type="button" onClick={() => setExpandedServiceCategory(null)} className="rounded-full px-2 py-1 text-[10px] font-bold text-purple-700 hover:bg-purple-100">Tutup</button>
+                </div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {selectedCategory.professional_service_subcategories.map((service) => (
+                    <div key={service.id} className="rounded-lg border border-purple-100/80 bg-white px-3 py-2">
+                      <p className="text-[11px] font-bold text-slate-800">{service.title}</p>
+                      <p className="mt-0.5 text-[10px] leading-relaxed text-slate-500">{service.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          <p className="mt-2 text-[9px] leading-relaxed text-slate-400">Kategori tetap terlihat meskipun penyedia belum tersedia. Profil penyedia hanya ditampilkan setelah aktif dan disetujui.</p>
         </section>
 
         <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
