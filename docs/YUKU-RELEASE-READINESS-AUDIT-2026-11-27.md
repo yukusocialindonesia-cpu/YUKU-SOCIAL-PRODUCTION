@@ -75,3 +75,52 @@ PR #284 and PR #287 are sibling branches, not a single linear stack. Do not assu
 - No PR was merged or retargeted.
 - No deployment was triggered.
 - No CI result is represented as passing unless a real run reports success.
+
+## Live Production security and performance review — 27 November 2026
+
+A read-only Supabase Advisor review and catalog inspection was run against Production project `sbqvltqzzcsqzijgumld`. No settings, grants, policies, functions, or data were changed.
+
+### Security advisor findings
+
+| Finding | Count | Assessment |
+|---|---:|---|
+| Public/anon can execute SECURITY DEFINER functions | 5 | Review required; not automatically exploitable |
+| Authenticated can execute SECURITY DEFINER functions | 61 | Review RPC-by-RPC; sample financial/Admin RPCs include explicit identity and permission checks |
+| RLS enabled but no policy | 3 | All reported tables are in the `private` schema; likely intentional only if access is through guarded functions |
+| Leaked-password protection disabled | 1 | Enable in Auth security settings before public launch |
+
+The five anon-callable functions were inspected:
+- `has_admin_permission` and `is_super_admin` delegate to private helpers that require an active Admin identity.
+- `is_talent_publicly_visible` returns only whether a Talent profile meets public eligibility rules.
+- `can_read_talent_media_object` returns whether a media object is publicly approved/visible or belongs to the caller/admin.
+- `guard_talent_media_moderation_fields` is a trigger-returning function; the Advisor flags its EXECUTE grant, but it is not an ordinary callable RPC.
+
+Read-only null/unknown-identity probes returned `false` for anonymous finance permission, Talent permission, Super Admin, unknown Talent visibility, and an unknown media object. This supports the intended null-identity guard but does not replace authenticated/anonymous API-level RLS tests. Do not revoke helper EXECUTE grants blindly: public RLS and Storage policies currently call some of these helpers.
+
+A sample of high-impact SECURITY DEFINER RPCs was inspected:
+- `admin_process_payout` and `admin_process_refund` explicitly require a non-null `auth.uid()` and Finance permission.
+- `admin_review_professional_service_application` explicitly requires a non-null identity and Admin Talent/Super Admin permission.
+- `request_talent_services` does not repeat the identity check itself, but delegates each entry to `request_talent_service`, which enforces authenticated Talent ownership. Continue reviewing the remaining functions; the Advisor count alone is not a vulnerability verdict.
+
+### Confirmed Production product/authorization mismatch
+
+The live Production function `admin_review_professional_service_application` still joins `professional_service_applications` to `talent_profiles` and requires the Talent profile to be approved before Professional Services can be published. Therefore the current Production database does **not** yet support the intended independent Professional-only provider lifecycle, regardless of the newer branch code. The branch's independent provider migrations must be reviewed and Staging-tested before the product advertises Professional-only onboarding.
+
+### Performance advisor findings
+
+| Finding | Count | Priority |
+|---|---:|---|
+| RLS policies re-evaluate auth functions per row | 34 | Optimization after security regression |
+| Foreign keys without covering indexes | 11 | Review workload and add only where useful |
+| Multiple permissive policies | 2 | Correctness review; currently Admin-read + owner-read for Professional application/history |
+| Unused indexes | 47 | Do not remove without production workload evidence |
+
+The two multiple-permissive-policy findings are on `professional_service_applications` and `professional_service_application_status_history`, combining Admin-read and owner-read policies. They are not evidence of a bypass by themselves; inspect the policy predicates and test cross-account access.
+
+### Recommended remediation order
+
+1. Enable leaked-password protection in Supabase Auth settings after reviewing sign-in impact.
+2. Add negative API/RLS tests for anon and authenticated callers against the public helper functions and all SECURITY DEFINER RPCs.
+3. Review the 61 authenticated-callable functions by privilege class and verify identity/ownership/admin checks; do not mass-revoke.
+4. Resolve the independent Professional Provider/Talent coupling in a reviewed migration sequence, then prove it in Staging.
+5. Handle RLS-initplan and index warnings only after correctness tests and workload evidence.
