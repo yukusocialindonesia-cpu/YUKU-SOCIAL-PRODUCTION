@@ -92,4 +92,6 @@ GRANT INSERT (booking_id, sender_id, message)
 
 -- Message rows are immutable to participants; only the read receipt may be updated.
 REVOKE UPDATE ON TABLE public.booking_messages FROM authenticated;
+REVOKE UPDATE (id, booking_id, sender_id, message, created_at)
+  ON TABLE public.booking_messages FROM authenticated;
 GRANT UPDATE (is_read) ON TABLE public.booking_messages TO authenticated;
