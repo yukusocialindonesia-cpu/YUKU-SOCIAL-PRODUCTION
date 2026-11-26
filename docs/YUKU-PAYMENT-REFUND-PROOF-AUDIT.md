@@ -191,3 +191,31 @@ A fresh read-only Supabase inspection confirmed the two earlier findings and ref
 - These are read-only Production metadata/function-definition checks. No Customer names, IDs, refund rows, provider references, notification contents, or secrets were read.
 - No Production schema, grants, policies, functions, triggers, data, payments, or refunds were changed.
 - Supabase documentation confirms column-level grants are additive with table-level grants and requires explicit column lists once restricted. See [Supabase Column Level Security](https://supabase.com/docs/guides/database/postgres/column-level-security).
+
+## Additional finding: internal incident-report notes exposed in Customer booking history
+
+### Production confirmation
+
+- A fresh read-only Production privilege check found `authenticated` has table-level `SELECT` on `public.reports_complaints` and explicit column-level `SELECT` on `admin_notes`.
+- The reporter's row-level policy permits the reporter to read their own report row. Therefore row RLS does not prevent that Customer from requesting the internal Admin note column.
+- Branch source review confirmed `BookingHistoryPage.tsx` selected `admin_notes` for the reporter's own reports and rendered the value under "Catatan Tim Keamanan YUKU".
+- This is a confirmed internal-note exposure path, not merely a notification-copy issue.
+
+### Branch UI mitigation
+
+- Removed `admin_notes` from the Customer report interface type, report SELECT list, mapped report object, and rendered booking-history UI.
+- Commit: `919a46ee85b991cbe595ac7a81dd7da7ca97dc95`.
+- Static source verification is still required after commit; this is not a database permission fix.
+
+### Database-level release blocker
+
+- Revoke authenticated table-wide SELECT on `reports_complaints` and grant an explicit allowlist of Customer-safe columns.
+- Revoke authenticated column-level SELECT on `admin_notes` explicitly; table grant revocation alone is not enough when explicit column grants remain.
+- Preserve Support Admin access through a narrowly scoped Support RPC or an explicit role-aware path; do not expose internal notes to reporters.
+- Confirm whether a separate customer-visible response field is required. Do not repurpose `admin_notes` for customer communication.
+- Required Staging checks: reporter can read safe fields of own report but cannot select `admin_notes`; another Customer cannot read the report; Support can access notes only through the authorized interface; unrelated roles cannot read notes; customer history UI renders without internal notes.
+
+### Validation boundary
+
+- Production check was metadata-only; no report rows or note contents were read.
+- No Production grants, policies, functions, triggers, or data were changed.
