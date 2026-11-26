@@ -182,3 +182,10 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] Admin navigation remains highest priority and opens the Admin workspace.
 - [ ] If a signed-in account has no resolved capability snapshot, the mobile Profile action opens the account menu rather than assuming a Customer or provider role.
 - [ ] Verify all five bottom-navigation items remain tappable at 320px viewport width and with device safe-area insets.
+
+## Merchant Center stale-session and fail-closed UI checks
+- [ ] If the signed-in user changes or signs out while Merchant Center is mounted, the previous account's business, branch, offer, team, invitation, and review-history state is cleared before another account can see the page.
+- [ ] If loading the caller's own membership rows fails, Merchant Center clears all previously loaded workspace data and shows the backend/access error; it must not leave a prior business or team visible.
+- [ ] If loading the business rows fails after membership lookup, Merchant Center clears the selected business and all dependent workspace data instead of rendering stale locations, offers, team members, or review history.
+- [ ] After a membership is revoked or an invitation is declined/expired, refreshing Merchant Center removes the business workspace and any stale invitation action.
+- [ ] Switching between two businesses never displays the previous business's locations, offers, team roster, or review history under the newly selected business, including during loading.
