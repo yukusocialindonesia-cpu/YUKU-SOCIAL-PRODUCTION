@@ -246,3 +246,38 @@ Production snapshot at audit time:
 Supabase Auth session documentation states that JWTs carry a session_id corresponding to auth.sessions, and that stronger post-sign-out guarantees can validate that session row. The current YUKU Admin authorization primarily uses live database permission helpers instead; it does not yet implement an explicit per-session revocation gate for already-issued tokens.
 
 No Admin account, permission, Auth session, JWT, Realtime setting, database object, or Production data was changed in this audit.
+
+## Follow-up: Production `admin_review_talent()` account-status transition — 26 November 2026
+
+### P1: Talent approval RPC can reactivate an account outside `pending_verification`
+
+Production function definition was read directly from `pg_proc` (read-only). Effective function:
+- `public.admin_review_talent(uuid, boolean, ktp_status_type, text)` is `SECURITY DEFINER`, owned by `postgres`.
+- `authenticated` has EXECUTE; `anon` does not.
+- It checks `auth.uid()` and `has_admin_permission('talent')`, requires KTP decision `verified` or `rejected`, requires approval to pair with `verified`, and locks the target Talent profile, identity, and user rows.
+- It requires the current KTP state to be `pending_review`.
+- **On approval**, it sets `users.account_status = 'active'` unconditionally when `p_is_approved=true`.
+- **On rejection**, it sets `users.account_status = 'pending_verification'` unconditionally.
+
+That differs from repository migration `32_fix_admin_review_talent_sets_is_approved.sql`, whose intended logic only changes `account_status` from `pending_verification` to `active`; its comment explicitly says suspended/banned accounts must not be reactivated. Production's current function definition does not preserve that guard.
+
+Impact: if an account has a Talent profile and KTP still `pending_review`, a Talent Admin approving the profile can change a `suspended` or `banned` account to `active`. Rejecting can also overwrite a suspended/banned status with `pending_verification`. This is a potential account-restriction bypass through the review RPC. No account row was read to determine whether such a case currently exists.
+
+Related active triggers inspected:
+- `users.trg_prevent_user_security_column_tampering` permits verification/account-status changes when `can_admin_access_ktp(NEW.id)` is true; it does not preserve the target's prior suspended/banned status.
+- `users`, `user_identities`, and `talent_profiles` have `private.guard_active_account_write()` triggers. That helper checks the acting user's account status; for the RPC the actor is the Admin, not the target. It therefore does not by itself enforce the target's allowed status transition.
+- `admin_review_ktp()` has a safer conditional transition: it activates only when the target is currently `pending_verification`. That guard is not mirrored by Production `admin_review_talent()`.
+
+### Required remediation
+
+1. Update `admin_review_talent()` through a new forward migration generated with the Supabase CLI workflow; do not edit migration 32 or any applied migration.
+2. Before changing `account_status`, lock/read the target current status and permit activation only from `pending_verification`; preserve `suspended` and `banned` unchanged for both approve and reject decisions.
+3. Keep KTP approval and `talent_profiles.is_approved` as separate outcomes; approval of a Talent listing must not override account suspension/banning.
+4. Add SQL regression tests for pending_verification, active, suspended, banned, duplicate review, KTP rejected, KTP verified, and role/permission denial.
+5. Verify function definition and `has_function_privilege` after migration in Staging; inspect aggregate status-transition counts without exposing user identities.
+
+**Release blocker:** do not treat the Talent approval workflow as fully secure until this transition is corrected and Staging-tested. No Production function, user status, migration, or permission was changed during this inspection.
+
+### Related Production notification finding reaffirmed
+
+`notify_on_booking_message_insert()` remains configured to store the first 120 characters of the chat message in the recipient's notification body. Since the push function sends notification.message, private chat text can appear in push notification previews/lock screens. This was previously documented in `docs/YUKU-REALTIME-NOTIFICATION-SESSION-AUDIT.md`; verify the forward migration is deployed before treating generic chat notifications as active in Production.
