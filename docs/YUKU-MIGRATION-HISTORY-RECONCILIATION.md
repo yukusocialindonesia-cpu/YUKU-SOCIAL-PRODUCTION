@@ -88,3 +88,33 @@ File yang tidak cocok berdasarkan nama belum otomatis berarti belum diterapkan. 
 - Belum dipastikan migration branch-only mana yang sudah diterapkan pada environment lain.
 - Belum ada Staging aktif yang dikonfirmasi dan belum ada replay migration.
 - Tidak ada DDL atau migration mutation yang dijalankan.
+## Pemeriksaan objek aktual dan environment
+
+Read-only catalog query Production mengonfirmasi objek berikut saat ini ada:
+- Function `claim_booking_payment_route(uuid,text)` dan kolom `bookings.payment_route`.
+- Function `auto_generate_booking_financial_ledgers()`.
+- Function `close_qris_submissions_on_booking_inactive()`.
+- Function `notify_on_booking_message_insert()`.
+- Function `process_escrow_release()`.
+- Function `admin_review_talent(uuid,boolean,ktp_status_type,text)`.
+- Kolom `qris_payment_submissions.status` dan `hero_slides.mobile_image_url`.
+
+Ini membuktikan fitur/objek tersebut ada pada schema Production saat pemeriksaan, tetapi **tidak membuktikan file bernama 28–43 yang ada di repository adalah sumber yang persis diterapkan**. Sebagian perubahan dapat berasal dari SQL Editor/manual migration atau migration bernama lain. Untuk membuktikan provenance perlu membandingkan function definition, constraints, policies, triggers, extension/job metadata, serta file SQL satu per satu.
+
+Daftar Supabase development branches menunjukkan satu branch bernama `main`, dengan status `MIGRATIONS_FAILED` dan `preview_project_status` `ACTIVE_HEALTHY`. Daftar projects hanya menunjukkan project Production `yukuproduction`; tidak ditemukan project Staging terpisah. Status branch ini membuatnya tidak layak dipakai sebagai bukti migration replay sukses. Penyebab kegagalan belum ditentukan.
+
+## Klasifikasi tambahan file yang perlu diperhatikan
+
+- `28_manual_qris_payment_workflow.sql`, `29_qris_ledger_failed_payment_recovery.sql`, `30_payment_route_lock_xendit_qris.sql`, `32_fix_admin_review_talent_sets_is_approved.sql`, `33_schedule_escrow_release_cron.sql`, `35_missing_notifications.sql`, `36_close_stale_qris_submissions.sql`, `37_optimize_rls_auth_initplan.sql`, `38_hero_slides.sql`, `39_hero_bucket_limits_and_audit_log_read.sql`, dan `43_booking_chat_push_notifications.sql` tidak ditemukan sebagai nama migration tersendiri dalam daftar history Production yang dibaca.
+- Isi beberapa file menyatakan pernah diterapkan manual/SQL Editor atau pada `yuku-staging`; ini petunjuk provenance, bukan bukti yang cukup untuk mengubah history.
+- `37_optimize_rls_auth_initplan.sql` menyatakan sudah diterapkan ke yuku-staging. File itu tidak boleh diasumsikan sudah ada di Production hanya karena berada di folder migration.
+- `36_close_stale_qris_submissions.sql` secara eksplisit menyebut eksekusi sekali via SQL Editor. File manual seperti ini perlu dicatat sebagai out-of-band DDL dan dibandingkan dengan schema aktif.
+- `FULL_MIGRATION_V20.sql` dan `FULL_MIGRATION_V20_PARTIAL_ARCHIVE.sql` tidak ditemukan pada path yang dicoba di branch tree yang diperiksa; jangan jadikan nama arsip tersebut dasar replay.
+
+## Next verification sequence
+
+1. Ekspor definisi aktual Production untuk fungsi, trigger, constraint, policy, extension, cron job, dan grants yang disentuh file 28–43.
+2. Diff definisi aktual dengan file SQL terkait untuk mengidentifikasi perubahan yang sama, parsial, atau sudah superseded.
+3. Periksa riwayat dan error `MIGRATIONS_FAILED` pada development branch tanpa reset/rebase.
+4. Susun baseline Staging baru hanya setelah estimasi biaya branch/project dikonfirmasi dan file migration canonical disepakati.
+5. Jalankan replay bersih dan regression suite pada Staging; Production tetap tidak disentuh.
