@@ -149,3 +149,12 @@ Terminal/exception paths are `cancelled_by_customer`, `cancelled_by_talent`, `ex
 Stage D.3 adds catalog/source-contract checks for the actor guard, status transition allowlist, row-locked two-party completion RPC, completion timestamp trigger, dispute-aware escrow release worker and pending reservation expiry worker. These checks do not execute concurrent state transitions or validate the live cron configuration.
 
 No booking state, payment, escrow, payout, database migration, or production deployment was changed by this audit.
+
+
+### Scoped Admin dispute restoration check
+
+The follow-up review included the latest trigger-hardening migration. Booking/Finance scoped Admin permissions do not receive a generic bypass of booking actor or transition guards. Support can only:
+- place an eligible booking on `disputed_hold` when a related report is active and preserve the exact prior status; or
+- restore that exact recorded status after all related reports are no longer open/investigating, while clearing the dispute snapshot.
+
+The Stage D.4 assertions now check that both database guards retain this Support-only, exact-state boundary and do not introduce generic Booking/Finance bypasses. This remains a source/catalog assertion; role-matrix runtime tests with real JWT claims are still required in staging.
