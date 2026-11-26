@@ -30,15 +30,15 @@ Commit: `8a4429a7345f3365e3cbf499c00961d764d03dad`.
 
 **Validasi:** GitHub Actions run #83 untuk PR #263 selesai dengan conclusion `success`. `npm ci`, `npm run lint` (TypeScript check), dan `npm run build` semuanya berhasil pada source commit `8a4429a7345f3365e3cbf499c00961d764d03dad`. Dua commit setelahnya hanya menambahkan/memperbarui dokumen baseline, tidak mengubah source aplikasi atau workflow.
 
-### B0-02 — Dua migration memakai version prefix `62`
+### B0-02 — Migration filename dan Production history tidak selaras
 
-Repository memuat:
-- `62_index_admin_audit_actor_foreign_keys.sql`
-- `62_scoped_admin_trigger_guard_hardening.sql`
+Repository memuat dua file dengan prefix `62`, tetapi pemeriksaan read-only Production menunjukkan kedua perubahan tercatat memakai version timestamp yang berbeda: `20261121081549` dan `20261121081552`. Jadi Production tidak memiliki duplicate version ID untuk dua perubahan tersebut.
 
-Supabase migration version berasal dari prefix version pada nama file. Dua file dengan version yang sama dapat menyebabkan duplicate-version/replay conflict, bergantung pada migration runner dan history yang ada.
+Masalah yang lebih besar: repository masih memuat rangkaian migration legacy bernomor `01` sampai `68`, sedangkan Production history memakai timestamp version. Ini dapat membuat migration runner menganggap perubahan lama belum diterapkan atau mencoba replay dengan urutan yang salah.
 
-**Status:** release blocker sampai migration history dan riwayat penerapan diverifikasi. Jangan sekadar rename file yang mungkin sudah pernah diterapkan. Rekonsiliasi harus membandingkan migration history target dengan schema aktual; gunakan migration forward baru bila perlu.
+**Status:** release blocker sampai seluruh file dipetakan satu-ke-satu terhadap Production history dan SQL aktual. Tidak boleh rename, push, repair, atau replay migration berdasarkan dugaan.
+
+Detail dan bukti: `docs/YUKU-MIGRATION-HISTORY-RECONCILIATION.md`.
 
 ### B0-03 — Backup source berada di folder halaman
 
