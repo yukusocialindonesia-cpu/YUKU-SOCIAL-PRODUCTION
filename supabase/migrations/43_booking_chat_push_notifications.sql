@@ -12,7 +12,6 @@ DECLARE
   v_booking_code varchar;
   v_recipient_id uuid;
   v_route text;
-  v_preview text;
 BEGIN
   SELECT b.customer_id, b.talent_id, b.booking_code
     INTO v_customer_id, v_talent_id, v_booking_code
@@ -42,10 +41,7 @@ BEGIN
   PERFORM public.create_in_app_notification(
     v_recipient_id,
     'Pesan Chat Baru',
-    CASE
-      WHEN v_preview = '' THEN 'Anda menerima pesan baru pada booking ' || v_booking_code || '.'
-      ELSE v_preview
-    END,
+    'Anda menerima pesan baru pada booking ' || v_booking_code || '. Buka YUKU untuk membaca percakapan.',
     'booking_update'::public.notification_type,
     jsonb_build_object(
       'booking_id', NEW.booking_id,
