@@ -78,9 +78,9 @@ Before any in-app voucher redemption:
 
 ## Current implementation status
 
-At the time of this document, the homepage contains a staged Merchant Partner introduction only. There is no active Merchant Center, merchant onboarding, merchant business catalogue, structured offer engine, voucher issuance/redemption, or merchant checkout. Existing banner promotions do not satisfy those requirements.
+The implementation in PR #287 is branch-only and is not yet live. It includes a draft Merchant Center, merchant onboarding, approved-business directory, branch/location management, owner/manager team workflow, Super Admin business review, structured informational offers, and Super Admin offer review. These screens require the matching draft migrations and have not been activated in Staging or Production.
 
-No database migration, production configuration, payment flow, or production data is changed by this product-scope document.
+No database migration has been applied to Supabase Staging or Production, no deployment or production data/configuration has been changed, and no merchant checkout, voucher issuance, QR redemption, quota reservation, payment, commission, escrow, payout, or settlement exists.
 
 
 ## Current PR #287 implementation
@@ -88,7 +88,9 @@ No database migration, production configuration, payment flow, or production dat
 - Merchant Center route: `/merchant-center` for business registration, profile draft/revision edits, branch creation, opening hours, review history, and review submission.
 - Public directory route: `/merchant-partner`; it queries only approved businesses, active branches, and currently valid approved offers.
 - Super Admin review route: `/admin/merchant-partners`; it now includes separate business and offer review queues. Server RPCs require the existing Super Admin check (`public.is_admin()`).
-- Owner can invite existing active YUKU accounts as Manager/Staff; invitees accept in Merchant Center. Notifications cover invitations, acceptance, revocation, and business/offer review decisions.
+- Owner can invite existing active YUKU accounts as Manager/Staff; invitees accept in Merchant Center. Notifications cover invitations, acceptance, revocation, and business/offer review decisions. Owner sees teammate emails; Manager roster views mask email addresses; Staff cannot access the roster RPC.
+- Raw membership table reads are limited to a user's own membership identifiers/status; Owner/Manager roster access is provided through a business-scoped RPC.
+- Public offer reads explicitly grant eligibility, stated quota, and merchant-funded status while withholding internal review metadata. Offer submission requires the parent business to remain approved; invitations cannot be accepted for rejected/suspended businesses.
 - Adding a new branch to an approved business by its Owner moves the business to needs_revision and hides it until re-review, preventing unreviewed branch publication.
 - The Merchant Center query is scoped through the signed-in user's own memberships; it does not list all public businesses as the user's own workspace.
 - Merchant purchases and offer redemption remain direct-to-merchant. No merchant checkout, voucher wallet, quota enforcement, commission, escrow, payout or settlement has been added.
