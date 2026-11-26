@@ -17,7 +17,7 @@ type NavEntry = {
 
 /**
  * Navigasi floating khusus HP.
- * Tujuan menu dan hak akses tetap mengikuti role yang sudah ada.
+ * Tujuan menu mengikuti capability snapshot, dengan fallback ke role lama.
  */
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, onNavigate }) => {
   const { user, role, accessSnapshot, isAuthLoading } = useAuth();
@@ -37,12 +37,17 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     }
     if (role === 'admin') {
       onNavigate('/admin');
-    } else if (role === 'talent') {
-      onNavigate('/dashboard-talent');
-    } else if (role === 'customer') {
+    } else if (customerAvailable) {
+      // Akses Customer tetap tersedia pada akun multi-profil, termasuk Talent.
       onNavigate('/profil-saya');
+    } else if (talentWorkspaceAvailable) {
+      onNavigate('/dashboard-talent');
+    } else if (accessSnapshot?.capabilities.professionalProvider) {
+      onNavigate('/daftar-jasa-profesional');
+    } else if (accessSnapshot?.capabilities.merchantMemberships.some((membership) => membership.status === 'active')) {
+      onNavigate('/merchant-center');
     } else {
-      // Sesi aktif tetapi role belum diketahui: jangan menganggap akun sebagai Customer.
+      // Sesi aktif tetapi belum memiliki workspace yang dapat dibuka.
       window.dispatchEvent(new CustomEvent('yuku:open-menu'));
     }
   };
