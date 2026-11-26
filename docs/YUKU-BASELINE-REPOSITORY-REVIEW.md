@@ -40,9 +40,9 @@ Masalah yang lebih besar: repository masih memuat rangkaian migration legacy ber
 
 Detail dan bukti: `docs/YUKU-MIGRATION-HISTORY-RECONCILIATION.md`.
 
-### B0-03 — Backup source berada di folder halaman
+### B0-03 — Backup source dihapus
 
-`src/pages/LoginPage.tsx.bak` ada di repository. Belum ditemukan bukti file tersebut dipakai oleh bundler; tetap perlu pemeriksaan import/reference sebelum penghapusan. Jangan biarkan backup source menjadi bagian artefak aplikasi tanpa alasan.
+`src/pages/LoginPage.tsx.bak` tidak ditemukan memiliki import/reference dalam repository. File backup yang tidak digunakan tersebut sudah dihapus dari feature branch pada commit `0c2d9e8100a7e970d9233ee63d7744effd2414df`. File source aktif `src/pages/LoginPage.tsx` tidak diubah.
 
 ### B0-04 — Route tidak dikenal kembali ke Beranda
 
