@@ -177,3 +177,12 @@ The review page now applies the selected status filter in the database, retrieve
 - Talent application history and Admin review cards now render the chronological timeline with actor class, timestamp, status transition, and recorded note.
 - This is an application-status audit trail, not a full record of every field edit or a legal credential verification record.
 - Migration is branch-only and has not been applied to production. RLS tests, actor attribution tests through the review RPC, and concurrent update tests remain part of staging validation.
+
+
+## Provider eligibility and inactive taxonomy guard
+
+- The final publication guard now rejects approved/active listings unless the provider has an approved Talent profile, the linked user account is not suspended or banned, the category and subcategory are active, and the listing delivery modes remain a subset of the subcategory's allowed modes.
+- The public-read RLS policy independently applies the same account-status and taxonomy checks, so existing listings from suspended/banned accounts are hidden even if their listing row remains marked approved.
+- The browse and application category queries now filter inactive subcategories from their embedded category results; inactive service types are not offered as selectable choices.
+- The database trigger is a defense-in-depth guard for future write paths, not a substitute for reviewing the human credentials/attestation workflow.
+- This migration is branch-only; no production database changes were made. Validate trigger behavior, account-status enum values, nested PostgREST filtering, and anon/authenticated RLS in a disposable Supabase project before rollout.
