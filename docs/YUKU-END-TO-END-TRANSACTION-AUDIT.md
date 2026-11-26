@@ -192,3 +192,49 @@ This is a source-level finding. No live column privilege query, RLS test, Realti
 ### Validation boundary
 
 Source review only. No Staging runtime tests, payment provider tests, database migrations, Production data/config changes, or deployments were performed. The recommended change-request and add-on flows are design recommendations, not implemented functionality.
+
+
+## Production catalog validation — payment, refund and payout controls — 26 Nov 2026
+
+This section adds read-only inspection of live Production function definitions, function ACLs, table privileges, RLS policies, triggers and unique indexes. No financial/user rows were queried.
+
+### Positive controls confirmed in Production
+
+- `request_talent_payout(p_amount, bank details, idempotency key)` exists in Production. It derives Talent ID from `auth.uid()`, requires Talent role + active account + 18+ + verified KTP + approved Talent profile, enforces minimum Rp100,000, validates bank-field lengths, and returns the original request on an exact same-key retry. Reuse of the same key with different owner/amount/bank details fails.
+- The payout INSERT trigger locks the Talent profile and eligible earning rows, calculates available balance from booking + affiliate ledgers, and rejects overdraw. Allocation trigger reserves the exact requested amount; transaction rollback protects partial allocation failure.
+- Payout provider reference has a unique index. Refund provider reference has a unique partial unique index. Payment booking ID, payment idempotency key, and provider charge ID are unique.
+- `admin_process_payout()` is Finance-permission scoped, row-locks the payout request, enforces requested → processing → provider-confirmed completion, requires a non-empty provider reference, and writes an Admin audit event. Database trigger guards payout completion while any reserved earning is disputed.
+- `admin_process_refund()` is Finance-permission scoped, locks refund/payment/booking rows, restricts refund to requested/approved, requires a provider reference, prevents cumulative refund exceeding payment amount, applies the customer-cancellation automatic-refund cap, and writes an Admin audit event.
+- Direct authenticated table privileges are denied for INSERT/UPDATE on `payout_requests`, `refunds`, and `payments`; direct update of payout status/provider reference columns is also denied. RLS further limits SELECT to the relevant Talent/booking participants or Finance Admin.
+
+### P1 — Provider callback still lacks independent invoice verification and durable receipt ledger
+
+- Existing webhook validates callback token, canonical booking UUID, PAID/SETTLED state, invoice ID presence, IDR currency and safe integer amount; it compares the amount to the booking's DB gross amount.
+- The webhook still trusts callback invoice identity/status/amount after token validation and does not independently retrieve the invoice from Xendit. There is also no durable provider-event/invoice receipt table with unique provider identity, payload hash, processing state and retry record.
+- Booking-level payment uniqueness prevents duplicate ledger generation, but it does not provide a complete audit trail for multiple payment attempts or robust recovery after provider success + client/network failure.
+- Keep Xendit unavailable for new checkout until the provider verification/receipt design and sandbox race/retry tests pass.
+
+### P2 — Xendit new-route lock is deliberately disabled in the live booking RPC
+
+- Production `claim_booking_payment_route()` rejects selecting `xendit` when a booking has no previously locked route, while allowing an already Xendit-locked legacy booking to re-claim the same route.
+- The `create-checkout` Edge Function still calls this RPC with `xendit`. Therefore a direct attempt to start a new Xendit checkout fails at the database route-claim step. This is a fail-closed disablement, not a bypass.
+- Align the product flag/checkout messaging and remove stale entry points, or deliberately re-enable only after sandbox verification and independent callback reconciliation. Do not remove the DB guard as a quick fix.
+
+### P2 — Bank destination ownership is not verified by the payout RPC
+
+- The payout RPC snapshots bank name, account number and account holder name supplied in the request and checks only field length/shape. It does not prove the destination account holder matches the verified Talent identity or an independently verified bank destination.
+- Because payout is manually transferred, Finance must verify destination ownership before transfer and the UI should clearly warn that the payout destination is the Talent's responsibility. Prefer a verified bank-destination workflow before automating payouts.
+
+### Remaining Staging acceptance tests
+
+1. Concurrent payout requests, exact idempotent retry, conflicting same key, and two distinct keys competing for the same balance.
+2. Payout rejection/failure releases each reservation once; provider-confirmed completion settles each allocation once; duplicate provider reference fails.
+3. Dispute/cancellation races with payout request, processing, and provider-confirmed completion.
+4. Concurrent refund processing for the same payment; cumulative partial refunds never exceed payment; duplicate provider reference fails.
+5. Direct REST INSERT/UPDATE attempts on payments, refunds and payouts fail for authenticated users; authorized RPC role matrix passes.
+6. Xendit new checkout remains unavailable until explicitly re-enabled; when enabled, test invoice-created/network-failure recovery, callback replay, wrong invoice ID/external ID, currency, amount, status and late callback.
+7. Confirm bank account ownership review and audit of changed payout destination before any manual transfer.
+
+### Validation boundary
+
+Read-only Production catalog inspection only: function definitions/ACLs, RLS policies, table/column privileges, triggers and indexes. No financial, payout, refund, payment, bank-account or user rows were read. No SQL mutation, provider request, deployment, feature flag change, or Production data change occurred.

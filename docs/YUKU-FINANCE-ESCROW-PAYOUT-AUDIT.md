@@ -95,3 +95,17 @@ Only after the shared booking contract and every booking consumer are migrated s
 ## Validation boundary
 
 This audit inspected committed source files only. It did not execute SQL, replay migrations, mutate Supabase, run payout simulations, or verify Staging/Production schema parity. No Production data or settings were changed. PR #263 remains the review boundary; no merge or deployment is authorized by this audit.
+
+
+## Production catalog verification addendum — 26 Nov 2026
+
+The previously unresolved payout RPC definition has now been located and inspected in Production (read-only). `request_talent_payout()` derives the actor from `auth.uid()`, checks active/verified/approved Talent status, validates minimum amount and bank-field lengths, enforces exact idempotent retry semantics, and inserts only the server-derived Talent ID. The payout INSERT trigger locks eligible earning rows, validates combined booking + affiliate balance, and the allocation trigger reserves exact amounts. This resolves the source-definition discovery gap, but Staging concurrency tests and deployment-parity checks remain mandatory.
+
+Production also confirms:
+- Authenticated users have no direct INSERT/UPDATE table privilege on payout requests, refunds or payments, and cannot directly update payout status/provider reference columns.
+- Unique indexes protect payout idempotency keys, payout provider references, refund provider references, payment booking IDs, payment idempotency keys and provider charge IDs.
+- Finance Admin RPCs row-lock payout/refund records and audit status transitions. Disputed reserved earnings block payout completion.
+- Payout RPC validates bank destination fields syntactically, not ownership against verified identity. Manual Finance verification remains required.
+- New Xendit route selection is currently blocked by `claim_booking_payment_route()`; the Edge Function's Xendit path will fail closed for a new route. Keep it disabled until callback verification/receipt ledger and sandbox tests are complete.
+
+This is catalog-only validation, not a live payout/refund simulation. No financial rows or bank details were read and no Production changes were made.

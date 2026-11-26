@@ -186,3 +186,13 @@ Launch gate: no launch/enablement of Talent onboarding or paid booking until evi
 - Professional services remain discovery-only; no CTA may call the legacy hourly booking RPC until the shared booking and finance lifecycle is complete.
 - Staging acceptance tests are required for direct URL access, RLS bypass attempts, media moderation/private Storage, expired URLs, schedule edge cases, overlapping bookings, rate snapshots, and professional-service route separation.
 - No Production changes were made.
+
+
+### Payment, refund and payout catalog gate — 26 Nov 2026
+
+- Production catalog confirms the Talent payout RPC exists and enforces active/verified/approved Talent status, idempotency, minimum Rp100,000 and server-side balance reservation across booking + affiliate ledgers.
+- Authenticated users cannot directly INSERT/UPDATE payment, refund or payout tables; payout/refund state changes require scoped Finance RPCs. Unique provider references are enforced by database indexes.
+- **P1 unresolved:** Xendit callback still lacks independent provider invoice verification and a durable receipt/event ledger. New Xendit route selection is currently blocked in Production; do not re-enable until sandbox and reconciliation gates pass.
+- **P2 operational control:** payout bank destination is length-validated but not matched to verified identity. Finance must manually verify account ownership before transfer.
+- Staging tests still required for payout/refund concurrency, idempotency, disputes, direct-table denial, late/duplicate callbacks and ledger reconciliation.
+- No Production data, schema, functions, payment routes or feature flags were changed.
