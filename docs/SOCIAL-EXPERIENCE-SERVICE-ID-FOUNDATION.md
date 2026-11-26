@@ -46,6 +46,10 @@ Move Social Experience booking identity from the ambiguous provider/category pai
 - Existing payment checkout feature flag remains authoritative and disabled until the gateway flow is approved.
 - This migration is not applied to production in this PR.
 
+## Current environment blocker
+
+The connected Supabase project currently lists only its default `main` branch, and that branch reports `MIGRATIONS_FAILED`. No separate healthy staging branch is available in the connected project. Therefore migration 40 and the Stage D SQL checks have not been executed. Do not use the production project as a substitute staging target.
+
 ## Required staging acceptance before merge/release
 
 1. Replay all migrations from a clean staging database in order, including taxonomy/custom-service migrations before migration 40.
