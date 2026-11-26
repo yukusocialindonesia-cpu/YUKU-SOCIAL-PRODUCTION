@@ -103,6 +103,7 @@ begin
       join auth.users au on au.id = mm.user_id
      where mm.business_id = p_business_id
        and mm.member_role in ('owner','manager','staff')
+       and mm.membership_status in ('active','pending_invitation')
      order by case mm.member_role when 'owner' then 0 when 'manager' then 1 else 2 end,
               mm.created_at;
 end;
@@ -131,7 +132,7 @@ begin
   if not private.has_merchant_business_access(p_business_id, array['owner']::text[]) then
     raise exception 'Only the business owner can invite members' using errcode = '42501';
   end if;
-  if p_member_role not in ('manager','staff') then
+  if p_member_role is null or p_member_role not in ('manager','staff') then
     raise exception 'Role undangan hanya Manager atau Staff' using errcode = '22023';
   end if;
   if p_email is null or char_length(trim(p_email)) not between 5 and 254
