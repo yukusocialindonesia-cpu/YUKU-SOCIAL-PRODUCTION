@@ -277,14 +277,36 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {visibleProviders.map((item) => (
-                <button key={item.id} type="button" onClick={() => onNavigate('/jasa-profesional/:id', { id: item.provider.user_id })} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left transition hover:border-violet-300 hover:shadow-md">
-                  <img src={item.provider.avatar_url || undefined} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-slate-100 object-cover"/>
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onNavigate('/jasa-profesional/:id', { id: item.provider.user_id })}
+                  aria-label={`Lihat layanan ${item.subcategory.title} dari ${item.provider.display_name}`}
+                  className="group flex w-full min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left shadow-[0_3px_12px_rgba(36,16,95,0.04)] transition hover:border-violet-300 hover:shadow-[0_8px_22px_rgba(36,16,95,0.09)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600"
+                >
+                  {item.provider.avatar_url ? (
+                    <img src={item.provider.avatar_url} alt="" loading="lazy" decoding="async" className="h-14 w-14 shrink-0 rounded-xl bg-slate-100 object-cover" />
+                  ) : (
+                    <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#32105f] to-[#7c3aed] text-lg font-black text-white">
+                      {item.provider.display_name.trim().split(/\\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase() || 'Y'}
+                    </span>
+                  )}
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-1 text-xs font-extrabold text-slate-900">{item.provider.display_name}{item.provider.is_profile_complete && <BadgeCheck aria-label="Profil profesional lengkap" className="h-3 w-3 text-violet-600"/>}</span>
-                    <span className="mt-1 block truncate text-[10px] text-slate-500">{item.subcategory.title} · {item.provider.city || 'Lokasi belum dicantumkan'}</span>
-                    <span className="mt-1 flex items-center gap-1 text-[10px] text-slate-500"><Star className="h-3 w-3 text-amber-500"/> Profil penyedia jasa profesional</span>
+                    <span className="flex min-w-0 items-center gap-1 text-xs font-extrabold text-slate-900">
+                      <span className="truncate">{item.provider.display_name}</span>
+                      {item.provider.is_profile_complete && <BadgeCheck aria-label="Profil profesional lengkap" className="h-3 w-3 shrink-0 text-violet-600"/>}
+                    </span>
+                    <span className="mt-1 block truncate text-[10px] font-semibold text-violet-800">{item.subcategory.title}</span>
+                    <span className="mt-1 block truncate text-[10px] text-slate-500">{item.provider.city || 'Lokasi belum dicantumkan'}</span>
+                    <span className="mt-2 flex flex-wrap gap-1">
+                      {(item.delivery_modes || []).map((delivery) => (
+                        <span key={delivery} className="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-semibold text-slate-600">
+                          {delivery === 'online' ? 'Online' : 'Offline'}
+                        </span>
+                      ))}
+                    </span>
                   </span>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-violet-500"/>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-violet-500 transition-transform group-hover:translate-x-0.5"/>
                 </button>
               ))}
             </div>
