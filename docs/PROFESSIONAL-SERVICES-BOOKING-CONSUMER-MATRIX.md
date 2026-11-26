@@ -144,3 +144,11 @@ The following additional consumers were verified by searching the repository and
 3. Keep existing booking completion, cancellation, refund, QRIS/bank proof, Xendit and payout paths unchanged for activity rows; add explicit professional branches with the same server-side ledger protections.
 4. Add automated contract tests covering activity regression and professional hourly/session/day/project flows, including no accidental hour conversion and no early project escrow release.
 5. Only after those checks, consider enabling professional checkout. This branch remains unmerged and production remains untouched.
+### Final source checks in this pass — types and checkout settlement
+
+- `src/types/database.ts` defines `BookingRow.activity_category_id: string` and `duration_hours: number` as required legacy fields. These must become a discriminated type only in the same change set as the database migration and all consumers; changing only the interface would conceal runtime nulls.
+- `get_admin_bookings()` returns a fixed legacy row shape with duration and booking mode. A safe migration must version or recreate this RPC and update the scoped Admin consumer in the same release.
+- `QrisCustomerPaymentPanel` and `BankTransferCustomerPaymentPanel` send the displayed amount as `p_claimed_amount`; the server remains authoritative and must compare it to the booking gross snapshot. Bank transfer instructions also return a server-calculated `gross_amount`.
+- `create-checkout` reads booking ID, owner, status, gross and expiry, then asks the authenticated user client to claim the route before creating the Xendit invoice. `xendit-webhook` compares provider paid amount to `bookings.gross_amount` before calling service-role `settle_booking_payment()`.
+- These checkout paths are structurally reusable if professional bookings are represented in the same bookings table and gross snapshot. They still require explicit kind eligibility, payment route availability, provider event/charge idempotency review, and exact currency validation before release.
+- No evidence from this source inspection authorizes enabling Xendit: the current route-lock migration deliberately blocks new route claims. QRIS/bank transfer remain subject to their existing server-side exact-amount and pending-booking checks.
