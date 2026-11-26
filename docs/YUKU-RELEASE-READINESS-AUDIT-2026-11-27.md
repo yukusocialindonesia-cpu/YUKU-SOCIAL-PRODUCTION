@@ -291,3 +291,16 @@ Listed the Edge Functions deployed to the Production Supabase project and inspec
 - The function's rollback strategy is compensating rather than a single transaction across Auth, Postgres, and audit logging. It returns an explicit manual-intervention error if rollback fails; monitor and rehearse this failure path in Staging.
 
 No Edge Function was deployed/replaced, no Auth user was invited/suspended/deleted, and no Production setting or database record was changed during this audit stage.
+
+
+### KTP identity verification and Admin data isolation — read-only Production inspection
+
+Inspected the KTP identity triggers and the private Admin authorization tables.
+
+**Positive controls confirmed**
+- KTP verification cannot be marked verified unless the account has a valid age-18+ date of birth, legal name, KTP storage path under the account's UUID folder, and a matching object owned by that account in the private ktp-documents bucket.
+- Ordinary users cannot self-approve or alter KTP review status, rejection reason, verification timestamp, or reviewer identity. Legal identity fields become immutable to the owner while a submission is pending review or verified; rejected submissions can be resubmitted through the controlled path.
+- Admin review capability is scoped by account type: Talent KTP review requires Talent permission; Customer KTP review requires Support permission. Other account roles do not receive KTP review access through this helper.
+- private.admin_accounts and private.admin_permissions both have RLS enabled and FORCE ROW LEVEL SECURITY. The catalog inspection showed no client-role table grants; access is mediated through narrowly scoped SECURITY DEFINER authorization functions.
+
+This remains a definition/privilege inspection. No KTP records or Admin permission rows were read or changed, and no real Admin/customer JWT test was performed.
