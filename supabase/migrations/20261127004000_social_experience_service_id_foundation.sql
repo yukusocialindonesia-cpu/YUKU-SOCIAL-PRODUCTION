@@ -17,7 +17,7 @@ BEGIN
     ALTER TABLE public.bookings
       ADD CONSTRAINT bookings_service_id_fkey
       FOREIGN KEY (service_id) REFERENCES public.talent_services(id)
-      ON DELETE SET NULL NOT VALID;
+      ON DELETE RESTRICT NOT VALID;
   END IF;
 END;
 $$;
