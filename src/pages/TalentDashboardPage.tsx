@@ -3455,6 +3455,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                         <th className="p-3.5">Bank / E-Wallet</th>
                         <th className="p-3.5">Nomor Rekening</th>
                         <th className="p-3.5">Nominal Dicairkan</th>
+                        <th className="p-3.5">Referensi Transfer</th>
                         <th className="p-3.5">Status Transfer</th>
                       </tr>
                     </thead>
