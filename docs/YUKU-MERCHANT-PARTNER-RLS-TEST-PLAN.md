@@ -121,3 +121,4 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Website URLs reject non-HTTP(S) schemes at the database boundary.
 
 - [ ] Only the business Owner and Super Admin can read business review history and decision notes; Manager/Staff cannot read internal review notes.
+- [ ] Owner receives an in-app notification for approved, needs_revision, rejected, and suspended review decisions, containing only the owner-facing decision note and linking to Merchant Center.
