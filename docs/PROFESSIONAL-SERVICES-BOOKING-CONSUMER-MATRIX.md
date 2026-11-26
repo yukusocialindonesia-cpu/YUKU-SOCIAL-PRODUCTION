@@ -114,3 +114,33 @@ The following additional consumers were verified by searching the repository and
 4. Keep Xendit unavailable while the current route-lock policy blocks new claims; do not create a frontend-only bypass.
 5. Test the exact same frozen gross against checkout, manual QRIS/bank proof, webhook settlement, ledger generation, refund reversal, payout allocation and reconciliation.
 6. Search results also identified reports, reviews, referral rewards, finance/admin RPCs and account-management booking joins. These remain in scope for a final exhaustive migration checklist; this document must not be treated as a claim that every booking consumer has already been updated.
+
+## Consumer audit continuation — operational, finance and payout details (2026-11-26)
+
+### Confirmed blockers from direct source inspection
+
+| Surface | Concrete legacy coupling | Required change before professional checkout |
+|---|---|---|
+| Customer booking history | BookingHistoryPage builds category IDs from every booking, queries activity_categories, renders duration_hours as hours, and passes duration to chat. Payment panels use gross_amount and the existing payment route. | Filter category IDs to non-null activity rows; use booking-kind snapshots for professional title/unit/quantity/schedule; make duration optional; keep payment panels bound to frozen gross. |
+| Talent dashboard | TalentDashboardPage selects activity_category_id, duration_hours, legacy booking mode/location and maps category title; action UI displays duration in hours. It uses shared talent_earnings and talent_affiliate_earnings ledgers for balances and payout history. | Add a professional discriminator and render the service snapshot/unit; keep action and earnings logic on the same booking/earning aggregate. Do not invent a duration for per-session/day/project rows. |
+| Chat | ChatBookingSummary requires duration_hours; modal header formats duration_hours as hours. | Accept a discriminated summary with professional service label, pricing unit/quantity, and either booked slot or project deadline. Chat remains keyed by the same booking ID. |
+| Admin booking list | Super Admin reads bookings.*; scoped Admin calls get_admin_bookings(), whose return contract explicitly includes booking_mode, start_time, duration_hours, and meeting location. | Extend the RPC with booking kind and safe professional snapshot labels; preserve current columns for activity rows and update Admin UI types/rendering in lockstep. |
+| Admin finance / refund labels | Finance labels RPC returns only id, booking_code; finance screens join refunds and cancellation cases to this code. | Keep booking code stable; add a separate kind-aware, permission-scoped summary RPC if Finance needs service/unit/quantity context. Do not expose private project scope or uploaded verification evidence in finance labels. |
+| Finance overview | Admin overview totals completed booking gross_amount and platform_fee_amount from loaded booking rows. | Confirm finance permission holders also receive the intended booking aggregate; explicitly include both booking kinds exactly once and reconcile totals to payments/ledger, not duplicated joins. |
+| QRIS / bank-transfer admin review | Both queues fetch booking status by booking ID and only permit approval for pending_payment; the queue does not show service-kind context. | Preserve the status gate and exact amount server checks; show a safe booking summary so Finance can identify a professional service without reading private documents. |
+| Payout ledger | Talent dashboard aggregates shared talent_earnings and affiliate ledger; payout allocation logic reserves rows from these ledgers. | Insert professional earnings into the existing booking earnings ledger only after settlement; maintain booking_id uniqueness, frozen net earning, dispute holds, allocation and reversal checks. No parallel professional wallet. |
+
+### Additional confirmed database contract
+
+- get_admin_bookings() is a typed table-returning RPC with legacy duration_hours and booking_mode fields. Its return contract must be changed with a coordinated drop/recreate or compatible versioned RPC; simply adding columns to the underlying table does not make its result polymorphic.
+- get_admin_finance_booking_labels() and get_admin_finance_booking_statuses() are permission-gated SECURITY DEFINER RPCs scoped to finance; retain those guards if adding a kind-aware summary.
+- 20_immediate_escrow_release_policy.sql schedules escrow release at completion_confirmed_at when a booking reaches completed, and its worker releases eligible held earnings when the schedule is due and there is no open/investigating report. Project completion therefore cannot reuse this status transition until acceptance/timeout policy is explicit.
+- Existing payout allocation is ledger-based, not computed from booking rows at withdrawal time. This supports a single booking aggregate for both service kinds, provided professional booking settlement writes the same immutable earning and commission snapshots and refund/dispute paths preserve existing guards.
+
+### Next implementation sequence
+
+1. Finalize a booking snapshot schema with nullable legacy category only after all consumers are updated; include booking_kind, professional listing FK, immutable service/category labels, pricing unit, quantity, gross, fee, Talent share, delivery mode, and the appropriate booked slot or delivery deadline.
+2. Update shared TypeScript booking types and view models; then update BookingHistory, TalentDashboard, chat, Admin list and payment-review summaries.
+3. Keep existing booking completion, cancellation, refund, QRIS/bank proof, Xendit and payout paths unchanged for activity rows; add explicit professional branches with the same server-side ledger protections.
+4. Add automated contract tests covering activity regression and professional hourly/session/day/project flows, including no accidental hour conversion and no early project escrow release.
+5. Only after those checks, consider enabling professional checkout. This branch remains unmerged and production remains untouched.
