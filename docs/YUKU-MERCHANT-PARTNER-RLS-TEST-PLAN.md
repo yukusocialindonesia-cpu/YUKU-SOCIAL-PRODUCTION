@@ -167,3 +167,4 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] Branch creation cannot race with Super Admin review to publish an unreviewed address; business row lock serializes branch creation and review decisions.
 - [ ] Legacy `invite_merchant_member(uuid,uuid,text)` is not executable by authenticated clients; all invitations must use the audited email-based RPC.
 - [ ] Run `supabase/ops/merchant_partner_staging_preflight.sql` after applying migrations 02000–05000 in disposable Staging; all required tables, functions, column grants, RLS flags, and privilege assertions pass.
+- [ ] Owner cannot invite Manager/Staff while the business is rejected or suspended; invitation acceptance remains scoped to the invited user's own active account.
