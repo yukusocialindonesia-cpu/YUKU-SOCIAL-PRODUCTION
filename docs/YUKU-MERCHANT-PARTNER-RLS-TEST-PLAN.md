@@ -114,3 +114,8 @@ Attach:
 6. Confirmation that no Production migration or payment/booking behavior was changed.
 
 The current branch includes Merchant Center, public directory, and Super Admin review routes for UI development. Until migrations are applied and the staging evidence is accepted, pages must fail closed with clear backend-not-ready messages; do not enable live onboarding or announce merchant discovery as generally available.
+
+
+## Public merchant data quality
+- [ ] Branch opening hours are stored as a JSON object and displayed only as plain text in the public directory.
+- [ ] Website URLs reject non-HTTP(S) schemes at the database boundary.
