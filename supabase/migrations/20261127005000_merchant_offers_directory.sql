@@ -111,6 +111,8 @@ as $merchant$
 declare
   v_offer_id uuid;
   v_existing_status text;
+  v_owner_user_id uuid;
+  v_business_name text;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -188,6 +190,21 @@ begin
     auth.uid(),
     case when private.has_merchant_business_access(p_business_id,array['owner']::text[]) then 'owner' else 'manager' end
   );
+
+  if v_existing_status = 'approved'
+     and not private.has_merchant_business_access(p_business_id,array['owner']::text[]) then
+    select mb.owner_user_id,mb.business_name
+      into v_owner_user_id,v_business_name
+      from public.merchant_businesses mb where mb.id = p_business_id;
+    perform public.create_in_app_notification(
+      v_owner_user_id,
+      'Promo Merchant Diperbarui Manager',
+      'Promo "' || trim(p_title) || '" untuk bisnis ' || v_business_name
+        || ' diperbarui oleh Manager dan kembali menjadi draft. Ajukan ulang untuk pemeriksaan YUKU.',
+      'system_alert'::public.notification_type,
+      jsonb_build_object('route','/merchant-center','merchant_business_id',p_business_id,'merchant_offer_id',p_offer_id,'event','merchant_offer_manager_edit')
+    );
+  end if;
   return p_offer_id;
 end;
 $merchant$;
