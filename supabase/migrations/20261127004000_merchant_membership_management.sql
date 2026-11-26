@@ -3,6 +3,22 @@
 
 begin;
 
+-- Website links are public contact data; never persist executable or non-web schemes.
+do $merchant$
+begin
+  if not exists (
+    select 1 from pg_constraint
+     where conrelid = 'public.merchant_businesses'::regclass
+       and conname = 'merchant_businesses_website_http_check'
+  ) then
+    alter table public.merchant_businesses
+      add constraint merchant_businesses_website_http_check
+      check (website_url is null or website_url ~* '^https?://[^[:space:]]+$')
+      not valid;
+  end if;
+end;
+$merchant$;
+
 create table if not exists public.merchant_membership_history (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.merchant_businesses(id) on delete cascade,
