@@ -138,6 +138,10 @@ No professional-service booking or payment CTA may be enabled until:
 - RLS, RPC grants, SECURITY DEFINER search paths and server-only settlement permissions are reviewed.
 - Mobile, Talent, customer, Admin and Finance workflows are signed off.
 
+## Consumer matrix reference
+
+The latest confirmed trigger/RPC/frontend/Edge Function consumer inventory is maintained in [`PROFESSIONAL-SERVICES-BOOKING-CONSUMER-MATRIX.md`](./PROFESSIONAL-SERVICES-BOOKING-CONSUMER-MATRIX.md). It records the confirmed high-risk subset and explicitly lists the remaining unverified surfaces; it is not yet a claim of exhaustive repository coverage.
+
 ## Current state
 Professional-service taxonomy, provider applications, private document handling, admin review and public approved listings are in the feature branch. Booking/payment remains intentionally disabled. The production database has not been modified for this feature.
 
