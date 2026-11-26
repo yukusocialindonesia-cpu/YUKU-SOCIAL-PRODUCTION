@@ -214,7 +214,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
 
         <div className="mt-7 rounded-2xl border border-violet-100 bg-violet-50 p-4 sm:p-5">
           <p className="text-xs font-extrabold text-violet-950">Layanan sedang dipersiapkan dengan standar keamanan YUKU.</p>
-          <p className="mt-1 text-[11px] leading-relaxed text-violet-800">Daftar ini merupakan katalog kategori. Profil penyedia, tarif, pemesanan, dan pembayaran jasa profesional akan dibuka setelah proses verifikasi serta integrasi layanan selesai.</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-violet-800">Kategori dan profil penyedia yang telah disetujui dapat dilihat. Fitur pemesanan, jadwal, transaksi, dan pembayaran jasa profesional belum dibuka sampai integrasi serta perlindungan pengguna selesai.</p>
         </div>
       </div>
     </div>
