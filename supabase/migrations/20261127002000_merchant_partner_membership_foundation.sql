@@ -88,7 +88,7 @@ $$;
 
 revoke all on function private.has_merchant_business_access(uuid,text[])
   from public, anon;
-grant usage on schema private to authenticated;
+grant usage on schema private to anon, authenticated;
 grant execute on function private.has_merchant_business_access(uuid,text[])
   to anon, authenticated;
 
@@ -198,6 +198,88 @@ begin
   return v_business_id;
 end;
 $$;
+
+create or replace function public.update_merchant_business_profile(
+  p_business_id uuid,
+  p_business_name text,
+  p_description text default null,
+  p_business_category text default null,
+  p_public_phone text default null,
+  p_website_url text default null
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required' using errcode = '28000';
+  end if;
+  if not private.has_merchant_business_access(p_business_id, array['owner']::text[]) then
+    raise exception 'Only the business owner can edit business identity' using errcode = '42501';
+  end if;
+  if p_business_name is null or char_length(trim(p_business_name)) not between 2 and 120
+     or (p_description is not null and char_length(p_description) > 2000)
+     or (p_business_category is not null and char_length(p_business_category) > 80)
+     or (p_public_phone is not null and char_length(p_public_phone) > 40)
+     or (p_website_url is not null and char_length(p_website_url) > 500) then
+    raise exception 'Data bisnis tidak valid' using errcode = '22023';
+  end if;
+
+  update public.merchant_businesses
+     set business_name = trim(p_business_name),
+         description = nullif(trim(p_description), ''),
+         business_category = nullif(trim(p_business_category), ''),
+         public_phone = nullif(trim(p_public_phone), ''),
+         website_url = nullif(trim(p_website_url), ''),
+         updated_at = now()
+   where id = p_business_id
+     and review_status in ('draft','needs_revision');
+
+  if not found then
+    raise exception 'Business profile can only be edited while draft or returned for revision' using errcode = '55000';
+  end if;
+  return true;
+end;
+$;
+
+create or replace function public.submit_merchant_business_for_review(p_business_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required' using errcode = '28000';
+  end if;
+  if not private.has_merchant_business_access(p_business_id, array['owner']::text[]) then
+    raise exception 'Only the business owner can submit this business' using errcode = '42501';
+  end if;
+  if not exists (
+    select 1 from public.merchant_businesses mb
+     where mb.id = p_business_id
+       and mb.review_status in ('draft','needs_revision')
+       and char_length(trim(mb.business_name)) between 2 and 120
+  ) then
+    raise exception 'Business is not ready for submission' using errcode = '55000';
+  end if;
+  if not exists (
+    select 1 from public.merchant_locations ml
+     where ml.business_id = p_business_id
+       and ml.is_active is true
+  ) then
+    raise exception 'Add at least one active business location before submission' using errcode = '22023';
+  end if;
+
+  update public.merchant_businesses
+     set review_status = 'pending_review',
+         updated_at = now()
+   where id = p_business_id;
+  return true;
+end;
+$;
 
 create or replace function public.add_merchant_location(
   p_business_id uuid,
@@ -317,6 +399,15 @@ begin
   return found;
 end;
 $$;
+
+revoke all on function public.update_merchant_business_profile(uuid,text,text,text,text,text)
+  from public, anon;
+revoke all on function public.submit_merchant_business_for_review(uuid)
+  from public, anon;
+grant execute on function public.update_merchant_business_profile(uuid,text,text,text,text,text)
+  to authenticated;
+grant execute on function public.submit_merchant_business_for_review(uuid)
+  to authenticated;
 
 revoke all on function public.create_merchant_business(text,text,text,text,text)
   from public, anon;
