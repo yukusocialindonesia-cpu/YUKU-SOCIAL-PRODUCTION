@@ -156,6 +156,7 @@ interface PayoutItem {
   bank_account_number: string;
   bank_account_holder_name: string;
   payout_status: 'requested' | 'processing' | 'completed_provider_confirmed' | 'rejected' | 'failed';
+  payout_provider_ref: string | null;
   rejection_reason: string | null;
   created_at: string;
 }
@@ -473,6 +474,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           bank_account_number,
           bank_account_holder_name,
           payout_status,
+          payout_provider_ref,
           rejection_reason,
           created_at
         `)
@@ -3477,6 +3479,13 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           </td>
                           <td className="p-3.5 font-black text-slate-900 tabular-nums">
                             {formatRupiah(p.amount)}
+                          </td>
+                          <td className="p-3.5">
+                            {p.payout_status === 'completed_provider_confirmed' && p.payout_provider_ref ? (
+                              <span className="block max-w-[180px] break-all font-mono text-[11px] text-slate-600">Ref: {p.payout_provider_ref}</span>
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
                           </td>
                           <td className="p-3.5">
                             {p.payout_status === 'completed_provider_confirmed' ? (
