@@ -1247,7 +1247,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
+      <div className="lg:hidden fixed bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
         <div className="max-w-7xl mx-auto flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between gap-2 min-[360px]:gap-3">
           <div className="min-w-0 w-full min-[360px]:w-auto">
             <div className="text-lg min-[360px]:text-xl font-black text-[#1E0938] tabular-nums truncate">
