@@ -149,3 +149,6 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Owner roster RPC returns member emails for their own business; Manager roster RPC returns the same scoped roles/statuses but masks all member emails. Staff cannot call the roster RPC.
 - [ ] Owner cannot submit a promo unless its parent business is currently approved; a business returned for revision or suspended cannot submit new promo reviews.
 - [ ] Pending team invitations cannot be accepted after the parent business is rejected or suspended.
+- [ ] Owner/Manager can edit branches only for businesses in draft/needs_revision; Manager cannot edit branches once business is approved.
+- [ ] Only Owner can edit or deactivate a branch on an approved business; the business is moved to needs_revision and removed from public directory until re-approved.
+- [ ] Editing/deactivating a branch cannot affect another business by supplying a foreign location UUID; at least one active branch is required for business approval.
