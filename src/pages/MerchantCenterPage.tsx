@@ -77,7 +77,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const activeMembership = memberships.find((membership) => membership.businessId === activeBusiness?.id);
   const isOwner = activeMembership?.role === 'owner' && activeMembership.status === 'active';
   const canEdit = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
-  const canManageLocations = ['owner', 'manager'].includes(activeMembership?.role || '') && activeMembership?.status === 'active';
+  const canManageLocations = activeMembership?.status === 'active' && (
+    (['draft', 'needs_revision'].includes(activeBusiness?.review_status || '') && ['owner', 'manager'].includes(activeMembership.role)) ||
+    (activeBusiness?.review_status === 'approved' && isOwner)
+  );
   const canSubmitForReview = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
 
   const load = useCallback(async () => {
@@ -367,6 +370,8 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                 <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between"><div><h2 className="text-base font-extrabold text-slate-900">Lokasi & cabang</h2><p className="mt-1 text-[11px] text-slate-500">{locations.length} lokasi terdaftar</p></div><MapPin className="h-5 w-5 text-purple-700" /></div>
                   {locations.map((location) => <div key={location.id} className="mb-2 rounded-xl border border-slate-100 bg-slate-50 p-3"><p className="text-xs font-bold text-slate-800">{location.location_name}</p><p className="mt-1 text-[11px] leading-5 text-slate-500">{location.address_text}{location.city ? `, ${location.city}` : ''}{location.province ? `, ${location.province}` : ''}</p></div>)}
+                  {activeBusiness.review_status === 'approved' && isOwner && <p className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[10px] leading-5 text-amber-900">Penambahan cabang pada bisnis yang sudah tayang akan mengirim ulang profil untuk pemeriksaan YUKU. Bisnis disembunyikan sementara sampai pemeriksaan selesai.</p>}
+                  {activeBusiness.review_status === 'approved' && !isOwner && <p className="mb-3 rounded-xl bg-slate-50 p-3 text-[10px] leading-5 text-slate-500">Cabang baru pada bisnis yang sudah tayang hanya dapat ditambahkan Owner agar alamat baru diperiksa terlebih dahulu.</p>}
                   {canManageLocations && <form onSubmit={addLocation} className="mt-4 border-t border-slate-100 pt-4">
                     <h3 className="mb-3 text-xs font-extrabold text-slate-800">Tambah lokasi</h3>
                     <div className="grid gap-3 sm:grid-cols-2">
