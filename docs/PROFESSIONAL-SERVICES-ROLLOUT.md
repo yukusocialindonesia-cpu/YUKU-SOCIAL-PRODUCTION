@@ -52,7 +52,7 @@ The `professional_service_applications` migration adds a private application wor
 
 Credential and supporting files are stored in a dedicated private Storage bucket (`professional-service-documents`), with a 10 MB limit and PDF/JPG/PNG/WebP MIME allowlist. The owner can access their own files; authorized Talent admins can read documents for review. No public bucket or public document URL is used.
 
-The application route is `/daftar-jasa-profesional`, linked from the professional-services discovery page. Approval is still a review state only; the next implementation step is the admin review UI and a controlled publication step that creates an approved listing. No booking/payment action is available.
+The application route is `/daftar-jasa-profesional`, linked from the professional-services discovery page. The Admin review UI is implemented. Approval runs through the transactional `admin_review_professional_service_application` RPC, requires a verification attestation, checks required evidence and provider eligibility, and creates or updates the approved public listing. Public discovery is gated by active account, age/KTP verification, approved Talent profile, active taxonomy, and allowed delivery modes. Professional-service booking/payment is intentionally not enabled yet; listings are discoverable and profiles show pricing, but customers cannot book these services until the existing booking, escrow, cancellation, refund, and time-extension flows are integrated and tested.
 
 
 ## Admin review and publication
