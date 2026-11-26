@@ -127,3 +127,21 @@ No production data was read from object contents, deleted, or changed during thi
 - The Production `portfolios` bucket is public with a public SELECT policy and a 5 MB image allowlist.
 - A source search of the current branch did not find frontend usage of `storage.from('portfolios')` or an active portfolio upload/read path. This suggests the bucket may be legacy or reserved for future use; it is not proof that no old objects exist.
 - Before launch, inventory object names/counts and confirm whether any current profile/media feature depends on this bucket. If unused, plan a controlled archival/private conversion rather than changing bucket visibility without checking existing links.
+
+
+
+## Recheck of Talent media overwrite guard — Production still exposed, 26 November 2026
+
+A fresh read-only Production policy query confirms the previous fix is not deployed there yet:
+- Production bucket talent-media is private.
+- Production storage.objects still has talent_media_bucket_owner_update for authenticated owners, allowing UPDATE of objects in their own Talent folder.
+- Production public.talent_media still has talent_media_owner_update for the owner row (the moderation trigger protects moderation fields, but the Storage object UPDATE policy is the critical bypass).
+- Production has 5 talent_media rows, all moderation_status=approved and all with a storage_path.
+
+Risk: a Talent can replace bytes of an already-approved object through the Storage API while the corresponding talent_media row remains approved. This bypasses the frontend upsert:false convention and can cause different content to be served through the approved row/signed URL without a new moderation decision.
+
+Branch already contains the intended mitigation in migration 65_talent_media_moderation_and_private_storage.sql and migration 20261127001300_make_talent_media_objects_immutable.sql: drop the Storage owner UPDATE policy; keep unique INSERT and owner DELETE. It has not been applied to Production. Do not describe this as fixed in Production until the migration is applied through the approved release path and the policy is absent in pg_policies.
+
+Required Staging tests: authenticated owner UPDATE/upsert existing approved object must fail; owner INSERT new unique object must succeed and create a pending row; owner DELETE only their own object; Talent Admin moderation must still work; unrelated user access must fail; approved object remains readable only through authorized short-lived access.
+
+No Production policy, bucket, media row, or object was modified in this recheck.
