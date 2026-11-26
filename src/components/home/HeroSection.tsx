@@ -57,12 +57,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   useEffect(() => {
     let mounted = true;
-    fetchHeroSlidesFromSupabase().then((rows) => {
-      if (!mounted) return;
-      setSlides(rows);
-      setSlidesLoaded(true);
-      writeCachedSlides(rows);
-    });
+    fetchHeroSlidesFromSupabase()
+      .then((rows) => {
+        if (!mounted) return;
+        setSlides(rows);
+        writeCachedSlides(rows);
+      })
+      .catch(() => {
+        // Keep the locally cached slides (if any); otherwise render the branded fallback.
+        if (!mounted) return;
+      })
+      .finally(() => {
+        if (mounted) setSlidesLoaded(true);
+      });
     return () => {
       mounted = false;
     };
