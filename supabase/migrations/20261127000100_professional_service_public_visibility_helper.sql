@@ -1,6 +1,6 @@
 -- Public professional-service discovery must not depend on querying users through
 -- the caller's users-table RLS policy. Expose only a boolean eligibility check.
-create or replace function public.is_professional_talent_publicly_visible(p_talent_id uuid)
+create or replace function private.is_professional_talent_publicly_visible(p_talent_id uuid)
 returns boolean
 language sql
 stable
@@ -21,9 +21,10 @@ as $$
   );
 $$;
 
-revoke all on function public.is_professional_talent_publicly_visible(uuid)
+revoke all on function private.is_professional_talent_publicly_visible(uuid)
   from public, anon, authenticated;
-grant execute on function public.is_professional_talent_publicly_visible(uuid)
+grant usage on schema private to anon, authenticated;
+grant execute on function private.is_professional_talent_publicly_visible(uuid)
   to anon, authenticated;
 
 -- The listing policy calls the SECURITY DEFINER boolean helper, not a direct
@@ -36,7 +37,7 @@ create policy professional_talent_services_public_read
   using (
     approval_status = 'approved'
     and is_active = true
-    and public.is_professional_talent_publicly_visible(provider_id)
+    and private.is_professional_talent_publicly_visible(provider_id)
     and exists (
       select 1
       from public.professional_service_subcategories sc
@@ -56,7 +57,7 @@ create policy talent_profiles_professional_service_public_read
   on public.talent_profiles
   for select to anon, authenticated
   using (
-    public.is_professional_talent_publicly_visible(id)
+    private.is_professional_talent_publicly_visible(id)
     and exists (
       select 1
       from public.professional_talent_services pts
@@ -66,7 +67,7 @@ create policy talent_profiles_professional_service_public_read
     )
   );
 
-comment on function public.is_professional_talent_publicly_visible(uuid) is
+comment on function private.is_professional_talent_publicly_visible(uuid) is
   'Returns only a boolean. Public professional-service visibility requires an active Talent account, verified age and KTP, and an approved Talent profile.';
 
 comment on policy professional_talent_services_public_read
