@@ -53,6 +53,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           return;
         }
 
+        // Jangan menganggap role yang kosong/tidak dikenal sebagai Customer.
+        // Sesi lokal dihentikan sampai role akun dapat diverifikasi dengan benar.
+        if (userRow.role !== 'admin' && userRow.role !== 'talent' && userRow.role !== 'customer') {
+          await supabase.auth.signOut({ scope: 'local' });
+          setErrorMsg('Role akun belum dapat diverifikasi. Silakan hubungi Support YUKU.');
+          return;
+        }
+
         // Jika ada isian pendaftaran talent yang tersimpan (dibuat sebelum konfirmasi email),
         // lanjutkan langsung ke formulir agar pengguna tidak tersesat di dashboard kosong.
         let hasTalentDraft = false;
@@ -69,11 +77,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         }
 
         const targetRoute: AppRoute =
-          userRow?.role === 'admin'
+          userRow.role === 'admin'
             ? '/admin'
-            : hasTalentDraft
+            : hasTalentDraft && userRow.role === 'customer'
             ? '/daftar-talent'
-            : userRow?.role === 'talent'
+            : userRow.role === 'talent'
             ? '/dashboard-talent'
             : '/talent';
 
