@@ -272,3 +272,39 @@ This section is based on direct source inspection of migrations 21–29 and 45�
 - No professional-specific finance/export view model exists.
 - No automated provider refund integration was identified in the inspected migrations.
 - Professional checkout must remain disabled until these are implemented and tested in a disposable/staging Supabase project.
+
+
+## Support, disputes, evidence and admin operations audit — 2026-11-26
+
+Source inspection: migrations 05, 12, 21, 25, 49–51 and professional-application migrations 20261126143000 / 20261126183000, plus the professional applicant/admin pages. This is a source review, not a live RLS penetration test.
+
+### What already exists
+
+- Booking-linked reports are restricted by a trigger to the booking's customer or Talent, and the reported user must be the other participant.
+- Creating an open/investigating booking report automatically moves eligible booking states into `disputed_hold`. Earnings are also moved into a non-payable hold state.
+- The report resolver can restore the prior booking/earning/referral states when no other open/investigating report remains.
+- Scoped Admin permissions distinguish Support (reports), Finance (refunds/payout), Talent (provider verification), and Super Admin (global audit-log read).
+- Professional-service applications have private evidence storage, applicant/admin-scoped read access, short-lived signed URLs, reviewer notes, and append-only status history. Applicant and Admin pages render the application status timeline.
+- Approval requires a verification attestation note and the reviewer UI checks that required evidence can be opened before enabling approval.
+
+### High-priority gaps found
+
+1. **Report UPDATE can bypass the audited resolver.** Migration 12 grants authenticated UPDATE on `status`, `admin_notes`, and `resolved_by_admin_id`; migration 49 scopes that direct UPDATE policy to Support permission. The intended RPC `admin_resolve_report` writes an audit-log row and restores booking/earning state, but a Support user can also update those columns directly under RLS. That direct path can bypass the resolver's audit insert and its dispute restoration logic. Before launch, revoke direct UPDATE from authenticated and require status changes through the permission-checked RPC only.
+2. **Report decision history is not append-only.** `reports_complaints` stores current status, current admin note, and one resolved-by user. The resolver writes an Admin audit log, but the report itself has no dedicated immutable event history for assignment, status transitions, evidence review, decision, or reopening. Add a report-event history table with actor, timestamp, prior/new status, note, and evidence references.
+3. **Evidence contract is weakly modelled.** The base report table stores `evidence_urls TEXT[]`. The inspected report migrations do not define a dedicated private evidence bucket, ownership-scoped object path, MIME/size policy, retention rule, or signed-link review flow. Do not assume those text URLs are private or safe. Professional-service disputes need private, access-logged evidence objects, not public URLs.
+4. **Resolver accepts broad status inputs.** The resolver accepts the report enum as `p_new_status` and permits an optional note; there is no explicit transition matrix or mandatory decision note in the inspected function. Define valid transitions (open → investigating → resolved/dismissed), require reason and outcome, and disallow ambiguous re-open/terminal transitions without an explicit new event.
+5. **Support case operations are incomplete for professional work.** No professional deliverable evidence, revision-request thread, milestone acceptance, service-specific incident type, SLA/assignment, or customer-visible dispute timeline is present in the reviewed professional-service workflow. Existing booking reports cannot by themselves represent project acceptance and partial-work disputes.
+6. **Verification lifecycle needs ongoing controls.** Application approval records the reviewer attestation, but the inspected application flow does not model credential expiry, revalidation reminders, suspension when a license expires, or an auditable re-check. A one-time approval must not be treated as permanent proof for credentials with expiry.
+7. **Document review links are short-lived.** The Admin page creates signed URLs with a 300-second lifetime during queue loading. A reviewer who leaves the page open may encounter expired links. Add on-demand URL refresh when the reviewer opens a document and log document access; do not lengthen the signed URL lifetime as a substitute for access controls.
+
+### Required admin/support workflow before professional checkout
+
+- Case queue with owner/assignee, severity, SLA, status, booking/service context, and separate Support vs Finance actions.
+- Immutable event timeline covering report creation, evidence upload/view, assignment, status changes, notes, decisions, refunds, compensation, and payout holds.
+- Private evidence upload with applicant/participant ownership checks, object-level RLS, file allowlist and size cap, signed URL on demand, and retention/deletion policy.
+- Professional project evidence model: deliverables, versioned revisions, customer acceptance/rejection reason, response deadline, and escalation to Support.
+- One transactional resolution RPC coordinating report state, booking state, escrow/earning hold, refund/compensation ledger, and audit event. No direct client status updates.
+- Credential expiry/revalidation and immediate listing suspension when a required authorization is expired, revoked, or under review.
+
+### Release blocker
+The Support direct-UPDATE bypass is a concrete authorization/audit-integrity gap in the reviewed migration chain. Close it and test Support-vs-Finance-vs-Talent-vs-Super-Admin role matrices in staging before enabling professional-service checkout. The existing application status-history feature is useful but does not replace a dispute/case event log.
