@@ -76,14 +76,20 @@ stable
 security definer
 set search_path = ''
 as $$
-  select auth.uid() is not null and exists (
-    select 1
-      from public.merchant_memberships mm
-     where mm.business_id = p_business_id
-       and mm.user_id = auth.uid()
-       and mm.membership_status = 'active'
-       and mm.member_role = any(p_allowed_roles)
-  );
+  select auth.uid() is not null
+    and exists (
+      select 1 from public.users u
+       where u.id = auth.uid()
+         and u.account_status = 'active'::public.account_status_type
+    )
+    and exists (
+      select 1
+        from public.merchant_memberships mm
+       where mm.business_id = p_business_id
+         and mm.user_id = auth.uid()
+         and mm.membership_status = 'active'
+         and mm.member_role = any(p_allowed_roles)
+    );
 $$;
 
 revoke all on function private.has_merchant_business_access(uuid,text[])
@@ -345,7 +351,11 @@ begin
     raise exception 'Only manager or staff membership can be invited' using errcode = '22023';
   end if;
   if p_user_id is null or p_user_id = auth.uid()
-     or not exists (select 1 from public.users u where u.id = p_user_id) then
+     or not exists (
+       select 1 from public.users u
+        where u.id = p_user_id
+          and u.account_status = 'active'::public.account_status_type
+     ) then
     raise exception 'Target account not found' using errcode = 'P0002';
   end if;
 
@@ -385,6 +395,13 @@ as $$
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
+  end if;
+  if not exists (
+    select 1 from public.users u
+     where u.id = auth.uid()
+       and u.account_status = 'active'::public.account_status_type
+  ) then
+    raise exception 'Active account required' using errcode = '42501';
   end if;
 
   update public.merchant_memberships
