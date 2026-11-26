@@ -82,6 +82,12 @@ WITH CHECK (
   )
 );
 
+-- Clients may submit only the business fields. Database-generated id, read state,
+-- and timestamp cannot be forged by the sender.
+REVOKE INSERT ON TABLE public.booking_messages FROM authenticated;
+GRANT INSERT (booking_id, sender_id, message)
+  ON TABLE public.booking_messages TO authenticated;
+
 -- Message rows are immutable to participants; only the read receipt may be updated.
 REVOKE UPDATE ON TABLE public.booking_messages FROM authenticated;
 GRANT UPDATE (is_read) ON TABLE public.booking_messages TO authenticated;
