@@ -5,12 +5,14 @@ interface TalentCtaSectionProps {
   onExploreClick: () => void;
   onRegisterCustomerClick: () => void;
   onRegisterClick: () => void;
+  onProfessionalRegisterClick: () => void;
 }
 
 export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
   onExploreClick,
   onRegisterCustomerClick,
   onRegisterClick,
+  onProfessionalRegisterClick,
 }) => {
   return (
     <section className="py-4 md:py-20 bg-gradient-to-br from-[#210B3D] via-[#330C58] to-[#1E0938] text-white relative overflow-hidden">
@@ -22,10 +24,10 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               Mulai Pengalaman Sosial Baru
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-1.5 md:mb-4">
-              Cari Teman Ngopi, Nonton, atau Partner Acara di Kotamu
+              Temukan Pengalaman & Layanan yang Kamu Butuhkan
             </h2>
             <p className="text-xs sm:text-base text-[13px] sm:text-base text-purple-200/90 leading-relaxed mb-2 md:mb-5">
-              Tidak perlu datang sendirian ke kafe baru, konser, atau kondangan. Pilih Talent terverifikasi sesuai hobi dan jadwalmu, lalu pesan dengan sistem pembayaran yang aman.
+              Temukan teman untuk aktivitas sosial atau pilih layanan profesional sesuai kebutuhan. Bandingkan profil, detail layanan, jadwal, dan ketentuan sebelum mengajukan pesanan.
             </p>
 
             {/* Customer Feature Highlights */}
@@ -37,7 +39,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                     Profil Terkurasi & Terverifikasi
                   </strong>
                   <span className="text-purple-200/80 text-xs sm:text-xs leading-snug">
-                    Semua Talent melalui verifikasi identitas 18+ dan standar etika komunikasi.
+                    Penyedia mengikuti proses verifikasi sesuai jenis layanan dan kebijakan YUKU.
                   </span>
                 </div>
               </div>
@@ -58,10 +60,10 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                 <Clock className="w-4 h-4 text-fuchsia-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
-                    Tarif Transparan per Jam
+                    Detail Layanan Jelas
                   </strong>
                   <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Lihat tarif per jam langsung di profil sebelum mengajukan jadwal booking.
+                    Lihat rincian layanan dan ketentuan sebelum mengajukan pesanan.
                   </span>
                 </div>
               </div>
@@ -73,7 +75,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                     Pembayaran Terlindungi
                   </strong>
                   <span className="text-purple-200/70 text-[11px] sm:text-xs leading-snug">
-                    Dana booking diamankan melalui sistem YUKU dan diteruskan setelah sesi selesai dikonfirmasi.
+                    Periksa detail layanan, jadwal, dan biaya sebelum melanjutkan proses pemesanan.
                   </span>
                 </div>
               </div>
@@ -126,17 +128,25 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
             {/* Secondary subtle Talent invitation */}
             <div className="p-3.5 sm:p-4 rounded-[22px] bg-gradient-to-r from-white/[0.11] to-white/[0.06] backdrop-blur-xl border border-white/20 shadow-[0_10px_26px_rgba(0,0,0,0.16)] flex items-center justify-between gap-3">
               <div className="text-[13px]">
-                <span className="font-bold text-white block">Ingin bergabung menjadi Talent?</span>
+                <span className="font-bold text-white block">Bergabung bersama YUKU</span>
                 <span className="text-purple-200/80 text-xs">
-                  Atur jadwal sendiri dan temani aktivitas sosial positif.
+                  Pilih jalur sesuai peran dan keahlianmu.
                 </span>
               </div>
-              <button
-                onClick={onRegisterClick}
-                className="shrink-0 min-h-11 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/25 text-xs font-bold text-amber-300 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
-              >
-                Daftar Talent →
-              </button>
+              <div className="flex shrink-0 flex-col gap-2">
+                <button
+                  onClick={onRegisterClick}
+                  className="min-h-10 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-[11px] font-bold text-amber-200 transition-colors hover:bg-white/20 cursor-pointer whitespace-nowrap"
+                >
+                  Daftar Talent
+                </button>
+                <button
+                  onClick={onProfessionalRegisterClick}
+                  className="min-h-10 rounded-lg bg-fuchsia-300 px-3 py-2 text-[11px] font-bold text-violet-950 transition-colors hover:bg-fuchsia-200 cursor-pointer whitespace-nowrap"
+                >
+                  Daftar Profesional
+                </button>
+              </div>
             </div>
           </div>
         </div>
