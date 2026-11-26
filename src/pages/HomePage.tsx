@@ -3,6 +3,7 @@ import { HeroSection } from '../components/home/HeroSection';
 import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
 import { ActivityCategories } from '../components/home/ActivityCategories';
+import { ProfessionalServicesSection } from '../components/home/ProfessionalServicesSection';
 import { FeaturedTalentSection } from '../components/home/FeaturedTalentSection';
 import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { SafetySection } from '../components/home/SafetySection';
@@ -94,6 +95,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
       {/* Kategori Aktivitas */}
       <ActivityCategories onSelectCategory={handleSelectCategory} />
+
+      {/* Professional services taxonomy; booking integration is intentionally not enabled yet. */}
+      <ProfessionalServicesSection />
 
       {/* Talent Pilihan dari profil publik Supabase */}
       <FeaturedTalentSection
