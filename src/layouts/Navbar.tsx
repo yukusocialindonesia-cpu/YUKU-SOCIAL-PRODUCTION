@@ -46,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
   const navLinks: { label: string; href: AppRoute }[] = [
     { label: 'Beranda', href: '/' },
-    { label: 'Jelajah', href: '/jasa-profesional' },
+    { label: 'Jelajah', href: '/talent' },
     { label: 'Komunitas', href: '/komunitas' },
     { label: 'Cara Kerja', href: '/cara-kerja' },
     { label: 'Tentang Kami', href: '/tentang' },
