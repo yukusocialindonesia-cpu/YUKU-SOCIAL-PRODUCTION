@@ -199,3 +199,11 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] Customer capability is not treated as identity/KTP verification: server-side create_booking checks remain authoritative and unverified/ineligible customers are rejected.
 - [ ] Customer-facing discovery cards and homepage companion cards continue hiding prices; prices are visible only after opening the Talent detail page.
 - [ ] Customer + Talent accounts can still view both their customer-side and talent-side booking records in Booking History, with the role filter selecting the correct side.
+
+## Professional provider account-switch acceptance
+- [ ] Open Professional Service Application as account A, then sign out or switch to account B; account A's profile fields, application rows, review history, and private document references must be cleared before account B's data appears.
+- [ ] Delay account A's category/application/history requests, switch to account B, then allow A's requests to finish; stale A responses must not overwrite B's workspace.
+- [ ] Open the application page while signed out after a previous authenticated session; no prior provider identity, application status, or document path remains in component state.
+- [ ] Professional provider identity and application history remain scoped to the authenticated applicant; a Talent profile is not required to submit or manage a Professional Services application.
+- [ ] Approved Professional Services listings are visible only when the provider profile is complete, the individual service is approved and active, and the public RLS policy permits visibility.
+- [ ] Editing/revising a service application does not expose its credential or supporting-document storage paths through public directory/profile queries.
