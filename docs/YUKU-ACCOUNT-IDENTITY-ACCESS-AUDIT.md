@@ -74,3 +74,35 @@ All other role changes remain Super Admin or trusted service-role only. The tran
 ## Validation boundary
 
 The role-transition conflict was identified by comparing migration 31's RPC, migration 62's final trigger guard, and the frontend call site. The fix migration was fetched back from the feature branch and checked statically. No live SQL was run, no migration was applied, no Staging or Production data was changed, and no Edge Function was deployed. PostgreSQL replay and end-to-end role tests remain required before release.
+
+## Production read-only follow-up — 26 November 2026
+
+### Effective signup trigger differs from the historical branch migration
+
+A read-only inspection of the live Production definition of `public.handle_new_user()` found that it currently:
+- Reads user-editable `raw_user_meta_data` only for display name and phone number.
+- Hard-codes the initial `public.users.role` to `customer` and `account_status` to `pending_verification`.
+- Creates a Customer profile with no inferred city or gender.
+- Does not use signup metadata to grant Talent or Admin privileges.
+
+This is safe from metadata-based role escalation, and it aligns with the current Talent application flow: `BecomeTalentPage` subsequently calls the authenticated, idempotent `become_talent()` RPC after the applicant submits the Talent form. The RPC changes only the caller's own Customer role to Talent; the later KTP and profile approvals remain separate gates.
+
+However, the branch's historical migration `18_security_and_payout_guardrails.sql` still contains a version that maps `raw_user_meta_data.user_role = 'talent'` directly to the initial Talent role. That differs from the live Production definition. The role remains non-public until later approvals, but the discrepancy can cause branch/Staging signup behavior to diverge from Production and should be reconciled before the next schema release. Do not treat the live function definition as proof that migration 18 is absent; the live migration ledger shows migration 18 applied, so the current function has been replaced or adjusted after that migration.
+
+The UI route and current implementation support the safer customer-first path: Talent applicants use `/daftar-talent`, and the form invokes `become_talent()` after successful submission. Preserve that flow when reconciling the migration chain; do not simply restore metadata-driven role assignment without testing the full signup/confirmation/application sequence.
+
+### Production account/session guard verification
+
+Read-only Production checks confirmed:
+- `private.is_current_user_active()` exists.
+- The account-status write trigger is installed on 45 public tables and `storage.objects`.
+- 44 restrictive active-account policies are present on RLS-enabled public tables; the `users` table is intentionally excluded so the owner can read their own account status.
+- All 49 public tables with RLS are covered by RLS; there are no public tables without RLS in the current inventory.
+- At the time of the aggregate snapshot, there were 0 suspended/banned public profiles and 0 Auth users with a currently active `banned_until` timestamp. No user identifiers or session tokens were queried.
+- Seven non-expired Auth sessions existed at the time of the session snapshot; aggregate count only.
+
+AuthContext source review confirms that `TOKEN_REFRESHED` and `USER_UPDATED` force a role/account-status reload, and the app also rechecks on window focus. If the account-row lookup fails, role/Admin access is cleared; database RLS and write triggers remain the data-access boundary.
+
+### Validation boundary
+
+These are read-only Production observations and source comparisons. No Auth users, sessions, user profiles, migrations, or Production settings were modified. Staging tests are still required for a suspended account with existing sessions across Data API, RPC, Storage, Edge Functions, and open Realtime connections.
