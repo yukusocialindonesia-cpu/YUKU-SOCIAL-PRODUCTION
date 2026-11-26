@@ -194,3 +194,12 @@ The review page now applies the selected status filter in the database, retrieve
 - The count is based on listing rows (not unique Talent accounts), matching the one-card-per-service presentation.
 - The UI relies on database RLS for provider approval/eligibility and does not silently discard fetched rows client-side, keeping the offset aligned with the number of rows actually fetched.
 - Offset pagination can still shift if new listings are inserted while a user is paging; cursor pagination is a future scale improvement.
+
+
+## Evidence access must succeed before approval
+
+- The admin review UI already generates short-lived signed URLs for private credential and supporting documents and blocks approval when a required credential URL is unavailable.
+- Hardened the approval action so it also blocks when any attached credential or supporting document cannot be opened through its signed URL. The same condition disables the approval button and is rechecked in the action handler, preventing accidental approval through a stale UI state.
+- This remains a UI-level safeguard backed by the existing private-bucket RLS and RPC evidence-existence checks. It does not establish that a document is authentic or legally valid; an authorized reviewer must inspect issuer, holder identity, scope, and expiry.
+- The signed URL is short-lived (5 minutes at generation). If it expires before inspection, the admin should refresh the queue to obtain a fresh link before approving. A future improvement is on-demand signed URL generation at the moment the reviewer opens an attachment.
+- File MIME/size allowlists are configured on the private bucket and checked in the form, but browser-provided MIME metadata is not proof of file contents. Manual review remains mandatory; malware scanning and file-signature validation are not yet implemented.
