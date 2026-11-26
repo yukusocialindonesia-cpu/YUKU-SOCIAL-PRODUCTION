@@ -339,7 +339,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
               <label><span className={labelClass}>Nama bisnis *</span><input className={inputClass} value={businessName} onChange={(e) => setBusinessName(e.target.value)} maxLength={120} required placeholder="Contoh: Kopi Senja" /></label>
               <label><span className={labelClass}>Kategori bisnis</span><input className={inputClass} value={category} onChange={(e) => setCategory(e.target.value)} maxLength={80} placeholder="Kuliner, olahraga, retail..." /></label>
               <label><span className={labelClass}>Nomor kontak publik</span><input className={inputClass} value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={40} placeholder="Nomor WhatsApp bisnis" /></label>
-              <label><span className={labelClass}>Website / tautan bisnis</span><input className={inputClass} value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={500} placeholder="https://" /></label>
+              <label><span className={labelClass}>Website / tautan bisnis</span><input type="url" inputMode="url" className={inputClass} value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={500} placeholder="https://" /></label>
             </div>
             <label className="mt-4 block"><span className={labelClass}>Deskripsi bisnis</span><textarea className={inputClass} rows={3} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={2000} placeholder="Ceritakan bisnis dan layanan utama..." /></label>
             <button disabled={saving} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-purple-800 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-purple-900/15 disabled:opacity-60"><Plus className="h-4 w-4" />{saving ? 'Menyimpan...' : 'Buat Profil Bisnis'}</button>
@@ -361,7 +361,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                     <label><span className={labelClass}>Nama bisnis *</span><input className={inputClass} value={businessName} onChange={(e) => setBusinessName(e.target.value)} maxLength={120} required disabled={!canEdit} /></label>
                     <label><span className={labelClass}>Kategori</span><input className={inputClass} value={category} onChange={(e) => setCategory(e.target.value)} maxLength={80} disabled={!canEdit} /></label>
                     <label><span className={labelClass}>Kontak publik</span><input className={inputClass} value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={40} disabled={!canEdit} /></label>
-                    <label><span className={labelClass}>Website</span><input className={inputClass} value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={500} disabled={!canEdit} /></label>
+                    <label><span className={labelClass}>Website</span><input type="url" inputMode="url" className={inputClass} value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={500} disabled={!canEdit} /></label>
                   </div>
                   <label className="mt-4 block"><span className={labelClass}>Deskripsi</span><textarea className={inputClass} rows={3} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={2000} disabled={!canEdit} /></label>
                   {canEdit && <button disabled={saving} className="mt-4 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900 disabled:opacity-60">Simpan Profil</button>}
