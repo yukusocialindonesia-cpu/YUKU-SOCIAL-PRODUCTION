@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, Users } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
 import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
@@ -23,8 +24,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
   const promoSectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Poster tetap tersedia di desktop; pada HP bagian promosi dipindahkan dari
-  // alur utama agar Beranda fokus pada pencarian dan penemuan layanan.
   useEffect(() => {
     const target = promoSectionRef.current;
     if (!target) return;
@@ -76,12 +75,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   const handleSelectTalent = (talentId: string) => {
-    onNavigate(`/talent/:id`, { id: talentId });
+    onNavigate('/talent/:id', { id: talentId });
   };
 
   return (
     <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
-      {/* Urutan inti HP: cari -> pilih mode -> pilih aktivitas -> lihat katalog -> lihat Talent. */}
       <HeroSection
         onExploreClick={() => onNavigate('/talent')}
         onSearch={handleSearch}
@@ -93,31 +91,51 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
-
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Konten pendukung tetap ada di desktop; tidak menumpuk di Beranda HP. */}
-      <div className="hidden sm:block">
-        <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
-        <SafetySection />
-        <div ref={promoSectionRef}>
-          <PromoCarousel
-            promotions={promotions}
-            isLoading={isLoadingPromotions}
-            onNavigate={onNavigate}
-          />
+      <section className="bg-white py-3 sm:py-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => onNavigate('/komunitas')}
+            className="group flex w-full items-center gap-3 rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-white p-3 text-left transition hover:border-purple-200 sm:p-4"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-purple-800 shadow-sm">
+              <Users className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-extrabold text-slate-900 sm:text-base">Gabung Komunitas YUKU</span>
+              <span className="mt-0.5 block text-[11px] text-slate-600 sm:text-sm">Temukan orang dengan minat yang sama dan mulai berinteraksi.</span>
+            </span>
+            <ArrowRight className="h-4 w-4 shrink-0 text-purple-800 transition-transform group-hover:translate-x-0.5" />
+          </button>
         </div>
-        <TalentCtaSection
-          onExploreClick={() => onNavigate('/talent')}
-          onRegisterCustomerClick={() => onNavigate('/register')}
-          onRegisterClick={() => onNavigate('/daftar-talent')}
+      </section>
+
+      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
+
+      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+
+      <SafetySection />
+
+      <div ref={promoSectionRef}>
+        <PromoCarousel
+          promotions={promotions}
+          isLoading={isLoadingPromotions}
+          onNavigate={onNavigate}
         />
-        <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
       </div>
+
+      <TalentCtaSection
+        onExploreClick={() => onNavigate('/talent')}
+        onRegisterCustomerClick={() => onNavigate('/register')}
+        onRegisterClick={() => onNavigate('/daftar-talent')}
+      />
+
+      <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
     </div>
   );
 };
