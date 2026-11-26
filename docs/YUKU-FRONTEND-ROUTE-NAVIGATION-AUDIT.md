@@ -29,3 +29,16 @@ This pass was a source-level review. The GitHub Actions build workflow is config
 2. Test direct URL entry and browser back/forward for all dynamic routes.
 3. Test mobile safe-area layout and keyboard behavior on registration, KTP verification and booking forms.
 4. Verify professional service listings never expose a booking CTA until the shared booking contract and payment lifecycle are complete.
+
+
+## Finding fixed — Xendit checkout presentation
+
+The booking history previously rendered an actionable Xendit checkout panel for pending bookings even though the current Production payment-route claim rejects new Xendit checkout claims and the Xendit Edge Functions are not active in the Production inventory. This could invite customers into a checkout path that cannot complete.
+
+Branch fix in `src/components/booking/XenditCustomerPaymentPanel.tsx`:
+- Remove the checkout invocation and payment CTA.
+- Show a clear temporary-unavailable message for pending bookings where Xendit would otherwise be offered.
+- Direct customers only to another method that is visibly active for that booking, or YUKU Admin support.
+- Keep existing booking/payment records and database route-lock controls unchanged.
+
+Validation: source-level review only. No checkout, payment, Production database, or deployment operation was performed. Build and browser regression tests remain required.
