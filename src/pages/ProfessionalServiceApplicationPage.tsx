@@ -77,7 +77,8 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
   const load = async () => {
     if (!user) { setLoading(false); return; }
     setLoading(true);
-    const [{ data: categoryRows }, { data: applicationRows, error: applicationError }, { data: talentProfile }] = await Promise.all([
+    setError('');
+    const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: talentProfile, error: talentProfileError }] = await Promise.all([
       supabase.from('professional_service_categories')
         .select('id,title,professional_service_subcategories(id,title,description,verification_level,delivery_modes,category_id)')
         .eq('is_active', true)
@@ -98,8 +99,10 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     }));
     setCategories(normalized);
     setApplications(applicationRows || []);
-    setHasTalentProfile(!!talentProfile);
-    if (applicationError) setError('Riwayat pengajuan belum dapat dimuat.');
+    setHasTalentProfile(talentProfileError ? null : !!talentProfile);
+    if (categoryError) setError('Daftar jenis jasa belum dapat dimuat. Coba muat ulang halaman atau hubungi admin YUKU.');
+    else if (talentProfileError) setError('Status profil Talent belum dapat diperiksa. Silakan muat ulang halaman.');
+    else if (applicationError) setError('Riwayat pengajuan belum dapat dimuat.');
     setLoading(false);
   };
 
