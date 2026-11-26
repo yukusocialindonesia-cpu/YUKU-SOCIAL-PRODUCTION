@@ -141,3 +141,8 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Offer funding source remains merchant-only in this release and cannot be changed to YUKU/platform-funded through client RPC input.
 - [ ] One YUKU account can create and switch between multiple merchant businesses while also holding memberships in other businesses; creating a new business selects that new business without losing existing memberships.
 - [ ] When a Manager edits an approved/live offer, the offer is hidden as draft and the business Owner receives an in-app notification to resubmit it.
+- [ ] Authenticated users can read only their own raw merchant_memberships rows; Owner/Manager roster details are available only through get_merchant_business_members(business_id), scoped to that business.
+- [ ] Raw merchant_memberships SELECT does not expose member_role, invited_by, accepted_at, or another member's user_id; only own membership identifiers/status are selectable.
+- [ ] Public merchant offer queries can select eligibility, quota, and funded_by; these fields are explicitly granted and no internal review fields are exposed.
+- [ ] Admin offer review queries can read the approved/pending offer fields and owner-only review history without exposing actor_user_id.
+- [ ] Merchant business review decision RPC compiles and sends owner notifications for approve/revise/reject/suspend transitions.
