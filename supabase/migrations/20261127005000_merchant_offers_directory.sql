@@ -297,7 +297,7 @@ begin
     from public.merchant_offers mo
     join public.merchant_businesses mb on mb.id = mo.business_id
    where mo.id = p_offer_id
-   for update of mo;
+   for update of mo, mb;
   if not found then
     raise exception 'Offer not found' using errcode = 'P0002';
   end if;
