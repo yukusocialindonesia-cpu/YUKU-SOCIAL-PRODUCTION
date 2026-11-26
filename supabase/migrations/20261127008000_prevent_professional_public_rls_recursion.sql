@@ -56,7 +56,19 @@ create policy professional_talent_services_public_read
   using (
     approval_status = 'approved'
     and is_active = true
+    -- The helper confirms provider-level eligibility without recursive RLS.
+    -- Re-check this exact listing's category/mode so one valid listing cannot
+    -- accidentally expose another listing in an inactive or incompatible category.
     and public.professional_provider_has_public_listing(provider_id)
+    and exists (
+      select 1
+      from public.professional_service_subcategories sc
+      join public.professional_service_categories c on c.id = sc.category_id
+      where sc.id = professional_talent_services.subcategory_id
+        and sc.is_active = true
+        and c.is_active = true
+        and professional_talent_services.delivery_modes <@ sc.delivery_modes
+    )
   );
 
 comment on function public.professional_provider_has_public_listing(uuid) is
