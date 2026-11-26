@@ -399,3 +399,63 @@ Read-only inspection of the connected production schema and function definitions
 3. Add server-side chat throttling and customer/Talent block/report controls.
 4. Regression-test identity trigger protections and completed-booking review validation.
 5. Continue the remaining SECURITY DEFINER inventory review function-by-function; current checks cover the named payout, identity, review and chat areas, not every privileged function in the project.
+
+
+## Focused live payment-path audit: QRIS, bank transfer, Xendit — 2026-11-26
+
+Read-only inspection of the connected production schema and the current PR branch Edge Functions/migrations. No payment was initiated, no files uploaded, no configuration changed, and no migration was applied.
+
+### Current production configuration observed
+
+- Server-side `system_feature_flags.payment_checkout` is currently **enabled**.
+- QRIS setting is currently **active**.
+- Bank transfer setting is currently **inactive**.
+- The new-booking route claim function rejects a new Xendit route when `payment_route` is NULL; already-locked legacy Xendit bookings can retain their historical route.
+- QRIS proof bucket and bank-transfer proof bucket are both private, with 5 MiB object limits and JPEG/PNG/WebP/PDF MIME allowlists. QRIS display bucket is public by design.
+- These are live configuration observations, not a recommendation to toggle anything. No production configuration was changed.
+
+### Controls verified
+
+1. **Customer booking amount**
+   - `create_booking(...)` calculates gross amount, platform fee and Talent share on the server from the approved Talent service rate and duration.
+   - Customer is required to be active, age-verified, KTP-verified and a customer-role account; Talent must be active, age-verified, approved and publicly visible.
+   - One active pending-payment booking per Customer is enforced.
+   - `bookings` authenticated UPDATE grants are limited to `status`, `cancellation_reason` and `updated_at`; financial columns, booking parties, schedule and payment route are not directly writable by the browser.
+   - The booking status actor trigger rejects a Customer/Talent attempting to mark a booking `paid_held_in_escrow`, `refunded` or `expired` directly. It requires backend/Admin authority for these states. Customer/Talent cancellation and Talent session transitions have separate actor checks.
+
+2. **QRIS proof submission and approval**
+   - Submission rows cannot be inserted/updated directly by authenticated clients; authenticated has SELECT only. The customer submission RPC verifies ownership, pending-payment state, expiry, exact `claimed_amount = bookings.gross_amount`, actual proof object existence, QRIS route lock, active QRIS configuration and one pending review at a time.
+   - Finance approval RPC locks submission and booking rows, rechecks owner, amount, booking state, expiry, route and proof object, requires a transaction reference, prevents reuse of a reference, writes the payment at the database-calculated booking gross, moves payment to `settled_held` and booking to escrow, and writes an audit event.
+   - The underlying QRIS review function is revoked from authenticated/anon; the Finance-checked wrapper is the supported client entry point.
+
+3. **Bank-transfer proof submission and approval**
+   - Submission rows likewise expose SELECT only to authenticated; writes are through the submission RPC.
+   - The RPC checks booking owner, pending-payment state, expiry, exact claimed amount, bank-transfer route, saved account snapshot, proof object existence and pending-submission uniqueness.
+   - Finance approval locks submission and booking, rechecks exact amount, expiry, route, account snapshot, proof object and transaction-reference uniqueness before creating/updating payment and moving booking into escrow. It writes an audit event and requires a non-empty admin note.
+
+4. **Payment records and settlement**
+   - Authenticated users have SELECT only on `payments`; no direct client INSERT/UPDATE grant was found.
+   - Unique constraints enforce one payment row per booking, unique idempotency key and unique provider charge ID.
+   - `settle_booking_payment` is not executable by anon/authenticated and is granted to service_role. It checks the provider allowlist, locks the booking, enforces expiry and payment-route consistency, calculates payment amount from `bookings.gross_amount`, and moves it to escrow.
+   - The status guard prevents ordinary booking participants from manufacturing the paid/escrow state through direct table updates.
+
+### Gaps and risks
+
+- **QRIS upload policy is broader than the submission RPC:** the live Storage INSERT policy checks that the first folder segment is a pending booking owned by the uploader, but does not require `payment_route = 'manual_qris'`. The submission RPC later rejects the wrong route, so this does not itself approve or settle a payment; it can allow orphan/unsubmitted files to be uploaded against the user's other pending booking. Tighten the Storage INSERT policy to require the QRIS route lock and add per-booking upload/retry limits.
+- **Repeated proof upload abuse:** both proof buckets allow multiple unique object paths while the booking is pending. The one-pending-submission partial unique index limits active review rows, not total uploaded objects or resubmission frequency after rejection. Add upload count/size quotas, retry cooldown and cleanup/retention for orphan/rejected proof objects. Keep the buckets private.
+- **MIME metadata is not content validation:** Storage MIME allowlists and size limits are useful controls, but they do not prove the uploaded bytes match the declared file type or are malware-free. Add file-signature validation and malware scanning/quarantine before Finance reviewers open attachments.
+- **Xendit has not been sandbox-verified:** both Edge Function source headers and prelaunch checklist explicitly state that sandbox end-to-end testing remains outstanding. The webhook checks callback token, external ID format, paid status, booking existence and exact amount, then calls a server-only settlement RPC. It does not explicitly assert callback currency is `IDR`, nor does it retrieve the invoice from Xendit to independently compare invoice ID/status/currency. Add currency validation and provider-side invoice reconciliation where supported before enabling this route. Test invalid token, wrong amount/currency, wrong route, expiry, duplicate callback, replay, provider timeout and concurrent callbacks.
+- **Xendit route policy is intentionally disabled for new bookings:** `claim_booking_payment_route` rejects Xendit when a booking has no route yet; only an already-locked legacy Xendit booking can continue. Do not bypass this guard merely because the checkout Edge Function still exists in the repository.
+- **Checkout readiness is not proven by a feature flag:** production server flag is currently true and QRIS active, but no live payment test was performed in this audit. Keep professional-service checkout disabled until the dedicated booking, settlement, refund, escrow, dispute and payout flow has passed staging acceptance tests.
+
+### Payment audit acceptance tests
+
+- Customer cannot change gross amount, fee, Talent share, customer/Talent IDs, or payment route through direct table updates.
+- Customer/Talent cannot set paid, refunded or expired booking status; valid cancellation/session transitions remain available only to the correct actor.
+- QRIS/transfer submission cannot claim an amount different from the booking gross; wrong owner, wrong route, expired booking, missing proof object and duplicate pending submission all fail.
+- Finance-only approval; Support/Talent/Booking roles cannot approve payments. Duplicate transaction references fail.
+- Payment row is unique per booking; duplicate/replayed settlement does not duplicate ledger/earnings or release escrow twice.
+- QRIS and bank-transfer proof reads remain limited to the owner and Finance; no public proof URL; delete while pending review is blocked.
+- QRIS upload against a booking not locked to QRIS is rejected; upload flood and repeated rejected-proof uploads are throttled and cleaned up.
+- Xendit sandbox: callback token mismatch, invalid external ID, wrong amount, wrong currency, wrong invoice, expired invoice, wrong payment route, duplicate/replay and concurrent webhook tests.
+- Verify live flag and provider settings against the intended launch plan before any launch change; do not rely on frontend environment flags alone.
