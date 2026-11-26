@@ -7,16 +7,16 @@ interface ServiceModeSectionProps {
 
 export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelectMode }) => {
   return (
-    <section className="relative overflow-hidden py-3 sm:py-12 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
+    <section className="relative overflow-hidden py-4 sm:py-7 bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
           <div className="mb-2">
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">
-              Pilih Teman
+              Cara Menikmati Social Experience
             </h2>
             <p className="mt-0.5 text-[13px] leading-relaxed text-slate-600">
-              Mau bertemu langsung atau ngobrol online?
+              Pilih pengalaman langsung atau online.
             </p>
           </div>
 
@@ -61,13 +61,13 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
         <div className="hidden sm:block">
           <div className="mb-2 sm:mb-6">
             <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase">
-              Pilih Cara Menemani
+              SOCIAL EXPERIENCE
             </span>
             <h2 className="mt-1 text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-              Mau Teman Offline atau Online?
+              Pilih Offline atau Online
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-slate-500">
-              Pilih layanan yang sesuai dengan kebutuhanmu.
+              Temukan teman untuk aktivitas secara langsung maupun jarak jauh.
             </p>
           </div>
 
