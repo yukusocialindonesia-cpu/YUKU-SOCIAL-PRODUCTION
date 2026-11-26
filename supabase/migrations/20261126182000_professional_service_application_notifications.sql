@@ -23,7 +23,7 @@ begin
         'Pengajuan Anda sudah masuk dan menunggu pemeriksaan tim YUKU.',
         'system_alert'::public.notification_type,
         jsonb_build_object(
-          'route', '/dashboard-talent',
+          'route', '/daftar-jasa-profesional',
           'application_id', new.id,
           'status', new.status,
           'event', 'professional_service_application_submitted'
@@ -38,7 +38,7 @@ begin
         'Ada pengajuan jasa profesional baru yang menunggu pemeriksaan.',
         'system_alert'::public.notification_type,
         jsonb_build_object(
-          'route', '/admin',
+          'route', '/admin/jasa-profesional',
           'application_id', new.id,
           'applicant_id', new.applicant_id,
           'status', new.status,
@@ -53,6 +53,7 @@ begin
 
     if old.status is distinct from new.status then
       v_status_label := case new.status
+        when 'pending' then 'dikirim ulang dan menunggu pemeriksaan'
         when 'under_review' then 'sedang diperiksa'
         when 'needs_revision' then 'memerlukan perbaikan'
         when 'approved' then 'disetujui'
@@ -61,6 +62,7 @@ begin
       end;
 
       v_title := case new.status
+        when 'pending' then 'Perbaikan pengajuan berhasil dikirim'
         when 'under_review' then 'Pengajuan sedang diperiksa'
         when 'needs_revision' then 'Pengajuan perlu diperbaiki'
         when 'approved' then 'Jasa profesional disetujui'
@@ -69,6 +71,7 @@ begin
       end;
 
       v_message := case new.status
+        when 'pending' then 'Perbaikan pengajuan Anda sudah diterima dan kembali masuk antrean pemeriksaan tim YUKU.'
         when 'under_review' then 'Tim YUKU sedang memeriksa pengajuan jasa profesional Anda.'
         when 'needs_revision' then 'Ada bagian pengajuan yang perlu Anda perbaiki. Buka riwayat pengajuan untuk membaca catatan Admin.'
         when 'approved' then 'Pengajuan Anda disetujui dan layanan dapat ditampilkan sesuai ketentuan YUKU.'
