@@ -45,6 +45,7 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
   const [query,setQuery]=useState('');
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState('');
+  const [reloadKey,setReloadKey]=useState(0);
   useEffect(()=>{
     let mounted=true;
     const load=async()=>{
@@ -76,7 +77,7 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
     };
     void load();
     return()=>{mounted=false;};
-  },[]);
+  },[reloadKey]);
 
   const visible=useMemo(()=>{
     const normalized=query.trim().toLocaleLowerCase('id');
@@ -107,7 +108,7 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
         <div className="mt-5 flex flex-wrap gap-2 text-[10px] font-semibold text-purple-100"><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">Bisnis terverifikasi</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">Multi-lokasi</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">Bayar langsung ke merchant</span></div>
       </header>
       <label className="mb-5 flex items-center gap-3 rounded-2xl border border-purple-100 bg-white px-4 py-3 shadow-sm"><Search className="h-4 w-4 shrink-0 text-purple-700"/><input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Cari nama bisnis, kategori, atau kota..." className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"/></label>
-      {error&&<div role="alert" className="mb-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertCircle className="h-4 w-4 shrink-0"/>{error}</div>}
+      {error&&<div role="alert" className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><span className="flex min-w-0 items-start gap-2"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0"/>{error}</span><button type="button" onClick={()=>setReloadKey((value)=>value+1)} disabled={loading} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-3 py-2 text-[10px] font-bold text-amber-900 disabled:opacity-50"><RefreshCw className="h-3 w-3"/> Coba lagi</button></div>}
       {loading?<div className="py-14 text-center text-sm text-slate-500"><RefreshCw className="mx-auto mb-2 h-5 w-5 animate-spin"/>Memuat merchant...</div>:visible.length===0?<div className="rounded-2xl border border-slate-200 bg-white px-5 py-12 text-center"><Building2 className="mx-auto h-9 w-9 text-slate-300"/><h2 className="mt-3 text-base font-extrabold text-slate-800">{businesses.length===0?'Merchant Partner segera hadir':'Bisnis tidak ditemukan'}</h2><p className="mx-auto mt-2 max-w-md text-xs leading-5 text-slate-500">{businesses.length===0?'Saat ini belum ada bisnis yang disetujui untuk ditampilkan. Kembali lagi setelah partner pertama aktif.':'Coba kata kunci lain atau nama kota yang berbeda.'}</p><button onClick={()=>onNavigate('/merchant-center')} className="mt-5 rounded-xl bg-purple-800 px-4 py-2.5 text-xs font-bold text-white">Daftarkan bisnis Anda</button></div>:<div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.9fr)]">
         <section className="space-y-3">
           <div className="flex items-center justify-between"><h2 className="text-sm font-extrabold text-slate-900">Bisnis terverifikasi</h2><span className="text-[10px] font-semibold text-slate-500">{visible.length} bisnis</span></div>
