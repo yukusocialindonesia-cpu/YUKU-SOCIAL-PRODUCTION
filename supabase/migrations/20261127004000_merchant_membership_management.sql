@@ -57,7 +57,7 @@ $merchant$;
 revoke all on function private.has_merchant_business_invitation(uuid)
   from public,anon;
 grant execute on function private.has_merchant_business_invitation(uuid)
-  to authenticated;
+  to anon, authenticated;
 
 drop policy if exists merchant_businesses_public_or_member_read
   on public.merchant_businesses;
