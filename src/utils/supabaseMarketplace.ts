@@ -230,7 +230,7 @@ export async function fetchTalentByIdFromSupabase(talentId: string): Promise<Tal
   // Fetch services for this talent with explicit error checking
   const { data: servicesData, error: servicesError } = await supabase
     .from('talent_services')
-    .select('activity_category_id, custom_title, custom_description, approval_status, is_active')
+    .select('id, activity_category_id, custom_title, custom_description, approval_status, is_active')
     .eq('talent_id', talentId);
 
   if (servicesError) {
