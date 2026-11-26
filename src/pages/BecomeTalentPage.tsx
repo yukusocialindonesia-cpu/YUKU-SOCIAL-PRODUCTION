@@ -279,6 +279,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     let uploadedAvatarPath: string | null = null;
     let avatarProfileSaved = false;
     let identityEvidenceSaved = false;
+    let onboardingUserId: string | null = currentSessionUser?.id ?? null;
 
     try {
       let activeUserId = currentSessionUser?.id;
@@ -312,6 +313,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
         }
 
         activeUserId = signUpData.user.id;
+        onboardingUserId = activeUserId;
 
         // If email confirmation is required by Supabase and no active session was returned
         if (!signUpData.session) {
@@ -541,24 +543,51 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     } catch (err: any) {
       // Best-effort rollback for evidence uploaded by this attempt only.
       // Never delete evidence after the identity row has successfully referenced it.
-      if (uploadedAvatarPath && !avatarProfileSaved) {
-        const { error: avatarCleanupError } = await supabase.storage
-          .from('avatars')
-          .remove([uploadedAvatarPath]);
-        if (avatarCleanupError) {
-          console.error('Gagal membersihkan avatar Talent yatim:', avatarCleanupError.message);
+      // A network error can happen after the database committed. Verify references
+      // before deleting any upload; if the reference check itself fails, keep the file.
+      if (uploadedAvatarPath && !avatarProfileSaved && onboardingUserId) {
+        const { data: savedProfile, error: savedProfileLookupError } = await supabase
+          .from('talent_profiles')
+          .select('avatar_url')
+          .eq('id', onboardingUserId)
+          .maybeSingle();
+        const avatarIsReferenced = Boolean(
+          savedProfile?.avatar_url && savedProfile.avatar_url.includes(uploadedAvatarPath),
+        );
+        if (!savedProfileLookupError && !avatarIsReferenced) {
+          const { error: avatarCleanupError } = await supabase.storage
+            .from('avatars')
+            .remove([uploadedAvatarPath]);
+          if (avatarCleanupError) {
+            console.error('Gagal membersihkan avatar Talent yatim:', avatarCleanupError.message);
+          }
+        } else if (savedProfileLookupError) {
+          console.error('Pembersihan avatar dilewati karena referensi profil tidak dapat diverifikasi:', savedProfileLookupError.message);
         }
       }
-      if (!identityEvidenceSaved) {
-        const orphanedEvidence = [uploadedKtpPath, uploadedSelfiePath].filter(
-          (storagePath): storagePath is string => Boolean(storagePath),
-        );
-        if (orphanedEvidence.length > 0) {
-          const { error: cleanupError } = await supabase.storage
-            .from('ktp-documents')
-            .remove(orphanedEvidence);
-          if (cleanupError) {
-            console.error('Gagal membersihkan berkas identitas yatim:', cleanupError.message);
+      if (!identityEvidenceSaved && onboardingUserId) {
+        const { data: savedIdentity, error: savedIdentityLookupError } = await supabase
+          .from('user_identities')
+          .select('ktp_storage_path, selfie_storage_path')
+          .eq('id', onboardingUserId)
+          .maybeSingle();
+        if (savedIdentityLookupError) {
+          console.error('Pembersihan bukti identitas dilewati karena referensi tidak dapat diverifikasi:', savedIdentityLookupError.message);
+        } else {
+          const referencedPaths = new Set([
+            savedIdentity?.ktp_storage_path,
+            savedIdentity?.selfie_storage_path,
+          ].filter((storagePath): storagePath is string => Boolean(storagePath)));
+          const orphanedEvidence = [uploadedKtpPath, uploadedSelfiePath].filter(
+            (storagePath): storagePath is string => Boolean(storagePath) && !referencedPaths.has(storagePath),
+          );
+          if (orphanedEvidence.length > 0) {
+            const { error: cleanupError } = await supabase.storage
+              .from('ktp-documents')
+              .remove(orphanedEvidence);
+            if (cleanupError) {
+              console.error('Gagal membersihkan berkas identitas yatim:', cleanupError.message);
+            }
           }
         }
       }
