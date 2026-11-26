@@ -138,3 +138,34 @@ A read-only catalog inspection covered `bookings`, `payments`, `payout_requests`
 - This was a schema/policy/grant spot-check, not an end-to-end negative test with real anon/customer/Talent/Admin JWTs. It does not prove every RPC transition or Storage object path is correct.
 
 No direct database write was performed during this check.
+
+
+### Payment, booking-state and financial RPC deep dive — read-only Production inspection
+
+The following Production function definitions, constraints and scheduled-job metadata were inspected: `create_booking`, `claim_booking_payment_route`, `settle_booking_payment`, `confirm_booking_completion`, `admin_process_refund`, `admin_process_payout`, `request_talent_payout`, `expire_stale_booking_reservations`, and the booking status/financial triggers. No RPC was invoked and no row was changed.
+
+**Positive controls confirmed**
+- `create_booking` requires an authenticated active Customer, age/KTP verification, an active approved Talent, an approved active service, a valid future schedule and duration, and a matching online/offline category. The rate and 20% platform share are snapshotted server-side.
+- A real PostgreSQL exclusion constraint exists on `bookings`: `EXCLUDE USING gist (talent_id WITH =, tstzrange(start_time, end_time) WITH &&)` for active/pending booking states. The similarly named GiST index is backed by this exclusion constraint, so overlapping Talent time slots are database-enforced, including concurrent inserts.
+- `payments` has unique constraints on `booking_id`, `idempotency_key`, and `provider_charge_id`.
+- `claim_booking_payment_route` locks the booking row, checks authenticated Customer ownership and pending/unexpired status, and prevents switching a locked route. New Xendit route selection is blocked; QRIS/bank transfer require active settings.
+- `settle_booking_payment` is restricted to server/service-role execution, locks the booking row, enforces provider allow-list and route consistency, and upserts one payment per booking.
+- `confirm_booking_completion` locks the booking row, requires an authenticated booking participant, and records each party's completion confirmation. The booking only transitions to completed once both Customer and Talent have confirmed.
+- `admin_process_refund` requires Finance permission, locks refund/payment/booking/cancellation-case rows, checks total refunds against payment and automatic-refund limits, requires a unique provider refund reference, and writes an Admin audit record.
+- `request_talent_payout` requires an active approved verified Talent, validates bank details and amount, and uses a caller-supplied idempotency key with payload matching. `admin_process_payout` requires Finance permission, row-locks the payout, validates allowed status transitions and requires a provider reference before completion.
+- A live active pg_cron job runs `expire_stale_booking_reservations()` every five minutes.
+
+**P1 — Settlement's expired-booking branch performs an update immediately before raising an exception**
+
+In `settle_booking_payment`, when `payment_expires_at <= NOW()`, the function updates the booking status to `expired` and then raises an exception. In PostgreSQL, an uncaught exception aborts the current transaction, so that preceding UPDATE is rolled back; callers receive the error but this branch itself does not persist the expiry. Production does have a separate active five-minute cron job that expires stale reservations, so this does not leave expired rows permanently pending, but it makes the inline UPDATE misleading/redundant and delays state correction until the scheduled job runs. Remediation should either remove the UPDATE and rely explicitly on the cron, or return/commit through a non-exception path after persisting the expiry. Test the exact webhook/caller behavior in Staging before changing it.
+
+**P1 — Already-settled webhook retries are acknowledged without comparing event identity**
+
+For bookings already in `paid_held_in_escrow`, `confirmed_by_talent`, `in_progress`, or `completed`, `settle_booking_payment` returns TRUE immediately. It does not compare the incoming provider, provider charge ID, amount, or payment row against the existing settlement before acknowledging. This may be intended to make provider retries idempotent, but the current function does not distinguish a genuine retry from a conflicting event targeting the same booking. The unique `provider_charge_id` constraint protects new/upsert writes, but it is not consulted on this early-return path. Verify the Edge Function's signature verification, event-to-booking binding, provider amount/currency checks, and duplicate-event handling; then add a Staging negative test for a different charge ID/provider against an already-settled booking. Do not treat the current early return alone as proof of a payment bypass.
+
+**Remaining payment/webhook evidence gap**
+- This inspection covered the database settlement RPC, not the deployed payment-provider Edge Function or its raw webhook verification. Signature validation, event-ID deduplication, amount/currency equality, merchant-account binding, and retry/replay handling remain unverified.
+- The payment webhook must be checked end-to-end against the exact provider event and the server-side booking/payment state before this flow can be release-approved.
+- No live customer, Talent, Admin or service-role payment transaction was simulated.
+
+No database writes, migration applications, function changes, cron changes, or deployments were performed during this deep dive.
