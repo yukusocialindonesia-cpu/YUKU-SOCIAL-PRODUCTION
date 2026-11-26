@@ -9,6 +9,7 @@ import { HomePage } from './pages/HomePage';
 
 // Load secondary routes only when a visitor opens them. Keep the homepage eager
 // so the first screen remains available without an additional route-chunk request.
+const ProfessionalServicesPage = lazy(() => import('./pages/ProfessionalServicesPage').then((module) => ({ default: module.ProfessionalServicesPage })));
 const CommunityPage = lazy(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })));
 const BrowseTalentPage = lazy(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })));
 const TalentDetailPage = lazy(() => import('./pages/TalentDetailPage').then((module) => ({ default: module.TalentDetailPage })));
@@ -39,6 +40,7 @@ export default function App() {
     const inviteParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     if (pathname === '/aktivasi-admin' || inviteParams.get('type') === 'invite') return '/aktivasi-admin';
     if (pathname === '/talent') return '/talent';
+    if (pathname === '/jasa-profesional') return '/jasa-profesional';
     if (pathname === '/komunitas') return '/komunitas';
     if (pathname.startsWith('/talent/')) return '/talent/:id';
     if (pathname === '/cara-kerja') return '/cara-kerja';
