@@ -154,3 +154,9 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Editing/deactivating a branch cannot affect another business by supplying a foreign location UUID; at least one active branch is required for business approval.
 - [ ] Owner can edit an approved business profile; saving any public identity change moves the business to needs_revision, writes a review-history event, and hides it until re-approved.
 - [ ] Manager/Staff cannot edit business identity; edits are rejected while business review is pending or status is rejected/suspended.
+
+## Read-only staging preflight
+
+Run `supabase/ops/merchant_partner_staging_preflight.sql` only after applying draft migrations `20261127002000` through `20261127005000` to a disposable or Staging project. The script checks required tables/functions, RLS flags, selected column grants, direct table mutation denial, and anonymous RPC execution denial. It does not modify data and does not replace the role/JWT, cross-tenant, concurrency, notification, or UI acceptance tests above.
+
+This preflight has not been executed. No migration has been applied to Staging or Production.
