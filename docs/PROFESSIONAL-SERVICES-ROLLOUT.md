@@ -85,3 +85,20 @@ Publishing now requires a separate internal verification note of at least 20 cha
 ## Application status audit timeline
 
 An append-only status history now records the initial submission and every status transition, including the previous/new status, note, actor class, actor ID where available, and timestamp. Talent can read only its own application timeline; Talent-permission admins and Super Admins can inspect the review history. Both the Talent application page and Admin review cards display the chronological timeline. The history is written transactionally by a database trigger and is not editable by clients.
+
+
+## Profession-specific evidence checklist
+
+The generic verification tier is only the minimum evidence class. Reviewers must follow the profession-specific checklist in `src/lib/professionalServiceVerification.ts`, which is displayed to applicants and admins. Examples:
+
+- **Nurse:** verify current STR and/or SIP (or other applicable authorization) through an official channel; match identity, validity, scope, and practice location. Never accept a document image as proof by itself.
+- **Legal and tax consulting:** verify professional status, license/permit, membership and scope through the relevant official body before enabling claims or services requiring that authority.
+- **Private driver / chauffeur:** verify current SIM and correct class; check STNK and relevant vehicle eligibility documents when the provider supplies the vehicle.
+- **Caregiver / babysitter / housekeeper:** verify identity, work history and references; review relevant first-aid/care training where claimed. Clearly separate non-medical assistance from regulated clinical tasks.
+- **Tour guide:** verify identity, references, destination knowledge and any local registration/permit required for the destination or service.
+- **Personal trainer / AC and electronics technicians:** review relevant training, experience and safety practices; do not imply a certificate is a statutory license unless verified.
+- **Creative, event, pet, tutoring, interpreting and translation services:** review portfolio/work samples, references and claimed qualifications. A sworn-translator or other regulated claim requires separate official verification.
+
+Taxonomy minimum tiers were refined: travel interpreter, business consultant, private tutor, and language translator use `reference` rather than making a generic certificate mandatory. This does not prevent a reviewer from requesting additional evidence where risk, client requirements, or applicable rules justify it.
+
+The applicant form now explains the evidence expected for the selected profession, and the admin review card shows a specific reviewer checklist. These prompts are operational guidance, not legal advice or automatic proof of qualification. Requirements can differ by jurisdiction and service scope; YUKU must obtain qualified compliance review before activating regulated services. No regulated listing should be approved solely because a file was uploaded.
