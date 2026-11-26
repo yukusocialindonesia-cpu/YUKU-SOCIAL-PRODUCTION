@@ -131,6 +131,16 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   );
   const memberships = accessSnapshot?.capabilities.merchantMemberships || [];
   const activeMembership = memberships.find((membership) => membership.businessId === activeBusiness?.id);
+
+  useEffect(() => {
+    setEditingLocationId(null);
+    setLocationName('Lokasi utama'); setAddress(''); setCity(''); setProvince('');
+    setLocationPhone(''); setOpeningHours(''); setLocationIsActive(true);
+    setEditingOfferId(null);
+    setOfferTitle(''); setOfferDescription(''); setOfferStart(toLocalDateTimeInput(new Date().toISOString()));
+    setOfferEnd(''); setOfferEligibility(''); setOfferQuota(''); setOfferTerms(''); setOfferInstructions('');
+  }, [activeBusiness?.id]);
+
   const isOwner = activeMembership?.role === 'owner' && activeMembership.status === 'active';
   const canEdit = isOwner && ['draft','needs_revision','approved'].includes(activeBusiness?.review_status || '');
   const canManageLocations = activeMembership?.status === 'active' && (
