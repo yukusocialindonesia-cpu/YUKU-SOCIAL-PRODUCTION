@@ -65,3 +65,6 @@ The RPC does not make a regulated professional credential valid by itself: an au
 A follow-up migration removes direct admin table updates, requires a Talent profile for application inserts, scopes all document paths to the applicant's own folder, checks that referenced evidence exists in the private bucket before publication, and prevents deletion of documents while an application references them. It also limits each applicant to one open application per service type.
 
 When an admin requests revisions, the applicant can edit and resubmit that same application. The database update policy permits only the transition from `needs_revision` back to `pending`, and clears reviewer metadata; applicants cannot directly change an application to an approved or rejected state.
+
+
+The latest guardrail also enforces that an applicant's selected online/offline modes are a subset of the modes configured for that subcategory. The same check is repeated in the admin approval RPC, so changing the taxonomy after an application is submitted cannot bypass the constraint.
