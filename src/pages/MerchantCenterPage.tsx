@@ -132,7 +132,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const memberships = accessSnapshot?.capabilities.merchantMemberships || [];
   const activeMembership = memberships.find((membership) => membership.businessId === activeBusiness?.id);
   const isOwner = activeMembership?.role === 'owner' && activeMembership.status === 'active';
-  const canEdit = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
+  const canEdit = isOwner && ['draft','needs_revision','approved'].includes(activeBusiness?.review_status || '');
   const canManageLocations = activeMembership?.status === 'active' && (
     (['draft', 'needs_revision'].includes(activeBusiness?.review_status || '') && ['owner', 'manager'].includes(activeMembership.role)) ||
     (activeBusiness?.review_status === 'approved' && isOwner)
