@@ -98,7 +98,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
         <div className="mx-auto max-w-4xl">
           <button onClick={() => onNavigate('/jasa-profesional')} className="mb-6 inline-flex items-center gap-2 text-xs font-semibold text-violet-100"><ArrowLeft className="h-4 w-4"/> Kembali ke jasa profesional</button>
           <div className="flex items-center gap-4">
-            <img src={profile.avatar_url} alt={profile.display_name} className="h-20 w-20 rounded-2xl border-2 border-white/40 bg-white/10 object-cover sm:h-24 sm:w-24"/>
+            <img src={profile.avatar_url || undefined} alt={profile.display_name} className="h-20 w-20 rounded-2xl border-2 border-white/40 bg-white/10 object-cover sm:h-24 sm:w-24"/>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-extrabold sm:text-2xl">{profile.display_name}</h1>
