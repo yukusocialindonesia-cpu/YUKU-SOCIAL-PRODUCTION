@@ -95,6 +95,8 @@ set search_path = ''
 as $merchant$
 declare
   v_previous_status text;
+  v_owner_user_id uuid;
+  v_business_name text;
 begin
   if auth.uid() is null or not public.is_admin() then
     raise exception 'Super Admin access required' using errcode = '42501';
