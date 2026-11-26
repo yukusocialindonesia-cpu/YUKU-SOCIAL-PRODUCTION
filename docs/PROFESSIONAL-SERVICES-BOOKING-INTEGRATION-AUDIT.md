@@ -186,3 +186,11 @@ The review page now applies the selected status filter in the database, retrieve
 - The browse and application category queries now filter inactive subcategories from their embedded category results; inactive service types are not offered as selectable choices.
 - The database trigger is a defense-in-depth guard for future write paths, not a substitute for reviewing the human credentials/attestation workflow.
 - This migration is branch-only; no production database changes were made. Validate trigger behavior, account-status enum values, nested PostgREST filtering, and anon/authenticated RLS in a disposable Supabase project before rollout.
+
+
+## Public provider directory pagination
+
+- The professional-service discovery page no longer fetches only the first 100 listings. It now requests 40 rows per page with an exact count and a stable created_at/id order, then offers a load-more action.
+- The count is based on listing rows (not unique Talent accounts), matching the one-card-per-service presentation.
+- The UI relies on database RLS for provider approval/eligibility and does not silently discard fetched rows client-side, keeping the offset aligned with the number of rows actually fetched.
+- Offset pagination can still shift if new listings are inserted while a user is paging; cursor pagination is a future scale improvement.
