@@ -45,8 +45,6 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
   const [query,setQuery]=useState('');
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState('');
-  const selected=businesses.find((item)=>item.id===selectedId)||null;
-
   useEffect(()=>{
     let mounted=true;
     const load=async()=>{
@@ -62,10 +60,11 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
         : {data:[] as any[],error:null};
       if(!mounted)return;
       if(locationError){setError('Lokasi merchant belum dapat dimuat. Coba muat ulang.');setBusinesses([]);setLoading(false);return;}
-      const {data:offerRows}=ids.length
+      const {data:offerRows,error:offerError}=ids.length
         ? await supabase.from('merchant_offers').select('id,business_id,title,description,offer_type,starts_at,ends_at,eligibility,quota,funded_by,terms,redemption_instructions').in('business_id',ids).eq('status','approved').order('starts_at',{ascending:true}).limit(300)
-        : {data:[] as any[]};
+        : {data:[] as any[],error:null};
       if(!mounted)return;
+      if(offerError)setError('Bisnis berhasil dimuat, tetapi promo merchant belum dapat ditampilkan. Coba muat ulang.');
       const grouped=new Map<string,MerchantLocation[]>();
       (locationRows||[]).forEach((location:MerchantLocation)=>grouped.set(location.business_id,[...(grouped.get(location.business_id)||[]),location]));
       const groupedOffers=new Map<string,MerchantOffer[]>();
@@ -87,6 +86,8 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
       ...business.locations.flatMap((location)=>[location.location_name,location.city||'',location.province||'',location.address_text]),
     ].join(' ').toLocaleLowerCase('id').includes(normalized));
   },[businesses,query]);
+
+  const selected=visible.find((item)=>item.id===selectedId)||visible[0]||null;
 
   const safeWebsite=(url:string|null)=>{
     if(!url)return null;
