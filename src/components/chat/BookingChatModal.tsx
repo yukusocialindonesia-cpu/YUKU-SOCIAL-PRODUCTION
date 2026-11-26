@@ -39,6 +39,20 @@ interface UiChatMessage extends BookingMessageRow {
   pending?: boolean;
 }
 
+const CHAT_VISIBLE_STATUSES = [
+  'paid_held_in_escrow',
+  'confirmed_by_talent',
+  'in_progress',
+  'completed',
+  'disputed_hold',
+] as const;
+
+const CHAT_SENDABLE_STATUSES = [
+  'paid_held_in_escrow',
+  'confirmed_by_talent',
+  'in_progress',
+] as const;
+
 const STARTER_PROMPTS = [
   'Halo! Konfirmasi jadwal & titik temu kita ya.',
   'Di area mana persisnya kita ketemu nanti?',
@@ -148,7 +162,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
   }, [isOpen, booking, onClose]);
 
   useEffect(() => {
-    if (!isOpen || !booking?.id || !currentUserId) return;
+    if (!isOpen || !booking?.id || !currentUserId || !CHAT_VISIBLE_STATUSES.includes(booking.status as (typeof CHAT_VISIBLE_STATUSES)[number])) return;
 
     setMessages([]);
     setDraft('');
@@ -248,7 +262,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
       channelRef.current = null;
       supabase.removeChannel(channel);
     };
-  }, [isOpen, booking?.id, currentUserId, loadMessages, markIncomingAsRead, scrollToBottom]);
+  }, [isOpen, booking?.id, booking?.status, currentUserId, loadMessages, markIncomingAsRead, scrollToBottom]);
 
   const emitTypingStatus = useCallback(
     (isTyping: boolean) => {
@@ -269,7 +283,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!booking || !currentUserId || isSending || !['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress'].includes(booking.status)) return;
+    if (!booking || !currentUserId || isSending || !CHAT_SENDABLE_STATUSES.includes(booking.status as (typeof CHAT_SENDABLE_STATUSES)[number])) return;
 
     const cleanText = draft.trim();
     if (!cleanText) return;
@@ -332,7 +346,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
     }
   };
 
-  if (!isOpen || !booking || !['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(booking.status)) return null;
+  if (!isOpen || !booking || !CHAT_VISIBLE_STATUSES.includes(booking.status as (typeof CHAT_VISIBLE_STATUSES)[number])) return null;
   const isReadOnlyChat = ['completed', 'disputed_hold'].includes(booking.status);
 
   const scheduleText = new Date(booking.start_time).toLocaleString('id-ID', {
