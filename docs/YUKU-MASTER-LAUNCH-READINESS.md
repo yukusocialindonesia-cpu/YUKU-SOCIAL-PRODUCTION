@@ -147,3 +147,12 @@ Gate 2 and Gate 5 remain blocked pending verification of account status and Admi
 - Admin role deactivation and permission changes are database-backed and checked dynamically; verify active-session behavior and stale UI after revocation in Staging.
 
 Exit criteria: Production/branch function parity verified; direct RPC/Edge Function negative tests pass; suspend/reactivate/role-revoke race tests pass; every sensitive decision has an append-only actor/time audit record; no account restriction can be bypassed by a different approval path.
+### Follow-up: session revocation and active-account enforcement
+
+- Production database guard is present: `private.is_current_user_active()`, 45 restrictive account-status policies, and 46 account-write guard triggers were found by read-only catalog inspection.
+- Admin permission checks are derived from live private Admin registry rows; direct database/RPC calls should stop working at the next authorization check after permission revocation, even if an already-open UI still shows stale navigation.
+- `AuthContext` refreshes Admin access on token refresh, user update, explicit role refresh, and browser focus. It globally signs out a user when it next verifies a suspended/banned account.
+- Open tabs and Realtime sockets have not been runtime-tested. Immediate disconnect must not be assumed. Add Staging tests for role revocation, account suspension, token refresh, existing chat socket, reconnect and Storage/Data API access.
+- Production `account-management` Edge Function version 1 still lacks the feature-branch guard that restricts reactivation to accounts whose current status is `suspended`. This remains a P1 rollout blocker.
+
+Exit criteria: direct API/RPC access is denied after revocation; UI refreshes cleanly; suspended users cannot use Data API, Storage or reconnect private Realtime channels; and session/token behavior is documented from observed Staging results.
