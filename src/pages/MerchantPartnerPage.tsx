@@ -52,7 +52,7 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
       (locationRows||[]).forEach((location:MerchantLocation)=>grouped.set(location.business_id,[...(grouped.get(location.business_id)||[]),location]));
       const cards=rows.map((business)=>({...business,locations:grouped.get(business.id)||[]})).filter((business)=>business.locations.length>0);
       setBusinesses(cards);
-      setSelectedId((current)=>cards.some((item)=>item.id===current)?current:'');
+      setSelectedId((current)=>cards.some((item)=>item.id===current)?current:(cards[0]?.id||''));
       setLoading(false);
     };
     void load();
