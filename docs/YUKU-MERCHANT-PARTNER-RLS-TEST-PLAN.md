@@ -152,3 +152,5 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Owner/Manager can edit branches only for businesses in draft/needs_revision; Manager cannot edit branches once business is approved.
 - [ ] Only Owner can edit or deactivate a branch on an approved business; the business is moved to needs_revision and removed from public directory until re-approved.
 - [ ] Editing/deactivating a branch cannot affect another business by supplying a foreign location UUID; at least one active branch is required for business approval.
+- [ ] Owner can edit an approved business profile; saving any public identity change moves the business to needs_revision, writes a review-history event, and hides it until re-approved.
+- [ ] Manager/Staff cannot edit business identity; edits are rejected while business review is pending or status is rejected/suspended.
