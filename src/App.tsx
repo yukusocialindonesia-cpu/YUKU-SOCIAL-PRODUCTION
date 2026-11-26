@@ -188,9 +188,13 @@ export default function App() {
     } else if (path === '/talent') {
       // Every new Jelajah entry starts from the requested filters, or clean defaults.
       // This prevents a previous search from leaking into unrelated "Cari Companion" actions.
-      const activity = params?.activity || 'all';
-      const city = params?.city || 'Semua Kota';
-      const mode = params?.mode === 'online' || params?.mode === 'offline' ? params.mode : 'all';
+      const returningFromTalentDetail = currentPath === '/talent/:id';
+      const activity = params?.activity || (returningFromTalentDetail ? initialActivityFilter : 'all');
+      const city = params?.city || (returningFromTalentDetail ? initialCityFilter : 'Semua Kota');
+      const requestedMode = params?.mode;
+      const mode = requestedMode === 'online' || requestedMode === 'offline'
+        ? requestedMode
+        : returningFromTalentDetail ? initialModeFilter : 'all';
       setInitialActivityFilter(activity);
       setInitialCityFilter(city);
       setInitialModeFilter(mode);
