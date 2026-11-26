@@ -12,6 +12,7 @@ import { HomePage } from './pages/HomePage';
 const ProfessionalServicesPage = lazy(() => import('./pages/ProfessionalServicesPage').then((module) => ({ default: module.ProfessionalServicesPage })));
 const ProfessionalProviderProfilePage = lazy(() => import('./pages/ProfessionalProviderProfilePage').then((module) => ({ default: module.ProfessionalProviderProfilePage })));
 const ProfessionalServiceApplicationPage = lazy(() => import('./pages/ProfessionalServiceApplicationPage').then((module) => ({ default: module.ProfessionalServiceApplicationPage })));
+const MerchantCenterPage = lazy(() => import('./pages/MerchantCenterPage').then((module) => ({ default: module.MerchantCenterPage })));
 const AdminProfessionalServicesPage = lazy(() => import('./pages/AdminProfessionalServicesPage').then((module) => ({ default: module.AdminProfessionalServicesPage })));
 const CommunityPage = lazy(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })));
 const BrowseTalentPage = lazy(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })));
@@ -50,6 +51,7 @@ export default function App() {
     if (pathname.startsWith('/talent/')) return '/talent/:id';
     if (pathname === '/cara-kerja') return '/cara-kerja';
     if (pathname === '/daftar-talent') return '/daftar-talent';
+    if (pathname === '/merchant-center') return '/merchant-center';
     if (pathname === '/dashboard-talent') return '/dashboard-talent';
     if (pathname === '/riwayat-booking') return '/riwayat-booking';
     if (pathname === '/profil-saya') return '/profil-saya';
@@ -112,6 +114,8 @@ export default function App() {
       setCurrentPath('/cara-kerja');
     } else if (pathname === '/daftar-talent') {
       setCurrentPath('/daftar-talent');
+    } else if (pathname === '/merchant-center') {
+      setCurrentPath('/merchant-center');
     } else if (pathname === '/dashboard-talent') {
       setCurrentPath('/dashboard-talent');
     } else if (pathname === '/riwayat-booking') {
@@ -250,6 +254,8 @@ export default function App() {
         return <HowItWorksPage onNavigate={handleNavigate} />;
       case '/daftar-talent':
         return <BecomeTalentPage onNavigate={handleNavigate} />;
+      case '/merchant-center':
+        return <MerchantCenterPage onNavigate={handleNavigate} />;
       case '/dashboard-talent':
         return <TalentDashboardPage onNavigate={handleNavigate} />;
       case '/riwayat-booking':
