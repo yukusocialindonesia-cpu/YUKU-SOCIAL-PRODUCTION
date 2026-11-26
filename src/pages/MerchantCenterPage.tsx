@@ -184,8 +184,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
         .select('id,title,description,offer_type,starts_at,ends_at,eligibility,quota,funded_by,terms,redemption_instructions,status')
         .eq('business_id', nextId)
         .order('created_at', { ascending: false });
-      if (offerError) setOffers([]);
-      else setOffers((offerRows || []) as MerchantOffer[]);
+      if (offerError) {
+        setOffers([]);
+        setError('Fitur promo Merchant Partner belum tersedia di server. Pastikan migrasi Merchant Offers sudah diterapkan di staging.');
+      } else setOffers((offerRows || []) as MerchantOffer[]);
     } else {
       setLocations([]);
       setOffers([]);
