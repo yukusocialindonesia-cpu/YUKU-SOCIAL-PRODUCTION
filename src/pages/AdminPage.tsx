@@ -439,7 +439,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         })) as AdminRefundItem[]);
 
         const { data: cancellationCaseRows, error: cancellationCaseErr } = await supabase
-          .from('customer_cancellation_cases').select('*').order('created_at', { ascending: false });
+          .from('customer_cancellation_cases')
+          .select('id,booking_id,customer_id,gross_amount,automatic_refund_amount,retained_pending_admin_amount,hours_before_session,policy_code,status,admin_hold_until,created_at')
+          .order('created_at', { ascending: false });
         if (cancellationCaseErr) throw cancellationCaseErr;
         const caseCustomerIds = Array.from(new Set((cancellationCaseRows || []).map((c) => c.customer_id)));
         const { data: caseCustomers } = caseCustomerIds.length
