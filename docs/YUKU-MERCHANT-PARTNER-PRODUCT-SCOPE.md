@@ -92,6 +92,7 @@ No database migration has been applied to Supabase Staging or Production, no dep
 - Raw membership table reads are limited to a user's own membership identifiers/status; Owner/Manager roster access is provided through a business-scoped RPC.
 - Public offer reads explicitly grant eligibility, stated quota, and merchant-funded status while withholding internal review metadata. Offer submission requires the parent business to remain approved; invitations cannot be accepted for rejected/suspended businesses.
 - Adding a new branch to an approved business by its Owner moves the business to needs_revision and hides it until re-review, preventing unreviewed branch publication.
+- Owner can edit or deactivate an existing branch. Editing a branch or changing an approved business profile moves the business to needs_revision and hides it until re-review; Managers can edit branches only before approval.
 - The Merchant Center query is scoped through the signed-in user's own memberships; it does not list all public businesses as the user's own workspace.
 - Merchant purchases and offer redemption remain direct-to-merchant. No merchant checkout, voucher wallet, quota enforcement, commission, escrow, payout or settlement has been added.
 - Migrations `20261127002000` through `20261127005000` are draft-only and unexecuted; they require SQL review, staging validation, RLS/JWT tests, and operational sign-off.
