@@ -120,3 +120,10 @@ A source-to-schema comparison found a separate identity-evidence handling defect
 This is a P1 identity workflow/privacy issue. Do not silently discard the selfie requirement or claim it is verified. A complete fix needs a schema field and migration for selfie evidence, typed client/admin review integration, signed-URL access through the same scoped KTP permission, plus failure cleanup and retention/deletion rules for superseded uploads. The existing upload path must also clean up any successfully uploaded object when a sibling upload or database write fails.
 
 No production data was read from object contents, deleted, or changed during this audit.
+
+
+### Public bucket usage check
+
+- The Production `portfolios` bucket is public with a public SELECT policy and a 5 MB image allowlist.
+- A source search of the current branch did not find frontend usage of `storage.from('portfolios')` or an active portfolio upload/read path. This suggests the bucket may be legacy or reserved for future use; it is not proof that no old objects exist.
+- Before launch, inventory object names/counts and confirm whether any current profile/media feature depends on this bucket. If unused, plan a controlled archival/private conversion rather than changing bucket visibility without checking existing links.
