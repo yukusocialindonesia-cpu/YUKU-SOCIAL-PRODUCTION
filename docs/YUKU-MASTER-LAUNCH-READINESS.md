@@ -205,3 +205,19 @@ Launch gate: no launch/enablement of Talent onboarding or paid booking until evi
 - Cancellation rules are valid only for current time-bound activity sessions. Professional per-day/per-project work needs explicit delivery acceptance, cancellation windows and proportional refund allocation before checkout.
 - Staging tests remain mandatory for 24h/6h boundaries, concurrent Customer/Talent cancellation, replay, retained funds, payout/dispute/escrow races and overdue Finance holds.
 - No Production rows or RPCs were modified or invoked.
+
+
+### Notifications, chat and report moderation gate — 26 Nov 2026
+
+Production catalog verification found the following P1 gaps. The branch has partial source fixes, but Production migration history currently ends at `20261125005419`; the 26–27 Nov branch migrations below are not applied:
+
+- **P1 — Chat read scope:** Production `booking_messages_select_participants` includes a Booking-permission Admin bypass and does not enforce the intended booking-status allowlist for participant reads. Restrict message-body access to the booking participants and valid chat statuses; keep Admin operational views minimal.
+- **P1 — Report moderation audit bypass:** Support Admins have direct UPDATE grants on `reports_complaints.status`, `admin_notes`, and `resolved_by_admin_id`. Revoke direct writes and force changes through the audited `admin_resolve_report()` path.
+- **P1 — Internal note leakage:** Production report-status notification includes `admin_notes`. Branch migration `20261127001000_stop_leaking_internal_report_notes.sql` fixes the notification but is not deployed.
+- **P1 — Admin notification overexposure:** Production `notify_all_admins()` broadcasts Finance/Talent/Support operational notifications to all active Admins. Branch migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` scopes recipients but is not deployed.
+- **P1 — Realtime private channel:** Production has no `realtime.messages` policies for booking chat Presence/Broadcast. Branch migration adds them and branch UI sets `private: true`; project-level “Allow public access” remains unverified.
+- **P1 — Lock-screen privacy:** Production chat notification uses message preview text as the push body. Use generic text and keep message content inside authenticated chat only.
+- Staging acceptance: direct chat access as unrelated user/Booking Admin; cancelled/expired chat access; direct report UPDATE attempts; report-note notification/push payload inspection; Admin notification recipient matrix; anonymous/non-participant Realtime joins; suspended-account reconnect; Android lock-screen payload checks.
+- No Production rows, schema, functions, policies, settings, push deliveries, deployments or payment state were changed.
+
+Launch decision: **do not treat notification/chat/report moderation as production-ready** until these P1 items are fixed in forward migrations and pass Staging negative tests.

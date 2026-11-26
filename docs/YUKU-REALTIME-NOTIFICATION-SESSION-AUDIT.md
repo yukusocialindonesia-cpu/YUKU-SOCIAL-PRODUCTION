@@ -295,3 +295,56 @@ Read-only checks were run against Supabase project `yukuproduction`. No user ide
 ### Validation boundary
 
 Production checks above were read-only. No notifications were inserted, no push test was sent, no user/device rows were read individually, no secret values were accessed, no database function/trigger/table/policy was modified, no Edge Function was deployed, and no Production setting was changed. Forward migrations and Android end-to-end tests remain outstanding.
+
+
+## Production verification addendum — notifications, chat and report privacy (26 Nov 2026)
+
+This addendum is based on read-only Production catalog/function inspection. Production schema migration history currently ends at version `20261125005419`; the branch-only migrations dated 26–27 Nov below are not present in that Production migration history.
+
+### P1 — Booking chat table policy is broader than the intended participant/status model
+
+- Production `booking_messages_select_participants` allows `has_admin_permission('booking') OR booking participant`. A Booking-permission Admin can therefore read every booking's message rows, not only messages for bookings they participate in.
+- The Production participant branch of the policy does not check booking status. It can continue exposing messages for cancelled, expired or rejected bookings unless another layer blocks the query.
+- Feature branch migration `20261126200000_restrict_booking_chat_by_status.sql` adds participant status checks and narrows insert/read-receipt rules, but that migration is not recorded in Production.
+- Required: remove broad Booking Admin message-body access (provide a minimal operational summary if needed), enforce participant + active chat status for SELECT/INSERT/UPDATE, and verify column grants keep message content/sender/booking identity immutable.
+
+### P1 — Report moderation writes can bypass the audited RPC
+
+- Production grants `authenticated` direct UPDATE on `reports_complaints.status`, `admin_notes`, and `resolved_by_admin_id`; the RLS UPDATE policy permits Support-permission Admins.
+- This permits a Support Admin to change report status/notes/reviewer attribution directly, bypassing `admin_resolve_report()` validation and its `admin_audit_logs` insert.
+- Required: revoke direct UPDATE on moderation columns from app roles; keep a single permission-checked RPC as the write path, with row locking, valid status transition checks, required resolution reason where applicable, and append-only audit. Verify Admin UI uses only that RPC.
+
+### P1 — Production report-status notification leaks internal notes
+
+- Production `notify_on_report_status_change()` still appends `NEW.admin_notes` to the notification sent to the report author.
+- Branch migration `20261127001000_stop_leaking_internal_report_notes.sql` removes the note from the notification body/metadata, but is not present in Production migration history.
+- Required: deploy the forward fix only after Staging validation; verify existing notification rows and push payloads do not include internal notes. Do not expose old notes in a report detail view for non-Admin users.
+
+### P1 — Production Admin notifications are not module-scoped
+
+- Production `notify_all_admins()` inserts operational notifications for every active Admin. This can disclose payment/payout identifiers and amounts, Talent review queues, and report references to Admins without the corresponding permission.
+- Branch migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` maps notification titles to Finance/Talent/Support and fails closed for unknown titles. It is branch-only.
+- Required: use a stable event-to-permission mapping (prefer an enum/event key over matching display title), fail closed on unknown events, and test every trigger's recipient set. Super Admin may receive all queues; inactive Admins must receive none.
+
+### P1 — Production private Realtime channel authorization is absent
+
+- Production catalog inspection returned no policies on `realtime.messages`; therefore participant-only Presence/Broadcast authorization is not configured in the database.
+- Branch migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` adds booking-topic participant policies, and branch UI sets `config.private: true`. Neither branch change is in Production migration history.
+- The Supabase project-level “Allow public access” setting was not inspected. A private client option alone does not prove public topics are disabled.
+- Required: reconcile the private-channel policies and client config, inspect the project-level setting, inventory all Realtime topics before disabling public access, and run negative tests for anon, unrelated users, non-participant Admins, suspended users and terminal bookings.
+
+### P1 — Chat message text is used as the push notification body
+
+- Production `notify_on_booking_message_insert()` copies up to 120 characters of the message into the in-app notification. The push sender uses the notification message as the Web Push body, so chat text may appear on a locked/shared phone.
+- Branch migration 43 uses generic “new message” copy instead of the chat preview; preserve this behavior when reconciling Production.
+- Required: send generic push text only; keep message content inside the authenticated booking chat. Test the actual Android lock-screen payload, including long messages, URLs and sensitive location details.
+
+### P2 — Report notification writes and delivery need a single release test
+
+- Verify report status notifications are generated only after an authorized state transition; duplicate status updates must not create duplicate notifications.
+- Verify Admin-only notes never appear in Customer/Talent notifications, web-push bodies, metadata, logs visible to app users, or public report queries.
+- Verify all report creation/resolve paths retain actor, timestamp, prior state, new state and decision rationale in an immutable audit record.
+
+### Validation boundary
+
+All Production checks for this addendum were catalog/function/policy/grant reads only. No report, chat, notification, user or device rows were read. No Production SQL write, migration, RLS change, Realtime setting change, Edge Function deploy, push send, or PR merge was performed. Branch-only source has not been run through Staging negative tests or a live push/Realtime test.

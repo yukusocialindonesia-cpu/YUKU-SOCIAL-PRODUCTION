@@ -517,3 +517,13 @@ Production inspection was read-only: `user_identities` columns, KTP Storage buck
 ### Validation boundary
 
 Production checks were read-only catalog/function/policy/constraint inspection. No user rows, exact coordinates, media objects, bookings, or payment data were read. No Production schema, RLS policy, Storage object, function, data, deployment, or feature flag was changed. Frontend changes are feature-branch-only; automated build/runtime tests are still required.
+
+
+## Production follow-up — report moderation write-path audit (26 Nov 2026)
+
+- Production grants authenticated app roles direct UPDATE on `reports_complaints.status`, `admin_notes`, and `resolved_by_admin_id`. The RLS policy scopes those writes to Support-permission Admins, but does not force them through `admin_resolve_report()`.
+- Direct table updates can therefore bypass the RPC's row lock, status/business validation and `admin_audit_logs` entry. Reviewer attribution can also be set directly by a Support Admin.
+- P1 remediation: revoke direct app-role UPDATE on moderation fields and make the audited, permission-checked RPC the sole write path. Keep reporter INSERT and reporter/Support SELECT separately scoped. Add negative tests for direct status/note/reviewer updates and positive tests for the RPC.
+- Production `notify_on_report_status_change()` currently includes internal `admin_notes` in the reporter notification. The branch-only migration `20261127001000_stop_leaking_internal_report_notes.sql` fixes the message but has not been applied to Production.
+- Production `notify_all_admins()` fans operational notifications out to every active Admin; branch migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` narrows them by module permission but is not yet in Production.
+- No Production writes were made. Keep both items as launch blockers until the forward migrations are reviewed and negative tests pass in Staging.
