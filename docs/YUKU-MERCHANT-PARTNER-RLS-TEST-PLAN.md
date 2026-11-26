@@ -133,3 +133,4 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Only Super Admin can approve, request revision, reject, or suspend offers; meaningful notes are required for non-approval decisions.
 - [ ] Offer review decisions notify the business Owner and are written to the append-only offer history.
 - [ ] Merchant offer redemption remains direct with the merchant; no YUKU checkout, coupon wallet, payment, commission, or settlement exists in this release.
+- [ ] Expired offers cannot be submitted or approved; future-start offers remain hidden until their start time and expired offers disappear from public queries automatically.
