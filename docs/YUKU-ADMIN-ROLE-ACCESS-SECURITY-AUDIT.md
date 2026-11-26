@@ -419,3 +419,58 @@ Read-only inspection of active Production definitions found:
 ### Validation boundary
 
 Production review was read-only: active definitions and grants for `handle_new_user`, `become_talent`, `prevent_user_security_column_tampering`, and `guard_active_account_write`, plus trigger definitions. No signup, login, password reset email, account record, Auth user, email, or session was created/read/changed. No SMTP settings, Auth settings, redirect allow-list, migration, or Production function was modified. The self-service role-transition fix remains branch-only.
+## Follow-up: KTP evidence, review workflow and public eligibility — 26 November 2026
+
+### Confirmed controls in Production
+
+- `storage.buckets` confirms `ktp-documents` is private, with a 5 MB limit and JPEG/PNG/WebP allowlist.
+- Storage RLS currently has only two KTP policies: owner-folder INSERT and owner-or-authorized-reviewer SELECT. The reviewer predicate is `can_admin_access_ktp(folder_user_id)`. No public read, UPDATE, or DELETE policy exists for this bucket.
+- `user_identities` owner INSERT/SELECT/UPDATE is scoped to `auth.uid()`. `protect_and_verify_user_identities()` overwrites submitted status on INSERT and only sets `pending_review` when both NIK and KTP path are present. On UPDATE it blocks owner edits to legal identity fields while pending_review or verified; a rejected owner can resubmit by changing KTP number/path, which clears rejection reason and returns status to pending_review.
+- `public.is_talent_publicly_visible()` checks Talent role, active account, 18+ flag, verified KTP, Admin-approved Talent profile, and at least one approved/active service. Public `talent_profiles` SELECT and `talent_services` SELECT both apply this helper.
+- `public.create_booking()` independently checks Customer active/18+/verified KTP and Talent active/18+/verified KTP/public visibility, approved profile, and approved active service. This is a server-side eligibility barrier; the UI is not the security boundary.
+- `admin_review_ktp()` and `admin_review_talent()` are authenticated-only (not executable by anon). `admin_review_ktp()` scopes Customer reviews to Support and Talent reviews to Talent permission.
+
+### P1 — Selfie evidence is uploaded but never persisted or available to reviewers
+
+- `VerifyKtpPage.tsx` requires a selfie with KTP and uploads it to `ktp-documents` as `selfie_<timestamp>.<ext>`.
+- The page stores only `ktp_storage_path` in `public.user_identities`; Production `user_identities` has no selfie path column. `AdminPage.tsx` loads only `ktp_storage_path`, and its KTP review modal creates a signed URL only for that KTP file. There is no reviewer view of the required selfie.
+- Therefore the application tells the applicant both files were submitted, but the review workflow cannot retrieve the selfie from the identity record. The selfie becomes an unreferenced private Storage object. It cannot be linked reliably to the identity review, and the existing Storage policy has no user DELETE policy for cleanup.
+- The upload sequence also uses `Promise.all`: if one upload succeeds and the other fails, or the later identity lookup/update/insert fails, the successful object remains orphaned. The current catch path does not remove already-uploaded objects.
+
+**Remediation required:** add a dedicated `selfie_storage_path` (or a normalized evidence table with evidence type, object path, submission version, and timestamp); persist it atomically with the KTP path and identity submission; expose short-lived signed URLs only to the owner and permitted reviewer; add safe rollback/cleanup for partial upload and DB failure; define resubmission cleanup/retention. Create the migration through the supported Supabase CLI migration workflow, not by guessing a timestamp. Do not add public Storage access.
+
+### P1 — Talent curation modal allows approval without a linked KTP image
+
+- `AdminPage.tsx` displays a fallback message when `ktp_storage_path` is null: it says the Admin may still approve if verification was done by interview/emergency contact.
+- The same modal's approval action calls `admin_review_talent(..., p_ktp_status='verified')`. Production `admin_review_talent()` requires a `pending_review` identity row but does not require a non-null KTP path, a KTP number, or persisted alternative evidence. It then sets `is_verified_18=true` and can activate the account when approved.
+- This creates a policy gap: a Talent may be marked KTP-verified/18+ without a retrievable KTP document or durable evidence of the alternative interview process. The DB public-visibility and booking gates trust those verification flags.
+
+**Remediation required:** either require the actual KTP evidence (KTP path + selfie evidence) before a `verified` decision, or implement a separately named, tightly controlled alternative-verification method with mandatory evidence type, reviewer identity, notes, timestamp, and audit event. Never represent interview/contact-only evidence as a standard KTP verification.
+
+### P1 — Talent review can overwrite suspended/banned account state
+
+- The active Production `admin_review_talent()` unconditionally writes `account_status='active'` on approval and `pending_verification` on rejection. Unlike `admin_review_ktp()`, it does not preserve the existing account status conditionally.
+- A Talent review action could therefore reactivate a suspended/banned account or overwrite another status. This confirms the earlier P1 finding; do not expose this review action as safe for Production until a forward migration preserves suspended/banned states and requires the account to be in an allowed onboarding status.
+
+### P2 — Customer KTP review lacks server-enforced rejection reason and audit log
+
+- Production `admin_review_ktp()` accepts `p_reason` as nullable and does not reject a `rejected` decision with an empty reason. The Admin UI prompts for a reason, but direct RPC calls can bypass UI validation.
+- The function does not insert `admin_audit_logs`. On rejection it clears `verified_by_admin_id` and `verified_at`, so the identity row does not preserve reviewer attribution. A reason may remain, but it is not a substitute for an append-only audit event.
+
+**Remediation required:** enforce non-empty sanitized rejection reason in the RPC; append an audit event in the same transaction with actor, target, old/new status, timestamp and sanitized reason. Do not include NIK, document paths, signed URLs, or raw KTP content in audit JSON.
+
+### KTP workflow Staging acceptance tests
+
+1. Submit valid KTP + selfie; verify both object paths are durably linked to the same submission and both can be opened by the owner and the correctly scoped reviewer only.
+2. Force KTP upload failure, selfie upload failure, DB insert/update failure, and network interruption after one successful upload; verify no orphan evidence objects remain.
+3. Attempt cross-user upload, cross-user read, anonymous read, unauthorized Admin read, expired signed URL reuse, and path traversal; all must be denied.
+4. Resubmit rejected evidence; verify old evidence retention/deletion policy, new evidence linkage, rejection reason reset, and new review version.
+5. Direct RPC rejection without reason must fail; successful review must create immutable audit event.
+6. Talent approval without KTP evidence or explicit alternative evidence must fail; alternative evidence must never be reported as KTP verification.
+7. Approve/reject Talent while account is suspended/banned; account status must not become active or pending_verification as a side effect.
+8. Catalogue query must hide every unverified, inactive, suspended/banned, unapproved, or no-active-service Talent; direct `create_booking()` must independently reject ineligible Customer/Talent.
+9. Test concurrent duplicate Admin review decisions and ensure only one pending_review transition wins with consistent audit attribution.
+
+### Validation boundary
+
+Production inspection was read-only: `user_identities` columns, KTP Storage bucket metadata and policies, public RLS policies for users/identities/Talent/services/bookings, and definitions/grants for KTP review and public-visibility functions. No KTP image, NIK, identity row, booking row, or Auth user data was read. No file was uploaded/downloaded, no signed URL was created, and no Production schema, policy, function, bucket, or data was modified. Runtime upload/review tests remain for Staging.

@@ -166,3 +166,13 @@ Exit criteria: direct API/RPC access is denied after revocation; UI refreshes cl
 - Password reset currently uses a neutral response (good anti-enumeration), but does not surface SMTP/rate-limit errors; recovery token parameters remain in URL/history after reset. Auth password policy, SMTP, CAPTCHA, rate limits and redirect allow-list are not yet verified.
 
 Gate 2 / Gate 5 exit criteria: safely deploy the narrow role-transition migration after reconciliation; Staging tests prove Customer -> Talent works and all other role/status/verification tampering remains denied; Talent signup works with email confirmation; Admin metadata cannot create Admin; consent evidence is server-persisted; password recovery valid/expired/replayed/error paths and post-reset session behavior pass.
+### KTP evidence and verification review blockers
+
+- **P1 — Required selfie is not linked to identity:** `VerifyKtpPage.tsx` uploads both KTP and selfie, but only persists `ktp_storage_path`; Production `user_identities` has no selfie path column and Admin review only opens the KTP image. Add durable evidence linkage and reviewer access before relying on the selfie requirement.
+- **P1 — Orphan evidence uploads:** the parallel upload + later DB write flow can leave private Storage objects orphaned on partial upload or database failure. Add compensating cleanup/retention and test all partial-failure cases.
+- **P1 — Talent may be marked KTP verified without KTP evidence:** Admin UI explicitly allows approval when KTP path is missing, and Production `admin_review_talent()` does not require a KTP path or persisted alternative verification evidence. Require real KTP evidence or a distinct auditable alternative-verification method.
+- **P1 — Talent review overwrites account status:** Production `admin_review_talent()` sets `active` on approval and `pending_verification` on rejection unconditionally. Preserve suspended/banned and other protected statuses before launch.
+- **P2 — Customer KTP review has no server-enforced rejection reason or audit log:** RPC must reject blank reasons and write append-only reviewer attribution/status transition audit in the same transaction.
+- Positive control: KTP bucket is private (5 MB, JPEG/PNG/WebP). Public Talent visibility and booking RPC enforce active account, 18+, verified KTP, approved profile and approved active service at the database layer.
+
+Launch gate: no launch/enablement of Talent onboarding or paid booking until evidence linkage, Admin review evidence requirements, account-status preservation, audit logging, and Staging negative tests pass.
