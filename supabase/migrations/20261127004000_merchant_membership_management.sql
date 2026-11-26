@@ -382,6 +382,83 @@ begin
 end;
 $merchant$;
 
+-- Replace the original branch creation RPC: approved businesses require
+-- Owner-only edits and every new branch triggers a fresh business review.
+create or replace function public.add_merchant_location(
+  p_business_id uuid,
+  p_location_name text,
+  p_address_text text,
+  p_city text default null,
+  p_province text default null,
+  p_public_phone text default null,
+  p_opening_hours jsonb default '{}'::jsonb
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $merchant$
+declare
+  v_location_id uuid;
+  v_business_status text;
+  v_is_owner boolean;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required' using errcode = '28000';
+  end if;
+  v_is_owner := private.has_merchant_business_access(
+    p_business_id,array['owner']::text[]
+  );
+  if not v_is_owner and not private.has_merchant_business_access(
+    p_business_id,array['manager']::text[]
+  ) then
+    raise exception 'Merchant owner or manager access required' using errcode = '42501';
+  end if;
+
+  select mb.review_status into v_business_status
+    from public.merchant_businesses mb
+   where mb.id = p_business_id
+   for update;
+  if not found then
+    raise exception 'Merchant business not found' using errcode = 'P0002';
+  end if;
+  if v_business_status = 'approved' and not v_is_owner then
+    raise exception 'Only the business owner can add a branch to an approved business' using errcode = '42501';
+  end if;
+  if v_business_status not in ('draft','needs_revision','approved') then
+    raise exception 'Branches cannot be added while review is in progress or business is rejected/suspended' using errcode = '55000';
+  end if;
+  if p_location_name is null or char_length(trim(p_location_name)) not between 2 and 120
+     or p_address_text is null or char_length(trim(p_address_text)) not between 5 and 500
+     or (p_public_phone is not null and char_length(p_public_phone) > 40)
+     or jsonb_typeof(coalesce(p_opening_hours, '{}'::jsonb)) <> 'object' then
+    raise exception 'Data lokasi tidak valid' using errcode = '22023';
+  end if;
+
+  insert into public.merchant_locations (
+    business_id,location_name,address_text,city,province,public_phone,opening_hours
+  ) values (
+    p_business_id,trim(p_location_name),trim(p_address_text),
+    nullif(trim(p_city),''),nullif(trim(p_province),''),
+    nullif(trim(p_public_phone),''),coalesce(p_opening_hours,'{}'::jsonb)
+  ) returning id into v_location_id;
+
+  if v_business_status = 'approved' then
+    update public.merchant_businesses
+       set review_status = 'needs_revision',updated_at = now()
+     where id = p_business_id;
+    insert into public.merchant_business_review_history (
+      business_id,from_status,to_status,decision_note,actor_user_id,actor_role
+    ) values (
+      p_business_id,'approved','needs_revision',
+      'Penambahan cabang memerlukan pemeriksaan ulang.',
+      auth.uid(),'owner'
+    );
+  end if;
+  return v_location_id;
+end;
+$merchant$;
+
 -- Edit or deactivate an existing branch. Changes to an approved business
 -- require a fresh business review so public addresses stay moderated.
 create or replace function public.update_merchant_location(
@@ -553,6 +630,8 @@ revoke all on function public.revoke_merchant_business_member(uuid,uuid)
   from public,anon,authenticated;
 revoke all on function public.accept_merchant_invitation(uuid)
   from public,anon,authenticated;
+revoke all on function public.add_merchant_location(uuid,text,text,text,text,text,jsonb)
+  from public,anon,authenticated;
 revoke all on function public.update_merchant_location(uuid,uuid,text,text,text,text,text,jsonb,boolean)
   from public,anon,authenticated;
 
@@ -560,6 +639,8 @@ grant execute on function public.get_merchant_business_members(uuid) to authenti
 grant execute on function public.invite_merchant_member_by_email(uuid,text,text) to authenticated;
 grant execute on function public.revoke_merchant_business_member(uuid,uuid) to authenticated;
 grant execute on function public.accept_merchant_invitation(uuid) to authenticated;
+grant execute on function public.add_merchant_location(uuid,text,text,text,text,text,jsonb)
+  to authenticated;
 grant execute on function public.update_merchant_location(uuid,uuid,text,text,text,text,text,jsonb,boolean)
   to authenticated;
 
