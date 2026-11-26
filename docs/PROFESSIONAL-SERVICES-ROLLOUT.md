@@ -59,9 +59,3 @@ The application route is `/daftar-jasa-profesional`, linked from the professiona
 The `/admin/jasa-profesional` page is available to admins with the existing Talent permission. It displays applicant profile details, service description, proposed rate and mode, verification requirements, and short-lived signed links to private credential files. Admin actions are handled by `admin_review_professional_service_application`, a transactional SECURITY DEFINER function that checks the Talent permission, locks the application row, and publishes an approved listing only if the associated Talent profile is approved and any required credential path is present. Other decisions can mark an application under review, rejected, or needing revision.
 
 The RPC does not make a regulated professional credential valid by itself: an authorized reviewer must inspect the actual document and applicable professional authorization before choosing approval. No booking or payment integration is included.
-
-
-## Security hardening and applicant revisions
-A follow-up migration removes direct admin table updates, requires a Talent profile for application inserts, scopes all document paths to the applicant's own folder, checks that referenced evidence exists in the private bucket before publication, and prevents deletion of documents while an application references them. It also limits each applicant to one open application per service type.
-
-When an admin requests revisions, the applicant can edit and resubmit that same application. The database update policy permits only the transition from `needs_revision` back to `pending`, and clears reviewer metadata; applicants cannot directly change an application to an approved or rejected state.
