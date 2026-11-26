@@ -38,6 +38,14 @@ Move Social Experience booking identity from the ambiguous provider/category pai
 - retention of the one-offer-per-category constraint;
 - RPC privilege boundary between `anon` and `authenticated`.
 
+## Financial trigger dependency audit
+
+A read-only inspection of the connected production schema confirmed that `trg_calculate_booking_financials` still resolves `custom_rate_override` by `(talent_id, activity_category_id)`, then falls back to the Talent profile hourly/online rate. The production unique constraint `uq_talent_activity UNIQUE (talent_id, activity_category_id)` is therefore a critical invariant today.
+
+The exact-ID RPC validates and locks the selected service, then sets a transaction-local service ID consumed by the BEFORE INSERT snapshot trigger. The legacy financial trigger continues to use the provider/category pair. This is safe only while the unique constraint remains in place and the snapshot trigger verifies that the selected service belongs to that exact pair. Do not remove or relax the unique constraint until the financial trigger itself reads the selected service ID and every legacy booking consumer has been migrated.
+
+The production booking table also has a separate `trg_enforce_approved_talent_service_for_booking` trigger. The new snapshot trigger must remain ordered before the financial trigger; PostgreSQL orders same-timing triggers by trigger name, so `trg_assign_booking_service_snapshot` currently precedes `trg_calculate_booking_financials`. Preserve/verify this ordering in staging.
+
 ## Compatibility and safety
 
 - Existing bookings remain readable; unmatched historical rows retain `service_id = NULL`.
