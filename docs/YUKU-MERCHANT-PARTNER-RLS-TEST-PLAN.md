@@ -119,3 +119,5 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 ## Public merchant data quality
 - [ ] Branch opening hours are stored as a JSON object and displayed only as plain text in the public directory.
 - [ ] Website URLs reject non-HTTP(S) schemes at the database boundary.
+
+- [ ] Only the business Owner and Super Admin can read business review history and decision notes; Manager/Staff cannot read internal review notes.
