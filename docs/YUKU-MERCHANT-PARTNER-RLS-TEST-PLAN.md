@@ -146,3 +146,4 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Public merchant offer queries can select eligibility, quota, and funded_by; these fields are explicitly granted and no internal review fields are exposed.
 - [ ] Admin offer review queries can read the approved/pending offer fields and owner-only review history without exposing actor_user_id.
 - [ ] Merchant business review decision RPC compiles and sends owner notifications for approve/revise/reject/suspend transitions.
+- [ ] Owner roster RPC returns member emails for their own business; Manager roster RPC returns the same scoped roles/statuses but masks all member emails. Staff cannot call the roster RPC.
