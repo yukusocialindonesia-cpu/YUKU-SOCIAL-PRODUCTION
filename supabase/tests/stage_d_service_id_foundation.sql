@@ -166,3 +166,93 @@ BEGIN
   END IF;
 END;
 $$;
+
+
+-- Stage D.3: booking lifecycle, dispute and escrow release contract checks.
+DO $$
+DECLARE
+  v_actor_guard TEXT;
+  v_update_guard TEXT;
+  v_completion_rpc TEXT;
+  v_completion_trigger TEXT;
+  v_escrow_release TEXT;
+  v_expiry_function TEXT;
+BEGIN
+  IF to_regprocedure('public.guard_booking_status_actor()') IS NULL
+     OR NOT EXISTS (
+       SELECT 1 FROM pg_trigger
+       WHERE tgrelid = 'public.bookings'::regclass
+         AND tgname = 'trg_guard_booking_status_actor'
+         AND NOT tgisinternal
+     ) THEN
+    RAISE EXCEPTION 'Booking status actor guard/trigger is missing';
+  END IF;
+
+  v_actor_guard := pg_get_functiondef('public.guard_booking_status_actor()'::regprocedure);
+  IF position('customer_completed_at' IN v_actor_guard) = 0
+     OR position('talent_completed_at' IN v_actor_guard) = 0
+     OR position('disputed_hold' IN v_actor_guard) = 0
+     OR position('reports_complaints' IN v_actor_guard) = 0 THEN
+    RAISE EXCEPTION 'Booking actor guard no longer enforces two-party completion and active-report dispute hold';
+  END IF;
+
+  IF to_regprocedure('public.validate_booking_update()') IS NULL THEN
+    RAISE EXCEPTION 'Booking transition validator is missing';
+  END IF;
+  v_update_guard := pg_get_functiondef('public.validate_booking_update()'::regprocedure);
+  IF position('pending_payment' IN v_update_guard) = 0
+     OR position('paid_held_in_escrow' IN v_update_guard) = 0
+     OR position('confirmed_by_talent' IN v_update_guard) = 0
+     OR position('in_progress' IN v_update_guard) = 0
+     OR position('disputed_hold' IN v_update_guard) = 0
+     OR position('cancelled_by_customer' IN v_update_guard) = 0
+     OR position('expired' IN v_update_guard) = 0 THEN
+    RAISE EXCEPTION 'Booking status transition allowlist is incomplete';
+  END IF;
+
+  IF to_regprocedure('public.confirm_booking_completion(uuid)') IS NULL THEN
+    RAISE EXCEPTION 'Two-party completion RPC is missing';
+  END IF;
+  v_completion_rpc := pg_get_functiondef('public.confirm_booking_completion(uuid)'::regprocedure);
+  IF position('FOR UPDATE' IN v_completion_rpc) = 0
+     OR position('customer_completed_at' IN v_completion_rpc) = 0
+     OR position('talent_completed_at' IN v_completion_rpc) = 0 THEN
+    RAISE EXCEPTION 'Completion RPC must lock booking and persist both participant confirmations';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger
+    WHERE tgrelid = 'public.bookings'::regclass
+      AND tgname = 'trg_set_booking_completion_timestamps'
+      AND NOT tgisinternal
+  ) THEN
+    RAISE EXCEPTION 'Completion timestamp/escrow scheduling trigger is missing';
+  END IF;
+  v_completion_trigger := pg_get_functiondef('public.set_booking_completion_timestamps()'::regprocedure);
+  IF position('escrow_release_scheduled_at' IN v_completion_trigger) = 0
+     OR position('completion_confirmed_at' IN v_completion_trigger) = 0 THEN
+    RAISE EXCEPTION 'Completion trigger must schedule escrow from the authoritative completion timestamp';
+  END IF;
+
+  IF to_regprocedure('public.process_escrow_release()') IS NULL THEN
+    RAISE EXCEPTION 'Escrow release worker is missing';
+  END IF;
+  v_escrow_release := pg_get_functiondef('public.process_escrow_release()'::regprocedure);
+  IF position('FOR UPDATE OF b SKIP LOCKED' IN v_escrow_release) = 0
+     OR position('reports_complaints' IN v_escrow_release) = 0
+     OR position('settled_held' IN v_escrow_release) = 0
+     OR position('released_to_talent' IN v_escrow_release) = 0 THEN
+    RAISE EXCEPTION 'Escrow release must lock bookings, skip active disputes and release only held payments';
+  END IF;
+
+  IF to_regprocedure('public.expire_stale_booking_reservations()') IS NULL THEN
+    RAISE EXCEPTION 'Pending reservation expiry worker is missing';
+  END IF;
+  v_expiry_function := pg_get_functiondef('public.expire_stale_booking_reservations()'::regprocedure);
+  IF position('pending_payment' IN v_expiry_function) = 0
+     OR position('payment_expires_at' IN v_expiry_function) = 0
+     OR position('expired' IN v_expiry_function) = 0 THEN
+    RAISE EXCEPTION 'Reservation expiry must only expire overdue pending-payment bookings';
+  END IF;
+END;
+$$;
