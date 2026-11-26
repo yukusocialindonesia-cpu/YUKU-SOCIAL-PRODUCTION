@@ -94,4 +94,4 @@ Attach:
 5. TypeScript/build CI result and a separate SQL/static review.
 6. Confirmation that no Production migration or payment/booking behavior was changed.
 
-Do not enable Merchant Center navigation or public merchant onboarding until the required evidence is reviewed and accepted.
+The current branch includes a Merchant Center route and a clearly scoped account-menu entry for UI development. Until the migration is applied and the staging evidence is accepted, the page must fail closed with a clear backend-not-ready message; public merchant discovery and real onboarding must remain disabled.
