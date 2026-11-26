@@ -459,3 +459,56 @@ Read-only inspection of the connected production schema and the current PR branc
 - QRIS upload against a booking not locked to QRIS is rejected; upload flood and repeated rejected-proof uploads are throttled and cleaned up.
 - Xendit sandbox: callback token mismatch, invalid external ID, wrong amount, wrong currency, wrong invoice, expired invoice, wrong payment route, duplicate/replay and concurrent webhook tests.
 - Verify live flag and provider settings against the intended launch plan before any launch change; do not rely on frontend environment flags alone.
+
+
+## Focused live financial-ledger, escrow, referral and payout audit — 2026-11-26
+
+Read-only production inspection. No financial records were changed and no payout/escrow operation was executed.
+
+### Controls verified
+
+1. **Payment-to-ledger idempotency**
+   - On transition to `settled_held`, the payment trigger creates one `commission_records` row and one `talent_earnings` row per booking using `ON CONFLICT (booking_id) DO NOTHING`.
+   - Referral reward is created at most once per booking. It uses the referral relationship active at payment settlement, and the configured affiliate percentage is constrained to 0–100%.
+   - Booking, commission, Talent earning and referral reward ownership/amount relationships are protected by unique keys, foreign keys and database-side calculation.
+   - Authenticated users have no direct INSERT/UPDATE/DELETE grants on the ledger, commission or payout-allocation tables.
+
+2. **Escrow release**
+   - `process_escrow_release()` is service-role-only for normal application execution.
+   - It selects completed bookings whose scheduled release time has arrived, excludes bookings with open/investigating reports, requires a settled-held payment, held Talent earning and commission record, and uses `FOR UPDATE ... SKIP LOCKED`.
+   - It moves Talent earnings to available, credits pending referral rewards (which then synchronize to the affiliate ledger), and marks the payment released. State predicates make repeat processing effectively idempotent.
+   - Dispute resolution restores prior booking/earning/referral states when the last active report closes. Payout completion is separately blocked when a reserved allocation contains an earning in `disputed_hold`.
+
+3. **Payout allocation**
+   - The payout insert trigger locks the Talent profile and eligible earning rows, computes available balance from both Talent and affiliate ledgers, then reserves exact amounts in allocation rows. If it cannot fully allocate the requested amount, the transaction raises and rolls back.
+   - Allocation rows enforce exactly one source earning, positive amount and foreign keys. Earning rows constrain allocated plus paid-out totals not to exceed the earning amount.
+   - Payout completion converts reserved allocations to settled and increments paid-out amounts; rejection/failure releases reservations. Finance status changes require the Finance permission, valid state transition and a provider reference to complete. Audit logs capture old/new payout request state.
+   - Concurrent requests are serialized on the Talent profile row in the insert trigger.
+
+4. **Referral relationship and rewards**
+   - Self-referral is blocked in both RPC and database constraint; one referral relationship per invited Talent is enforced by a unique key.
+   - Referral rewards and affiliate earnings are unique per booking/reward. The affiliate ledger is only created when the reward becomes credited at escrow release.
+   - The current production integrity snapshot returned zero mismatches for commission arithmetic, Talent earning ownership/amount, referral reward relationship/booking/commission base, affiliate reward ledger amount/owner, and non-terminal payout allocation totals. Five commission rows were present in that snapshot. This is a consistency snapshot only, not a proof of future correctness.
+
+### Confirmed release blocker (reconfirmed)
+
+- Live `payout_requests` still has an authenticated owner INSERT RLS policy and column-level INSERT grants. The trigger checks minimum amount and available ledger balance and reserves funds, but it does not repeat the payout RPC's eligibility checks (active Talent role, approved Talent profile, age verification and verified KTP). A caller can therefore bypass the stronger `request_talent_payout(...)` validation by inserting directly, subject to the balance/minimum constraints.
+- Required remediation remains: revoke authenticated direct INSERT on `payout_requests`, remove the owner INSERT policy, and retain the SECURITY DEFINER payout RPC as the only client entry point. Keep the balance/reservation trigger as defense in depth. Add tests proving unverified, pending, suspended and non-Talent accounts cannot create payout requests by either route.
+- This was observed in production metadata but was not changed in production or this audit pass.
+
+### Additional controls to tighten
+
+- `admin_process_payout` records the Finance actor and provider reference, but the current manual workflow relies on the Finance operator entering a reference. Add a second-person approval or reconciliation evidence for high-value payouts, and a daily bank-statement/provider reconciliation before treating the state as final.
+- Referral application RPC checks that the referee has a Talent profile and prevents self-referral/reuse, but does not explicitly require the referrer to be an active, approved Talent at relationship creation. Define whether inactive/unapproved referrers should be eligible; if not, enforce that at creation and recheck eligibility at reward-credit time.
+- Keep a dedicated immutable payout event history (requested, processing, rejected/failed, provider-confirmed, reservation rows) and reconcile it to provider/bank statements. Existing Admin audit log is useful but not a replacement for a domain event ledger.
+- Commission and affiliate settings should be snapshotted per booking at settlement (the current referral percentage is read at payment settlement). Confirm whether that is the intended commercial rule; if a booking quote must lock the affiliate rate, snapshot it at booking creation instead.
+
+### Financial acceptance tests
+
+- Replaying a paid webhook cannot create duplicate commission, Talent earning, referral reward or affiliate earning rows.
+- Escrow release skips open/investigating reports, runs safely under concurrent workers, and cannot release twice.
+- Refund/dispute transitions cannot leave an earning available while its booking/payment is held or refunded; already allocated/paid-out earnings must enter Finance review rather than silently decrement.
+- Parallel payout requests cannot reserve the same earning twice; rejected/failed requests release exactly their own reserved allocations; completed payout settles each allocation once.
+- Direct authenticated INSERT into payout_requests is denied after remediation; payout RPC enforces active Talent, approved profile, age and KTP checks.
+- Referral self-referral, second referral assignment, inactive/unapproved referrer (per policy), duplicate reward and duplicate affiliate-ledger creation are rejected.
+- Daily reconciliation: payout request amount equals reserved/settled allocations; each earning satisfies `allocated + paid_out <= earning amount`; commission arithmetic and referral reserve remain within platform commission.
