@@ -119,3 +119,33 @@ A deeper read of the current cancellation/refund implementation found an importa
 **Decision:** do not implement or advertise partial-refund support for Social Experience or Professional Services as an end-to-end proportional finance feature until Finance defines the allocation policy and an auditable adjustment ledger covers allocated/paid earnings. Keep current cancellation/refund behavior unchanged in this service-ID foundation PR.
 
 Stage D.2 now checks that the booking financial snapshot guard, booking-keyed settlement ledger trigger/function, booking-linked refund reversal handler, and payout dispute guard remain present. These are catalog/source-contract assertions only; they do not prove runtime idempotency under concurrent provider callbacks or payout/refund races. Those require isolated staging scenario tests.
+
+
+## Booking lifecycle and escrow transition audit
+
+A source-level review of the canonical activity booking lifecycle confirms the intended path and identifies release boundaries:
+
+`pending_payment → paid_held_in_escrow → confirmed_by_talent → in_progress → completed`
+
+Terminal/exception paths are `cancelled_by_customer`, `cancelled_by_talent`, `expired`, `refunded`, and the temporary `disputed_hold` state. Database transition guards restrict which actor/backend may perform each transition; a scoped Support Admin can hold/restore only through the active-report resolution path.
+
+### Confirmed safeguards in source
+
+- Pending reservations expire only after `payment_expires_at`; the existing expiry worker is scheduled separately from the escrow release worker.
+- Completion requires both `customer_completed_at` and `talent_completed_at`. The completion RPC locks the booking row and records one participant's confirmation at a time.
+- A booking can enter `disputed_hold` only when a related report is open/investigating; the report workflow preserves the pre-dispute booking and financial states.
+- The completion timestamp trigger schedules escrow release when the booking becomes completed. Current product policy is immediate release (not 24-hour delay).
+- The escrow worker locks candidate bookings with `FOR UPDATE SKIP LOCKED`, skips bookings with an active report, releases only held Talent earnings/referral rewards/payment rows, and is restricted to trusted backend execution.
+- The existing status and financial guards protect the frozen booking amount and prevent arbitrary terminal-state rewrites.
+
+### Important product boundaries
+
+1. Immediate release is acceptable only for a completed time-bound activity whose two-party confirmation is the agreed completion signal. A Professional Services project must not be marked `completed` on upload or due-date alone. It needs explicit deliverable submission, revision/acceptance, dispute and timeout rules before connecting to the release worker.
+2. A booking in `disputed_hold` must remain held until every open/investigating report is resolved. Support restoration must restore only the recorded pre-dispute state, not an arbitrary state supplied by a client.
+3. Expiry, payment settlement, cancellation and completion can race. Staging must exercise expiry-vs-payment callback, customer-vs-talent cancellation, completion-vs-report insertion, duplicate completion confirmation and release-vs-payout allocation under concurrent transactions.
+4. The cron job label `yuku_release_escrow_24h` is historical naming; migration 20 changed the release policy to immediate once completed and scheduled. Do not interpret the job name as a 24-hour delay.
+5. The source audit does not prove that the expected cron jobs are actually installed/enabled in the current Supabase environment. Verify job inventory and execution history in the intended staging environment before rollout.
+
+Stage D.3 adds catalog/source-contract checks for the actor guard, status transition allowlist, row-locked two-party completion RPC, completion timestamp trigger, dispute-aware escrow release worker and pending reservation expiry worker. These checks do not execute concurrent state transitions or validate the live cron configuration.
+
+No booking state, payment, escrow, payout, database migration, or production deployment was changed by this audit.
