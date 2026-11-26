@@ -59,7 +59,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         <div className="mb-3 flex items-end justify-between gap-3">
           <div className="min-w-0">
             <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-purple-700">
-              Pilihan Pengalaman Sosial
+              Social Experience · Paid Companion
             </span>
             <h2 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-2xl">
               Pilihan Aktivitas
