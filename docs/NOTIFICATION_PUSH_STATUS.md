@@ -40,3 +40,18 @@ All implementation work is isolated to `feature/notification-push`.
 - No secrets have been set.
 - No Database Webhook has been configured.
 - `docs/sql/push_subscriptions_draft.sql` remains a draft, not a migration.
+
+
+## Production status correction — 26 November 2026
+
+The read-only Production snapshot on 26 November 2026 supersedes the earlier "no table / no Edge Functions" snapshot above:
+
+- `public.push_subscriptions` exists and contained 3 rows in an aggregate-only check. No endpoints or account identifiers were read.
+- `yuku-push` Edge Function is ACTIVE, version 4, `verify_jwt=false`.
+- The `public.notifications` table has RLS enabled, is in `supabase_realtime`, and has 3 policies.
+- The `yuku_push_after_notification_insert` database trigger is enabled. The Vault secret name `yuku_push_webhook_secret` exists; the value was not accessed.
+- Production `yuku-push` deployment and DB webhook path exist, but VAPID secret configuration, `APP_ORIGIN`, delivery success, and Android closed-app delivery have not been verified end-to-end.
+- Production `notify_on_booking_message_insert()` currently includes a 120-character chat preview in the notification body. This can flow into lock-screen push text. The branch migration 43 uses generic text and is the safer behavior; keep chat content out of push payloads.
+- Do not interpret the presence of 3 subscription rows as proof of active/valid subscriptions or successful delivery.
+
+No Production changes or push test sends were performed during this read-only check.
