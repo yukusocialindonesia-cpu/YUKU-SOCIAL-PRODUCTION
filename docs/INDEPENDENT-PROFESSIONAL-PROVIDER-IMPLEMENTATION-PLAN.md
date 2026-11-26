@@ -3,7 +3,7 @@
 Branch: `feat/independent-professional-provider-identity`  
 Base: `fix/yuku-final-service-taxonomy`  
 Scope: architecture and implementation contract for Professional-only provider accounts.  
-Status: Phase A, Phase B, Phase C, and the Phase D public discovery/profile query changes are committed to this feature branch only. Automated build/test and full regression verification remain outstanding. No database migration has been applied; no production data or deployment changed.
+Status: Phase A, Phase B, Phase C, Phase D public discovery/profile query changes, and Phase E database-derived profile completeness hardening are committed to this feature branch only. Automated build/test and full regression verification remain outstanding. No database migration has been applied; no production data or deployment changed.
 
 ## Product requirement
 
@@ -72,6 +72,8 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 4. Ensure a Professional-only provider never appears in Social Experience unless they separately create and pass Companion onboarding.
 
 ### Phase E — compatibility cleanup
+**Implementation checkpoint:** `20261127007000_derive_professional_profile_completeness.sql` now derives `is_profile_complete` in a database trigger from display name, city, headline, and bio. This prevents a client from setting the boolean to `true` while leaving required presentation fields blank. Existing rows are recalculated by the same rule.
+
 1. Verify all consumers no longer depend on the old provider FK or Talent-profile join.
 2. Validate the new FK and remove old compatibility constraints only in a later migration.
 3. Keep existing application IDs, listing IDs, provider user IDs, review history, and storage paths stable.
