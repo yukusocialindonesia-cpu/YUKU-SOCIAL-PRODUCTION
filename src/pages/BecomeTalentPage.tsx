@@ -276,6 +276,8 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     // remove these new objects without touching previously stored evidence.
     let uploadedKtpPath: string | null = null;
     let uploadedSelfiePath: string | null = null;
+    let uploadedAvatarPath: string | null = null;
+    let avatarProfileSaved = false;
     let identityEvidenceSaved = false;
 
     try {
@@ -348,6 +350,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       if (avatarFile) {
         const compressedAvatar = await compressProfileImage(avatarFile);
         const avatarPath = `${activeUserId}/avatar_${Date.now()}.webp`;
+        uploadedAvatarPath = avatarPath;
         const { error: avatarUploadError } = await supabase.storage
           .from('avatars')
           .upload(avatarPath, compressedAvatar, { upsert: false, contentType: 'image/webp' });
@@ -360,7 +363,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       // 3. Save public.talent_profiles (select first: update without id if exists, insert with id if new)
       const { data: existingProfile, error: profileLookupError } = await supabase
         .from('talent_profiles')
-        .select('id')
+        .select('id, avatar_url')
         .eq('id', activeUserId)
         .maybeSingle();
 
@@ -389,16 +392,60 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       if (profileError) {
         throw new Error(`Gagal menyimpan profil Talent: ${profileError.message} (${profileError.code || 'RLS_ERR'})`);
       }
+      avatarProfileSaved = Boolean(uploadedAvatarPath);
 
-      // 4. Ajukan semua layanan melalui satu RPC atomik. Semua layanan baru
-      // berstatus pending dan tidak tampil / dapat dibooking sebelum Admin menyetujui.
+      // Hapus avatar lama milik akun ini hanya setelah URL avatar baru berhasil
+      // tersimpan. Ini mencegah file avatar yatim saat pengguna mengulang submit.
+      if (uploadedAvatarPath && existingProfile?.avatar_url) {
+        try {
+          const oldAvatarUrl = new URL(existingProfile.avatar_url);
+          const storageMarker = '/storage/v1/object/public/avatars/';
+          const markerIndex = oldAvatarUrl.pathname.indexOf(storageMarker);
+          const oldAvatarPath = markerIndex >= 0
+            ? decodeURIComponent(oldAvatarUrl.pathname.slice(markerIndex + storageMarker.length))
+            : '';
+          if (oldAvatarPath.startsWith(`${activeUserId}/`) && oldAvatarPath !== uploadedAvatarPath) {
+            const { error: oldAvatarCleanupError } = await supabase.storage
+              .from('avatars')
+              .remove([oldAvatarPath]);
+            if (oldAvatarCleanupError) {
+              console.error('Gagal membersihkan avatar lama Talent:', oldAvatarCleanupError.message);
+            }
+          }
+        } catch {
+          // URL avatar lama eksternal/tidak valid tidak boleh menggagalkan pendaftaran.
+        }
+      }
+
+      // 4. Ajukan hanya layanan yang belum pernah diajukan atau berstatus rejected.
+      // Retry setelah kegagalan identitas tidak boleh mengirim ulang layanan pending/approved,
+      // karena RPC memang menolak pengajuan duplikat dan hanya mengizinkan rejected untuk diajukan ulang.
       if (formData.selectedActivities.length > 0) {
-        const { error: serviceRequestError } = await supabase.rpc('request_talent_services', {
-          p_activity_category_ids: formData.selectedActivities,
-          p_custom_rate_override: null,
+        const { data: existingTalentServices, error: existingTalentServicesError } = await supabase
+          .from('talent_services')
+          .select('activity_category_id, approval_status')
+          .eq('talent_id', activeUserId);
+
+        if (existingTalentServicesError) {
+          throw new Error(`Gagal memeriksa layanan Talent yang sudah ada: ${existingTalentServicesError.message}`);
+        }
+
+        const existingServiceByCategory = new Map(
+          (existingTalentServices || []).map((service) => [service.activity_category_id, service.approval_status]),
+        );
+        const categoriesToRequest = formData.selectedActivities.filter((categoryId) => {
+          const existingStatus = existingServiceByCategory.get(categoryId);
+          return !existingStatus || existingStatus === 'rejected';
         });
-        if (serviceRequestError) {
-          throw new Error(`Gagal mengajukan layanan Talent: ${serviceRequestError.message}`);
+
+        if (categoriesToRequest.length > 0) {
+          const { error: serviceRequestError } = await supabase.rpc('request_talent_services', {
+            p_activity_category_ids: categoriesToRequest,
+            p_custom_rate_override: null,
+          });
+          if (serviceRequestError) {
+            throw new Error(`Gagal mengajukan layanan Talent: ${serviceRequestError.message}`);
+          }
         }
       }
 
@@ -494,6 +541,14 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     } catch (err: any) {
       // Best-effort rollback for evidence uploaded by this attempt only.
       // Never delete evidence after the identity row has successfully referenced it.
+      if (uploadedAvatarPath && !avatarProfileSaved) {
+        const { error: avatarCleanupError } = await supabase.storage
+          .from('avatars')
+          .remove([uploadedAvatarPath]);
+        if (avatarCleanupError) {
+          console.error('Gagal membersihkan avatar Talent yatim:', avatarCleanupError.message);
+        }
+      }
       if (!identityEvidenceSaved) {
         const orphanedEvidence = [uploadedKtpPath, uploadedSelfiePath].filter(
           (storagePath): storagePath is string => Boolean(storagePath),
