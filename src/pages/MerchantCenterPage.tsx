@@ -150,7 +150,12 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const canSubmitForReview = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
 
   const load = useCallback(async (preferredBusinessId?: string) => {
-    if (!user) { setLoading(false); return; }
+    if (!user) {
+      setBusinesses([]); setLocations([]); setOffers([]); setTeamMembers([]);
+      setPendingInvitationIds({}); setReviewHistory([]); setOfferHistoryRows([]);
+      setActiveBusinessId(''); setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     const { data: ownMemberships, error: membershipError } = await supabase
@@ -162,6 +167,12 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       setError('Fitur Merchant Partner belum tersedia di server. Migrasi Merchant Partner perlu diterapkan dan diuji di staging terlebih dahulu.');
       setBusinesses([]);
       setLocations([]);
+      setOffers([]);
+      setTeamMembers([]);
+      setPendingInvitationIds({});
+      setReviewHistory([]);
+      setOfferHistoryRows([]);
+      setActiveBusinessId('');
       setLoading(false);
       return;
     }
@@ -178,6 +189,12 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       setError('Profil bisnis milik akun ini belum dapat dimuat.');
       setBusinesses([]);
       setLocations([]);
+      setOffers([]);
+      setTeamMembers([]);
+      setPendingInvitationIds({});
+      setReviewHistory([]);
+      setOfferHistoryRows([]);
+      setActiveBusinessId('');
       setLoading(false);
       return;
     }
