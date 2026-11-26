@@ -145,9 +145,14 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
     <div className="min-h-screen bg-[#F8F7FC] pb-10">
       <div className="bg-gradient-to-br from-[#24105F] to-[#5416B8] px-4 pb-7 pt-5 text-white sm:pb-10 sm:pt-8">
         <div className="mx-auto max-w-6xl">
-          <button onClick={() => onNavigate('/talent')} className="mb-5 inline-flex items-center gap-2 text-xs font-semibold text-violet-100 hover:text-white">
+          <button onClick={() => onNavigate('/talent')} className="mb-4 inline-flex items-center gap-2 text-xs font-semibold text-violet-100 hover:text-white">
             <ArrowLeft className="h-4 w-4" /> Kembali ke Jelajah
           </button>
+          <nav aria-label="Pilih katalog YUKU" className="mb-5 grid grid-cols-3 gap-1 rounded-xl border border-white/15 bg-black/10 p-1">
+            <button type="button" onClick={() => onNavigate('/talent')} className="min-h-10 rounded-lg px-2 text-[10px] font-bold text-white/90 hover:bg-white/15 sm:text-xs">Teman Aktivitas</button>
+            <button type="button" aria-current="page" className="min-h-10 rounded-lg bg-white px-2 text-[10px] font-extrabold text-[#32105f] shadow-sm sm:text-xs">Jasa Profesional</button>
+            <button type="button" onClick={() => onNavigate('/merchant-partner')} className="min-h-10 rounded-lg px-2 text-[10px] font-bold text-white/90 hover:bg-white/15 sm:text-xs">Merchant</button>
+          </nav>
           <div className="flex items-start gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/15"><BriefcaseBusiness className="h-5 w-5" /></span>
             <div>
