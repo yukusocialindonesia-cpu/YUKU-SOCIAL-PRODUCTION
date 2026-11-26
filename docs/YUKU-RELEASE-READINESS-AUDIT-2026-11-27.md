@@ -244,3 +244,27 @@ Inspected the live Storage bucket configuration, all storage.objects RLS policie
 - These are source/definition-level controls. No authenticated JWT matrix, signup/deletion lifecycle, session revocation, or real role-transition test was run. The account lifecycle review is therefore not an end-to-end authorization certification.
 
 No Storage objects, user records, Admin roles, RLS policies, functions, database settings, migrations, or deployments were changed during this audit stage.
+
+
+### Merchant Partner workspace isolation — branch source review + Production schema check
+
+Compared the four Merchant Partner migrations on PR #287 with the live Production public-schema catalog. The Merchant Partner schema is not present in Production at the time of inspection; no Merchant tables or Merchant RPCs were found there. The following controls are therefore a source review of draft branch migrations, not evidence of a deployed or Staging-tested workspace.
+
+**Positive controls in the branch migrations**
+- Business identity, memberships, locations, offers, and review histories are separate tables; Merchant Partner does not reuse Talent or Professional Provider identity tables.
+- Client roles receive read-only table privileges. Business/member/location/offer writes are routed through SECURITY DEFINER RPCs with explicit caller identity and membership-role checks.
+- Public business-directory reads expose only approved businesses. The owner_user_id column is excluded from client SELECT grants. Public location reads require an active location attached to an approved business.
+- Membership reads are scoped to the current member or Admin. The raw membership table grants only limited columns; roster email disclosure is through a dedicated RPC and is returned only to the Owner, not Manager.
+- Workspace access helper requires auth.uid(), an active YUKU account, an active membership, and an allowed role. The default allowed roles are Owner, Manager, and Staff; write RPCs narrow roles where needed.
+- Invitations are Owner-only, limited to Manager/Staff, require an existing active YUKU account, and require the invitee to accept. Revocation is Owner-only and explicitly excludes the Owner membership. Invitation, acceptance, and revocation events are written to membership history.
+- Manager/Staff membership does not permit editing the business identity. For an approved business, branch/location changes are Owner-only and return the business to needs_revision, removing its locations from public directory visibility until reviewed again.
+- Merchant offers are informational promotions, explicitly funded/redeemed directly with the merchant. Only approved offers under an approved business are public; Owner submission and Admin review are separate steps. Editing an approved offer returns it to draft before it can be republished.
+- Admin review RPCs require an authenticated Super Admin, and review decisions are recorded in dedicated history tables.
+
+**Release evidence gaps**
+- Since Merchant tables/RPCs are absent from Production, there is no live tenant-isolation test evidence yet. Do not advertise Merchant Partner as a live Production feature until migrations are reconciled, applied to Staging, and tested with separate business owners, managers, staff, invitees, unrelated users, anon, and Admin roles.
+- The branch stack still contains duplicate migration version prefixes documented above. This blocks safe application of the Merchant migrations until the history and ordering are reconciled.
+- Source review does not exercise concurrent invitations, membership revocation during active requests, owner/member lifecycle edge cases, or cross-business ID substitution. Add negative Staging tests for every write/read RPC using Business A credentials against Business B IDs.
+- No direct checkout, escrow, payout, voucher balance, or YUKU commission is implemented by these Merchant offer migrations; redemption remains directly with the merchant, consistent with the current product scope.
+
+No Merchant migration was applied to Production, and no Merchant table, policy, RPC, membership, offer, or business record was created or changed during this audit stage.
