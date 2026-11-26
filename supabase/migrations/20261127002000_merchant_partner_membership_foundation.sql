@@ -122,7 +122,8 @@ create policy merchant_businesses_public_or_member_read
   );
 
 drop policy if exists merchant_memberships_owner_or_admin_read on public.merchant_memberships;
-create policy merchant_memberships_owner_or_admin_read
+drop policy if exists merchant_memberships_self_or_admin_read on public.merchant_memberships;
+create policy merchant_memberships_self_or_admin_read
   on public.merchant_memberships
   for select to authenticated
   using (
