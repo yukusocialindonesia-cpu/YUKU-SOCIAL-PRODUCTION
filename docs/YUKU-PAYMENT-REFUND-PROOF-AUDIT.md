@@ -161,3 +161,33 @@ Branch-only source fixes are not yet validated by workflow runs or Staging runti
 - The Supabase migration CLI is not available in this execution environment, so no new migration file was fabricated around the required `supabase migration new` workflow.
 - No Production or Staging database changes, grants, functions, triggers, notifications, payments, or refunds were made.
 - No workflow runs were returned for commit `391649545b1e2b14b4ce3ce779502b0605013f95`; static source verification is not a CI or runtime test.
+
+## Production read-only confirmation (follow-up)
+
+A fresh read-only Supabase inspection confirmed the two earlier findings and refined the safe remediation:
+
+### Cancellation case column grants
+
+- Production currently grants `authenticated` table-level `SELECT` on `public.customer_cancellation_cases`.
+- Production also has explicit column-level `SELECT` grants for all 16 columns, including `admin_notes`, `admin_decision`, `resolved_by_admin_id`, and `resolved_at`.
+- The table's current RLS policy allows the case-owning Customer or Finance Admin to read the row. Because RLS is row-level only, the Customer can request the internal columns.
+- The branch UI now requests an explicit safe-column allowlist, but that does not block direct Data API access.
+- The correct migration must revoke the table-level grant **and** revoke existing column grants on internal columns before granting only the approved Customer-safe columns. Revoking just table SELECT is insufficient when column grants remain. Supabase's Column Level Security guidance explicitly warns that table-level and column-level grants coexist and that wildcard selects fail once privileges are narrowed.
+- Admin Finance does not currently render the case's `admin_notes` in this page. The decision RPC reads/writes those notes internally, while the separate decision-history table is Finance-RLS-scoped. Therefore do not create an extra notes RPC unless a real Admin UI requirement is identified.
+- Approved safe list should be limited to fields the Customer and Finance UI actually use: `id, booking_id, customer_id, gross_amount, automatic_refund_amount, retained_pending_admin_amount, hours_before_session, policy_code, status, created_at`. Treat `payment_id`, `admin_decision`, `admin_notes`, `resolved_by_admin_id`, `resolved_at`, and `admin_hold_until` as restricted until a customer-facing product requirement is explicitly approved.
+
+### Refund notification trigger and idempotency
+
+- Production `trg_notify_refund_processed` is currently `AFTER UPDATE OF status` only.
+- Production `notify_refund_processed()` explicitly handles only `TG_OP = 'UPDATE'` transitioning into `processed`.
+- The retained-cancellation Finance RPC inserts a refund row already in `processed` state. That INSERT does not invoke the current notification trigger.
+- Production `create_in_app_notification()` performs a plain INSERT; it has no deduplication logic.
+- Production `notifications` currently has only its primary-key unique index and a user/unread lookup index; no refund-event idempotency constraint exists.
+- Safe follow-up migration should add a unique partial expression index for a refund notification event keyed by Customer + refund ID, then use `INSERT ... ON CONFLICT DO NOTHING` for both processed INSERT and processed UPDATE-transition paths. Avoid changing the generic notification helper because it serves unrelated events. The trigger should remain generic in message content and must never include Admin notes/provider references.
+- Required tests: a newly inserted processed refund creates one notification; a refund transitioning into processed creates one; updates while already processed create none; replay/concurrent trigger execution creates no duplicate; other refund states create none.
+
+### Verification boundary
+
+- These are read-only Production metadata/function-definition checks. No Customer names, IDs, refund rows, provider references, notification contents, or secrets were read.
+- No Production schema, grants, policies, functions, triggers, data, payments, or refunds were changed.
+- Supabase documentation confirms column-level grants are additive with table-level grants and requires explicit column lists once restricted. See [Supabase Column Level Security](https://supabase.com/docs/guides/database/postgres/column-level-security).
