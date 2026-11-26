@@ -171,3 +171,14 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] Concurrent business suspension/revision and offer approval serialize on the parent business row; no offer is newly approved against a non-approved parent.
 - [ ] Approved offers are publicly visible only while the parent business is approved and the offer validity window is active; verify visibility after business suspension, needs-revision, and re-approval.
 - [ ] Manager edits to an approved offer return it to draft and notify the Owner; only Owner can resubmit it.
+
+## Multi-profile navigation acceptance
+- [ ] An active account with Customer + Talent capabilities opens Customer Profile from the mobile bottom-nav Profile action; it must not force the Talent dashboard.
+- [ ] Customer-capable accounts open Booking History from the mobile Orders action, even when they also have Talent, Professional Provider, or Merchant memberships.
+- [ ] A Talent-only legacy account without Customer capability opens the Talent dashboard.
+- [ ] A Professional Provider-only account without Customer/Talent capability opens the Professional Provider workspace.
+- [ ] A Merchant-only account without Customer/Talent/Professional capability opens Merchant Center when it has an active merchant membership.
+- [ ] Pending merchant invitations do not grant Merchant Center workspace access through the mobile Profile action; the account can still open the invitation from the account menu/notification.
+- [ ] Admin navigation remains highest priority and opens the Admin workspace.
+- [ ] If a signed-in account has no resolved capability snapshot, the mobile Profile action opens the account menu rather than assuming a Customer or provider role.
+- [ ] Verify all five bottom-navigation items remain tappable at 320px viewport width and with device safe-area insets.
