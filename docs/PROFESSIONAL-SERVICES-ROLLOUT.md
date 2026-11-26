@@ -53,3 +53,9 @@ The `professional_service_applications` migration adds a private application wor
 Credential and supporting files are stored in a dedicated private Storage bucket (`professional-service-documents`), with a 10 MB limit and PDF/JPG/PNG/WebP MIME allowlist. The owner can access their own files; authorized Talent admins can read documents for review. No public bucket or public document URL is used.
 
 The application route is `/daftar-jasa-profesional`, linked from the professional-services discovery page. Approval is still a review state only; the next implementation step is the admin review UI and a controlled publication step that creates an approved listing. No booking/payment action is available.
+
+
+## Admin review and publication
+The `/admin/jasa-profesional` page is available to admins with the existing Talent permission. It displays applicant profile details, service description, proposed rate and mode, verification requirements, and short-lived signed links to private credential files. Admin actions are handled by `admin_review_professional_service_application`, a transactional SECURITY DEFINER function that checks the Talent permission, locks the application row, and publishes an approved listing only if the associated Talent profile is approved and any required credential path is present. Other decisions can mark an application under review, rejected, or needing revision.
+
+The RPC does not make a regulated professional credential valid by itself: an authorized reviewer must inspect the actual document and applicable professional authorization before choosing approval. No booking or payment integration is included.
