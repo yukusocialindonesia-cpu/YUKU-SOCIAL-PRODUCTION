@@ -161,7 +161,7 @@ The review page now applies the selected status filter in the database, retrieve
 
 - Added an additive migration that uses the existing `public.notifications` table for new professional-service application confirmations, admin queue alerts, and applicant status-change notifications.
 - Applicant notifications link to `/daftar-jasa-profesional`, where the applicant can read the current status and Admin note. Admin alerts link to `/admin/jasa-profesional`.
-- Status notifications cover review started, needs revision, approval, rejection, and resubmission back to pending.
+- Status notifications cover review started, needs revision, approval, rejection, and resubmission back to pending. Admins are also notified when a corrected application returns to the review queue.
 - Notification trigger errors are caught and logged as warnings so a notification delivery problem cannot roll back an application submission or review.
 - The existing notification bell already subscribes to inserts on `public.notifications` and routes using metadata; its empty-state copy now includes professional-service application updates.
 - This is an in-app notification trail, not yet a dedicated immutable application-event ledger. A formal status-history timeline with actor and timestamp remains a separate enhancement if operations require audit-grade history.
