@@ -81,3 +81,36 @@ The first release must keep project bookings out of automatic escrow release unt
 - This pass did not enumerate every repository reference to `bookings`, every view, every Edge Function, every storage policy, or every frontend workflow. The inventory is a confirmed high-risk subset and a continuation checklist.
 - No migration, RPC, trigger, RLS policy, payment setting, or production row was changed.
 - No CI, staging migration, payment sandbox, or end-to-end test is claimed as passing.
+
+
+## Expanded consumer inventory — confirmed repository search (2026-11-26)
+
+The following additional consumers were verified by searching the repository and reading the current source files. This is a source-level inventory, not proof of staging or production runtime behavior.
+
+### Payment UI and proof review
+- `src/components/booking/QrisCustomerPaymentPanel.tsx`: accepts a booking ID, amount and status; submits the client-provided amount as a claim to the proof RPC. The server RPC must continue to compare this claim to the immutable booking gross; professional UI must pass the booking snapshot amount only.
+- `src/components/booking/BankTransferCustomerPaymentPanel.tsx`: obtains booking-scoped bank instructions and submits a proof with the amount. Must display the professional booking's frozen total and must not derive it from the current listing.
+- `src/components/booking/XenditCustomerPaymentPanel.tsx`: invokes `create-checkout` with booking ID. Edge Function remains authoritative for ownership, pending state, expiry and amount.
+- `src/components/booking/QrisAdminPanel.tsx` and `BankTransferAdminPanel.tsx`: review proof queues keyed by booking ID and query booking status. Add booking-kind and snapshot context to the review details, while retaining the existing server-side exact-amount checks.
+- `supabase/functions/create-checkout/index.ts`: reads the booking gross and calls route-claim logic before invoice creation.
+- `supabase/functions/xendit-webhook/index.ts`: compares provider paid amount with booking gross before server-side settlement. The webhook must also retain provider event/charge idempotency and reject unsupported currencies/amount mismatches.
+- The current migration `20261124172000_block_new_xendit_route_claims.sql` deliberately blocks new Xendit route claims. Do not bypass this for professional services; payment-route activation is a separate release decision.
+
+### Chat, admin and generated types
+- `src/components/chat/BookingChatModal.tsx`: `ChatBookingSummary` currently requires `start_time` and `duration_hours`, and labels the activity title. Replace this with a discriminated summary using professional snapshots for session/day/project bookings.
+- `src/pages/AdminPage.tsx`: `AdminBookingItem` currently requires legacy `booking_mode`, `start_time`, and `duration_hours`; the booking review table and finance context need kind-aware labels and schedule/scope.
+- `src/types/database.ts`: the central `BookingRow` model currently represents the legacy required activity category and hourly duration. Update only alongside the additive database contract; avoid weakening types before the database constraint and consumers are migrated.
+- `src/pages/BookingHistoryPage.tsx` and `src/pages/TalentDashboardPage.tsx` remain confirmed activity-specific consumers. Their customer/Talent actions must remain intact for legacy rows.
+
+### Escrow and refund semantics
+- `supabase/migrations/20_immediate_escrow_release_policy.sql` sets `escrow_release_scheduled_at` to the completion timestamp immediately when a booking transitions to `completed`; the scheduled worker in migration 33 releases held earnings once no open/investigating report exists. Therefore project deliverable acceptance cannot be represented by simply reusing the existing completion transition before acceptance.
+- `supabase/migrations/24_hold_talent_earnings_during_customer_admin_review.sql` prevents cancellation reversal where earnings have already been allocated or paid and holds earnings during a retained-amount review. Professional cancellation/refund must preserve these allocation and payout guards.
+- Migration 20 also updates historical completed bookings. Any professional-specific behavior must be gated strictly by booking kind so the activity release policy is unchanged.
+
+### Release gates added by this expanded inventory
+1. Keep the existing activity RPC, activity financial trigger branch, completion semantics and payment proof RPC behavior regression-tested.
+2. Add booking-kind-aware view models to chat, booking history, Talent dashboard, Admin booking views and all payment proof surfaces before nullable legacy category references are introduced.
+3. Keep professional projects out of the current immediate-completion/escrow-release path until deliverable submission, included revision count, customer acceptance, timeout and dispute rules are implemented and tested.
+4. Keep Xendit unavailable while the current route-lock policy blocks new claims; do not create a frontend-only bypass.
+5. Test the exact same frozen gross against checkout, manual QRIS/bank proof, webhook settlement, ledger generation, refund reversal, payout allocation and reconciliation.
+6. Search results also identified reports, reviews, referral rewards, finance/admin RPCs and account-management booking joins. These remain in scope for a final exhaustive migration checklist; this document must not be treated as a claim that every booking consumer has already been updated.
