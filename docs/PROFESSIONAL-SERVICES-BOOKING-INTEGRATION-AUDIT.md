@@ -357,3 +357,45 @@ Source inspection: `AuthContext`, LoginPage, AccountManagementPanel, the `accoun
 ### Current decision
 
 Account status enforcement has meaningful database-level protection already; do not describe the old access-token lifetime as an unmitigated bypass. The release blockers are the unreviewed SECURITY DEFINER inventory, disabled leaked-password protection, unclear pending-verification permissions, and missing server-side anti-spam/rate-limit and sanction/appeal controls. Professional-service checkout remains disabled until the booking/finance/support gates and these account-safety gates pass staging.
+
+
+## Focused live database review: identity, payout, booking chat and reviews — 2026-11-26
+
+Read-only inspection of the connected production schema and function definitions. No test writes, migrations, or policy changes were performed.
+
+### Confirmed payout authorization gap — HIGH PRIORITY
+
+- `request_talent_payout(bigint,text,text,text,uuid)` is a SECURITY DEFINER RPC executable by authenticated users only. It checks `auth.uid()`, Talent role, active account, age verification, approved Talent profile, verified KTP, minimum Rp100,000, bank-field lengths, idempotency and exact reuse of idempotency key.
+- However, the live `payout_requests` RLS also has `payout_requests_insert_talent` allowing an authenticated user to insert a row where `talent_id = auth.uid()`. Authenticated has column-level INSERT grants for payout_number, talent_id, amount, bank name/account/holder, payout_provider and payout_status. The table defaults idempotency_key and payout_status; the row can therefore be inserted without using the stricter RPC.
+- The `validate_payout_request_before_insert()` trigger enforces minimum Rp100,000, locks the Talent profile and earning rows, checks available ledger balance, and rejects over-allocation. It does **not** repeat the active Talent + approved profile + age/KTP verified eligibility checks performed by the RPC. Other triggers force manual provider, reset some payout state fields, and allocate the requested amount to earnings.
+- Therefore the direct INSERT path can bypass the RPC's identity/approval eligibility gate while still being constrained by available ledger balance and payout minimum. This is a confirmed policy/function mismatch, not merely an advisor warning.
+- Recommended fix before any public payout launch: revoke direct INSERT privileges from authenticated and remove the owner INSERT policy; keep payout creation exclusively through the eligibility-checking SECURITY DEFINER RPC. Ensure RPC is the only public entry point and retain the ledger allocation trigger as defense in depth. Validate with role-matrix tests for active verified Talent, unverified Talent, pending Talent, customer account, suspended account, insufficient balance, duplicate idempotency and concurrent payout attempts.
+
+### Identity data protection — controls verified
+
+- Live `user_identities` has owner INSERT/UPDATE policies and column-level grants, but a BEFORE UPDATE trigger `protect_and_verify_user_identities()` blocks a non-reviewing owner from changing legal name, DOB, KTP number or KTP storage path once status is `pending_review` or `verified`. It also blocks applicant changes to reviewer decision fields. A separate trigger prevents self-assignment of verified status and clears reviewer fields on applicant insert.
+- A further trigger ensures a row marked verified has an adult DOB, legal name, applicant-owned KTP document path and an existing object in the private KTP bucket.
+- This means the broad owner UPDATE policy is not, by itself, a confirmed way to alter verified KTP identity data. Preserve and regression-test these trigger protections; do not remove them when refactoring the identity form.
+- Residual operational gap: sensitive identity reads by authorized Admins should have explicit document-access logging, least-privilege access review, and a defined retention/deletion process. The inspected row policies do not themselves provide a dedicated immutable KTP view/download audit trail.
+
+### Booking chat — participant scope present, abuse controls incomplete
+
+- INSERT policy requires `sender_id = auth.uid()` and that the sender is either customer or Talent on the referenced booking.
+- SELECT is limited to booking participants plus Admins with Booking permission. UPDATE is restricted to the other participant's message row, consistent with read-recipient updates.
+- Message body is constrained to 1–1000 characters.
+- No per-booking or per-account message frequency cap, flood cooldown, link/attachment abuse detection, block/mute control, or server-side spam throttle was identified in the live policies/constraints inspected. Add server-side throttling and abuse-report hooks; keep the participant RLS checks unchanged. Verify Admin access is logged and limited to legitimate support cases.
+
+### Reviews — important integrity controls present
+
+- INSERT policy binds `customer_id` to `auth.uid()`.
+- BEFORE INSERT trigger checks that the booking exists, customer_id and talent_id exactly match that booking, and booking status is `completed`.
+- Rating has a 1–5 constraint and booking review uniqueness was previously verified. This is a stronger control than a client-only review form; retain it and add tests for forged participant IDs, non-completed bookings and duplicate reviews.
+- Residual gap: the reviewed schema does not establish a full anti-brigading or review-dispute workflow (for example, immutable moderation events and appeal evidence).
+
+### Updated priority list
+
+1. Remove direct authenticated INSERT on `payout_requests`; require the eligibility-checking payout RPC only. **Confirmed release blocker.**
+2. Add immutable Admin document-access logs for KTP and bank details, plus retention and access-review controls.
+3. Add server-side chat throttling and customer/Talent block/report controls.
+4. Regression-test identity trigger protections and completed-booking review validation.
+5. Continue the remaining SECURITY DEFINER inventory review function-by-function; current checks cover the named payout, identity, review and chat areas, not every privileged function in the project.
