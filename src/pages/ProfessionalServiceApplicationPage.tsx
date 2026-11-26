@@ -3,6 +3,7 @@ import { ArrowLeft, BriefcaseBusiness, Upload, ShieldCheck, Clock3, FileCheck2, 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
+import { getProfessionalVerificationGuide } from '../lib/professionalServiceVerification';
 
 interface Subcategory {
   id: string;
@@ -150,7 +151,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     if (!modes.length) { setError('Pilih minimal satu metode layanan.'); return; }
     if (!/^\d+$/.test(rate) || Number(rate) < 10000) { setError('Tarif minimal Rp10.000.'); return; }
     if (requiresCredential && !credentialFile && !existingCredentialPath) { setError('Jenis jasa ini wajib melampirkan sertifikat kompetensi atau izin profesi.'); return; }
-    const fileError = validateFile(credentialFile, 'Dokumen kompetensi') || validateFile(supportingFile, 'Dokumen pendukung');
+    const fileError = validateFile(credentialFile, 'Dokumen kompetensi/izin profesi') || validateFile(supportingFile, 'Dokumen pendukung');
     if (fileError) { setError(fileError); return; }
 
     setSubmitting(true);
@@ -284,7 +285,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
             </select>
           </label>
           {editingApplicationId && <p className="-mt-2 text-[10px] text-slate-500">Jenis jasa dikunci selama revisi. Untuk menawarkan jenis jasa lain, buat pengajuan baru setelah pengajuan ini selesai.</p>}
-          {selectedSubcategory && <div className="rounded-xl bg-violet-50 p-3 text-[11px] leading-relaxed text-violet-900"><ShieldCheck className="mr-1 inline h-3.5 w-3.5"/>{verificationLabels[selectedSubcategory.verification_level]}</div>}
+          {selectedSubcategory && <div className="rounded-xl bg-violet-50 p-3 text-[11px] leading-relaxed text-violet-900"><ShieldCheck className="mr-1 inline h-3.5 w-3.5"/><strong>{verificationLabels[selectedSubcategory.verification_level]}</strong><p className="mt-1">{getProfessionalVerificationGuide(selectedSubcategory.id).applicant}</p></div>}
           <label className="block text-xs font-bold text-slate-700">Deskripsi layanan
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} maxLength={3000} required placeholder="Jelaskan keahlian, cakupan pekerjaan, dan layanan yang diberikan (minimal 30 karakter)." className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-xs outline-none focus:border-violet-500"/>
           </label>
