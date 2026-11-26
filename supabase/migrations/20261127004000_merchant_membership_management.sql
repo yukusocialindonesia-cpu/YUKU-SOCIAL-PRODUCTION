@@ -540,6 +540,11 @@ begin
 end;
 $merchant$;
 
+-- Retire the earlier UUID-based invitation RPC. All invitations must now
+-- use the email-scoped, audited, notification-producing workflow below.
+revoke all on function public.invite_merchant_member(uuid,uuid,text)
+  from public,anon,authenticated;
+
 revoke all on function public.get_merchant_business_members(uuid)
   from public,anon,authenticated;
 revoke all on function public.invite_merchant_member_by_email(uuid,text,text)
