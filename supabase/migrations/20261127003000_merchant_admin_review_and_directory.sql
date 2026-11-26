@@ -35,6 +35,70 @@ revoke all on public.merchant_business_review_history from public, anon, authent
 grant select (id,business_id,from_status,to_status,decision_note,actor_role,created_at)
   on public.merchant_business_review_history to authenticated;
 
+-- Allow an Owner to update a live business profile, but require a fresh
+-- review before the edited public identity is shown again.
+create or replace function public.update_merchant_business_profile(
+  p_business_id uuid,
+  p_business_name text,
+  p_description text default null,
+  p_business_category text default null,
+  p_public_phone text default null,
+  p_website_url text default null
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $merchant$
+declare
+  v_previous_status text;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required' using errcode = '28000';
+  end if;
+  if not private.has_merchant_business_access(p_business_id, array['owner']::text[]) then
+    raise exception 'Only the business owner can edit business identity' using errcode = '42501';
+  end if;
+  if p_business_name is null or char_length(trim(p_business_name)) not between 2 and 120
+     or (p_description is not null and char_length(p_description) > 2000)
+     or (p_business_category is not null and char_length(p_business_category) > 80)
+     or (p_public_phone is not null and char_length(p_public_phone) > 40)
+     or (p_website_url is not null and char_length(p_website_url) > 500) then
+    raise exception 'Data bisnis tidak valid' using errcode = '22023';
+  end if;
+
+  select mb.review_status into v_previous_status
+    from public.merchant_businesses mb
+   where mb.id = p_business_id
+     and mb.review_status in ('draft','needs_revision','approved')
+   for update;
+  if not found then
+    raise exception 'Business profile cannot be edited while review is pending or business is rejected/suspended' using errcode = '55000';
+  end if;
+
+  update public.merchant_businesses
+     set business_name = trim(p_business_name),
+         description = nullif(trim(p_description), ''),
+         business_category = nullif(trim(p_business_category), ''),
+         public_phone = nullif(trim(p_public_phone), ''),
+         website_url = nullif(trim(p_website_url), ''),
+         review_status = case when v_previous_status = 'approved' then 'needs_revision' else v_previous_status end,
+         updated_at = now()
+   where id = p_business_id;
+
+  if v_previous_status = 'approved' then
+    insert into public.merchant_business_review_history (
+      business_id,from_status,to_status,decision_note,actor_user_id,actor_role
+    ) values (
+      p_business_id,'approved','needs_revision',
+      'Perubahan profil bisnis memerlukan pemeriksaan ulang.',
+      auth.uid(),'owner'
+    );
+  end if;
+  return true;
+end;
+$merchant$;
+
 -- Replace submission RPC so resubmissions are recorded in the review timeline.
 create or replace function public.submit_merchant_business_for_review(p_business_id uuid)
 returns boolean
