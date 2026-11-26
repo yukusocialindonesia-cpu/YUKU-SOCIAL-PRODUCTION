@@ -119,6 +119,9 @@ interface TalentBookingItem {
   customer_id: string;
   talent_id: string;
   activity_category_id: string;
+  service_id?: string | null;
+  service_title_snapshot?: string | null;
+  service_description_snapshot?: string | null;
   booking_mode: 'offline' | 'online';
   start_time: string;
   end_time: string;
@@ -386,32 +389,50 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
       }
 
       // 3. Fetch Bookings for this Talent
-      const { data: bookingRows, error: bookingErr } = await supabase
+      const legacyBookingSelect = `
+        id,
+        booking_code,
+        customer_id,
+        talent_id,
+        activity_category_id,
+        booking_mode,
+        start_time,
+        end_time,
+        duration_hours,
+        meeting_location_name,
+        meeting_location_address,
+        gross_amount,
+        platform_fee_amount,
+        talent_gross_share,
+        status,
+        payment_expires_at,
+        cancellation_reason,
+        customer_completed_at,
+        talent_completed_at,
+        created_at
+      `;
+      let { data: bookingRows, error: bookingErr } = await supabase
         .from('bookings')
         .select(`
-          id,
-          booking_code,
-          customer_id,
-          talent_id,
-          activity_category_id,
-          booking_mode,
-          start_time,
-          end_time,
-          duration_hours,
-          meeting_location_name,
-          meeting_location_address,
-          gross_amount,
-          platform_fee_amount,
-          talent_gross_share,
-          status,
-          payment_expires_at,
-          cancellation_reason,
-          customer_completed_at,
-          talent_completed_at,
-          created_at
+          ${legacyBookingSelect},
+          service_id,
+          service_title_snapshot,
+          service_description_snapshot
         `)
         .eq('talent_id', userId)
         .order('created_at', { ascending: false });
+
+      // Keep the provider dashboard compatible with environments where migration 40
+      // has not yet been applied (for example, the current production preview DB).
+      if (bookingErr && ['42703', 'PGRST204'].includes(bookingErr.code)) {
+        const legacyResult = await supabase
+          .from('bookings')
+          .select(legacyBookingSelect)
+          .eq('talent_id', userId)
+          .order('created_at', { ascending: false });
+        bookingRows = legacyResult.data;
+        bookingErr = legacyResult.error;
+      }
 
       if (bookingErr) {
         console.warn('Gagal membaca pesanan talent:', bookingErr.message);
@@ -448,7 +469,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           return {
             ...b,
             customer_name: customerMap.get(b.customer_id) || 'Customer YUKU',
-            activity_title: categoryMap.get(b.activity_category_id) || 'Pendamping Aktivitas',
+            activity_title: b.service_title_snapshot || categoryMap.get(b.activity_category_id) || 'Pendamping Aktivitas',
             report: rep
               ? {
                   id: rep.id,
