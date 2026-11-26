@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 type PushStatus = 'checking' | 'unsupported' | 'enabled' | 'disabled' | 'permission-denied';
 
 export const PushNotificationToggle: React.FC = () => {
-  const { user, isAuthenticated, isAuthLoading } = useAuth();
+  const { isAuthenticated, isAuthLoading } = useAuth();
   const [status, setStatus] = useState<PushStatus>('checking');
   const [isBusy, setIsBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -17,19 +17,15 @@ export const PushNotificationToggle: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isAuthLoading || !isAuthenticated || !user?.id) {
-      setStatus('checking');
-      return;
-    }
+    if (isAuthLoading || !isAuthenticated) return;
     let active = true;
-    setStatus('checking');
     void getYukuPushStatus().then((next) => {
       if (active) setStatus(next);
     });
     return () => {
       active = false;
     };
-  }, [isAuthLoading, isAuthenticated, user?.id]);
+  }, [isAuthLoading, isAuthenticated]);
 
   const handleToggle = async () => {
     if (isBusy) return;

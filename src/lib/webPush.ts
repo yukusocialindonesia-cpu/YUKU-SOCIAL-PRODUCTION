@@ -82,14 +82,7 @@ export async function getYukuPushStatus(): Promise<'unsupported' | 'enabled' | '
   if (Notification.permission === 'denied') return 'permission-denied';
   try {
     const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
-    if (!subscription) return 'disabled';
-
-    const { data, error } = await (await import('./supabase')).supabase.functions.invoke('yuku-push', {
-      body: { action: 'status', endpoint: subscription.endpoint },
-    });
-    if (error || !data?.ok) return 'disabled';
-    return data.enabled === true ? 'enabled' : 'disabled';
+    return await registration.pushManager.getSubscription() ? 'enabled' : 'disabled';
   } catch {
     return 'disabled';
   }

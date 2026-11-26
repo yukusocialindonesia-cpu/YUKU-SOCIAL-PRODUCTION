@@ -8,8 +8,7 @@ ON public.booking_messages
 FOR SELECT
 TO authenticated
 USING (
-  (SELECT public.is_admin())
-  OR EXISTS (
+  EXISTS (
     SELECT 1
     FROM public.bookings b
     WHERE b.id = booking_messages.booking_id

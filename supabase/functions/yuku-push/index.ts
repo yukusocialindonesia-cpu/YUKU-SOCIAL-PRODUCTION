@@ -62,7 +62,7 @@ Deno.serve(async (request) => {
 
   const action = payload.action;
 
-  if (action === "subscribe" || action === "unsubscribe" || action === "status") {
+  if (action === "subscribe" || action === "unsubscribe") {
     const authorization = request.headers.get("Authorization");
     const anonKey = getDefaultSecretKey("SUPABASE_PUBLISHABLE_KEYS") ?? Deno.env.get("SUPABASE_ANON_KEY");
     if (!authorization || !anonKey) return json({ ok: false, message: "Authentication required." }, 401, origin);
@@ -76,26 +76,17 @@ Deno.serve(async (request) => {
     if (userError || !userData.user) return json({ ok: false, message: "Session tidak valid. Silakan login kembali." }, 401, origin);
     const userId = userData.user.id;
 
-    // This function uses service_role, so enforce account state explicitly.
-    const { data: account, error: accountError } = await admin
-      .from("users")
-      .select("account_status")
-      .eq("id", userId)
-      .maybeSingle();
-    if (accountError || !account || !["active", "pending_verification"].includes(account.account_status)) {
-      return json({ ok: false, message: "Akun sedang dinonaktifkan dan tidak dapat mengelola notifikasi." }, 403, origin);
-    }
-
-    if (action === "status") {
-      const endpoint = typeof payload.endpoint === "string" ? payload.endpoint : "";
-      if (!endpoint.startsWith("https://")) return json({ ok: false, message: "Alamat perangkat tidak valid." }, 400, origin);
-      const { data: owned, error: ownershipError } = await admin
-        .from("push_subscriptions")
-        .select("user_id")
-        .eq("endpoint", endpoint)
+    // This function writes through service_role, so enforce the account state
+    // explicitly instead of relying on the caller's RLS policies.
+    if (action === "subscribe") {
+      const { data: account, error: accountError } = await admin
+        .from("users")
+        .select("account_status")
+        .eq("id", userId)
         .maybeSingle();
-      if (ownershipError) return json({ ok: false, message: "Tidak dapat memeriksa status perangkat." }, 500, origin);
-      return json({ ok: true, enabled: owned?.user_id === userId }, 200, origin);
+      if (accountError || !account || !["active", "pending_verification"].includes(account.account_status)) {
+        return json({ ok: false, message: "Akun sedang dinonaktifkan dan tidak dapat mendaftarkan perangkat." }, 403, origin);
+      }
     }
 
     if (action === "subscribe") {
@@ -175,18 +166,10 @@ Deno.serve(async (request) => {
       .eq("user_id", notification.user_id);
     if (subscriptionsError) return json({ ok: false, message: "Could not load device subscriptions." }, 500, origin);
 
-    const metadata = notification.metadata as Record<string, unknown> | null;
-    const route = metadata?.route;
-    // Chat content must never be exposed in OS notifications or lock-screen previews,
-    // including notifications created by older database triggers.
-    const isBookingChatNotification =
-      typeof metadata?.message_id === "string" &&
-      typeof metadata?.booking_id === "string";
+    const route = (notification.metadata as Record<string, unknown> | null)?.route;
     const pushPayload = JSON.stringify({
       title: notification.title,
-      body: isBookingChatNotification
-        ? "Anda menerima pesan baru. Buka YUKU untuk membaca percakapan."
-        : notification.message,
+      body: notification.message,
       url: typeof route === "string" && route.startsWith("/") ? route : "/",
       tag: notification.id,
     });
