@@ -477,10 +477,10 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
             <section className="overflow-hidden rounded-[1.6rem] border border-white bg-gradient-to-br from-purple-50/95 via-white to-fuchsia-50/95 p-5 shadow-[0_14px_36px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/80">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-purple-700 shadow-sm"><Users className="h-5 w-5" /></div>
               <h3 className="mt-3 text-sm font-extrabold text-slate-900">Dari kenalan ke aktivitas</h3>
-              <p className="mt-2 text-xs leading-5 text-slate-600">Temukan talent, pilih aktivitas yang kamu suka, lalu lakukan booking melalui sistem YUKU.</p>
+              <p className="mt-2 text-xs leading-5 text-slate-600">Temukan Companion dan pilih aktivitas yang ingin kamu lakukan bersama.</p>
               <button type="button" onClick={() => onNavigate('/talent')}
                 className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110">
-                Lihat talent <ArrowRight className="h-3.5 w-3.5" />
+                Cari Companion <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </section>
             <section className="rounded-[1.6rem] border border-white bg-gradient-to-br from-amber-50 to-white p-5 shadow-[0_14px_36px_rgba(180,83,9,0.07)] ring-1 ring-amber-100/90">
