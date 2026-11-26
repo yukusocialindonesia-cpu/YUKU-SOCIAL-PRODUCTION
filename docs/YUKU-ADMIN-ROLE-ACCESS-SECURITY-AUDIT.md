@@ -312,3 +312,43 @@ Follow-up comparison of the exact repository file `supabase/migrations/32_fix_ad
 - Migration 32 checks `public.is_admin()`. Production `is_admin()` was later narrowed to Super Admin/service_role, while the active `admin_review_talent()` uses `has_admin_permission('talent')` so scoped Talent Admins can review.
 - Production's active function also writes a before/after `admin_audit_logs` record and requires a rejection reason; migration 32 does not include those later behaviors.
 - Therefore the remediation must be a new forward migration based on the current Production function body, preserving current Talent permission checks, row locks, evidence validation, notifications and audit logging while fixing only the unsafe account-status transition. Do not copy/paste migration 32 as a whole.
+## Follow-up: Account suspension, reactivation and Admin role lifecycle — 26 November 2026
+
+### Production-vs-branch comparison: account-management Edge Function
+
+Inspected the ACTIVE Production Edge Function `account-management` (version 1) and compared its source with `supabase/functions/account-management/index.ts` on `feat/professional-services-categories`.
+
+**P1 — Production reactivation endpoint can bypass initial verification.**
+- Production accepts `set_status` with `nextStatus='active'` whenever the target is not already active and not `banned`; it does not require the current status to be `suspended`.
+- Therefore a Super Admin who calls the Edge Function directly (not through the current UI) can transition a `pending_verification` Customer/Talent account to `active`, bypassing the intended initial verification state.
+- The Admin UI only renders the reactivation action for `suspended` accounts, but UI visibility is not an authorization boundary.
+- The feature-branch source already contains a server-side guard requiring `nextStatus='active'` to pair with `target.account_status='suspended'`. Production version 1 does not contain that guard. The source fix is not deployed.
+- This is not a public unauthenticated path: the Edge Function validates the bearer token, checks the actor's active account, and requires `get_admin_access().is_super_admin=true`. It is nevertheless an authorization/state-machine bypass available to an authorized Super Admin through direct invocation.
+
+**Required action:** deploy the already-reviewed branch guard only after Staging tests; test direct invocation attempts for `pending_verification -> active`, `active -> active`, `suspended -> active`, and `banned -> active`. Do not treat UI hiding as sufficient protection.
+
+### Existing account and Admin-role protections confirmed
+
+- Authenticated users have SELECT, but no direct column UPDATE grant, on `users.role`, `users.account_status`, or `users.is_verified_18` in Production.
+- `private.is_active_admin(user_id)` requires all three: `private.admin_accounts.is_active=true`, `public.users.role='admin'`, and `public.users.account_status='active'`.
+- `get_admin_access()` derives permissions from the live private Admin tables for `auth.uid()`; it does not trust user-editable profile metadata.
+- `set_admin_active()` is Super Admin-only, locks the target Admin row, only targets `admin_level='admin'`, prevents the actor from disabling themselves, and writes an audit event. Disabling a scoped Admin makes database Admin access fail on the next authorization check; it does not itself ban that person from ordinary app login.
+- `set_admin_permissions()` is Super Admin-only, blocks self-edits, validates permission keys against `talent`, `booking`, `finance`, `support`, replaces the permission set, and writes an audit event.
+- `admin-management` Edge Function validates the signed-in user, requires Super Admin access, refuses to invite an email already associated with a Customer/Talent account, and provisions permissions through a service-role-only RPC. The RPC derives the Super Admin record from the supplied actor ID and validates that actor with `private.is_super_admin()`.
+- `guard_active_account_write()` blocks writes by suspended/banned actors when an authenticated actor context exists; trusted service-role work is intentionally separate. `prevent_user_security_column_tampering()` permits the Customer-to-Talent self-service transition only for the caller's own row and preserves account status/verification fields.
+
+### P2 — Account status, Auth ban and audit are a multi-system compensation flow
+
+`account-management` updates `public.users.account_status`, then calls Supabase Auth `updateUserById(ban_duration)`, then inserts `admin_audit_logs`. On Auth or audit failure it attempts compensating rollback calls. These operations are not one atomic transaction.
+
+An interleaving of two Super Admin status changes and a rollback can leave the database status, Auth ban duration and audit history temporarily or persistently out of sync. The optimistic `WHERE account_status = old_status` protects the initial database update, but rollback and Auth compensation are separate calls and are not protected by one per-user operation lock.
+
+Recommended hardening: make the database the authoritative status state machine; serialize per-user transitions with a transactional RPC/row lock and append-only audit/outbox event; have a retryable worker reconcile Auth ban state to the latest committed desired status. Until then, test simultaneous suspend/reactivate requests and forced Auth/audit failures, and alert on DB/Auth state divergence.
+
+### Permanent-ban workflow clarification
+
+`account_status_type` includes `banned`, and the UI can display that state, but the current account-management UI/API only supports `active` and `suspended`; the endpoint rejects reactivation of `banned` and does not provide an action to set `banned`. Current suspension uses a very long Auth ban duration (876000 hours) and the database status `suspended`. This is not equivalent to a separately governed permanent-ban workflow. Define the policy, appeal path, and audit requirements before adding a permanent-ban control.
+
+### Validation boundary
+
+All checks above were read-only inspection of Production function definitions, Edge Function source/version, role helper functions, trigger definitions, and column privileges. No user IDs/records, email lists, Auth sessions, or account-specific statuses were read. No Edge Function was deployed, no migration applied, no account or Admin permission changed, and no Production setting was modified. Production account-management version 1 remains behind the feature-branch source guard.
