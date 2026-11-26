@@ -1059,7 +1059,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                     })()}
                   </div>
                 ) : (
-                  item.status !== 'expired' && (
+                  ['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(item.status) && (
                     <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                       <button
                         type="button"
@@ -1083,7 +1083,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                     </div>
                   )
                 )}
-                {item.report && item.status !== 'expired' && (
+                {item.report && ['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(item.status) && (
                   <div className="pt-2 flex items-center justify-start">
                     <button
                       type="button"
