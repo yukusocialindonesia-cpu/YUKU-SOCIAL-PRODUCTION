@@ -155,3 +155,12 @@ No object content, filenames, user IDs, or signed URLs were read. No Storage obj
 6. Test Customer and Talent flows, first submission, rejected resubmission, partial upload failure, database failure, concurrent resubmission, admin role matrix, expired signed URL, owner denial of admin evidence, and retention cleanup in Staging.
 
 This follow-up is documentation and read-only Production inspection only. No Production schema, policies, bucket settings, identity rows, Auth users, or Storage objects were changed. No migration was applied. The complete remediation is not yet implemented and must remain a release blocker for the identity verification workflow until the full flow is shipped and tested.
+
+
+### Customer and Talent evidence requirements are inconsistent
+
+A second source pass found that `BecomeTalentPage.tsx` has a separate identity upload path: it uploads only a KTP image if `ktpFile` is present, and saves only `ktp_storage_path`; there is no selfie field or selfie validation in that Talent onboarding flow. The Customer `VerifyKtpPage` requires both KTP and selfie. The Admin review UI uses the same KTP-only evidence display for both roles.
+
+This means the current product has two different evidence standards. Decide one explicit policy for Customer and Talent before changing the schema: if selfie-with-KTP is required for both, make it mandatory in both onboarding flows and Admin review; if it is required only for Customer, document the role-based policy and ensure Talent identity review has its own clear requirements. Do not infer compliance from a KTP-only Admin screen.
+
+The Production aggregate status query returned 7 identity records, all `verified`, with no missing KTP storage paths. This is a count-only result; no personal identity data was inspected.
