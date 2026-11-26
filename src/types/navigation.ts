@@ -12,6 +12,7 @@ export type AppRoute =
   | '/daftar-jasa-profesional'
   | '/cara-kerja'
   | '/daftar-talent'
+  | '/merchant-center'
   | '/dashboard-talent'
   | '/riwayat-booking'
   | '/profil-saya'
