@@ -39,32 +39,44 @@ Deno.serve(async (req) => {
 
   const status = String(payload?.status ?? '').toUpperCase();
   const externalId = String(payload?.external_id ?? '');
-  const match = /^yuku-([0-9a-f-]{36})$/i.exec(externalId);
+  const match = /^yuku-([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i.exec(externalId);
   if (!match) return ok({ ignored: 'external_id tidak dikenali' });
   const bookingId = match[1];
 
   // Hanya PAID/SETTLED yang melunasi. EXPIRED dibiarkan ke cron kedaluwarsa booking.
   if (status !== 'PAID' && status !== 'SETTLED') return ok({ ignored: `status ${status}` });
 
+  // Do not accept callbacks with a missing invoice ID, non-IDR currency,
+  // or an absent/non-numeric amount. The booking amount remains the authority.
+  const invoiceId = String(payload?.id ?? '').trim();
+  if (!invoiceId || invoiceId.length > 100) return fail(422, 'ID invoice tidak valid');
+  if (String(payload?.currency ?? '').toUpperCase() !== 'IDR') {
+    return fail(422, 'Mata uang pembayaran tidak sesuai');
+  }
+  const rawPaid = payload?.paid_amount ?? payload?.amount;
+  if (typeof rawPaid !== 'number' || !Number.isSafeInteger(rawPaid) || rawPaid <= 0) {
+    return fail(422, 'Nominal pembayaran tidak valid');
+  }
+
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
-  // 2) Cocokkan nominal dengan database (bukan percaya payload).
+  // Cocokkan nominal dengan database (bukan percaya payload).
   const { data: booking } = await admin
     .from('bookings').select('id, gross_amount').eq('id', bookingId).maybeSingle();
   if (!booking) return ok({ ignored: 'booking tidak ditemukan' });
 
-  const paid = Number(payload?.paid_amount ?? payload?.amount ?? 0);
+  const paid = rawPaid;
   if (paid !== Number(booking.gross_amount)) {
     console.error('Nominal tidak cocok', bookingId, paid, booking.gross_amount);
     return fail(422, 'Nominal pembayaran tidak sesuai');
   }
 
-  // 3) Lunasi (idempotent di sisi database).
+  // Lunasi (idempotent di sisi database).
   const method = String(payload?.payment_channel ?? payload?.payment_method ?? 'invoice').slice(0, 50);
   const { error } = await admin.rpc('settle_booking_payment', {
     p_booking_id: bookingId,
     p_provider: 'xendit',
-    p_provider_charge_id: String(payload?.id ?? '').slice(0, 100) || null,
+    p_provider_charge_id: invoiceId,
     p_payment_method: method,
     p_webhook_payload: payload,
   });
