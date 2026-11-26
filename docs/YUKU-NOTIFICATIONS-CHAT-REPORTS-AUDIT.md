@@ -74,3 +74,19 @@ These are source-level changes only. They have not been applied to Production or
 ## Validation boundary
 
 Production checks were read-only catalog, policy, grant and function-definition inspection. No report, chat, notification, user or device rows were read. No Production DDL/DML, migration, policy, setting, Edge Function deployment, push send, or PR merge was performed. Automated Staging and device-level tests remain outstanding.
+
+
+## Branch remediation update — 26 Nov 2026
+
+The feature branch now includes additional source-level safeguards:
+
+- Booking chat SELECT no longer has the blanket `is_admin()` bypass; only Customer/Talent participants for the allowed booking states can read message bodies.
+- The push sender detects booking-chat notifications from `booking_id + message_id` metadata and sends generic OS notification text instead of the stored message body. This protects lock screens even if an older Production trigger still writes a message preview.
+- Push status is now checked against the server-side endpoint owner and current account, rather than treating any local browser subscription as belonging to the currently signed-in user.
+- The push toggle refreshes when the authenticated user ID changes.
+
+Still unresolved:
+- Production has not received these branch changes.
+- Direct UPDATE grants on report moderation columns still require a forward migration to revoke them while preserving the `admin_resolve_report()` RPC's SECURITY DEFINER owner path.
+- Staging tests for chat participant isolation, lock-screen payload, account switching and report direct-write denial remain outstanding.
+- No build, Deno check, automated test, push send or live Realtime test has been run for this commit.

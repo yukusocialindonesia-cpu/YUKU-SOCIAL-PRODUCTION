@@ -221,3 +221,12 @@ Production catalog verification found the following P1 gaps. The branch has part
 - No Production rows, schema, functions, policies, settings, push deliveries, deployments or payment state were changed.
 
 Launch decision: **do not treat notification/chat/report moderation as production-ready** until these P1 items are fixed in forward migrations and pass Staging negative tests.
+
+
+### Branch source hardening — notification/chat (26 Nov 2026)
+
+- Feature branch now removes blanket Admin read access to booking message bodies; only actual booking participants retain message access for allowed states.
+- Push sender now forces generic text for booking-chat notifications even when the stored notification body contains legacy chat preview text.
+- Push toggle status now verifies endpoint ownership for the current authenticated account and refreshes on account ID changes.
+- **Still P1:** Production has not received these changes; direct report moderation column UPDATE grants need a generated forward migration; all Staging negative tests and Android lock-screen checks remain outstanding.
+- No Production migration, deployment, data write or push delivery was performed.

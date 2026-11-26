@@ -348,3 +348,10 @@ This addendum is based on read-only Production catalog/function inspection. Prod
 ### Validation boundary
 
 All Production checks for this addendum were catalog/function/policy/grant reads only. No report, chat, notification, user or device rows were read. No Production SQL write, migration, RLS change, Realtime setting change, Edge Function deploy, push send, or PR merge was performed. Branch-only source has not been run through Staging negative tests or a live push/Realtime test.
+
+
+### Branch remediation update — 26 Nov 2026
+
+- `yuku-push` now replaces the body of booking-chat push notifications with generic text using the booking/message metadata, providing a second privacy boundary even if legacy notification rows contain previews.
+- `getYukuPushStatus()` now asks the authenticated Edge Function whether the local browser endpoint is owned by the current account. `PushNotificationToggle` refreshes when the authenticated user ID changes, fixing stale status on shared-device account switches.
+- These are branch-only source changes. Production function deployment and Android lock-screen tests have not occurred.
