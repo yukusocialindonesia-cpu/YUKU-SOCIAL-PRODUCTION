@@ -191,7 +191,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
           </div>
         )}
 
-        {providers.length > 0 && (
+        {visibleProviders.length > 0 && (
           <section className="mt-8">
             <div className="mb-3 flex items-end justify-between gap-3">
               <div><h2 className="text-sm font-extrabold text-slate-900">Penyedia jasa tersedia</h2><p className="mt-1 text-[11px] text-slate-500">Profil yang sudah disetujui dan aktif di YUKU.</p></div>
