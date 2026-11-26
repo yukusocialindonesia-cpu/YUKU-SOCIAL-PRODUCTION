@@ -13,7 +13,12 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
-  const { user: currentUser, role: userRole, isAuthLoading, signOut } = useAuth();
+  const { user: currentUser, role: userRole, accessSnapshot, isAuthLoading, signOut } = useAuth();
+  const customerAvailable = accessSnapshot?.capabilities.customer.available ?? (userRole === 'customer' || userRole === 'talent');
+  const talentWorkspaceAvailable = accessSnapshot
+    ? accessSnapshot.capabilities.talent?.status === 'approved'
+    : userRole === 'talent';
+  const professionalWorkspaceAvailable = Boolean(accessSnapshot?.capabilities.professionalProvider);
 
   useEffect(() => {
     const openMenu = () => setIsMobileMenuOpen(true);
@@ -167,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'talent' && (
+                {talentWorkspaceAvailable && (
                   <button
                     onClick={() => handleLinkClick('/dashboard-talent')}
                     className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
@@ -182,7 +187,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'customer' && (
+                {professionalWorkspaceAvailable && (
+                  <button
+                    onClick={() => handleLinkClick('/daftar-jasa-profesional')}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                      currentPath === '/daftar-jasa-profesional'
+                        ? 'bg-fuchsia-700 text-white border-fuchsia-700 shadow-xs'
+                        : 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-200 hover:bg-fuchsia-100'
+                    }`}
+                    title="Buka profil dan pengajuan Jasa Profesional"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5 text-fuchsia-700" />
+                    <span>Profesional</span>
+                  </button>
+                )}
+
+                {customerAvailable && (
                   <>
                     <button
                       onClick={() => handleLinkClick('/riwayat-booking')}
@@ -244,7 +264,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       </div>
 
                       <div className="py-1">
-                        {userRole === 'customer' && (
+                        {customerAvailable && (
                           <button
                             type="button"
                             role="menuitem"
