@@ -71,7 +71,7 @@ The latest guardrail also enforces that an applicant's selected online/offline m
 
 
 ## Latest repository checks
-The latest PR head has successful GitHub Actions results for account-management build/type checks, account-management security checks, admin simple-management checks, notification branch checks, and manual bank-transfer branch validation. These are repository CI checks only; they do not replace applying the migrations to a disposable Supabase project, exercising RLS/RPC with separate user roles, or completing mobile and financial end-to-end tests.
+The latest PR head's GitHub Actions checks are still running or queued. Do not treat CI as passed until all required runs complete successfully. Repository CI also does not replace applying the migrations to a disposable Supabase project, exercising RLS/RPC with separate user roles, or completing mobile and financial end-to-end tests.
 
 
 ## Public listing visibility guard
@@ -80,3 +80,8 @@ A follow-up RLS migration now hides a professional listing unless its provider p
 
 ## Reviewer verification attestation
 Publishing now requires a separate internal verification note of at least 20 characters, recorded with the reviewing admin and timestamp. The note should state what was checked, such as identity/name match, issuer, credential validity and scope, or employment references. This is an auditable reviewer attestation, not an automated validation of a license or certificate. Applicants cannot edit the verification note or reviewer identity/timestamp during revision. Regulated services still require a qualified human reviewer to confirm the applicable current authorization before approval.
+
+
+## Application status audit timeline
+
+An append-only status history now records the initial submission and every status transition, including the previous/new status, note, actor class, actor ID where available, and timestamp. Talent can read only its own application timeline; Talent-permission admins and Super Admins can inspect the review history. Both the Talent application page and Admin review cards display the chronological timeline. The history is written transactionally by a database trigger and is not editable by clients.
