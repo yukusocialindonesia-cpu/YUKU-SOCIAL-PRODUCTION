@@ -258,6 +258,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     else {
       setAddress(''); setOpeningHours(''); setSuccess('Lokasi usaha berhasil ditambahkan.');
       await load();
+      await loadReviewHistory();
     }
     setSaving(false);
   };
@@ -269,7 +270,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       p_business_id: activeBusiness.id,
     });
     if (rpcError) setError(rpcError.message);
-    else { setSuccess('Pengajuan verifikasi berhasil dikirim. Bisnis belum tampil publik sampai disetujui.'); await load(); }
+    else { setSuccess('Pengajuan verifikasi berhasil dikirim. Bisnis belum tampil publik sampai disetujui.'); await load(); await loadReviewHistory(); }
     setSaving(false);
   };
 
