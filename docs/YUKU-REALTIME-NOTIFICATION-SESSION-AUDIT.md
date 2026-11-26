@@ -139,3 +139,23 @@ Required Staging checks:
 8. Review the project-level Realtime setting. Disabling public access globally is a separate project setting and was not changed by this repository migration.
 
 No SQL was run against Staging or Production, no project-level Realtime setting was changed, and no Edge Function was deployed.
+
+
+## Production read-only inspection and Security Advisor snapshot
+
+Read-only checks against the connected Supabase project on 26 November 2026:
+- `pg_policies` returned **zero policies** for `realtime.messages`.
+- Security Advisor reported 5 anonymous-callable SECURITY DEFINER functions, 60 authenticated-callable SECURITY DEFINER functions, 3 private-schema tables with RLS enabled and no policies, and leaked-password protection disabled.
+- The 60 authenticated-callable findings are not all defects: many are intended authenticated RPCs whose function bodies enforce ownership or module permission. They require function-by-function authorization review, not blanket revocation.
+- The 5 anonymous-callable findings include narrow boolean helpers used by RLS/Storage policies (`can_read_talent_media_object`, `has_admin_permission`, `is_super_admin`, `is_talent_publicly_visible`). Their exposed return values and call paths need to remain minimal and verified. The fifth finding, `guard_talent_media_moderation_fields()`, is a trigger-only helper and should not be a direct API endpoint.
+
+Branch-only remediation:
+- Migration `20261127001200_revoke_talent_media_trigger_helper_execute.sql` revokes direct execution of `guard_talent_media_moderation_fields()` from PUBLIC, anon, and authenticated. The database trigger can still call its trigger function.
+- This migration has not been applied to Production.
+
+Other Advisor findings:
+- Three tables in the non-exposed `private` schema have RLS enabled without policies: `private.admin_accounts`, `private.admin_permissions`, and `private.talent_service_locations`. This may be intentional defense-in-depth because application access is through tightly scoped SECURITY DEFINER helpers; do not add broad policies without reviewing every call path.
+- Leaked-password protection is disabled. This is an Auth project setting and was not changed.
+- Advisor snapshot is a point-in-time Production inspection; it is not a substitute for staging role-matrix tests.
+
+The absence of `realtime.messages` policies in Production confirms that the private booking-chat authorization migration remains a deployment blocker. Project-level Realtime public-access configuration was not inspected or changed.
