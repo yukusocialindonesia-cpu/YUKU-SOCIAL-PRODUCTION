@@ -248,30 +248,33 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
 
     setIsSubmitting(true);
 
+    let uploadedKtpPath: string | null = null;
+    let uploadedSelfiePath: string | null = null;
+    let identityEvidenceSaved = false;
+
     try {
       const timestamp = Date.now();
 
       // 1. Upload Foto KTP & Swafoto KTP to private bucket ktp-documents with upsert: false
       const ktpExt = ktpFile.name.split('.').pop() || 'jpg';
-      const ktpStoragePath = `${currentUser.id}/ktp_${timestamp}.${ktpExt}`;
+      uploadedKtpPath = `${currentUser.id}/ktp_${timestamp}.${ktpExt}`;
 
       const selfieExt = selfieFile.name.split('.').pop() || 'jpg';
-      const selfieStoragePath = `${currentUser.id}/selfie_${timestamp}.${selfieExt}`;
+      uploadedSelfiePath = `${currentUser.id}/selfie_${timestamp}.${selfieExt}`;
 
-      const [ktpUploadRes, selfieUploadRes] = await Promise.all([
-        supabase.storage.from('ktp-documents').upload(ktpStoragePath, ktpFile, {
-          upsert: false,
-        }),
-        supabase.storage.from('ktp-documents').upload(selfieStoragePath, selfieFile, {
-          upsert: false,
-        }),
-      ]);
+      const ktpUploadRes = await supabase.storage
+        .from('ktp-documents')
+        .upload(uploadedKtpPath, ktpFile, { upsert: false });
 
       if (ktpUploadRes.error || !ktpUploadRes.data) {
         throw new Error(
           `Gagal mengunggah foto e-KTP: ${ktpUploadRes.error?.message || 'Upload gagal'}`
         );
       }
+
+      const selfieUploadRes = await supabase.storage
+        .from('ktp-documents')
+        .upload(uploadedSelfiePath, selfieFile, { upsert: false });
 
       if (selfieUploadRes.error || !selfieUploadRes.data) {
         throw new Error(
@@ -294,8 +297,8 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         full_legal_name: fullLegalName.trim(),
         date_of_birth: dateOfBirth,
         ktp_number: ktpNumber.trim(),
-        ktp_storage_path: ktpStoragePath,
-        selfie_storage_path: selfieStoragePath,
+        ktp_storage_path: uploadedKtpPath,
+        selfie_storage_path: uploadedSelfiePath,
         emergency_contact_phone: emergencyPhone.trim(),
       };
 
@@ -311,6 +314,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
       if (saveError) {
         throw new Error(`Gagal menyimpan pengajuan verifikasi KTP: ${saveError.message}`);
       }
+      identityEvidenceSaved = true;
 
       setKtpFile(null);
       setKtpPreviewUrl(null);
@@ -321,6 +325,19 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
       );
       await loadIdentityData(currentUser);
     } catch (err: any) {
+      if (!identityEvidenceSaved) {
+        const orphanedEvidence = [uploadedKtpPath, uploadedSelfiePath].filter(
+          (storagePath): storagePath is string => Boolean(storagePath),
+        );
+        if (orphanedEvidence.length > 0) {
+          const { error: cleanupError } = await supabase.storage
+            .from('ktp-documents')
+            .remove(orphanedEvidence);
+          if (cleanupError) {
+            console.error('Gagal membersihkan berkas verifikasi KTP yatim:', cleanupError.message);
+          }
+        }
+      }
       setErrorMessage(err?.message || 'Terjadi kesalahan saat mengirim verifikasi KTP.');
     } finally {
       setIsSubmitting(false);
