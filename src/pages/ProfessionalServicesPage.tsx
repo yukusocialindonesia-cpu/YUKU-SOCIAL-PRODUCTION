@@ -107,6 +107,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-200">YUKU Professional Services</p>
               <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Jelajahi Jasa Profesional</h1>
               <p className="mt-2 max-w-2xl text-xs leading-relaxed text-violet-100 sm:text-sm">Temukan berbagai keahlian dan layanan untuk kebutuhan pribadi, keluarga, perjalanan, hingga bisnis.</p>
+              <button onClick={() => onNavigate('/daftar-jasa-profesional')} className="mt-4 rounded-xl bg-white px-4 py-2.5 text-[11px] font-extrabold text-[#24105F] shadow-sm">Daftarkan jasa Anda</button>
             </div>
           </div>
           <div className="mt-5 flex flex-wrap gap-2 text-[10px] font-semibold text-violet-50">
