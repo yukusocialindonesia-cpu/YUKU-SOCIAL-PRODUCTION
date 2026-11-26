@@ -229,6 +229,25 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       return;
     }
 
+    // Identitas Talent harus siap diajukan untuk verifikasi sebelum data profil/layanan dibuat.
+    const normalizedKtpNumber = formData.ktpNumber.replace(/\\D/g, '');
+    if (!/^\\d{16}$/.test(normalizedKtpNumber)) {
+      setSubmitError('Nomor NIK wajib diisi tepat 16 digit sesuai KTP.');
+      return;
+    }
+    if (!ktpFile) {
+      setSubmitError('Unggah foto e-KTP terlebih dahulu agar identitas dapat diverifikasi.');
+      return;
+    }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(ktpFile.type)) {
+      setSubmitError('Format foto e-KTP harus JPG, PNG, atau WebP.');
+      return;
+    }
+    if (ktpFile.size === 0 || ktpFile.size > 5 * 1024 * 1024) {
+      setSubmitError('Ukuran foto e-KTP harus lebih dari 0 KB dan maksimal 5 MB.');
+      return;
+    }
+
     // Check age on client
     const birthDate = new Date(formData.dateOfBirth);
     const today = new Date();
