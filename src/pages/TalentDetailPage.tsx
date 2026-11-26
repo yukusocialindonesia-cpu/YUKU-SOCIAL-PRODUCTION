@@ -123,7 +123,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Auth state for booking
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, role, accessSnapshot } = useAuth();
+  const canBookAsCustomer = accessSnapshot
+    ? accessSnapshot.capabilities.customer.available
+    : role === 'customer';
 
   // Real Booking Form States
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -330,6 +333,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     // 1. Auth Guard
     if (!currentUser) {
       setBookingError('Anda harus masuk (login) terlebih dahulu untuk mengajukan reservasi.');
+      return;
+    }
+    if (!canBookAsCustomer) {
+      setBookingError('Akun ini belum memiliki akses Customer untuk membuat booking. Periksa status akun atau hubungi bantuan YUKU.');
       return;
     }
 
