@@ -90,7 +90,20 @@ revoke all on function private.has_merchant_business_access(uuid,text[])
   from public, anon;
 grant usage on schema private to authenticated;
 grant execute on function private.has_merchant_business_access(uuid,text[])
-  to authenticated;
+  to anon, authenticated;
+
+create or replace function private.is_merchant_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $
+  select auth.uid() is not null and public.is_admin();
+$;
+
+revoke all on function private.is_merchant_admin() from public;
+grant execute on function private.is_merchant_admin() to anon, authenticated;
 
 drop policy if exists merchant_businesses_public_or_member_read on public.merchant_businesses;
 create policy merchant_businesses_public_or_member_read
@@ -99,7 +112,7 @@ create policy merchant_businesses_public_or_member_read
   using (
     review_status = 'approved'
     or private.has_merchant_business_access(id)
-    or (auth.uid() is not null and public.is_admin())
+    or private.is_merchant_admin()
   );
 
 drop policy if exists merchant_memberships_owner_or_admin_read on public.merchant_memberships;
@@ -109,7 +122,7 @@ create policy merchant_memberships_owner_or_admin_read
   using (
     user_id = auth.uid()
     or private.has_merchant_business_access(business_id, array['owner','manager']::text[])
-    or public.is_admin()
+    or private.is_merchant_admin()
   );
 
 drop policy if exists merchant_locations_public_or_member_read on public.merchant_locations;
@@ -244,8 +257,18 @@ begin
   if p_member_role not in ('manager','staff') then
     raise exception 'Only manager or staff membership can be invited' using errcode = '22023';
   end if;
-  if p_user_id is null or not exists (select 1 from public.users u where u.id = p_user_id) then
+  if p_user_id is null or p_user_id = auth.uid()
+     or not exists (select 1 from public.users u where u.id = p_user_id) then
     raise exception 'Target account not found' using errcode = 'P0002';
+  end if;
+
+  if exists (
+    select 1 from public.merchant_memberships mm
+     where mm.business_id = p_business_id
+       and mm.user_id = p_user_id
+       and mm.member_role = 'owner'
+  ) then
+    raise exception 'Business owner cannot be invited as staff or manager' using errcode = '22023';
   end if;
 
   insert into public.merchant_memberships (
@@ -318,5 +341,84 @@ comment on function public.create_merchant_business(text,text,text,text,text) is
   'Creates a pending merchant business and its owner membership atomically.';
 comment on function public.invite_merchant_member(uuid,uuid,text) is
   'Business owner may invite an existing YUKU account as manager or staff; invitee must accept.';
+
+-- Extend the account snapshot so the workspace switcher receives only the
+-- authenticated user's own server-confirmed merchant memberships.
+create or replace function public.get_my_account_access_snapshot()
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $
+declare
+  v_user_id uuid := auth.uid();
+  v_account_status text;
+  v_customer_available boolean;
+  v_talent_status text;
+  v_professional_status text;
+  v_merchant_memberships jsonb;
+begin
+  if v_user_id is null then
+    raise exception 'Authentication required' using errcode = '28000';
+  end if;
+
+  select u.account_status::text
+    into v_account_status
+    from public.users u
+   where u.id = v_user_id;
+
+  if not found then
+    raise exception 'Account record not found' using errcode = 'P0002';
+  end if;
+
+  v_customer_available := v_account_status in ('active','pending_verification');
+
+  select case when tp.is_approved is true then 'approved' else 'pending_review' end
+    into v_talent_status
+    from public.talent_profiles tp
+   where tp.id = v_user_id;
+
+  select pp.review_status
+    into v_professional_status
+    from public.professional_provider_profiles pp
+   where pp.user_id = v_user_id;
+
+  select coalesce(
+    jsonb_agg(
+      jsonb_build_object(
+        'businessId', mb.id,
+        'businessName', mb.business_name,
+        'role', mm.member_role,
+        'status', mm.membership_status,
+        'businessStatus', mb.review_status
+      ) order by mm.created_at
+    ),
+    '[]'::jsonb
+  )
+    into v_merchant_memberships
+    from public.merchant_memberships mm
+    join public.merchant_businesses mb on mb.id = mm.business_id
+   where mm.user_id = v_user_id
+     and mm.membership_status in ('active','pending_invitation');
+
+  return jsonb_build_object(
+    'accountStatus', v_account_status,
+    'capabilities', jsonb_build_object(
+      'customer', jsonb_build_object('available', v_customer_available),
+      'talent', case when v_talent_status is null then null
+        else jsonb_build_object('status', v_talent_status) end,
+      'professionalProvider', case when v_professional_status is null then null
+        else jsonb_build_object('status', v_professional_status) end,
+      'merchantMemberships', v_merchant_memberships
+    )
+  );
+end;
+$;
+
+revoke all on function public.get_my_account_access_snapshot()
+  from public, anon;
+grant execute on function public.get_my_account_access_snapshot()
+  to authenticated;
 
 commit;
