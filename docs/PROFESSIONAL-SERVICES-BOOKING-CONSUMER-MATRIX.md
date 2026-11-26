@@ -152,3 +152,45 @@ The following additional consumers were verified by searching the repository and
 - `create-checkout` reads booking ID, owner, status, gross and expiry, then asks the authenticated user client to claim the route before creating the Xendit invoice. `xendit-webhook` compares provider paid amount to `bookings.gross_amount` before calling service-role `settle_booking_payment()`.
 - These checkout paths are structurally reusable if professional bookings are represented in the same bookings table and gross snapshot. They still require explicit kind eligibility, payment route availability, provider event/charge idempotency review, and exact currency validation before release.
 - No evidence from this source inspection authorizes enabling Xendit: the current route-lock migration deliberately blocks new route claims. QRIS/bank transfer remain subject to their existing server-side exact-amount and pending-booking checks.
+
+## Cancellation, refund, dispute and escrow audit — direct migration inspection (2026-11-26)
+
+This is a source-level audit of the current activity booking financial lifecycle. It does not change the existing activity behavior and does not authorize production migration.
+
+### Confirmed existing behavior
+
+| Component | Current behavior | Professional-service compatibility |
+|---|---|---|
+| `request_customer_cancellation()` (migration 23) | Locks booking; allows pending payment, escrow-held and talent-confirmed states; rejects cancellation once `start_time <= now()`; unpaid bookings create a zero-value case; paid cancellation uses time remaining until `start_time`: >24h full refund, 6–24h half refund with retained amount pending Admin review, <6h no automatic refund and Admin review. | Not compatible as-is with per-day/per-session/project services. The policy is hard-coded to a single `start_time` and hour windows. Professional policy must use the immutable booking unit and its approved cancellation cutoff; do not map a project deadline or multi-day window into `start_time`. |
+| `request_talent_cancellation()` (migration 22) | Allows only escrow-held or talent-confirmed bookings; creates a full refund request for the full settled payment; changes booking to `cancelled_by_talent`. | Can be reused only if the professional service policy approves full refund for Talent cancellation and the booking has a valid settled escrow payment. Future project/milestone work needs a different rule and cannot be silently treated as full unused service. |
+| `admin_process_refund()` (migration 23 replacement) | Requires Admin/Finance, locks refund and payment, validates provider/bank reference, checks cumulative processed refunds do not exceed payment amount, and marks payment fully refunded only when cumulative processed amount reaches the payment total. | Reusable at payment aggregate level if partial refunds are allowed and every refund is tied to the frozen professional booking/payment. Add service-kind context to Admin review, not client authority. |
+| `handle_booking_refund_financials()` (migration 21) | On refunded/customer-cancelled/Talent-cancelled status, marks the earning refund-adjusted and writes a reversal for the earning's net amount; cancellation handling is idempotency-guarded by existing reversal rows. | Shared ledger path is preferable, but partial customer refunds and retained amounts must reconcile against commission, Talent earning and referral reward. Existing reversal logic is not proof that arbitrary partial refunds are allocated proportionally. |
+| `validate_booking_report_and_hold()` / `hold_booking_when_reported()` (migration 21) | A report tied to a booking must be made by a participant against the other participant. An open/investigating report moves eligible booking states to `disputed_hold`; earning/reward states are preserved for later restoration. | Reusable for professional bookings only if report categories and Admin resolution screens understand the professional service snapshot and private evidence. |
+| `admin_resolve_report()` (migration 21) | Admin resolves report; if no other active report remains, restores prior booking and earning/reward states. | Keep the active-report guard and ledger restoration. Project disputes need deliverable/scope/revision evidence before a decision can release funds. |
+| `set_booking_completion_timestamps()` / `process_escrow_release()` (migration 20) | Any transition to `completed` schedules release at the completion timestamp. The service-role cron worker makes held Talent earnings available and marks settled payment as released when no open/investigating report exists. | Safe only for service units whose completion signal is authoritative. Project must not transition to generic `completed` until accepted (or a formally approved timeout outcome) because the release is immediate. |
+| `confirm_booking_completion()` (migration 21) | Requires `in_progress`; either participant confirms; booking completes only after both customer and Talent confirmations. | Suitable as a candidate for session-based service after the booked slot, but not for day/project unless the completion semantics are separately defined. |
+
+### Concrete blockers
+
+1. **Cancellation cutoff assumes `start_time` exists.** Per-session/day/project services need explicit unit-specific cancellation anchors and timezones. Multi-day cancellation should define whether refund is calculated on whole unused days, elapsed blocks, or a fixed policy; do not prorate by guessed hourly duration.
+2. **Customer cancellation formula is activity-specific.** The >24h / 6–24h / <6h rules must not automatically apply to professional services. Approve a separate policy code and snapshot it when the booking is created.
+3. **Talent cancellation assumes a full refund of the entire payment.** Keep this as a candidate default for a service that has not started, but define a separate policy for partially delivered work before any project feature is enabled.
+4. **Partial refund and earning reversal are not yet a complete allocation contract.** The refund processor prevents over-refunding the payment, but the booking status trigger reverses the linked Talent earning as a whole. Do not support partial refund of a completed/partially delivered professional service until the retained amount, YUKU fee, Talent earning, referral reward, tax/transfer costs and already allocated payout are reconciled by a dedicated idempotent financial adjustment.
+5. **Immediate escrow release is a critical project constraint.** Generic `completed` causes immediate release scheduling. Project delivery must use a separate acceptance state and cannot mark the booking completed until the accepted outcome is authoritative.
+6. **Dispute hold is booking-wide.** The existing report workflow holds the entire booking and restores prior financial states when all active reports are resolved. Keep this behavior for the first professional release; do not introduce partial milestone release without a separate ledger design.
+7. **Refund provider execution is manual.** Current Finance workflow records a real provider/bank refund reference after the refund is actually completed. Do not tell customers a refund is completed merely because a request or approval record exists.
+
+### Required professional cancellation contract before checkout
+
+- Snapshot a versioned cancellation policy on the booking, including service unit, timezone, cutoff anchor, refund bands, provider-cancellation rule and no-show rule.
+- Per-session: use the booked session start and a separately approved cancellation window.
+- Per-day: define calendar-day versus fixed work-block semantics and how cancellation of future unused days is calculated.
+- Per-project: keep checkout disabled until scope acceptance, work-start rules, revision limits, partial-work refund treatment and dispute/acceptance outcomes are defined.
+- Preserve one refund aggregate per payment with cumulative refund cap, provider refund reference and audit trail.
+- Financial reversal must be idempotent and reconcile the actual retained/refunded split against Talent earning, YUKU fee, referral rewards and payout allocations. Reject changes if earnings have already been allocated/paid unless a verified recovery path exists.
+- Keep the existing activity policy and its tests unchanged. Add a distinct professional policy branch rather than altering the legacy activity thresholds.
+- Add tests for cancellation before/after cutoff, Talent cancellation, no-show, partial delivery, repeated RPC calls, concurrent cancellation/refund, open dispute, resolved dispute, payout already allocated, partial refund, and immediate escrow worker.
+
+### Release decision
+
+Professional booking checkout remains blocked until Product/Finance approves unit-specific cancellation and refund rules and the financial allocation path is tested in disposable Supabase. Project booking remains disabled until the separate acceptance/dispute workflow prevents premature escrow release.
