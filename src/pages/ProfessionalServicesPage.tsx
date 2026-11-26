@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BriefcaseBusiness, Search, ShieldCheck, MapPin, Monitor, ChevronRight, AlertCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, BriefcaseBusiness, Search, ShieldCheck, MapPin, Monitor, ChevronRight, AlertCircle, RefreshCw, Star, BadgeCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AppRoute } from '../types/navigation';
 
@@ -17,7 +17,7 @@ interface ServiceGroup {
   icon_name: string;
   professional_service_subcategories: ServiceItem[];
 }
-interface Props {
+interface ProviderItem {\n  id: string;\n  service_description: string;\n  rate_amount: number;\n  pricing_unit: string;\n  delivery_modes: string[];\n  provider: { id: string; display_name: string; avatar_url: string; city: string; headline: string; rating_average: number; review_count: number; is_approved: boolean };\n  subcategory: { id: string; title: string; category_id: string };\n}\ninterface Props {
   onNavigate: (path: AppRoute, params?: Record<string, string>) => void;
 }
 const verificationLabel: Record<string, string> = {
@@ -28,7 +28,7 @@ const verificationLabel: Record<string, string> = {
 };
 
 export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
-  const [groups, setGroups] = useState<ServiceGroup[]>([]);
+  const [groups, setGroups] = useState<ServiceGroup[]>([]);\n  const [providers, setProviders] = useState<ProviderItem[]>([]);
   const [selectedGroup, setSelectedGroup] = useState('all');
   const [mode, setMode] = useState<'all' | 'online' | 'offline'>('all');
   const [query, setQuery] = useState('');
@@ -49,6 +49,18 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
       setGroups([]);
     } else {
       setGroups((data || []) as ServiceGroup[]);
+      const { data: providerData } = await supabase
+        .from('professional_talent_services')
+        .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)')
+        .eq('approval_status', 'approved')
+        .eq('is_active', true)
+        .limit(24);
+      const normalized = (providerData || []).map((row: any) => ({
+        ...row,
+        provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
+        subcategory: Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory,
+      })).filter((row: any) => row.provider?.is_approved === true);
+      setProviders(normalized as ProviderItem[]);
     }
     setLoading(false);
   };
@@ -160,6 +172,33 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
               </section>
             ))}
           </div>
+        )}
+
+        {providers.length > 0 && (
+          <section className="mt-8">
+            <div className="mb-3 flex items-end justify-between gap-3">
+              <div><h2 className="text-sm font-extrabold text-slate-900">Penyedia jasa tersedia</h2><p className="mt-1 text-[11px] text-slate-500">Profil yang sudah disetujui dan aktif di YUKU.</p></div>
+              <span className="text-[10px] font-semibold text-slate-500">{providers.length} profil</span>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {providers.filter((item) => {
+                const matchesQuery = !query.trim() || `${item.provider.display_name} ${item.provider.headline} ${item.subcategory.title} ${item.provider.city}`.toLocaleLowerCase('id').includes(query.trim().toLocaleLowerCase('id'));
+                const matchesCategory = selectedGroup === 'all' || groups.find((g) => g.id === selectedGroup)?.professional_service_subcategories.some((sub) => sub.id === item.subcategory.id);
+                const matchesMode = mode === 'all' || (item.delivery_modes || []).includes(mode);
+                return matchesQuery && matchesCategory && matchesMode;
+              }).map((item) => (
+                <button key={item.id} type="button" onClick={() => onNavigate('/jasa-profesional/:id', { id: item.provider.id })} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left transition hover:border-violet-300 hover:shadow-md">
+                  <img src={item.provider.avatar_url} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-slate-100 object-cover"/>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1 text-xs font-extrabold text-slate-900">{item.provider.display_name}{item.provider.is_approved && <BadgeCheck className="h-3 w-3 text-violet-600"/>}</span>
+                    <span className="mt-1 block truncate text-[10px] text-slate-500">{item.subcategory.title} · {item.provider.city}</span>
+                    <span className="mt-1 flex items-center gap-1 text-[10px] text-slate-500"><Star className="h-3 w-3 text-amber-500"/> {Number(item.provider.rating_average || 0).toFixed(1)} ({item.provider.review_count || 0})</span>
+                  </span>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-violet-500"/>
+                </button>
+              ))}
+            </div>
+          </section>
         )}
 
         <div className="mt-7 rounded-2xl border border-violet-100 bg-violet-50 p-4 sm:p-5">
