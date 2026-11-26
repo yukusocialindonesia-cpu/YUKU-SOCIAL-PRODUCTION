@@ -411,7 +411,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         talent_completed_at,
         created_at
       `;
-      let { data: bookingRows, error: bookingErr } = await supabase
+      let bookingRows: any[] | null = null;
+      let bookingErr: any = null;
+      const bookingResult = await supabase
         .from('bookings')
         .select(`
           ${legacyBookingSelect},
@@ -421,6 +423,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         `)
         .eq('talent_id', userId)
         .order('created_at', { ascending: false });
+      bookingRows = bookingResult.data;
+      bookingErr = bookingResult.error;
 
       // Keep the provider dashboard compatible with environments where migration 40
       // has not yet been applied (for example, the current production preview DB).
