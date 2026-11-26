@@ -1,7 +1,7 @@
 # YUKU Professional Services — Booking Consumer Matrix
 
 Audit date: 2026-11-26  
-Source: read-only inspection of production Supabase catalogs/function definitions and the current `main` frontend/Edge Function sources. The feature branch contains this document only; no production writes were performed.
+Source: read-only inspection of production Supabase catalogs/function definitions and repository frontend/Edge Function sources. No production writes were performed.
 
 ## Decision
 
