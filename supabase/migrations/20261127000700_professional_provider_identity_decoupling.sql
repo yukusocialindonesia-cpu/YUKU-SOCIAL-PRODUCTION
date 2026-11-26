@@ -533,6 +533,67 @@ before insert or update of provider_id, subcategory_id, delivery_modes, approval
 on public.professional_talent_services
 for each row execute function public.guard_professional_talent_service_publication();
 
+-- Read-only, server-derived capability snapshot. The legacy users.role remains intact
+-- during the multi-profile transition; this RPC is the new source for workspace discovery.
+create or replace function public.get_my_account_access_snapshot()
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $
+declare
+  v_user_id uuid := auth.uid();
+  v_account_status text;
+  v_customer_available boolean;
+  v_talent_status text;
+  v_professional_status text;
+begin
+  if v_user_id is null then
+    raise exception 'Authentication required' using errcode = '28000';
+  end if;
+
+  select u.account_status::text
+    into v_account_status
+    from public.users u
+   where u.id = v_user_id;
+
+  if not found then
+    raise exception 'Account record not found' using errcode = 'P0002';
+  end if;
+
+  v_customer_available := v_account_status in ('active','pending_verification');
+
+  select case when tp.is_approved is true then 'approved' else 'pending_review' end
+    into v_talent_status
+    from public.talent_profiles tp
+   where tp.id = v_user_id;
+
+  select pp.review_status
+    into v_professional_status
+    from public.professional_provider_profiles pp
+   where pp.user_id = v_user_id;
+
+  return jsonb_build_object(
+    'accountStatus', v_account_status,
+    'capabilities', jsonb_build_object(
+      'customer', jsonb_build_object('available', v_customer_available),
+      'talent', case when v_talent_status is null then null
+        else jsonb_build_object('status', v_talent_status) end,
+      'professionalProvider', case when v_professional_status is null then null
+        else jsonb_build_object('status', v_professional_status) end,
+      -- Merchant memberships are populated when the merchant schema is introduced.
+      'merchantMemberships', '[]'::jsonb
+    )
+  );
+end;
+$;
+
+revoke all on function public.get_my_account_access_snapshot()
+  from public, anon;
+grant execute on function public.get_my_account_access_snapshot()
+  to authenticated;
+
 comment on table public.professional_provider_profiles is
   'Independent Professional Services identity. Does not require a Talent profile or users.role=talent.';
 comment on function private.is_professional_talent_publicly_visible(uuid) is
