@@ -56,6 +56,10 @@ Create Business A and Business B, each with at least two branches. Do not reuse 
 - [ ] Owner can revoke manager/staff access, but cannot revoke or demote the owner.
 - [ ] Revoked members lose business and branch access immediately.
 - [ ] Invitation, re-invitation, acceptance, and revocation are recorded in membership history.
+- [ ] A newly invited account receives an in-app notification through the existing notifications table, with route `/merchant-center` and no sensitive account data.
+- [ ] When the invitee accepts, the business owner receives an in-app notification that the membership is active.
+- [ ] Realtime notification and existing web-push delivery work without exposing private business data in lock-screen payloads.
+- [ ] Notification clicks route to Merchant Center and the invitee sees the correct pending invitation for their own account.
 - [ ] Only the invited user can accept the invitation from their own account; acceptance activates the membership.
 - [ ] Owner cannot invite themselves or create another owner through the invitation RPC.
 - [ ] Unknown target account is rejected.
