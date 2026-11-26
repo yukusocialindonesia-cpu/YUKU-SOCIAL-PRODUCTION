@@ -31,7 +31,7 @@ Supabase migration files require unique timestamps and are applied in timestamp 
 
 `.github/workflows/main-build-validation.yml` limits pull requests to base branches `main` and `fix/yuku-final-service-taxonomy`. PR #287 targets `design/beranda-premium-compact`, so it does not match the workflow's pull-request branch filter. PR #282 targets `feat/independent-professional-provider-identity`, and PR #280 targets `fix/jelajah-companion-professional-separation`; those bases are also absent from the filter.
 
-The latest queried status/workflow-run responses for the active PR head were empty. This means validation is unknown/not detected, not passed. The workflow filter has now been expanded on both PR #287's base branch (`design/beranda-premium-compact`) and the active head branch to include the current stacked PR base branches. A fresh head update is required before confirming that GitHub Actions actually starts.
+The latest queried status/workflow-run responses for the active PR head were empty. This means validation is unknown/not detected, not passed. The workflow filter was expanded on PR #287's base branch (`design/beranda-premium-compact`) and the active head branch. After the head update, both `YUKU main build validation` and `Account management build and type checks` ran for commit `4e16c5dcc881c055a3a25e4d09f4591e6d0ab737` and completed successfully: TypeScript check and production build both passed. The later documentation-only commit does not trigger these path-filtered workflows.
 
 ### P1 — Frontend CI is build/typecheck only
 
