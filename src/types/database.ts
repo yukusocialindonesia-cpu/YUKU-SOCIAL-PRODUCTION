@@ -174,6 +174,8 @@ export interface TalentServiceRow {
   id: string; // UUID
   talent_id: string; // UUID
   activity_category_id: string;
+  custom_title?: string | null;
+  custom_description?: string | null;
   custom_rate_override: number | null; // BIGINT
   created_at: string;
 }
