@@ -125,6 +125,11 @@ This branch contains an implementation draft and a draft pull request for review
 - No production migration, merge, or deploy is authorized by this implementation checkpoint.
 
 
+### Phase I — per-listing public eligibility
+- Finding: the non-recursive provider helper establishes whether a provider has at least one valid public listing. Using that provider-level boolean alone in the listing SELECT policy could also expose another approved/active listing from the same provider whose own category had since been disabled or whose delivery modes no longer matched.
+- Fix: migration `20261127008000_prevent_professional_public_rls_recursion.sql` now additionally checks the exact listing's active subcategory, active parent category, and delivery-mode subset in its own policy predicate.
+- Verification still required: seed one provider with multiple listings (one valid and one invalid) and confirm only the valid row is visible to anon/authenticated users.
+
 ### Phase H — Super Admin review visibility
 - Finding: application and private-document review policies explicitly allow Super Admin, but the new independent provider profile SELECT policy initially allowed only owner and Talent-permission admins. A Super Admin without the Talent grant could see the application but not hydrate its provider profile in the review UI.
 - Fix: migration `20261127010000_allow_super_admin_professional_profile_review.sql` adds the same explicit Super Admin allowance to independent profile reads.
