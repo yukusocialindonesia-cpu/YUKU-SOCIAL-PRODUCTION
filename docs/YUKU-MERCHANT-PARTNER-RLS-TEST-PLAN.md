@@ -72,9 +72,17 @@ Create Business A and Business B, each with at least two branches. Do not reuse 
 ## Admin and lifecycle
 
 - [ ] Admin access is server-confirmed; client metadata cannot grant it.
-- [ ] Admin can inspect the required review queue through a separately scoped Admin workflow.
+- [ ] Only Super Admin can execute `admin_review_merchant_business`; a normal Admin, Talent Admin, Finance Admin, Support Admin, merchant owner and anonymous visitor are denied.
+- [ ] Super Admin can read the review queue and locations for pending businesses.
+- [ ] Approval requires at least one active branch and changes status to `approved`.
+- [ ] Needs-revision, rejection and suspension require a meaningful decision note; note and actor role are recorded in review history.
+- [ ] Owner can read only the review history for their own business; anonymous users cannot read review history or decision notes.
+- [ ] Review history exposes no reviewer user ID to the client.
+- [ ] Owner can resubmit only a draft or needs-revision business; resubmission is recorded in history.
+- [ ] Rejected or suspended businesses remain hidden from public discovery.
 - [ ] Non-admin cannot approve, reject, suspend, or publish a merchant business.
-- [ ] Approved business becomes publicly visible only after explicit Admin review.
+- [ ] Approved business becomes publicly visible only after explicit Super Admin review.
+- [ ] Public directory returns only approved businesses and active locations; it never returns a business without an active location.
 - [ ] Suspension removes public visibility without deleting the business or membership history.
 - [ ] Review and membership changes are auditable; add append-only audit events before enabling operational Admin review.
 
@@ -94,4 +102,4 @@ Attach:
 5. TypeScript/build CI result and a separate SQL/static review.
 6. Confirmation that no Production migration or payment/booking behavior was changed.
 
-The current branch includes a Merchant Center route and a clearly scoped account-menu entry for UI development. Until the migration is applied and the staging evidence is accepted, the page must fail closed with a clear backend-not-ready message; public merchant discovery and real onboarding must remain disabled.
+The current branch includes Merchant Center, public directory, and Super Admin review routes for UI development. Until migrations are applied and the staging evidence is accepted, pages must fail closed with clear backend-not-ready messages; do not enable live onboarding or announce merchant discovery as generally available.
