@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, BriefcaseBusiness, Upload, ShieldCheck, Clock3, FileCheck2, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -82,6 +82,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const loadGenerationRef = useRef(0);
 
   const selectedSubcategory = useMemo(
     () => categories.flatMap((category) => category.items).find((item) => item.id === subcategoryId),
@@ -90,10 +91,33 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
   const requiresCredential = selectedSubcategory?.verification_level === 'credential' || selectedSubcategory?.verification_level === 'license';
   const requiresSupportingEvidence = selectedSubcategory?.verification_level === 'reference';
 
-  const load = async () => {
-    if (!user) { setLoading(false); return; }
+  const load = async (isCurrent: () => boolean = () => true) => {
+    if (!user) {
+      setCategories([]);
+      setApplications([]);
+      setStatusHistory({});
+      setProfileName('');
+      setProfileCity('');
+      setProfileHeadline('');
+      setProfileBio('');
+      setEditingApplicationId(null);
+      setExistingCredentialPath(null);
+      setExistingSupportingPath(null);
+      setCredentialFile(null);
+      setSupportingFile(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
+    setCategories([]);
+    setApplications([]);
+    setStatusHistory({});
+    setProfileName('');
+    setProfileCity('');
+    setProfileHeadline('');
+    setProfileBio('');
     setError('');
+    setSuccess('');
     const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: professionalProfile, error: professionalProfileError }] = await Promise.all([
       supabase.from('professional_service_categories')
         .select('id,title,professional_service_subcategories(id,title,description,verification_level,delivery_modes,category_id)')
@@ -106,6 +130,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         .order('created_at', { ascending: false }),
       supabase.from('professional_provider_profiles').select('user_id,display_name,city,headline,bio').eq('user_id', user.id).maybeSingle(),
     ]);
+    if (!isCurrent()) return;
     const ownedApplicationIds = (applicationRows || []).map((application) => application.id);
     const { data: historyRows, error: historyError } = ownedApplicationIds.length
       ? await supabase.from('professional_service_application_status_history')
@@ -114,6 +139,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
           .order('created_at', { ascending: true })
           .order('id', { ascending: true })
       : { data: [], error: null };
+    if (!isCurrent()) return;
     const normalized = (categoryRows || []).map((category: any) => ({
       id: category.id,
       title: category.title,
@@ -143,7 +169,12 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     setLoading(false);
   };
 
-  useEffect(() => { void load(); }, [user?.id]);
+  useEffect(() => {
+    const generation = ++loadGenerationRef.current;
+    let active = true;
+    void load(() => active && loadGenerationRef.current === generation);
+    return () => { active = false; };
+  }, [user?.id]);
 
   const toggleMode = (mode: string) => setModes((current) =>
     current.includes(mode) ? current.filter((item) => item !== mode) : [...current, mode],
