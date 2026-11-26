@@ -141,3 +141,54 @@ Scope: static review of branch migrations and React client code. No live RLS que
 ### Validation boundary
 
 This is a source-level finding. No live column privilege query, RLS test, Realtime authorization test, database migration, project setting change, or Production data change was performed. Do not state that the `admin_notes` exposure is confirmed in Production until effective column grants and a reporter-session SELECT are tested.
+
+
+## Booking approval, pre-confirmation chat, schedule/location changes & extra duration — 26 November 2026
+
+### Confirmed current lifecycle
+
+1. Customer creates a booking using `create_booking`. Server validates active/eligible Customer and Talent, approved active legacy service, booking mode, schedule/availability, rate, duration, and slot conflict rules.
+2. New booking is `pending_payment`; current legacy flow requires start time at least 2 hours ahead and duration > 0 up to 5 hours. The payment route/checkout is a separate step.
+3. After payment settlement the booking moves to `paid_held_in_escrow`.
+4. In `paid_held_in_escrow`, both participants can already open the booking chat. Talent can discuss distance, meeting point, and readiness with the Customer before accepting the booking.
+5. Talent acceptance is a guarded transition to `confirmed_by_talent`; the Talent dashboard updates only the matching booking owned by that Talent and currently in `paid_held_in_escrow`.
+6. Talent starts the session by transitioning `confirmed_by_talent` to `in_progress`.
+7. Either participant can submit their completion confirmation; the booking completes only after both have confirmed.
+8. Customer cancellation is through `request_customer_cancellation`, not direct table mutation. It is allowed in pending_payment, paid_held_in_escrow, or confirmed_by_talent, before session start. Talent cancellation uses its own RPC and requires a full refund request.
+
+### What works for the user's coordination requirement
+
+- Chat is available before Talent approval, specifically in `paid_held_in_escrow`. This gives both parties a channel to clarify distance/location before Talent confirms.
+- Chat remains writable in `paid_held_in_escrow`, `confirmed_by_talent`, and `in_progress`; after completion or dispute it is read-only.
+- The client UI and database policy both enforce the relevant state rules. The UI alone is not the security boundary.
+
+### P1 product/flow limitation — no safe booking edit or extra-time flow
+
+- No supported booking extension/additional-duration RPC or UI action was found in the inspected source. The original booking snapshots duration, end time, hourly rate, gross, platform fee, and Talent share.
+- Direct authenticated booking INSERT is revoked; creation is through the server RPC. Authenticated UPDATE grants are restricted to status/cancellation fields, not schedule/location/price.
+- Once paid, database trigger guards prevent changes to start/end time, duration, and meeting location/address. This is correct protection against unilateral post-payment edits.
+- Consequence: if the parties agree in chat to move the meeting point, change the schedule, or extend the session, the agreement is not yet represented in a new authoritative booking/payment record. They must not settle an extra amount outside YUKU.
+- Pending-payment bookings also do not expose a supported edit action. Current safe workaround is cancel (where allowed) and create a new booking with the corrected schedule/location; verify payment-route/refund state before any retry.
+- Do not implement a simple `duration_hours += x` update or accept cash/direct transfer for extra time. That would leave escrow, fees, Talent earnings, availability, cancellation policy, and dispute snapshots inconsistent.
+
+### Recommended target flow (design only; not implemented)
+
+1. In the paid-held stage, Customer and Talent use the existing chat to discuss whether the distance and meeting point work.
+2. Talent chooses Confirm or Decline/Request Customer cancellation using explicit in-app actions. Do not interpret chat messages as approval.
+3. If the location/time needs a change, create a structured change request with old/new values, actor, timestamp, reason, and both-party consent. Revalidate availability and price before it becomes effective.
+4. If additional time is requested, create an add-on linked to the original booking with quantity, rate snapshot, platform fee, Talent share, availability extension, payment route, and idempotency key. Both parties accept it and Customer pays through YUKU before the added time begins.
+5. Never overwrite the original booking's financial snapshot. Keep original and add-on ledgers separately linked to one booking aggregate.
+6. If the current financial/escrow implementation cannot safely support changes/add-ons, decline the change in-app and ask the parties to cancel/rebook through the existing supported workflow.
+
+### Further tests before enabling/expanding
+
+- Verify the chat is usable for both participants in paid_held_in_escrow before Talent approval; unrelated users and inactive accounts must be denied at both Data API and Realtime layers.
+- Verify Talent can accept only own paid-held bookings; duplicate/late acceptance and Customer/Talent races must be harmless.
+- Verify Customer can cancel before session start under the policy and cannot use cancellation after start; Talent cancellation must atomically create the required full refund request.
+- Verify booking schedule/location/rate/fee/share cannot be modified by either participant, including through direct REST requests.
+- Verify no route allows additional hours or location changes to be paid outside the YUKU checkout.
+- Test expiry, late payment callback, cancellation race, and acceptance race in Staging.
+
+### Validation boundary
+
+Source review only. No Staging runtime tests, payment provider tests, database migrations, Production data/config changes, or deployments were performed. The recommended change-request and add-on flows are design recommendations, not implemented functionality.
