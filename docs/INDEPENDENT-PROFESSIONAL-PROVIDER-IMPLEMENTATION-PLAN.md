@@ -3,7 +3,7 @@
 Branch: `feat/independent-professional-provider-identity`  
 Base: `fix/yuku-final-service-taxonomy`  
 Scope: architecture and implementation contract for Professional-only provider accounts.  
-Status: Phase A foundation migration committed to this feature branch only. Not applied to any database; no production data or deployment changed.
+Status: Phase A identity foundation and Phase B applicant onboarding changes are committed to this feature branch only. Not applied to any database; no production data or deployment changed.
 
 ## Product requirement
 
@@ -50,6 +50,8 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 5. Preserve the old FK/compatibility read path until all application, admin, public discovery, and profile consumers are switched. This FK transition is intentionally deferred until the dependent code and RPCs can move together.
 
 ### Phase B — provider application
+**Implementation checkpoint:** The application page now reads/saves `professional_provider_profiles` and no longer checks for `talent_profiles`. Migration `20261127005000_allow_professional_only_applications.sql` replaces application INSERT/revision policies with active-account, complete-professional-profile, category/mode, and private-document ownership checks. These changes are branch-only and not deployed.
+
 1. Replace `hasTalentProfile` with a professional-provider-profile state in `ProfessionalServiceApplicationPage`.
 2. Let a signed-in account create/edit its own professional presentation profile independently.
 3. Remove the Companion-profile existence requirement from the application INSERT policy, but retain `applicant_id = auth.uid()`, pending-only status, immutable review fields, and private-document path ownership checks.
@@ -87,6 +89,10 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 - Suspended/banned accounts cannot publish or retain public active listings.
 - Admin review still enforces credential/license and reference evidence requirements.
 - Unapproved, inactive, or deleted professional profiles do not leak public listings.
+
+## Current functional boundary
+
+Phase B alone is not an end-to-end launch: the existing Admin approval RPC, `professional_talent_services.provider_id` foreign key, publication trigger, Admin applicant hydration, and public provider/profile queries still depend on `talent_profiles`. Until Phase C and Phase D are implemented together, a Professional-only user may be able to submit an application after the migrations are applied, but Admin cannot safely approve/publish it. Do not apply the new migrations as a standalone production release.
 
 ## Release and safety boundary
 
