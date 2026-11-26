@@ -1,0 +1,91 @@
+# YUKU — Baseline Repository Review
+
+Tanggal: 26 November 2026  
+Branch: `feat/professional-services-categories`  
+PR: #263 (draft)
+
+## Ruang lingkup dan batas pemeriksaan
+
+Review dilakukan melalui pembacaan GitHub source dan konfigurasi workflow. Ini bukan local checkout, browser test, Supabase Staging test, atau Production certification. Hasil build/lint hanya boleh dinyatakan setelah GitHub Actions menyelesaikan job.
+
+## Struktur aplikasi yang teridentifikasi
+
+- React 19 + Vite 8 + TypeScript 7.
+- Supabase JS client.
+- `src/App.tsx` menjadi route dispatcher.
+- Beranda dimuat eager; halaman sekunder memakai React lazy/Suspense.
+- Route utama meliputi Beranda, Jelajah Talent, detail Talent, layanan profesional, komunitas, pendaftaran Talent, dashboard Talent, booking history, profil Customer, Admin, verifikasi KTP, autentikasi, bantuan, FAQ, syarat dan privasi.
+- Layout utama menyediakan Navbar, Footer, Safety Pledge dan Mobile Bottom Navigation.
+- Web Push service worker berada di `public/sw.js`.
+
+## Temuan baseline
+
+### B0-01 — CI sebelumnya tidak terpicu untuk feature branch ini
+
+Workflow `.github/workflows/main-build-validation.yml` hanya menjalankan push pada `main` dan branch lain yang bukan feature branch YUKU ini. Pull request validation belum dikonfigurasi. Akibatnya, perubahan pada branch kerja dapat tidak menjalankan pemeriksaan TypeScript/build otomatis.
+
+**Perbaikan branch:** workflow sekarang memicu push pada `feat/professional-services-categories` dan pull request ke `main`, selain workflow_dispatch.
+
+Commit: `8a4429a7345f3365e3cbf499c00961d764d03dad`.
+
+**Validasi:** GitHub Actions run #83 untuk PR #263 selesai dengan conclusion `success`. `npm ci`, `npm run lint` (TypeScript check), dan `npm run build` semuanya berhasil pada source commit `8a4429a7345f3365e3cbf499c00961d764d03dad`. Dua commit setelahnya hanya menambahkan/memperbarui dokumen baseline, tidak mengubah source aplikasi atau workflow.
+
+### B0-02 — Migration filename dan Production history tidak selaras
+
+Repository memuat dua file dengan prefix `62`, tetapi pemeriksaan read-only Production menunjukkan kedua perubahan tercatat memakai version timestamp yang berbeda: `20261121081549` dan `20261121081552`. Jadi Production tidak memiliki duplicate version ID untuk dua perubahan tersebut.
+
+Masalah yang lebih besar: repository masih memuat rangkaian migration legacy bernomor `01` sampai `68`, sedangkan Production history memakai timestamp version. Ini dapat membuat migration runner menganggap perubahan lama belum diterapkan atau mencoba replay dengan urutan yang salah.
+
+**Status:** release blocker sampai seluruh file dipetakan satu-ke-satu terhadap Production history dan SQL aktual. Tidak boleh rename, push, repair, atau replay migration berdasarkan dugaan.
+
+Detail dan bukti: `docs/YUKU-MIGRATION-HISTORY-RECONCILIATION.md`.
+
+### B0-03 — Backup source dihapus
+
+`src/pages/LoginPage.tsx.bak` tidak ditemukan memiliki import/reference dalam repository. File backup yang tidak digunakan tersebut sudah dihapus dari feature branch pada commit `0c2d9e8100a7e970d9233ee63d7744effd2414df`. File source aktif `src/pages/LoginPage.tsx` tidak diubah.
+
+### B0-04 — Route tidak dikenal kembali ke Beranda
+
+`src/App.tsx` mengarahkan path yang tidak dikenal ke Beranda. Ini mencegah blank screen, tetapi URL salah atau link lama dapat terlihat seolah berhasil membuka halaman Beranda. Pertimbangkan not-found state/404 setelah memastikan kompatibilitas deep-link dan route lama.
+
+### B0-05 — Route parsing ditangani oleh inisialisasi dan listener
+
+Route awal ditentukan dari pathname saat state dibuat, kemudian `parseCurrentLocation` dipanggil lagi di effect dan pada `popstate`. Ini perlu regression test untuk direct deep-link, browser back/forward, query filters, reset password hash, dan admin invite hash. Tidak dinyatakan sebagai bug tanpa runtime test.
+
+## Daftar route untuk smoke test
+
+- [ ] `/` — Beranda
+- [ ] `/talent` dan `/talent/:id` — Jelajah/detail
+- [ ] `/jasa-profesional`, `/jasa-profesional/:id`, `/daftar-jasa-profesional`
+- [ ] `/komunitas`
+- [ ] `/daftar-talent`, `/dashboard-talent`
+- [ ] `/riwayat-booking`, `/profil-saya`
+- [ ] `/admin`, `/admin/jasa-profesional`, `/aktivasi-admin`
+- [ ] `/verifikasi-ktp`
+- [ ] `/login`, `/register`, `/lupa-sandi`, `/reset-sandi`, `/ganti-sandi`
+- [ ] `/cara-kerja`, `/tentang`, `/faq`, `/bantuan`, `/syarat-ketentuan`, `/kebijakan-privasi`
+
+## Hasil CI
+
+- Workflow: YUKU main build validation.
+- Steps: `npm ci`, `npm run lint`, `npm run build`.
+- Run: #83 (PR #263).
+- Status akhir: `success`.
+- `npm ci`: success.
+- `npm run lint`: success.
+- `npm run build`: success.
+- Source commit yang diuji: `8a4429a7345f3365e3cbf499c00961d764d03dad`.
+- Run URL: https://github.com/yukusocialindonesia-cpu/YUKU-id/actions/runs/45797045271
+
+## Langkah lanjutan
+
+1. CI baseline hijau pada source commit tersebut; jalankan ulang setelah perubahan source berikutnya.
+2. Rekonsiliasi duplicate migration version 62 sebelum Staging replay.
+3. Periksa referensi file backup dan bersihkan bila aman.
+4. Tambah smoke tests route/deep-link dan 404 behavior.
+5. Jalankan Staging migration replay dan negative role/permission tests.
+6. Lanjutkan transaksi end-to-end setelah baseline frontend hijau.
+
+## Batas keamanan
+
+Tidak ada migration yang dijalankan, tidak ada perubahan Supabase/Staging/Production, tidak ada deployment, tidak ada merge, dan tidak ada transaksi/pembayaran nyata. Branch dan PR tetap terpisah dari Production.

@@ -39,6 +39,20 @@ interface UiChatMessage extends BookingMessageRow {
   pending?: boolean;
 }
 
+const CHAT_VISIBLE_STATUSES = [
+  'paid_held_in_escrow',
+  'confirmed_by_talent',
+  'in_progress',
+  'completed',
+  'disputed_hold',
+] as const;
+
+const CHAT_SENDABLE_STATUSES = [
+  'paid_held_in_escrow',
+  'confirmed_by_talent',
+  'in_progress',
+] as const;
+
 const STARTER_PROMPTS = [
   'Halo! Konfirmasi jadwal & titik temu kita ya.',
   'Di area mana persisnya kita ketemu nanti?',
@@ -97,6 +111,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
   const loadMessages = useCallback(
     async (bookingId: string) => {
       setIsLoadingMessages(true);
+      setMigrationMissing(false);
       setErrorMsg(null);
       try {
         const { data, error } = await supabase
@@ -148,7 +163,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
   }, [isOpen, booking, onClose]);
 
   useEffect(() => {
-    if (!isOpen || !booking?.id || !currentUserId) return;
+    if (!isOpen || !booking?.id || !currentUserId || !CHAT_VISIBLE_STATUSES.includes(booking.status as (typeof CHAT_VISIBLE_STATUSES)[number])) return;
 
     setMessages([]);
     setDraft('');
@@ -160,6 +175,8 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
 
     const channel = supabase.channel(`booking-chat:${booking.id}`, {
       config: {
+        // Presence and typing broadcasts must pass realtime.messages RLS.
+        private: true,
         presence: { key: currentUserId },
       },
     });
@@ -248,7 +265,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
       channelRef.current = null;
       supabase.removeChannel(channel);
     };
-  }, [isOpen, booking?.id, currentUserId, loadMessages, markIncomingAsRead, scrollToBottom]);
+  }, [isOpen, booking?.id, booking?.status, currentUserId, loadMessages, markIncomingAsRead, scrollToBottom]);
 
   const emitTypingStatus = useCallback(
     (isTyping: boolean) => {
@@ -269,7 +286,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!booking || !currentUserId || isSending) return;
+    if (!booking || !currentUserId || isSending || !CHAT_SENDABLE_STATUSES.includes(booking.status as (typeof CHAT_SENDABLE_STATUSES)[number])) return;
 
     const cleanText = draft.trim();
     if (!cleanText) return;
@@ -332,7 +349,8 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
     }
   };
 
-  if (!isOpen || !booking) return null;
+  if (!isOpen || !booking || !CHAT_VISIBLE_STATUSES.includes(booking.status as (typeof CHAT_VISIBLE_STATUSES)[number])) return null;
+  const isReadOnlyChat = ['completed', 'disputed_hold'].includes(booking.status);
 
   const scheduleText = new Date(booking.start_time).toLocaleString('id-ID', {
     weekday: 'short',
@@ -440,11 +458,9 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
                 <span>Tabel Chat Belum Diaktifkan di Supabase</span>
               </div>
               <p className="text-amber-800 leading-relaxed">
-                Jalankan file migrasi{' '}
-                <code className="font-mono bg-amber-100 px-1.5 py-0.5 rounded">
-                  supabase/migrations/17_booking_chat_messages.sql
-                </code>{' '}
-                di Supabase SQL Editor untuk mengaktifkan chat real-time per booking.
+                Layanan chat belum tersedia karena struktur database belum siap atau belum tersinkron.
+                Coba muat ulang beberapa saat lagi. Jika masalah berlanjut, hubungi tim bantuan YUKU.
+                Jangan menjalankan file SQL secara manual dari aplikasi.
               </p>
             </div>
           ) : isLoadingMessages ? (
@@ -537,6 +553,12 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
           </div>
         )}
 
+        {isReadOnlyChat && (
+          <div className="shrink-0 border-t border-slate-200 bg-slate-50 px-4 py-3 text-center text-xs text-slate-600">
+            Booking ini sudah selesai atau dalam peninjauan. Chat hanya dapat dibaca.
+          </div>
+        )}
+
         {/* Message Input Bar */}
         <form
           onSubmit={handleSendMessage}
@@ -546,7 +568,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
             rows={1}
             maxLength={1000}
             value={draft}
-            disabled={migrationMissing}
+            disabled={migrationMissing || isReadOnlyChat}
             onChange={(e) => {
               setDraft(e.target.value);
               emitTypingStatus(Boolean(e.target.value.trim()));
@@ -562,7 +584,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
           />
           <button
             type="submit"
-            disabled={isSending || !draft.trim() || migrationMissing}
+            disabled={isSending || !draft.trim() || migrationMissing || isReadOnlyChat}
             aria-label="Kirim pesan"
             className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 text-xs font-bold text-white shadow-[0_8px_20px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
           >

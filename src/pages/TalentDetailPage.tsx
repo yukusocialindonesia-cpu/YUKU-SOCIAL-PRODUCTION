@@ -214,24 +214,12 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       if (reviewsRes.error) {
         throw new Error(`Gagal membaca ulasan Talent: ${reviewsRes.error.message}`);
       }
-      let mediaRows: any[] = (mediaRes.data || []) as any[];
-      let moderationSchemaAvailable = true;
+      // Fail closed: gallery moderation and private Storage migration are required.
+      // Never fall back to legacy public media URLs when the moderation schema is absent.
       if (mediaRes.error) {
-        // Compatibility window: the new frontend can be deployed before migration 65.
-        // Until the moderation column exists, retain the current public gallery behavior.
-        if (/moderation_status/i.test(mediaRes.error.message) && /(column|schema cache|does not exist|could not find)/i.test(mediaRes.error.message)) {
-          moderationSchemaAvailable = false;
-          const legacyMediaRes = await supabase.from('talent_media')
-            .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
-            .eq('talent_id', talentId)
-            .order('sort_order', { ascending: true })
-            .order('created_at', { ascending: false });
-          if (legacyMediaRes.error) throw new Error(`Gagal membaca galeri Talent: ${legacyMediaRes.error.message}`);
-          mediaRows = (legacyMediaRes.data || []) as any[];
-        } else {
-          throw new Error(`Gagal membaca galeri Talent: ${mediaRes.error.message}`);
-        }
+        throw new Error(`Galeri Talent belum tersedia dengan aman. Pastikan migrasi moderasi media sudah diterapkan: ${mediaRes.error.message}`);
       }
+      const mediaRows = (mediaRes.data || []) as any[];
       if (serviceRatesRes.error) {
         throw new Error(`Gagal membaca tarif layanan Talent: ${serviceRatesRes.error.message}`);
       }
@@ -243,9 +231,6 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       setServiceRateOverrides(Object.fromEntries((serviceRatesRes.data || []).map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
       const approvedMedia = mediaRows as TalentMediaRow[];
       const mediaWithSignedUrls = await Promise.all(approvedMedia.map(async (item) => {
-        // Before migration 65, preserve the current public gallery URLs during
-        // the brief frontend-first rollout window. Once migrated, never fall back.
-        if (!moderationSchemaAvailable) return item;
         if (!item.storage_path) return { ...item, media_url: '' };
         const { data: signedData, error: signedError } = await supabase.storage
           .from('talent-media')

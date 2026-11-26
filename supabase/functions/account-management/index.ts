@@ -197,6 +197,11 @@ Deno.serve(async (req: Request) => {
     }
     if (target.account_status === nextStatus) return json({ error: 'Akun sudah memiliki status tersebut.' }, 409);
     if (target.account_status === 'banned') return json({ error: 'Akun yang diblokir permanen tidak dapat diaktifkan dari menu ini.' }, 403);
+    // Reactivation is only a recovery path for a previously suspended account.
+    // Never use this endpoint to bypass the initial identity-verification flow.
+    if (nextStatus === 'active' && target.account_status !== 'suspended') {
+      return json({ error: 'Hanya akun yang sebelumnya dinonaktifkan yang dapat diaktifkan kembali dari menu ini.' }, 403);
+    }
 
     // Update database status first with an optimistic status check.
     // Auth and audit changes are compensated if a later step fails.

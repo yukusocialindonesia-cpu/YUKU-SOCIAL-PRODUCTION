@@ -42,7 +42,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           .maybeSingle();
 
         if (userRowError || !userRow) {
-          await supabase.auth.signOut({ scope: 'global' });
+          // A transient profile-read failure must not revoke sessions on other devices.
+          await supabase.auth.signOut({ scope: 'local' });
           setErrorMsg('Data akun belum dapat diverifikasi. Silakan coba lagi.');
           return;
         }
@@ -56,9 +57,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         // lanjutkan langsung ke formulir agar pengguna tidak tersesat di dashboard kosong.
         let hasTalentDraft = false;
         try {
-          hasTalentDraft = Boolean(localStorage.getItem('yuku_talent_registration_draft'));
+          const rawDraft = localStorage.getItem('yuku_talent_registration_draft');
+          if (rawDraft) {
+            const draft = JSON.parse(rawDraft) as { email?: unknown };
+            hasTalentDraft =
+              typeof draft.email === 'string' &&
+              draft.email.trim().toLowerCase() === (data.user.email || email).trim().toLowerCase();
+          }
         } catch {
-          // Abaikan jika penyimpanan browser tidak tersedia
+          // Draf rusak atau penyimpanan browser tidak tersedia: jangan gunakan draf.
         }
 
         const targetRoute: AppRoute =

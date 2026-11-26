@@ -5,6 +5,19 @@ on:
     branches:
       - main
       - fix/talent-media-moderation
+      - feat/professional-services-categories
+    paths:
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "vite.config.*"
+      - ".github/workflows/main-build-validation.yml"
+  pull_request:
+    branches:
+      - main
     paths:
       - "src/**"
       - "public/**"

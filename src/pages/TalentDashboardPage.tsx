@@ -156,6 +156,7 @@ interface PayoutItem {
   bank_account_number: string;
   bank_account_holder_name: string;
   payout_status: 'requested' | 'processing' | 'completed_provider_confirmed' | 'rejected' | 'failed';
+  payout_provider_ref: string | null;
   rejection_reason: string | null;
   created_at: string;
 }
@@ -473,6 +474,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           bank_account_number,
           bank_account_holder_name,
           payout_status,
+          payout_provider_ref,
           rejection_reason,
           created_at
         `)
@@ -604,20 +606,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
 
-      // Deploy frontend before migration 65 safely: use the old projection only
-      // while the moderation columns have not been added yet. Uploads stay paused
-      // during this short compatibility window.
-      let moderationSchemaAvailable = true;
-      if (mediaErr && /moderation_status/i.test(mediaErr.message) && /(column|schema cache|does not exist|could not find)/i.test(mediaErr.message)) {
-        moderationSchemaAvailable = false;
-        const legacyMediaResult = await supabase.from('talent_media')
-          .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
-          .eq('talent_id', userId)
-          .order('sort_order', { ascending: true })
-          .order('created_at', { ascending: false });
-        mediaRows = (legacyMediaResult.data || []).map((row) => ({ ...row, moderation_status: 'approved' as const, moderation_reason: null }));
-        mediaErr = legacyMediaResult.error;
-      }
+      // Fail closed: do not treat legacy rows as approved when moderation schema is absent.
 
       if (mediaErr) {
         setMediaModerationAvailable(false);
@@ -630,12 +619,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         setMediaItems([]);
       } else {
         setMediaMigrationMissing(false);
-        setMediaModerationAvailable(moderationSchemaAvailable);
+        setMediaModerationAvailable(true);
         const ownMedia = (mediaRows || []) as TalentMediaRow[];
         const ownMediaWithSignedUrls = await Promise.all(ownMedia.map(async (item) => {
-          // Preserve legacy public URLs until migration 65 is applied. Once the
-          // moderation schema exists, only signed URLs are used.
-          if (!moderationSchemaAvailable) return item;
           if (!item.storage_path) return { ...item, media_url: '' };
           const { data: signedData, error: signedError } = await supabase.storage
             .from('talent-media')
@@ -2141,7 +2127,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           ) : b.status === 'completed' ? (
                             <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg flex items-center gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Selesai & Masuk Saldo</span>
+                              <span>Sesi Selesai</span>
                             </span>
                           ) : b.status === 'disputed_hold' ? (
                             <span className="px-2.5 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-lg flex items-center gap-1">
@@ -2218,7 +2204,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                       {/* Bottom Action Buttons for Talent */}
                       <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
                         <div className="flex flex-wrap items-center gap-3">
-                          {b.status !== 'expired' && (
+                          {['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(b.status) && (
                             <button
                               type="button"
                               onClick={() => setChatTargetBooking(b)}
@@ -2241,7 +2227,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                             <span>Buka Peta Lokasi di Google Maps</span>
                           </a>
 
-                          {!b.report && b.status !== 'expired' && (
+                          {!b.report && ['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(b.status) && (
                             <button
                               type="button"
                               onClick={() => openReportModal(b)}
@@ -3469,6 +3455,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                         <th className="p-3.5">Bank / E-Wallet</th>
                         <th className="p-3.5">Nomor Rekening</th>
                         <th className="p-3.5">Nominal Dicairkan</th>
+                        <th className="p-3.5">Referensi Transfer</th>
                         <th className="p-3.5">Status Transfer</th>
                       </tr>
                     </thead>
@@ -3493,6 +3480,13 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           </td>
                           <td className="p-3.5 font-black text-slate-900 tabular-nums">
                             {formatRupiah(p.amount)}
+                          </td>
+                          <td className="p-3.5">
+                            {p.payout_status === 'completed_provider_confirmed' && p.payout_provider_ref ? (
+                              <span className="block max-w-[180px] break-all font-mono text-[11px] text-slate-600">Ref: {p.payout_provider_ref}</span>
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
                           </td>
                           <td className="p-3.5">
                             {p.payout_status === 'completed_provider_confirmed' ? (

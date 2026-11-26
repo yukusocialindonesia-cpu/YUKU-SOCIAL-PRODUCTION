@@ -188,6 +188,10 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
   };
 
   const submit = async () => {
+    if (left !== null && left <= 0) {
+      setError('Waktu pembayaran sudah habis. Buat booking baru untuk melanjutkan.');
+      return;
+    }
     if (!file) {
       setError('Pilih bukti pembayaran terlebih dahulu.');
       return;
@@ -205,6 +209,15 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
     let uploadedPath = '';
 
     try {
+      // Claim the route before uploading: the Storage INSERT policy only
+      // accepts proof objects for bookings already locked to manual_qris.
+      const { error: routeError } = await (supabase as any).rpc('claim_booking_payment_route', {
+        p_booking_id: bookingId,
+        p_route: 'manual_qris',
+      });
+      if (routeError) throw routeError;
+      onRouteClaimed?.('manual_qris');
+
       const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
       const path = `${bookingId}/${crypto.randomUUID()}.${ext}`;
 
@@ -393,7 +406,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
 
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || (left !== null && left <= 0)}
           onClick={() => fileInputRef.current?.click()}
           className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-violet-300 bg-white px-4 py-3 text-xs font-extrabold text-violet-800 shadow-sm transition hover:border-violet-500 hover:bg-violet-50 disabled:opacity-50"
         >
@@ -430,7 +443,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
       <button
         type="button"
         onClick={submit}
-        disabled={busy || !file}
+        disabled={busy || !file || (left !== null && left <= 0)}
         className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-indigo-700 px-4 py-3 text-xs font-extrabold text-white shadow-lg shadow-violet-900/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:translate-y-0 disabled:opacity-50"
       >
         {busy

@@ -474,3 +474,56 @@ Production review was read-only: active definitions and grants for `handle_new_u
 ### Validation boundary
 
 Production inspection was read-only: `user_identities` columns, KTP Storage bucket metadata and policies, public RLS policies for users/identities/Talent/services/bookings, and definitions/grants for KTP review and public-visibility functions. No KTP image, NIK, identity row, booking row, or Auth user data was read. No file was uploaded/downloaded, no signed URL was created, and no Production schema, policy, function, bucket, or data was modified. Runtime upload/review tests remain for Staging.
+
+## Public Talent profile, availability, media and booking CTA audit — 26 Nov 2026
+
+### Positive controls confirmed in Production (read-only)
+
+- is_talent_publicly_visible() requires Talent role, active account, 18+ flag, verified KTP, approved Talent profile, and at least one approved + active service.
+- Public talent_profiles SELECT is scoped to owner, authorized Talent Admin, or is_talent_publicly_visible(); public talent_services SELECT additionally requires the individual service to be approved and active.
+- talent_availability public SELECT is limited to publicly visible Talent; owners and authorized Talent Admins retain their own access. Production policy does not expose every Talent's schedule to anonymous visitors.
+- create_booking() rechecks Customer active/18+/verified KTP and Talent active/18+/verified KTP/public visibility, approved profile, approved active service, service mode, server-side rate, and Asia/Jakarta availability. Client-side checks are not the security boundary.
+- Booking overlap is protected by the Production exclusion constraint on Talent + overlapping time ranges for active booking states. Concurrent overlapping inserts cannot both succeed.
+- Public browse query for legacy Talent cards includes rate columns in its data projection, but the current UI only renders the rate on the Talent detail/booking flow. Keep the browse-card UI price-free as required; avoid broadening rate display in discovery.
+
+### P1 — Fail-closed media moderation compatibility gap (fixed on feature branch)
+
+- TalentDetailPage.tsx previously fell back to a legacy talent_media projection without moderation_status when the moderation column was missing. It then used the legacy media_url directly rather than a short-lived signed URL. In a deployment where migration 65 had not been applied, this could bypass moderation and private-object access controls.
+- TalentDashboardPage.tsx also treated legacy rows as approved during the same compatibility window. That was an owner-only display path, but it could misrepresent the moderation state and normalize an unsafe rollout order.
+- Branch fix: both pages now fail closed when moderation schema is unavailable; neither uses legacy public media URLs. Gallery and dashboard media rendering require moderation columns and short-lived signed URLs. This aligns frontend behavior with migration 65's private bucket and approved-media Storage policy.
+- Production read-only policy inspection confirmed talent_media_select_public_or_owner filters public rows to moderation_status='approved' and is_talent_publicly_visible(talent_id). The feature-branch fallback was therefore a rollout hazard, not evidence that the current Production policy was missing.
+
+### P2 — Unconfigured availability currently means open availability
+
+- Production create_booking() explicitly retains legacy behavior: when a Talent has no rows in talent_availability, it does not reject the requested time based on a schedule. Once any schedule rows exist, it enforces the matching specific-date slot (if one exists for that date) or weekly slot, including availability flag and full duration.
+- The booking UI indicates when no schedule is configured, but the RPC still permits booking at any otherwise-valid future time. Decide before wider launch whether this is an intentional “always available until schedule configured” policy or whether publication/booking should require at least one availability slot. Do not silently change this business rule in Production.
+
+### P2 — Professional service profile is discovery-only, not a booking route
+
+- ProfessionalServicesPage.tsx lists only approved, active professional listings; ProfessionalProviderProfilePage.tsx shows unit-based rate on detail and explicitly says booking is not open.
+- This is correct for the current safety boundary. Do not wire these cards to legacy hourly create_booking(); professional per-hour/session/day/project pricing requires the separate shared-booking contract and financial lifecycle work already documented.
+
+### Required Staging acceptance tests
+
+1. Anonymous and authenticated direct URL to a pending/rejected/inactive Talent profile returns no public profile; owner/admin access remains appropriately scoped.
+2. Attempt direct table SELECT for unapproved/inactive services and availability belonging to non-public Talent; all denied. Verify exact coordinates/location records are not public.
+3. Missing moderation column/schema-cache error: both detail and owner dashboard fail closed; no legacy media_url is rendered or used. With migration applied, pending/rejected media remains hidden publicly and approved media uses expiring signed URLs.
+4. Expired signed URL, wrong-owner object path, direct public object URL, and object overwrite attempts fail.
+5. Direct create_booking() calls with unverified/suspended Customer or Talent, unapproved/inactive service, invalid mode, invalid rate, unavailable slot, past/near-term start, and overlapping booking all fail.
+6. Confirm the documented no-schedule behavior; test a Talent with zero availability rows and a Talent with weekly + specific-date overrides.
+7. Verify browse cards remain price-free while detail page displays the correct approved service rate; changing rate after page load cannot alter the server-side booking snapshot.
+8. Professional service listing/profile must never invoke legacy create_booking() or transform per-session/day/project pricing into hourly rates.
+
+### Validation boundary
+
+Production checks were read-only catalog/function/policy/constraint inspection. No user rows, exact coordinates, media objects, bookings, or payment data were read. No Production schema, RLS policy, Storage object, function, data, deployment, or feature flag was changed. Frontend changes are feature-branch-only; automated build/runtime tests are still required.
+
+
+## Production follow-up — report moderation write-path audit (26 Nov 2026)
+
+- Production grants authenticated app roles direct UPDATE on `reports_complaints.status`, `admin_notes`, and `resolved_by_admin_id`. The RLS policy scopes those writes to Support-permission Admins, but does not force them through `admin_resolve_report()`.
+- Direct table updates can therefore bypass the RPC's row lock, status/business validation and `admin_audit_logs` entry. Reviewer attribution can also be set directly by a Support Admin.
+- P1 remediation: revoke direct app-role UPDATE on moderation fields and make the audited, permission-checked RPC the sole write path. Keep reporter INSERT and reporter/Support SELECT separately scoped. Add negative tests for direct status/note/reviewer updates and positive tests for the RPC.
+- Production `notify_on_report_status_change()` currently includes internal `admin_notes` in the reporter notification. The branch-only migration `20261127001000_stop_leaking_internal_report_notes.sql` fixes the message but has not been applied to Production.
+- Production `notify_all_admins()` fans operational notifications out to every active Admin; branch migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` narrows them by module permission but is not yet in Production.
+- No Production writes were made. Keep both items as launch blockers until the forward migrations are reviewed and negative tests pass in Staging.

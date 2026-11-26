@@ -176,3 +176,57 @@ Gate 2 / Gate 5 exit criteria: safely deploy the narrow role-transition migratio
 - Positive control: KTP bucket is private (5 MB, JPEG/PNG/WebP). Public Talent visibility and booking RPC enforce active account, 18+, verified KTP, approved profile and approved active service at the database layer.
 
 Launch gate: no launch/enablement of Talent onboarding or paid booking until evidence linkage, Admin review evidence requirements, account-status preservation, audit logging, and Staging negative tests pass.
+
+### Public Talent discovery and booking acceptance gate — 26 Nov 2026
+
+- Production public visibility and create_booking() server-side gates were inspected. They enforce active account, 18+, verified KTP, approved profile, and approved + active legacy service before public visibility/booking.
+- Production booking overlap protection exists through a GiST exclusion constraint on Talent and overlapping time ranges for active booking states.
+- Feature-branch fix: removed legacy gallery fallback that could render old public media URLs without moderation state. Talent detail and dashboard now fail closed if moderation schema is missing and use short-lived signed URLs only.
+- Decision required: no availability rows currently means the legacy booking RPC allows any otherwise-valid future time. Decide whether this remains the intended default or whether Talent must configure availability before publishing/accepting bookings.
+- Professional services remain discovery-only; no CTA may call the legacy hourly booking RPC until the shared booking and finance lifecycle is complete.
+- Staging acceptance tests are required for direct URL access, RLS bypass attempts, media moderation/private Storage, expired URLs, schedule edge cases, overlapping bookings, rate snapshots, and professional-service route separation.
+- No Production changes were made.
+
+
+### Payment, refund and payout catalog gate — 26 Nov 2026
+
+- Production catalog confirms the Talent payout RPC exists and enforces active/verified/approved Talent status, idempotency, minimum Rp100,000 and server-side balance reservation across booking + affiliate ledgers.
+- Authenticated users cannot directly INSERT/UPDATE payment, refund or payout tables; payout/refund state changes require scoped Finance RPCs. Unique provider references are enforced by database indexes.
+- **P1 unresolved:** Xendit callback still lacks independent provider invoice verification and a durable receipt/event ledger. New Xendit route selection is currently blocked in Production; do not re-enable until sandbox and reconciliation gates pass.
+- **P2 operational control:** payout bank destination is length-validated but not matched to verified identity. Finance must manually verify account ownership before transfer.
+- Staging tests still required for payout/refund concurrency, idempotency, disputes, direct-table denial, late/duplicate callbacks and ledger reconciliation.
+- No Production data, schema, functions, payment routes or feature flags were changed.
+
+
+### Cancellation and refund gate — 26 Nov 2026
+
+- Production cancellation RPCs were inspected: Customer cancellation is server-calculated by time-to-start; Talent cancellation requests full refund while escrow is held; Finance resolves retained funds with audit notes and provider reference.
+- Refund processing locks payment and prevents cumulative refund from exceeding payment. Provider refund references are unique.
+- Cancellation rules are valid only for current time-bound activity sessions. Professional per-day/per-project work needs explicit delivery acceptance, cancellation windows and proportional refund allocation before checkout.
+- Staging tests remain mandatory for 24h/6h boundaries, concurrent Customer/Talent cancellation, replay, retained funds, payout/dispute/escrow races and overdue Finance holds.
+- No Production rows or RPCs were modified or invoked.
+
+
+### Notifications, chat and report moderation gate — 26 Nov 2026
+
+Production catalog verification found the following P1 gaps. The branch has partial source fixes, but Production migration history currently ends at `20261125005419`; the 26–27 Nov branch migrations below are not applied:
+
+- **P1 — Chat read scope:** Production `booking_messages_select_participants` includes a Booking-permission Admin bypass and does not enforce the intended booking-status allowlist for participant reads. Restrict message-body access to the booking participants and valid chat statuses; keep Admin operational views minimal.
+- **P1 — Report moderation audit bypass:** Support Admins have direct UPDATE grants on `reports_complaints.status`, `admin_notes`, and `resolved_by_admin_id`. Revoke direct writes and force changes through the audited `admin_resolve_report()` path.
+- **P1 — Internal note leakage:** Production report-status notification includes `admin_notes`. Branch migration `20261127001000_stop_leaking_internal_report_notes.sql` fixes the notification but is not deployed.
+- **P1 — Admin notification overexposure:** Production `notify_all_admins()` broadcasts Finance/Talent/Support operational notifications to all active Admins. Branch migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` scopes recipients but is not deployed.
+- **P1 — Realtime private channel:** Production has no `realtime.messages` policies for booking chat Presence/Broadcast. Branch migration adds them and branch UI sets `private: true`; project-level “Allow public access” remains unverified.
+- **P1 — Lock-screen privacy:** Production chat notification uses message preview text as the push body. Use generic text and keep message content inside authenticated chat only.
+- Staging acceptance: direct chat access as unrelated user/Booking Admin; cancelled/expired chat access; direct report UPDATE attempts; report-note notification/push payload inspection; Admin notification recipient matrix; anonymous/non-participant Realtime joins; suspended-account reconnect; Android lock-screen payload checks.
+- No Production rows, schema, functions, policies, settings, push deliveries, deployments or payment state were changed.
+
+Launch decision: **do not treat notification/chat/report moderation as production-ready** until these P1 items are fixed in forward migrations and pass Staging negative tests.
+
+
+### Branch source hardening — notification/chat (26 Nov 2026)
+
+- Feature branch now removes blanket Admin read access to booking message bodies; only actual booking participants retain message access for allowed states.
+- Push sender now forces generic text for booking-chat notifications even when the stored notification body contains legacy chat preview text.
+- Push toggle status now verifies endpoint ownership for the current authenticated account and refreshes on account ID changes.
+- **Still P1:** Production has not received these changes; direct report moderation column UPDATE grants need a generated forward migration; all Staging negative tests and Android lock-screen checks remain outstanding.
+- No Production migration, deployment, data write or push delivery was performed.

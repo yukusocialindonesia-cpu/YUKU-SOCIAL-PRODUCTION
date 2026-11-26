@@ -9,6 +9,10 @@ import { HomePage } from './pages/HomePage';
 
 // Load secondary routes only when a visitor opens them. Keep the homepage eager
 // so the first screen remains available without an additional route-chunk request.
+const ProfessionalServicesPage = lazy(() => import('./pages/ProfessionalServicesPage').then((module) => ({ default: module.ProfessionalServicesPage })));
+const ProfessionalProviderProfilePage = lazy(() => import('./pages/ProfessionalProviderProfilePage').then((module) => ({ default: module.ProfessionalProviderProfilePage })));
+const ProfessionalServiceApplicationPage = lazy(() => import('./pages/ProfessionalServiceApplicationPage').then((module) => ({ default: module.ProfessionalServiceApplicationPage })));
+const AdminProfessionalServicesPage = lazy(() => import('./pages/AdminProfessionalServicesPage').then((module) => ({ default: module.AdminProfessionalServicesPage })));
 const CommunityPage = lazy(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })));
 const BrowseTalentPage = lazy(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })));
 const TalentDetailPage = lazy(() => import('./pages/TalentDetailPage').then((module) => ({ default: module.TalentDetailPage })));
@@ -39,6 +43,9 @@ export default function App() {
     const inviteParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     if (pathname === '/aktivasi-admin' || inviteParams.get('type') === 'invite') return '/aktivasi-admin';
     if (pathname === '/talent') return '/talent';
+    if (pathname === '/jasa-profesional') return '/jasa-profesional';
+    if (pathname === '/daftar-jasa-profesional') return '/daftar-jasa-profesional';
+    if (pathname.startsWith('/jasa-profesional/')) return '/jasa-profesional/:id';
     if (pathname === '/komunitas') return '/komunitas';
     if (pathname.startsWith('/talent/')) return '/talent/:id';
     if (pathname === '/cara-kerja') return '/cara-kerja';
@@ -46,6 +53,7 @@ export default function App() {
     if (pathname === '/dashboard-talent') return '/dashboard-talent';
     if (pathname === '/riwayat-booking') return '/riwayat-booking';
     if (pathname === '/profil-saya') return '/profil-saya';
+    if (pathname === '/admin/jasa-profesional') return '/admin/jasa-profesional';
     if (pathname === '/admin') return '/admin';
     if (pathname === '/tentang') return '/tentang';
     if (pathname === '/faq') return '/faq';
@@ -61,6 +69,7 @@ export default function App() {
     return '/';
   });
   const [activeTalentId, setActiveTalentId] = useState<string>('');
+  const [activeProfessionalProviderId, setActiveProfessionalProviderId] = useState<string>('');
   const [initialActivityFilter, setInitialActivityFilter] = useState<string>('all');
   const [initialCityFilter, setInitialCityFilter] = useState<string>('Semua Kota');
   const [initialModeFilter, setInitialModeFilter] = useState<string>('all');
@@ -87,6 +96,14 @@ export default function App() {
       setCurrentPath('/komunitas');
     } else if (pathname === '/talent') {
       setCurrentPath('/talent');
+    } else if (pathname === '/jasa-profesional') {
+      setCurrentPath('/jasa-profesional');
+    } else if (pathname === '/daftar-jasa-profesional') {
+      setCurrentPath('/daftar-jasa-profesional');
+    } else if (pathname.startsWith('/jasa-profesional/')) {
+      const id = pathname.replace('/jasa-profesional/', '');
+      setActiveProfessionalProviderId(id || '');
+      setCurrentPath('/jasa-profesional/:id');
     } else if (pathname.startsWith('/talent/')) {
       const id = pathname.replace('/talent/', '');
       setActiveTalentId(id || '');
@@ -101,6 +118,8 @@ export default function App() {
       setCurrentPath('/riwayat-booking');
     } else if (pathname === '/profil-saya') {
       setCurrentPath('/profil-saya');
+    } else if (pathname === '/admin/jasa-profesional') {
+      setCurrentPath('/admin/jasa-profesional');
     } else if (pathname === '/admin') {
       setCurrentPath('/admin');
     } else if (pathname === '/tentang') {
@@ -158,7 +177,11 @@ export default function App() {
   const handleNavigate = (path: AppRoute, params?: Record<string, string>) => {
     let targetUrl = path as string;
 
-    if (path === '/talent/:id') {
+    if (path === '/jasa-profesional/:id') {
+      const id = params?.id || activeProfessionalProviderId;
+      setActiveProfessionalProviderId(id);
+      targetUrl = `/jasa-profesional/${id}`;
+    } else if (path === '/talent/:id') {
       const id = params?.id || activeTalentId;
       setActiveTalentId(id);
       targetUrl = `/talent/${id}`;
@@ -190,6 +213,12 @@ export default function App() {
     switch (currentPath) {
       case '/':
         return <HomePage onNavigate={handleNavigate} />;
+      case '/jasa-profesional':
+        return <ProfessionalServicesPage onNavigate={handleNavigate} />;
+      case '/daftar-jasa-profesional':
+        return <ProfessionalServiceApplicationPage onNavigate={handleNavigate} />;
+      case '/jasa-profesional/:id':
+        return <ProfessionalProviderProfilePage providerId={activeProfessionalProviderId} onNavigate={handleNavigate} />;
       case '/komunitas':
         return <CommunityPage onNavigate={handleNavigate} />;
       case '/talent':
@@ -218,6 +247,8 @@ export default function App() {
         return <BookingHistoryPage onNavigate={handleNavigate} />;
       case '/profil-saya':
         return <CustomerProfilePage onNavigate={handleNavigate} />;
+      case '/admin/jasa-profesional':
+        return <AdminProfessionalServicesPage onNavigate={handleNavigate} />;
       case '/admin':
         return <AdminPage onNavigate={handleNavigate} />;
       case '/tentang':

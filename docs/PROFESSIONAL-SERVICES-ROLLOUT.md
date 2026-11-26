@@ -52,10 +52,53 @@ The `professional_service_applications` migration adds a private application wor
 
 Credential and supporting files are stored in a dedicated private Storage bucket (`professional-service-documents`), with a 10 MB limit and PDF/JPG/PNG/WebP MIME allowlist. The owner can access their own files; authorized Talent admins can read documents for review. No public bucket or public document URL is used.
 
-The application route is `/daftar-jasa-profesional`, linked from the professional-services discovery page. Approval is still a review state only; the next implementation step is the admin review UI and a controlled publication step that creates an approved listing. No booking/payment action is available.
+The application route is `/daftar-jasa-profesional`, linked from the professional-services discovery page. The Admin review UI is implemented. Approval runs through the transactional `admin_review_professional_service_application` RPC, requires a verification attestation, checks required evidence and provider eligibility, and creates or updates the approved public listing. Public discovery is gated by active account, age/KTP verification, approved Talent profile, active taxonomy, and allowed delivery modes. Professional-service booking/payment is intentionally not enabled yet; listings are discoverable and profiles show pricing, but customers cannot book these services until the existing booking, escrow, cancellation, refund, and time-extension flows are integrated and tested.
 
 
 ## Admin review and publication
 The `/admin/jasa-profesional` page is available to admins with the existing Talent permission. It displays applicant profile details, service description, proposed rate and mode, verification requirements, and short-lived signed links to private credential files. Admin actions are handled by `admin_review_professional_service_application`, a transactional SECURITY DEFINER function that checks the Talent permission, locks the application row, and publishes an approved listing only if the associated Talent profile is approved and any required credential path is present. Other decisions can mark an application under review, rejected, or needing revision.
 
 The RPC does not make a regulated professional credential valid by itself: an authorized reviewer must inspect the actual document and applicable professional authorization before choosing approval. No booking or payment integration is included.
+
+
+## Security hardening and applicant revisions
+A follow-up migration removes direct admin table updates, requires a Talent profile for application inserts, scopes all document paths to the applicant's own folder, checks that referenced evidence exists in the private bucket before publication, and prevents deletion of documents while an application references them. It also limits each applicant to one open application per service type.
+
+When an admin requests revisions, the applicant can edit and resubmit that same application. The database update policy permits only the transition from `needs_revision` back to `pending`, and clears reviewer metadata; applicants cannot directly change an application to an approved or rejected state.
+
+
+The latest guardrail also enforces that an applicant's selected online/offline modes are a subset of the modes configured for that subcategory. The same check is repeated in the admin approval RPC, so changing the taxonomy after an application is submitted cannot bypass the constraint.
+
+
+## Latest repository checks
+The latest PR head's GitHub Actions checks are still running or queued. Do not treat CI as passed until all required runs complete successfully. Repository CI also does not replace applying the migrations to a disposable Supabase project, exercising RLS/RPC with separate user roles, or completing mobile and financial end-to-end tests.
+
+
+## Public listing visibility guard
+A follow-up RLS migration now hides a professional listing unless its provider profile, listing, subcategory, and parent category are all currently approved/active. It also verifies that the listing's delivery modes remain a subset of the current subcategory taxonomy. This means deactivating a service type or changing its allowed modes immediately removes incompatible listings from public reads without deleting their records.
+
+
+## Reviewer verification attestation
+Publishing now requires a separate internal verification note of at least 20 characters, recorded with the reviewing admin and timestamp. The note should state what was checked, such as identity/name match, issuer, credential validity and scope, or employment references. This is an auditable reviewer attestation, not an automated validation of a license or certificate. Applicants cannot edit the verification note or reviewer identity/timestamp during revision. Regulated services still require a qualified human reviewer to confirm the applicable current authorization before approval.
+
+
+## Application status audit timeline
+
+An append-only status history now records the initial submission and every status transition, including the previous/new status, note, actor class, actor ID where available, and timestamp. Talent can read only its own application timeline; Talent-permission admins and Super Admins can inspect the review history. Both the Talent application page and Admin review cards display the chronological timeline. The history is written transactionally by a database trigger and is not editable by clients.
+
+
+## Profession-specific evidence checklist
+
+The generic verification tier is only the minimum evidence class. Reviewers must follow the profession-specific checklist in `src/lib/professionalServiceVerification.ts`, which is displayed to applicants and admins. Examples:
+
+- **Nurse:** verify current STR and/or SIP (or other applicable authorization) through an official channel; match identity, validity, scope, and practice location. Never accept a document image as proof by itself.
+- **Legal and tax consulting:** verify professional status, license/permit, membership and scope through the relevant official body before enabling claims or services requiring that authority.
+- **Private driver / chauffeur:** verify current SIM and correct class; check STNK and relevant vehicle eligibility documents when the provider supplies the vehicle.
+- **Caregiver / babysitter / housekeeper:** verify identity, work history and references; review relevant first-aid/care training where claimed. Clearly separate non-medical assistance from regulated clinical tasks.
+- **Tour guide:** verify identity, references, destination knowledge and any local registration/permit required for the destination or service.
+- **Personal trainer / AC and electronics technicians:** review relevant training, experience and safety practices; do not imply a certificate is a statutory license unless verified.
+- **Creative, event, pet, tutoring, interpreting and translation services:** review portfolio/work samples, references and claimed qualifications. A sworn-translator or other regulated claim requires separate official verification.
+
+Taxonomy minimum tiers were refined: travel interpreter, business consultant, private tutor, and language translator use `reference` rather than making a generic certificate mandatory. This does not prevent a reviewer from requesting additional evidence where risk, client requirements, or applicable rules justify it.
+
+The applicant form now explains the evidence expected for the selected profession, and the admin review card shows a specific reviewer checklist. These prompts are operational guidance, not legal advice or automatic proof of qualification. Requirements can differ by jurisdiction and service scope; YUKU must obtain qualified compliance review before activating regulated services. No regulated listing should be approved solely because a file was uploaded.

@@ -83,7 +83,6 @@ interface BookingItem {
     category: string;
     description: string;
     status: string;
-    admin_notes: string | null;
     created_at: string;
   } | null;
 }
@@ -196,7 +195,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
         bookingIds.length > 0
           ? supabase
               .from('reports_complaints')
-              .select('id, booking_id, category, description, status, admin_notes, created_at')
+              .select('id, booking_id, category, description, status, created_at')
               .eq('reporter_id', currentUser.id)
               .in('booking_id', bookingIds)
               .order('created_at', { ascending: false })
@@ -279,7 +278,6 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 category: existingReport.category,
                 description: existingReport.description,
                 status: existingReport.status,
-                admin_notes: existingReport.admin_notes ?? null,
                 created_at: existingReport.created_at,
               }
             : null,
@@ -976,13 +974,19 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                   </div>
                 )}
 
-                {roleFilter === 'customer' && item.status === 'cancelled_by_talent' && item.refund && (
+                {roleFilter === 'customer' && ['cancelled_by_customer', 'cancelled_by_talent'].includes(item.status) && item.refund && (
                   <div className="pt-3 border-t border-slate-100">
                     <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-950 space-y-1">
-                      <div className="font-bold">Permintaan refund penuh: {formatRupiah(item.refund.amount)}</div>
-                      <div>Status: {item.refund.status === 'processed' ? 'Refund telah diproses' : 'Menunggu proses manual dari Finance YUKU'}</div>
+                      <div className="font-bold">Informasi refund: {formatRupiah(item.refund.amount)}</div>
+                      <div>Status: {{
+                        requested: 'Permintaan refund tercatat, menunggu peninjauan Finance',
+                        approved: 'Refund disetujui, menunggu pelaksanaan oleh Finance',
+                        processed: 'Instruksi refund telah diproses dan referensinya tercatat',
+                        rejected: 'Permintaan refund ditolak oleh Finance',
+                      }[item.refund.status]}</div>
                       {item.refund.provider_refund_id && <div>Referensi refund: <span className="font-mono">{item.refund.provider_refund_id}</span></div>}
-                      {item.refund.status !== 'processed' && <div>Refund belum dinyatakan selesai sampai dana benar-benar dikembalikan dan referensi dicatat.</div>}
+                      {item.refund.status === 'processed' && <div>Catatan: status diproses bukan konfirmasi bahwa dana sudah masuk ke rekening atau saldo Anda. Periksa kanal pembayaran asal dan hubungi Bantuan YUKU jika dana belum diterima.</div>}
+                      {item.refund.status === 'requested' && <div>Dana belum dinyatakan dikembalikan. Tunggu pembaruan dari Finance YUKU.</div>}
                     </div>
                   </div>
                 )}
@@ -1048,18 +1052,12 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                             </span>
                           </div>
                           <p className="text-slate-700 leading-relaxed">{item.report.description}</p>
-                          {item.report.admin_notes && (
-                            <div className="p-2.5 rounded-lg bg-white border border-rose-100 text-[11px] text-slate-700">
-                              <strong className="text-purple-900">Catatan Tim Keamanan YUKU:</strong>{' '}
-                              {item.report.admin_notes}
-                            </div>
-                          )}
                         </div>
                       );
                     })()}
                   </div>
                 ) : (
-                  item.status !== 'expired' && (
+                  ['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(item.status) && (
                     <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                       <button
                         type="button"
@@ -1083,7 +1081,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                     </div>
                   )
                 )}
-                {item.report && item.status !== 'expired' && (
+                {item.report && ['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(item.status) && (
                   <div className="pt-2 flex items-center justify-start">
                     <button
                       type="button"

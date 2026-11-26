@@ -34,6 +34,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const [soundEnabled, setSoundEnabled] = useState(false);
   const seenNotificationIds = useRef<Set<string> | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  // Prevent a late response for a previous account from populating this bell
+  // after a shared-device account switch or sign-out/sign-in race.
+  const activeUserIdRef = useRef(userId);
+  const notificationLoadIdRef = useRef(0);
 
   const playNotificationSound = useCallback(async (type: NotificationType, force = false) => {
     if ((!soundEnabled && !force) || typeof window === 'undefined') return;
@@ -80,15 +84,23 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   }, []);
 
   const loadNotifications = useCallback(async (playForNew = false) => {
-    if (!userId) return;
+    const requestedUserId = userId;
+    if (!requestedUserId || activeUserIdRef.current !== requestedUserId) return;
+    const requestId = ++notificationLoadIdRef.current;
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('notifications')
         .select('id, user_id, title, message, type, is_read, metadata, created_at')
-        .eq('user_id', userId)
+        .eq('user_id', requestedUserId)
         .order('created_at', { ascending: false })
         .limit(20);
+
+      // Ignore responses started under an older account or superseded request.
+      if (
+        requestId !== notificationLoadIdRef.current ||
+        activeUserIdRef.current !== requestedUserId
+      ) return;
 
       if (!error && data) {
         const rows = data as NotificationRow[];
@@ -101,14 +113,23 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
         setNotifications(rows);
       }
     } finally {
-      setIsLoading(false);
+      if (
+        requestId === notificationLoadIdRef.current &&
+        activeUserIdRef.current === requestedUserId
+      ) setIsLoading(false);
     }
   }, [userId, playNotificationSound]);
 
   useEffect(() => {
-    loadNotifications();
+    activeUserIdRef.current = userId;
+    // Invalidate in-flight requests before clearing the previous account's data.
+    notificationLoadIdRef.current += 1;
+    seenNotificationIds.current = null;
+    setNotifications([]);
+    setIsLoading(false);
 
     if (!userId) return;
+    loadNotifications();
     // Nama channel harus unik per komponen; dua lonceng dengan userId sama
     // sebelumnya memakai channel yang sama dan membuat aplikasi crash.
     const channelName = `user-notifications-${userId}-${Math.random().toString(36).slice(2)}`;
@@ -129,6 +150,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       .subscribe();
 
     return () => {
+      // Any pending fetch from this account must not update a later account's UI.
+      notificationLoadIdRef.current += 1;
       supabase.removeChannel(channel);
     };
   }, [userId, loadNotifications]);
@@ -319,7 +342,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 <Bell className="w-7 h-7 text-slate-300 mx-auto" />
                 <p className="text-xs font-bold text-slate-700">Belum ada notifikasi baru</p>
                 <p className="text-[11px] text-slate-400">
-                  Pembaruan status booking, verifikasi e-KTP, dan pencairan dana akan muncul di sini.
+                  Pembaruan booking, pengajuan jasa profesional, verifikasi e-KTP, dan pencairan dana akan muncul di sini.
                 </p>
               </div>
             ) : (
