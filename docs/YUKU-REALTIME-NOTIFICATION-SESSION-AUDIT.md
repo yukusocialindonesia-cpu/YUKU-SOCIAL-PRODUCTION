@@ -70,6 +70,27 @@ Supabase access tokens are JWTs and remain valid until expiry even after a refre
 - active WebSocket Presence/Broadcast connections need explicit reconnect/revocation handling;
 - session lifetime and JWT expiry should be reviewed in Supabase Auth settings, and strict session_id validation should be considered for particularly sensitive operations.
 
+
+
+## Fixed: internal report notes were included in user notifications
+
+Finding:
+- The original `notify_on_report_status_change()` concatenated `reports_complaints.admin_notes` into the notification message sent to `reporter_id`.
+- `admin_notes` is an Admin moderation field written by `admin_resolve_report()`; it must not be exposed as a general user-facing notification.
+
+Branch-only fix:
+- Migration `20261127001000_stop_leaking_internal_report_notes.sql` replaces the trigger function.
+- The reporter now receives only the report status and report/booking identifiers.
+- Internal `admin_notes` are not copied into the notification body or metadata.
+- Direct execution of the trigger helper remains revoked from app roles.
+
+Commit: `be5d647315802a4f5ed0c524dd115a5d4f9ee8b5`.
+
+## Additional follow-up
+
+- Push toggle state is currently keyed to `isAuthenticated` rather than `userId`; on a direct account switch where both users remain authenticated, the device subscription status may remain stale until a later refresh. This is a UI correctness issue, not evidence of cross-account subscription access: the Edge Function scopes subscription changes to the JWT user and refuses endpoint reassignment to another account.
+- The booking chat Presence/Broadcast public-channel issue remains a release blocker until the project-wide Realtime public-access setting and channel authorization are configured and tested.
+
 ## Validation boundary
 
 The NotificationBell fix was committed and its source will be re-fetched for static verification. The chat/message and notification policies were inspected in the final migration chain. No Realtime Settings were changed, no private-channel migration was applied, no database was queried or modified, no functions were deployed, and no live WebSocket or cross-account tests were performed. Staging tests and a project-level Realtime configuration review remain required.
