@@ -341,16 +341,24 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   }, [activeBusiness?.id, activeBusiness?.business_name, activeBusiness?.description, activeBusiness?.business_category, activeBusiness?.public_phone, activeBusiness?.website_url]);
 
   const runAction = async (action: () => Promise<{ error: { message: string } | null }>, done: string) => {
+    const workspace = captureWorkspace();
     setSaving(true); setError(''); setSuccess('');
     const result = await action();
+    if (!isWorkspaceCurrent(workspace)) return;
     if (result.error) setError(result.error.message || 'Aksi belum berhasil. Coba lagi.');
-    else { setSuccess(done); await refreshRole(); await load(); }
-    setSaving(false);
+    else {
+      setSuccess(done);
+      await refreshRole();
+      if (isWorkspaceCurrent(workspace)) await load(workspace.businessId || undefined);
+    }
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const createBusiness = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!businessName.trim()) { setError('Nama bisnis wajib diisi.'); return; }
+    if (!businessName.trim() || !user) { setError('Nama bisnis wajib diisi.'); return; }
+    const workspace = captureWorkspace();
+    const creatingUserId = user.id;
     setSaving(true); setError(''); setSuccess('');
     const { data, error: rpcError } = await supabase.rpc('create_merchant_business', {
       p_business_name: businessName.trim(),
@@ -359,6 +367,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       p_public_phone: phone || null,
       p_website_url: website || null,
     });
+    if (!isWorkspaceCurrent(workspace) || workspace.userId !== creatingUserId) return;
     if (rpcError) setError(rpcError.message);
     else {
       setActiveBusinessId(String(data));
@@ -367,7 +376,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       await refreshRole();
       await load(String(data));
     }
-    setSaving(false);
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const saveBusiness = async (event: React.FormEvent) => {
@@ -390,9 +399,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     event.preventDefault();
     if (!activeBusiness) return;
     if (!locationName.trim() || !address.trim()) { setError('Nama lokasi dan alamat wajib diisi.'); return; }
-    setSaving(true); setError(''); setSuccess('');
+    const workspace = captureWorkspace();
+    const businessId = activeBusiness.id;
     const locationPayload = {
-      p_business_id: activeBusiness.id,
+      p_business_id: businessId,
       p_location_name: locationName.trim(),
       p_address_text: address.trim(),
       p_city: city || null,
@@ -407,16 +417,17 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
           p_is_active: locationIsActive,
         })
       : await supabase.rpc('add_merchant_location', locationPayload);
+    if (!isWorkspaceCurrent(workspace)) return;
     if (rpcError) setError(rpcError.message);
     else {
       setEditingLocationId(null);
       setLocationName('Lokasi utama'); setAddress(''); setCity(''); setProvince('');
       setLocationPhone(''); setOpeningHours(''); setLocationIsActive(true);
       setSuccess(editingLocationId ? 'Lokasi berhasil diperbarui.' : 'Lokasi usaha berhasil ditambahkan.');
-      await load();
-      await loadReviewHistory();
+      await load(businessId);
+      if (isWorkspaceCurrent(workspace)) await loadReviewHistory();
     }
-    setSaving(false);
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const editLocation = (location: MerchantLocation) => {
@@ -441,9 +452,11 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const createOffer = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!activeBusiness) return;
+    const workspace = captureWorkspace();
+    const businessId = activeBusiness.id;
     setSaving(true); setError(''); setSuccess('');
     const { error: offerError } = await supabase.rpc('save_merchant_offer', {
-      p_business_id: activeBusiness.id,
+      p_business_id: businessId,
       p_offer_id: editingOfferId,
       p_title: offerTitle.trim(),
       p_description: offerDescription.trim(),
@@ -455,15 +468,16 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       p_terms: offerTerms.trim() || null,
       p_redemption_instructions: offerInstructions.trim() || null,
     });
+    if (!isWorkspaceCurrent(workspace)) return;
     if (offerError) setError(offerError.message);
     else {
       setOfferTitle(''); setOfferDescription(''); setOfferStart(toLocalDateTimeInput(new Date().toISOString())); setOfferEnd('');
       setOfferEligibility(''); setOfferQuota(''); setOfferTerms(''); setOfferInstructions(''); setEditingOfferId(null);
       setSuccess('Promo berhasil disimpan sebagai draft. Owner perlu mengajukannya untuk pemeriksaan YUKU.');
-      await load();
-      await loadOfferHistory();
+      await load(businessId);
+      if (isWorkspaceCurrent(workspace)) await loadOfferHistory();
     }
-    setSaving(false);
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const editOffer = (offer: MerchantOffer) => {
@@ -482,28 +496,39 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   };
 
   const submitOfferForReview = async (offerId: string) => {
+    if (!activeBusiness) return;
+    const workspace = captureWorkspace();
+    const businessId = activeBusiness.id;
     setSaving(true); setError(''); setSuccess('');
     const { error: submitError } = await supabase.rpc('submit_merchant_offer_for_review', {
       p_offer_id: offerId,
     });
+    if (!isWorkspaceCurrent(workspace)) return;
     if (submitError) setError(submitError.message);
     else {
       setSuccess('Promo dikirim untuk pemeriksaan YUKU. Promo belum tampil di direktori sampai disetujui.');
-      await load();
-      await loadOfferHistory();
+      await load(businessId);
+      if (isWorkspaceCurrent(workspace)) await loadOfferHistory();
     }
-    setSaving(false);
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const submitForReview = async () => {
     if (!activeBusiness) return;
+    const workspace = captureWorkspace();
+    const businessId = activeBusiness.id;
     setSaving(true); setError(''); setSuccess('');
     const { error: rpcError } = await supabase.rpc('submit_merchant_business_for_review', {
       p_business_id: activeBusiness.id,
     });
+    if (!isWorkspaceCurrent(workspace)) return;
     if (rpcError) setError(rpcError.message);
-    else { setSuccess('Pengajuan verifikasi berhasil dikirim. Bisnis belum tampil publik sampai disetujui.'); await load(); await loadReviewHistory(); }
-    setSaving(false);
+    else {
+      setSuccess('Pengajuan verifikasi berhasil dikirim. Bisnis belum tampil publik sampai disetujui.');
+      await load(businessId);
+      if (isWorkspaceCurrent(workspace)) await loadReviewHistory();
+    }
+    if (isWorkspaceCurrent(workspace)) setSaving(false);
   };
 
   const acceptInvitation = async () => {
