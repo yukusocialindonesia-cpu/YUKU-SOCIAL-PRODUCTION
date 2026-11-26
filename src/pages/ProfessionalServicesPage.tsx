@@ -39,6 +39,9 @@ const verificationLabel: Record<string, string> = {
 export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
   const [groups, setGroups] = useState<ServiceGroup[]>([]);
   const [providers, setProviders] = useState<ProviderItem[]>([]);
+  const [providerCount, setProviderCount] = useState(0);
+  const [loadingMoreProviders, setLoadingMoreProviders] = useState(false);
+  const PROVIDER_PAGE_SIZE = 40;
   const [selectedGroup, setSelectedGroup] = useState('all');
   const [mode, setMode] = useState<'all' | 'online' | 'offline'>('all');
   const [query, setQuery] = useState('');
@@ -61,14 +64,16 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
       setGroups([]);
     } else {
       setGroups((data || []) as ServiceGroup[]);
-      const { data: providerData, error: providerFetchError } = await supabase
+      const { data: providerData, error: providerFetchError, count: providerTotal } = await supabase
         .from('professional_talent_services')
-        .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)')
+        .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)', { count: 'exact' })
         .eq('approval_status', 'approved')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
-        .limit(100);
+        .order('id', { ascending: false })
+        .range(0, PROVIDER_PAGE_SIZE - 1);
       setProviderError(providerFetchError ? 'Daftar penyedia jasa belum dapat dimuat. Coba muat ulang halaman.' : '');
+      setProviderCount(providerFetchError ? 0 : (providerTotal || 0));
       const normalized = (providerData || []).map((row: any) => ({
         ...row,
         provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
@@ -80,6 +85,35 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
   };
 
   useEffect(() => { void load(); }, []);
+
+  const loadMoreProviders = async () => {
+    if (loadingMoreProviders || providers.length >= providerCount) return;
+    setLoadingMoreProviders(true);
+    const start = providers.length;
+    const { data, error: fetchError } = await supabase
+      .from('professional_talent_services')
+      .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)')
+      .eq('approval_status', 'approved')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(start, start + PROVIDER_PAGE_SIZE - 1);
+    if (fetchError) {
+      setProviderError('Halaman penyedia berikutnya gagal dimuat. Coba lagi.');
+    } else {
+      const normalized = (data || []).map((row: any) => ({
+        ...row,
+        provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
+        subcategory: Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory,
+      })).filter((row: any) => row.provider?.is_approved === true) as ProviderItem[];
+      setProviders((current) => {
+        const existing = new Set(current.map((item) => item.id));
+        return [...current, ...normalized.filter((item) => !existing.has(item.id))];
+      });
+      setProviderError('');
+    }
+    setLoadingMoreProviders(false);
+  };
 
   const visibleGroups = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase('id');
@@ -202,6 +236,14 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
           </div>
         )}
 
+        {providers.length < providerCount && !providerError && (
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <p className="text-[10px] text-slate-500">Memuat {providers.length} dari {providerCount} layanan penyedia</p>
+            <button type="button" onClick={() => void loadMoreProviders()} disabled={loadingMoreProviders} className="rounded-xl border border-violet-200 bg-white px-5 py-2.5 text-[11px] font-bold text-violet-800 disabled:opacity-50">
+              {loadingMoreProviders ? 'Memuat...' : 'Muat penyedia lainnya'}
+            </button>
+          </div>
+        )}
         {visibleProviders.length > 0 && (
           <section className="mt-8">
             <div className="mb-3 flex items-end justify-between gap-3">
@@ -224,7 +266,11 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
           </section>
         )}
 
-        <div className="mt-7 rounded-2xl border border-violet-100 bg-violet-50 p-4 sm:p-5">
+        {providerError && providers.length > 0 && providers.length < providerCount && (
+          <div className="mt-3 text-center"><button type="button" onClick={() => void loadMoreProviders()} disabled={loadingMoreProviders} className="text-[11px] font-bold text-violet-700">Coba muat penyedia lainnya</button></div>
+        )}
+
+                <div className="mt-7 rounded-2xl border border-violet-100 bg-violet-50 p-4 sm:p-5">
           <p className="text-xs font-extrabold text-violet-950">Layanan sedang dipersiapkan dengan standar keamanan YUKU.</p>
           <p className="mt-1 text-[11px] leading-relaxed text-violet-800">Kategori dan profil penyedia yang telah disetujui dapat dilihat. Fitur pemesanan, jadwal, transaksi, dan pembayaran jasa profesional belum dibuka sampai integrasi serta perlindungan pengguna selesai.</p>
         </div>
