@@ -370,8 +370,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       return;
     }
 
-    if (startDateTime.getTime() <= Date.now()) {
-      setBookingError('Jadwal pertemuan harus di masa mendatang (minimal beberapa jam dari sekarang).');
+    const minimumStartTime = Date.now() + 2 * 60 * 60 * 1000;
+    if (startDateTime.getTime() < minimumStartTime) {
+      setBookingError('Pilih jadwal minimal 2 jam dari sekarang.');
       return;
     }
 
