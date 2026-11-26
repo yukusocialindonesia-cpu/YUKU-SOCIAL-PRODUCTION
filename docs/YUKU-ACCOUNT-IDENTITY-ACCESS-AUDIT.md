@@ -242,3 +242,22 @@ Scope: static review of the feature branch client flows and migrations. This is 
 ### Validation boundary
 
 Only branch source and migration text were inspected. No SQL was executed, no Storage objects were read or changed, no migration was applied, and no Production or Staging configuration was modified. The above findings are source-level until replayed against Staging and exercised through Storage API requests.
+
+
+### Talent gallery upload/delete code-path verification
+
+A deeper client-flow review of `src/pages/TalentDashboardPage.tsx` confirms:
+
+- Uploads use per-user unique paths and `upsert: false`; file type, size and duration are checked client-side. The database trigger forces new media rows to `pending`.
+- If the `talent_media` INSERT fails, the client attempts to remove the just-uploaded object. If signed-URL creation fails after INSERT, it attempts to delete the row and object. These cleanup calls are best-effort and their returned errors are ignored; a failed Storage removal can leave an orphan object.
+- Delete flow removes the database row first, then attempts Storage removal. A failed Storage removal is not surfaced to the user and leaves an unreferenced private object. This does not make it publicly readable under the branch helper because reads require a matching `talent_media` row, but it creates storage-retention/cost and privacy-retention work.
+- Public profile `TalentDetailPage.tsx`, owner dashboard, and Admin moderation panel all generate 1800-second signed URLs when the moderation schema is available. The profile has a compatibility fallback to legacy `media_url` only when the moderation column is absent; migration 65 makes the bucket private, so rollout order and schema detection must be tested together.
+- The Admin professional-service review page generates 300-second signed URLs for credential and supporting evidence. No public URL fallback was found in that review path.
+
+### Additional release tests
+
+- Force Storage remove failure after successful row delete and verify the UI reports cleanup pending (or a server-side cleanup queue records it).
+- Force database INSERT failure after successful object upload and verify exact-path cleanup; retry must be safe.
+- Verify an orphaned object cannot be signed/read by anon, unrelated authenticated user, or Admin without a linked authorized record.
+- Verify the compatibility window: frontend before migration 65, migration 65 before/after frontend, and ensure no private-bucket media is rendered from a public URL.
+- Confirm legacy rows without `storage_path` are intentionally hidden or migrated before private-bucket rollout; the new profile code intentionally renders no URL for such rows once moderation schema exists.
