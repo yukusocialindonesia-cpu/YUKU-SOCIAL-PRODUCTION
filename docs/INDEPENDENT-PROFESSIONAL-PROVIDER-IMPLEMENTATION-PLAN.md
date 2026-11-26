@@ -3,7 +3,7 @@
 Branch: `feat/independent-professional-provider-identity`  
 Base: `fix/yuku-final-service-taxonomy`  
 Scope: architecture and implementation contract for Professional-only provider accounts.  
-Status: Phase A, Phase B, Phase C, Phase D public discovery/profile query changes, and Phase E database-derived profile completeness hardening are committed to this feature branch only. Automated build/test and full regression verification remain outstanding. No database migration has been applied; no production data or deployment changed.
+Status: Phase A–G are committed to this feature branch only: independent identity, independent applications/review/publication, independent public queries, server-derived profile completeness, non-recursive public RLS eligibility, and independent private-document upload access. Automated build/test and full regression verification remain outstanding. No database migration has been applied; no production data or deployment changed.
 
 ## Product requirement
 
@@ -99,3 +99,23 @@ Phase B alone is not an end-to-end launch: the existing Admin approval RPC, `pro
 ## Release and safety boundary
 
 This branch is a code-planning checkpoint only. Do not run migrations against Production, merge, deploy, enable professional checkout, or change payment behavior without separate explicit approval. A future implementation PR must include migration review, type/build checks, RLS tests, and a documented rollback/compatibility plan.
+
+
+## Additional security audit checkpoints
+
+### Phase F — public RLS recursion
+- Finding: the initial independent-profile public SELECT policy queried professional listings while the professional listing public SELECT policy queried provider profiles. Under RLS this can recursively evaluate the two policies.
+- Fix: migration `20261127008000_prevent_professional_public_rls_recursion.sql` introduces a narrowly scoped SECURITY DEFINER eligibility helper and makes both public policies call that helper.
+- Verification still required: execute against staging with RLS enabled for anon, owner, and admin roles; confirm public approved listings and profiles resolve without recursion and pending/inactive/disabled accounts remain hidden.
+
+### Phase G — private evidence upload
+- Finding: the pre-existing storage upload policy `20261127000200_restrict_professional_document_uploads.sql` requires a `talent_profiles` row. That blocks Professional-only providers from uploading required credentials despite the independent application form.
+- Fix: migration `20261127009000_allow_independent_professional_document_uploads.sql` replaces the policy with active-account + complete independent provider profile + owner-folder checks. The bucket remains private and existing MIME/size restrictions remain.
+- Verification still required: test owner upload/read/delete, other-user denial, admin read, anonymous denial, and confirm the bucket is private.
+
+## Outstanding validation gate
+- Run `npm ci`, `npm run lint`, and `npm run build` on this exact branch head.
+- Execute all new migrations in order on a disposable/staging database built from the matching baseline.
+- Run role-based RLS/storage tests for anon, customer, Professional-only provider, Companion-only provider, dual provider, and Talent Admin.
+- Confirm no booking/payment action becomes available; Professional Services remains display/application-only until a separate booking contract is approved and implemented.
+- No production migration, merge, or deploy is authorized by this implementation checkpoint.
