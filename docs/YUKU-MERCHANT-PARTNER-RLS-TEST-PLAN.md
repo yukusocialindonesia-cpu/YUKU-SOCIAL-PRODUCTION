@@ -139,3 +139,4 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Direct INSERT/UPDATE/DELETE against merchant_offers and merchant_offer_history is denied to anon/authenticated clients; only scoped RPCs may mutate offers.
 - [ ] Offer quota is never decremented, reserved, or represented as real-time availability; public copy explicitly tells customers to confirm directly with merchant.
 - [ ] Offer funding source remains merchant-only in this release and cannot be changed to YUKU/platform-funded through client RPC input.
+- [ ] One YUKU account can create and switch between multiple merchant businesses while also holding memberships in other businesses; creating a new business selects that new business without losing existing memberships.
