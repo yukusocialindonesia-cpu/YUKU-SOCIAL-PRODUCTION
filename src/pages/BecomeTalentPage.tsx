@@ -42,6 +42,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
 
   // Authentication check
   const { user: currentSessionUser } = useAuth();
+  const currentSessionUserId = currentSessionUser?.id ?? null;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successInfo, setSuccessInfo] = useState<{
@@ -106,14 +107,32 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     try {
       const raw = localStorage.getItem(TALENT_DRAFT_KEY);
       if (!raw) return;
-      const draft = JSON.parse(raw) as { email?: unknown } & Record<string, unknown>;
+      const draft = JSON.parse(raw) as Record<string, unknown>;
       const draftEmail = typeof draft.email === 'string' ? draft.email.trim().toLowerCase() : '';
       const accountEmail = (currentSessionUser.email || '').trim().toLowerCase();
       if (!draftEmail || !accountEmail || draftEmail !== accountEmail) {
         localStorage.removeItem(TALENT_DRAFT_KEY);
         return;
       }
-      setFormData((prev) => ({ ...prev, ...draft, password: '', ktpNumber: prev.ktpNumber }));
+      setFormData((prev) => ({
+        ...prev,
+        fullName: typeof draft.fullName === 'string' ? draft.fullName : prev.fullName,
+        email: draftEmail,
+        phone: typeof draft.phone === 'string' ? draft.phone : prev.phone,
+        city: typeof draft.city === 'string' ? draft.city : prev.city,
+        gender: draft.gender === 'Pria' || draft.gender === 'Wanita' ? draft.gender : prev.gender,
+        dateOfBirth: typeof draft.dateOfBirth === 'string' ? draft.dateOfBirth : prev.dateOfBirth,
+        headline: typeof draft.headline === 'string' ? draft.headline : prev.headline,
+        avatarUrl: typeof draft.avatarUrl === 'string' ? draft.avatarUrl : prev.avatarUrl,
+        bio: typeof draft.bio === 'string' ? draft.bio : prev.bio,
+        hourlyRate: typeof draft.hourlyRate === 'string' ? draft.hourlyRate : prev.hourlyRate,
+        referralCode: typeof draft.referralCode === 'string' ? draft.referralCode : prev.referralCode,
+        selectedActivities: Array.isArray(draft.selectedActivities)
+          ? draft.selectedActivities.filter((value): value is string => typeof value === 'string')
+          : prev.selectedActivities,
+        password: '',
+        ktpNumber: prev.ktpNumber,
+      }));
     } catch {
       // Draf rusak tidak boleh dipulihkan.
       try { localStorage.removeItem(TALENT_DRAFT_KEY); } catch { /* storage unavailable */ }
@@ -121,7 +140,6 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
   }, [currentSessionUserId, currentSessionUser?.email]);
 
   // Isi otomatis formulir dari akun yang sudah login (data dari AuthContext).
-  const currentSessionUserId = currentSessionUser?.id ?? null;
   useEffect(() => {
     if (!currentSessionUser) return;
     setFormData((prev) => ({
