@@ -169,3 +169,24 @@ For bookings already in `paid_held_in_escrow`, `confirmed_by_talent`, `in_progre
 - No live customer, Talent, Admin or service-role payment transaction was simulated.
 
 No database writes, migration applications, function changes, cron changes, or deployments were performed during this deep dive.
+
+
+### Xendit Edge Function source review — branch source only
+
+The current PR #287 branch source for `supabase/functions/xendit-webhook/index.ts` and `create-checkout/index.ts` was inspected. This is a source-code review only; it does not prove either function is deployed to Production.
+
+**Webhook controls present in source**
+- POST-only endpoint and constant-time comparison of `x-callback-token` with `XENDIT_CALLBACK_TOKEN`.
+- Only PAID/SETTLED events proceed; the external ID must match the expected `yuku-<UUID>` format.
+- Invoice ID is required and bounded; currency must be IDR; paid amount must be a positive safe integer.
+- The booking is loaded from the database and callback amount is compared to `bookings.gross_amount`; transient database errors return 5xx for retry.
+- Settlement is delegated to the server-only `settle_booking_payment` RPC; permanent booking-state errors are acknowledged to avoid endless retries.
+- Source comments explicitly state Xendit sandbox testing has not been completed.
+
+**Remaining P1 release gaps**
+- The webhook does not fetch/reconcile the invoice from Xendit's API using the callback invoice ID before settlement. Callback-token validation is a meaningful control, but provider-side invoice identity/status/currency reconciliation is still absent.
+- No durable event-ID/idempotency ledger is visible in this Edge Function. The database's unique provider charge ID and one-payment-per-booking constraints help, but the settlement RPC's early return for already-paid bookings does not compare the incoming invoice ID/provider to the stored payment.
+- `create-checkout` source calls `claim_booking_payment_route(..., 'xendit')`, while the live Production RPC rejects Xendit for a booking whose route is still NULL. This is intentional route policy, so new Xendit checkout is currently unavailable unless policy is explicitly changed after sandbox validation.
+- Both Edge Function files state that sandbox tests remain outstanding. There is no evidence in this audit that these source files or their required secrets/callback configuration are deployed and working in Production.
+
+Before enabling Xendit, run Staging tests for invalid callback token, malformed external ID, wrong invoice ID, wrong amount, wrong currency, wrong provider/route, expired booking, duplicate identical callback, conflicting invoice ID for an already-settled booking, concurrent callbacks, provider timeout/retry, and provider-side invoice lookup/reconciliation. Keep new Xendit checkout disabled until that evidence is recorded.
