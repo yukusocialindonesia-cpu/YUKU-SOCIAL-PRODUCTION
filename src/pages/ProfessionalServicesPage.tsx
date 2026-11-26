@@ -54,7 +54,8 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
       .select('id, title, description, icon_name, sort_order, professional_service_subcategories(id, title, description, verification_level, delivery_modes, sort_order)')
       .eq('is_active', true)
       .order('sort_order', { ascending: true })
-      .order('sort_order', { referencedTable: 'professional_service_subcategories', ascending: true });
+      .order('sort_order', { referencedTable: 'professional_service_subcategories', ascending: true })
+      .eq('professional_service_subcategories.is_active', true);
     if (fetchError) {
       setError('Kategori jasa belum tersedia. Pastikan migrasi kategori profesional sudah diterapkan.');
       setGroups([]);
