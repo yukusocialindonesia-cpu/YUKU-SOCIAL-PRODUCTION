@@ -604,20 +604,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
 
-      // Deploy frontend before migration 65 safely: use the old projection only
-      // while the moderation columns have not been added yet. Uploads stay paused
-      // during this short compatibility window.
-      let moderationSchemaAvailable = true;
-      if (mediaErr && /moderation_status/i.test(mediaErr.message) && /(column|schema cache|does not exist|could not find)/i.test(mediaErr.message)) {
-        moderationSchemaAvailable = false;
-        const legacyMediaResult = await supabase.from('talent_media')
-          .select('id, talent_id, media_type, media_url, storage_path, caption, sort_order, created_at')
-          .eq('talent_id', userId)
-          .order('sort_order', { ascending: true })
-          .order('created_at', { ascending: false });
-        mediaRows = (legacyMediaResult.data || []).map((row) => ({ ...row, moderation_status: 'approved' as const, moderation_reason: null }));
-        mediaErr = legacyMediaResult.error;
-      }
+      // Fail closed: do not treat legacy rows as approved when moderation schema is absent.
 
       if (mediaErr) {
         setMediaModerationAvailable(false);
@@ -630,12 +617,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
         setMediaItems([]);
       } else {
         setMediaMigrationMissing(false);
-        setMediaModerationAvailable(moderationSchemaAvailable);
+        setMediaModerationAvailable(true);
         const ownMedia = (mediaRows || []) as TalentMediaRow[];
         const ownMediaWithSignedUrls = await Promise.all(ownMedia.map(async (item) => {
-          // Preserve legacy public URLs until migration 65 is applied. Once the
-          // moderation schema exists, only signed URLs are used.
-          if (!moderationSchemaAvailable) return item;
           if (!item.storage_path) return { ...item, media_url: '' };
           const { data: signedData, error: signedError } = await supabase.storage
             .from('talent-media')

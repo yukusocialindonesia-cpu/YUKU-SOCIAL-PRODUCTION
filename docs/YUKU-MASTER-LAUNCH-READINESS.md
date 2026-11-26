@@ -176,3 +176,13 @@ Gate 2 / Gate 5 exit criteria: safely deploy the narrow role-transition migratio
 - Positive control: KTP bucket is private (5 MB, JPEG/PNG/WebP). Public Talent visibility and booking RPC enforce active account, 18+, verified KTP, approved profile and approved active service at the database layer.
 
 Launch gate: no launch/enablement of Talent onboarding or paid booking until evidence linkage, Admin review evidence requirements, account-status preservation, audit logging, and Staging negative tests pass.
+
+### Public Talent discovery and booking acceptance gate — 26 Nov 2026
+
+- Production public visibility and create_booking() server-side gates were inspected. They enforce active account, 18+, verified KTP, approved profile, and approved + active legacy service before public visibility/booking.
+- Production booking overlap protection exists through a GiST exclusion constraint on Talent and overlapping time ranges for active booking states.
+- Feature-branch fix: removed legacy gallery fallback that could render old public media URLs without moderation state. Talent detail and dashboard now fail closed if moderation schema is missing and use short-lived signed URLs only.
+- Decision required: no availability rows currently means the legacy booking RPC allows any otherwise-valid future time. Decide whether this remains the intended default or whether Talent must configure availability before publishing/accepting bookings.
+- Professional services remain discovery-only; no CTA may call the legacy hourly booking RPC until the shared booking and finance lifecycle is complete.
+- Staging acceptance tests are required for direct URL access, RLS bypass attempts, media moderation/private Storage, expired URLs, schedule edge cases, overlapping bookings, rate snapshots, and professional-service route separation.
+- No Production changes were made.
