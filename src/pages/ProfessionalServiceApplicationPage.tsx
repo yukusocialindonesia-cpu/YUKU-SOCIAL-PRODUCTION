@@ -28,6 +28,15 @@ interface Application {
   credential_document_path: string | null;
   supporting_document_path: string | null;
 }
+interface StatusHistoryEntry {
+  id: string;
+  application_id: string;
+  from_status: string | null;
+  to_status: string;
+  admin_note: string | null;
+  actor_role: 'applicant' | 'admin' | 'system';
+  created_at: string;
+}
 interface Props { onNavigate: (path: AppRoute) => void; }
 
 const statusLabels: Record<string, string> = {
@@ -51,6 +60,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
   const [categories, setCategories] = useState<{ id: string; title: string; items: Subcategory[] }[]>([]);
   const [hasTalentProfile, setHasTalentProfile] = useState<boolean | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [statusHistory, setStatusHistory] = useState<Record<string, StatusHistoryEntry[]>>({});
   const [editingApplicationId, setEditingApplicationId] = useState<string | null>(null);
   const [existingCredentialPath, setExistingCredentialPath] = useState<string | null>(null);
   const [existingSupportingPath, setExistingSupportingPath] = useState<string | null>(null);
@@ -78,7 +88,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     if (!user) { setLoading(false); return; }
     setLoading(true);
     setError('');
-    const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: talentProfile, error: talentProfileError }] = await Promise.all([
+    const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: talentProfile, error: talentProfileError }, { data: historyRows, error: historyError }] = await Promise.all([
       supabase.from('professional_service_categories')
         .select('id,title,professional_service_subcategories(id,title,description,verification_level,delivery_modes,category_id)')
         .eq('is_active', true)
@@ -88,6 +98,10 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         .eq('applicant_id', user.id)
         .order('created_at', { ascending: false }),
       supabase.from('talent_profiles').select('id').eq('id', user.id).maybeSingle(),
+      supabase.from('professional_service_application_status_history')
+        .select('id,application_id,from_status,to_status,admin_note,actor_role,created_at')
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true }),
     ]);
     const normalized = (categoryRows || []).map((category: any) => ({
       id: category.id,
@@ -99,10 +113,15 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     }));
     setCategories(normalized);
     setApplications(applicationRows || []);
+    setStatusHistory((historyRows || []).reduce((acc: Record<string, StatusHistoryEntry[]>, entry: StatusHistoryEntry) => {
+      (acc[entry.application_id] ||= []).push(entry);
+      return acc;
+    }, {}));
     setHasTalentProfile(talentProfileError ? null : !!talentProfile);
     if (categoryError) setError('Daftar jenis jasa belum dapat dimuat. Coba muat ulang halaman atau hubungi admin YUKU.');
     else if (talentProfileError) setError('Status profil Talent belum dapat diperiksa. Silakan muat ulang halaman.');
     else if (applicationError) setError('Riwayat pengajuan belum dapat dimuat.');
+    else if (historyError) setError('Riwayat perubahan status belum dapat dimuat. Coba muat ulang halaman.');
     setLoading(false);
   };
 
@@ -287,7 +306,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
 
         <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
           <h2 className="text-sm font-extrabold text-slate-900">Riwayat pengajuan</h2>
-          {loading ? <p className="mt-3 text-xs text-slate-500">Memuat riwayat...</p> : applications.length === 0 ? <p className="mt-3 text-xs text-slate-500">Belum ada pengajuan.</p> : <div className="mt-3 space-y-2">{applications.map((item) => <article key={item.id} className="rounded-xl border border-slate-100 p-3"><div className="flex items-center justify-between gap-3"><span className="text-xs font-bold text-slate-800">{statusLabels[item.status] || item.status}</span><span className="text-[10px] text-slate-500">{new Date(item.created_at).toLocaleDateString('id-ID')}</span></div><p className="mt-1 text-[11px] text-slate-600">{categories.flatMap((category) => category.items).find((itemCategory) => itemCategory.id === item.subcategory_id)?.title || 'Jasa profesional'}</p>{item.admin_note && <p className="mt-2 text-[11px] text-slate-600">Catatan admin: {item.admin_note}</p>}{item.status === 'needs_revision' && <button type="button" onClick={() => { setEditingApplicationId(item.id); setSubcategoryId(item.subcategory_id); setDescription(item.service_description); setExperience(String(item.experience_years)); setCity(item.service_city); setModes(item.delivery_modes || ['offline']); setRate(String(item.rate_amount)); setUnit(item.pricing_unit); setExistingCredentialPath(item.credential_document_path); setExistingSupportingPath(item.supporting_document_path); setCredentialFile(null); setSupportingFile(null); setError(''); setSuccess(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="mt-3 rounded-lg bg-violet-100 px-3 py-2 text-[10px] font-bold text-violet-800">Perbaiki & kirim ulang</button>}</article>)}</div>}
+          {loading ? <p className="mt-3 text-xs text-slate-500">Memuat riwayat...</p> : applications.length === 0 ? <p className="mt-3 text-xs text-slate-500">Belum ada pengajuan.</p> : <div className="mt-3 space-y-2">{applications.map((item) => <article key={item.id} className="rounded-xl border border-slate-100 p-3"><div className="flex items-center justify-between gap-3"><span className="text-xs font-bold text-slate-800">{statusLabels[item.status] || item.status}</span><span className="text-[10px] text-slate-500">{new Date(item.created_at).toLocaleDateString('id-ID')}</span></div><p className="mt-1 text-[11px] text-slate-600">{categories.flatMap((category) => category.items).find((itemCategory) => itemCategory.id === item.subcategory_id)?.title || 'Jasa profesional'}</p>{item.admin_note && <p className="mt-2 text-[11px] text-slate-600">Catatan admin: {item.admin_note}</p>}{statusHistory[item.id]?.length > 0 && <div className="mt-3 rounded-lg bg-slate-50 p-3"><p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Perjalanan pengajuan</p><ol className="space-y-3">{statusHistory[item.id].map((entry, index) => <li key={entry.id} className="relative pl-4"><span className={`absolute left-0 top-1.5 h-2 w-2 rounded-full ${index === statusHistory[item.id].length - 1 ? 'bg-violet-600' : 'bg-slate-300'}`}/><p className="text-[11px] font-bold text-slate-800">{entry.from_status ? (statusLabels[entry.from_status] || entry.from_status) + ' → ' : 'Pengajuan dibuat · '}{statusLabels[entry.to_status] || entry.to_status}</p><p className="mt-0.5 text-[10px] text-slate-500">{new Date(entry.created_at).toLocaleString('id-ID')} · {entry.actor_role === 'admin' ? 'Admin YUKU' : entry.actor_role === 'applicant' ? 'Talent' : 'Sistem'}</p>{entry.admin_note && <p className="mt-1 text-[10px] leading-relaxed text-slate-600">Catatan: {entry.admin_note}</p>}</li>)}</ol></div>}{item.status === 'needs_revision' && <button type="button" onClick={() => { setEditingApplicationId(item.id); setSubcategoryId(item.subcategory_id); setDescription(item.service_description); setExperience(String(item.experience_years)); setCity(item.service_city); setModes(item.delivery_modes || ['offline']); setRate(String(item.rate_amount)); setUnit(item.pricing_unit); setExistingCredentialPath(item.credential_document_path); setExistingSupportingPath(item.supporting_document_path); setCredentialFile(null); setSupportingFile(null); setError(''); setSuccess(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="mt-3 rounded-lg bg-violet-100 px-3 py-2 text-[10px] font-bold text-violet-800">Perbaiki & kirim ulang</button>}</article>)}</div>}
         </section>
         <p className="flex items-center gap-2 px-1 text-[10px] text-slate-500"><Clock3 className="h-3.5 w-3.5"/> Proses pemeriksaan memerlukan waktu. Layanan belum ditampilkan selama status belum disetujui.</p>
       </div>
