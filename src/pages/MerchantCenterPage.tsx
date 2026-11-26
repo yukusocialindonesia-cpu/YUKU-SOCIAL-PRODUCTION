@@ -68,7 +68,7 @@ const statusCopy: Record<MerchantBusiness['review_status'], string> = {
   draft: 'Lengkapi profil dan lokasi, lalu ajukan verifikasi',
   pending_review: 'Menunggu pemeriksaan tim YUKU',
   needs_revision: 'Ada data yang perlu diperbaiki',
-  approved: 'Bisnis disetujui',
+  approved: 'Bisnis disetujui. Perubahan profil atau cabang akan memicu pemeriksaan ulang dan menyembunyikan bisnis sementara.',
   rejected: 'Pengajuan belum disetujui',
   suspended: 'Profil bisnis sedang dinonaktifkan',
 };
