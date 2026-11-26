@@ -500,7 +500,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       if (canSupport) {
         const { data: allIdentityRows, error: identityFetchError } = await supabase
           .from('user_identities')
-          .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+          .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,selfie_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
           .order('created_at', { ascending: false });
         if (identityFetchError) throw identityFetchError;
         const customerIdentityIds = (allIdentityRows || []).map((row) => row.id);
