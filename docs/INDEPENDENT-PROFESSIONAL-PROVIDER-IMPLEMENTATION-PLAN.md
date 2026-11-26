@@ -41,7 +41,7 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 ## Safe migration sequence
 
 ### Phase A — additive identity and compatibility
-<progress>Implementation checkpoint: additive profile table, owner/admin RLS, public-approved-listing read gate, and legacy presentation backfill are committed in `20261127004000_create_independent_professional_provider_profiles.sql`. The migration is not applied to any database.</progress>
+**Implementation checkpoint:** Additive profile table, owner/admin RLS, public-approved-listing read gate, and legacy presentation backfill are committed in `20261127004000_create_independent_professional_provider_profiles.sql`. The migration is not applied to any database.
 
 1. Create `professional_provider_profiles` with RLS enabled and narrowly scoped owner-write/admin-read/public-approved-read policies.
 2. Backfill one professional profile for every existing professional listing provider and application applicant, copying only presentation fields from `talent_profiles` where present. Existing provider IDs are already user IDs; do not mint new identities.
