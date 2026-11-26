@@ -54,6 +54,37 @@ Other confirmed database functions in the booking lifecycle include:
 - `admin_review_qris_payment`
 - `admin_review_bank_transfer_payment`
 
+## Additional frontend dependency findings (branch audit)
+
+The booking-history UI is not currently polymorphic:
+- `src/pages/BookingHistoryPage.tsx` types `activity_category_id` as a required string.
+- It builds `categoryIds` directly from every booking and queries `activity_categories` using those IDs.
+- It renders `activityTitle`, `booking_mode`, `start_time`, and `duration_hours` as if every booking were an hourly activity.
+- The same activity title and duration are passed into the booking chat context.
+- The history page also owns customer payment panels, cancellation/report/review actions and status-specific UI. These must remain available for legacy activity bookings while professional service cards use their own snapshot label and unit/quantity.
+
+Consequences:
+- Making `activity_category_id` nullable before updating the history query and render model can produce invalid category lookups, blank labels, or incorrect activity assumptions.
+- A professional booking cannot be represented safely by setting `duration_hours = 1` as a placeholder for a session/day/project. That would corrupt the booking display and can mislead finance/support.
+- Do not expose a professional booking CTA merely because a professional listing is approved. The current public page correctly states that booking and payment are not open.
+
+## Required frontend compatibility work
+
+Before enabling professional booking:
+1. Introduce a discriminated booking view model (`activity` vs `professional_service`) with a safe label and price-unit snapshot.
+2. Make category enrichment conditional: only activity rows query `activity_categories`; professional rows enrich from immutable booking snapshots, not the current listing.
+3. Update Booking History, chat context, customer/talent details, payment panels, cancellation/report/review UI, admin booking views, exports and finance summaries to render the correct kind.
+4. Preserve legacy activity labels, rates, durations, payment instructions and state actions exactly.
+5. Ensure customer and Talent views both resolve the provider/customer and service title without requiring a legacy activity category.
+
+## Newly confirmed release blockers
+
+- `bookings.activity_category_id` is a NOT NULL foreign key, and the legacy booking history currently assumes it is always populated.
+- `calculate_booking_financials()` recalculates every inserted booking from legacy `talent_services` and profile hourly rates. It must branch by booking kind before any professional row can be inserted.
+- The current `create_booking()` RPC only accepts a legacy activity category and hourly duration, with a five-hour cap. It must not be overloaded with fake category IDs or placeholder durations.
+- The settlement ledger reads the booking's stored gross, platform fee and Talent share. This is reusable only after the professional booking RPC has frozen those values and the payment amount is checked against the same snapshot.
+- The existing booking-history category lookup and chat payload must be migrated together with the database contract; changing only the database will leave frontend assumptions behind.
+
 ## Required additive data model
 
 Preferred direction: extend the existing booking aggregate, not a parallel payment system.
