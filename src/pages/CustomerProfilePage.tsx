@@ -63,8 +63,13 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
       onNavigateRef.current('/login');
       return;
     }
-    if (role && role !== 'customer') {
-      onNavigateRef.current(role === 'talent' ? '/dashboard-talent' : '/admin');
+    if (role !== 'customer') {
+      if (role === 'talent') onNavigateRef.current('/dashboard-talent');
+      else if (role === 'admin') onNavigateRef.current('/admin');
+      else {
+        setErrorMessage('Role akun belum dapat diverifikasi. Muat ulang sesi atau hubungi Support YUKU.');
+        setIsLoading(false);
+      }
       return;
     }
 
