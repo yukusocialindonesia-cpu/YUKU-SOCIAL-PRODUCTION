@@ -39,7 +39,7 @@ create table if not exists public.merchant_offer_history (
   to_status text not null,
   decision_note text null check (decision_note is null or char_length(decision_note) <= 1200),
   actor_user_id uuid null references public.users(id) on delete set null,
-  actor_role text not null check (actor_role in ('owner','admin','system')),
+  actor_role text not null check (actor_role in ('owner','manager','admin','system')),
   created_at timestamptz not null default now()
 );
 
@@ -137,6 +137,12 @@ begin
       coalesce(p_starts_at,now()),p_ends_at,nullif(trim(p_terms),''),
       nullif(trim(p_redemption_instructions),''),auth.uid()
     ) returning id into v_offer_id;
+    insert into public.merchant_offer_history (
+      offer_id,business_id,from_status,to_status,actor_user_id,actor_role
+    ) values (
+      v_offer_id,p_business_id,null,'draft',auth.uid(),
+      case when private.has_merchant_business_access(p_business_id,array['owner']::text[]) then 'owner' else 'manager' end
+    );
     return v_offer_id;
   end if;
 
@@ -170,7 +176,7 @@ begin
     p_offer_id,p_business_id,v_existing_status,'draft',
     case when v_existing_status = 'approved' then 'Promo diperbarui oleh merchant dan menunggu pengajuan ulang.' else null end,
     auth.uid(),
-    case when private.has_merchant_business_access(p_business_id,array['owner']::text[]) then 'owner' else 'owner' end
+    case when private.has_merchant_business_access(p_business_id,array['owner']::text[]) then 'owner' else 'manager' end
   );
   return p_offer_id;
 end;
@@ -235,7 +241,7 @@ begin
   if auth.uid() is null or not public.is_admin() then
     raise exception 'Super Admin access required' using errcode = '42501';
   end if;
-  if p_decision not in ('approved','needs_revision','rejected','suspended') then
+  if p_decision is null or p_decision not in ('approved','needs_revision','rejected','suspended') then
     raise exception 'Unsupported offer review decision' using errcode = '22023';
   end if;
   if p_decision in ('needs_revision','rejected','suspended')
