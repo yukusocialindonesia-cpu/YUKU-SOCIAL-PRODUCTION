@@ -105,7 +105,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
 
       {/* 5. Community dan Merchant Partner adalah bagian ekosistem, bukan kategori Talent. */}
-      <EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} />
+      <EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} />
 
       {/* 6. Informasi pendukung diletakkan setelah katalog utama. */}
       <div className="bg-white">
