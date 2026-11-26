@@ -134,3 +134,8 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Offer review decisions notify the business Owner and are written to the append-only offer history.
 - [ ] Merchant offer redemption remains direct with the merchant; no YUKU checkout, coupon wallet, payment, commission, or settlement exists in this release.
 - [ ] Expired offers cannot be submitted or approved; future-start offers remain hidden until their start time and expired offers disappear from public queries automatically.
+- [ ] Merchant Owner A cannot read, edit, submit, or review offers belonging to Merchant B by substituting a foreign business/offer UUID.
+- [ ] Manager can edit offers only for businesses where their active Manager membership exists; Staff cannot mutate offers.
+- [ ] Direct INSERT/UPDATE/DELETE against merchant_offers and merchant_offer_history is denied to anon/authenticated clients; only scoped RPCs may mutate offers.
+- [ ] Offer quota is never decremented, reserved, or represented as real-time availability; public copy explicitly tells customers to confirm directly with merchant.
+- [ ] Offer funding source remains merchant-only in this release and cannot be changed to YUKU/platform-funded through client RPC input.
