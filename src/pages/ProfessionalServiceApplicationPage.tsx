@@ -85,6 +85,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     [categories, subcategoryId],
   );
   const requiresCredential = selectedSubcategory?.verification_level === 'credential' || selectedSubcategory?.verification_level === 'license';
+  const requiresSupportingEvidence = selectedSubcategory?.verification_level === 'reference';
 
   const load = async () => {
     if (!user) { setLoading(false); return; }
@@ -155,6 +156,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     if (!city.trim()) { setError('Isi kota atau area layanan.'); return; }
     if (!modes.length) { setError('Pilih minimal satu metode layanan.'); return; }
     if (requiresCredential && !credentialFile && !existingCredentialPath) { setError('Jenis jasa ini wajib melampirkan sertifikat kompetensi atau izin profesi.'); return; }
+    if (requiresSupportingEvidence && !supportingFile && !existingSupportingPath) { setError('Jenis jasa ini wajib melampirkan bukti pengalaman atau referensi yang dapat diperiksa.'); return; }
     const fileError = validateFile(credentialFile, 'Dokumen kompetensi/izin profesi') || validateFile(supportingFile, 'Dokumen pendukung');
     if (fileError) { setError(fileError); return; }
 
@@ -306,7 +308,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
 
           <section className="border-t border-slate-100 pt-4"><h2 className="text-sm font-extrabold text-slate-900">Dokumen verifikasi</h2><p className="mt-1 text-[11px] leading-relaxed text-slate-500">Dokumen disimpan di penyimpanan privat dan hanya dapat diakses pemilik akun serta admin yang berwenang. Maksimal 10 MB per file (PDF/JPG/PNG/WebP).</p></section>
           <label className="block rounded-xl border border-dashed border-violet-300 bg-violet-50/50 p-4 text-xs text-slate-700"><span className="flex items-center gap-2 font-bold"><Upload className="h-4 w-4 text-violet-700"/> Sertifikat, izin, SIM, atau bukti kompetensi {requiresCredential ? '(wajib)' : '(jika ada)'}</span><input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(e) => setCredentialFile(e.target.files?.[0] || null)} className="mt-3 block w-full text-[11px]"/>{credentialFile ? <span className="mt-2 block text-[10px] text-emerald-700">{credentialFile.name}</span> : existingCredentialPath && <span className="mt-2 block text-[10px] text-emerald-700">Dokumen sebelumnya tersimpan — unggah file baru jika ingin menggantinya.</span>}</label>
-          <label className="block rounded-xl border border-dashed border-slate-300 p-4 text-xs text-slate-700"><span className="flex items-center gap-2 font-bold"><FileCheck2 className="h-4 w-4 text-violet-700"/> Portofolio, bukti pengalaman, atau dokumen referensi (opsional)</span><input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(e) => setSupportingFile(e.target.files?.[0] || null)} className="mt-3 block w-full text-[11px]"/>{supportingFile ? <span className="mt-2 block text-[10px] text-emerald-700">{supportingFile.name}</span> : existingSupportingPath && <span className="mt-2 block text-[10px] text-emerald-700">Dokumen sebelumnya tersimpan — unggah file baru jika ingin menggantinya.</span>}</label>
+          <label className="block rounded-xl border border-dashed border-slate-300 p-4 text-xs text-slate-700"><span className="flex items-center gap-2 font-bold"><FileCheck2 className="h-4 w-4 text-violet-700"/> Portofolio, bukti pengalaman, atau dokumen referensi {requiresSupportingEvidence ? '(wajib untuk verifikasi referensi)' : '(opsional)'}</span><input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(e) => setSupportingFile(e.target.files?.[0] || null)} className="mt-3 block w-full text-[11px]"/>{supportingFile ? <span className="mt-2 block text-[10px] text-emerald-700">{supportingFile.name}</span> : existingSupportingPath && <span className="mt-2 block text-[10px] text-emerald-700">Dokumen sebelumnya tersimpan — unggah file baru jika ingin menggantinya.</span>}</label>
           <div className="rounded-xl bg-amber-50 p-3 text-[10px] leading-relaxed text-amber-900"><strong>Catatan:</strong> Unggah hanya dokumen milik Anda dan tutupi nomor/data yang tidak diperlukan bila memungkinkan. Untuk profesi berizin, dokumen harus masih berlaku dan sesuai ruang lingkup layanan. Persetujuan YUKU bukan pengganti izin resmi, dan pengajuan yang disetujui belum otomatis membuka pemesanan.</div>
           <button disabled={submitting || loading} type="submit" className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#24105F] text-xs font-extrabold text-white disabled:opacity-50">{submitting ? <><Loader2 className="h-4 w-4 animate-spin"/> Mengirim pengajuan...</> : editingApplicationId ? 'Kirim ulang setelah perbaikan' : 'Kirim pengajuan untuk diperiksa'}</button>
         </form>
