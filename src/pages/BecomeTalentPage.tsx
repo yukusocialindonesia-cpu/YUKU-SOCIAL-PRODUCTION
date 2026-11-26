@@ -272,6 +272,12 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
 
     setIsSubmitting(true);
 
+    // Track only files uploaded during this attempt. If a later step fails,
+    // remove these new objects without touching previously stored evidence.
+    let uploadedKtpPath: string | null = null;
+    let uploadedSelfiePath: string | null = null;
+    let identityEvidenceSaved = false;
+
     try {
       let activeUserId = currentSessionUser?.id;
 
@@ -400,8 +406,8 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       const evidenceTimestamp = Date.now();
       const ktpExt = ktpFile.name.split('.').pop() || 'jpg';
       const selfieExt = selfieFile.name.split('.').pop() || 'jpg';
-      const uploadedKtpPath = `${activeUserId}/ktp_${evidenceTimestamp}.${ktpExt}`;
-      const uploadedSelfiePath = `${activeUserId}/selfie_${evidenceTimestamp}.${selfieExt}`;
+      uploadedKtpPath = `${activeUserId}/ktp_${evidenceTimestamp}.${ktpExt}`;
+      uploadedSelfiePath = `${activeUserId}/selfie_${evidenceTimestamp}.${selfieExt}`;
       const { data: ktpUploadData, error: ktpUploadError } = await supabase.storage
         .from('ktp-documents')
         .upload(uploadedKtpPath, ktpFile, { upsert: false });
@@ -442,6 +448,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       if (identityError) {
         throw new Error(`Gagal menyimpan data identitas legal: ${identityError.message}`);
       }
+      identityEvidenceSaved = true;
 
       // 7. Apply optional referral code (1-tier permanent, anti self-referral)
       let referralStatus: { ok: boolean; message: string } | undefined;
@@ -485,6 +492,21 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
         referralStatus,
       });
     } catch (err: any) {
+      // Best-effort rollback for evidence uploaded by this attempt only.
+      // Never delete evidence after the identity row has successfully referenced it.
+      if (!identityEvidenceSaved) {
+        const orphanedEvidence = [uploadedKtpPath, uploadedSelfiePath].filter(
+          (storagePath): storagePath is string => Boolean(storagePath),
+        );
+        if (orphanedEvidence.length > 0) {
+          const { error: cleanupError } = await supabase.storage
+            .from('ktp-documents')
+            .remove(orphanedEvidence);
+          if (cleanupError) {
+            console.error('Gagal membersihkan berkas identitas yatim:', cleanupError.message);
+          }
+        }
+      }
       setSubmitError(err?.message || 'Terjadi kesalahan sistem saat memproses pendaftaran.');
     } finally {
       setIsSubmitting(false);
