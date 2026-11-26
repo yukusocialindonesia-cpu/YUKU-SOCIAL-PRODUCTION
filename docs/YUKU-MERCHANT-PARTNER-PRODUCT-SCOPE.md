@@ -1,6 +1,6 @@
 # YUKU Merchant Partner — Product Scope
 
-Status: product foundation / planned feature. This document does not activate merchant onboarding, listings, offers, payments, or production data.
+Status: implementation draft in PR #287. UI and review workflow are coded but not live until the migrations pass staging validation. No Production changes.
 
 ## Product definition
 
@@ -31,9 +31,9 @@ The initial release is a discovery/referral directory, not an in-app merchant ch
 - Merchant registration is a separate business onboarding flow.
 - A merchant business profile is distinct from the owner/operator's personal profile and provider profiles.
 - Support multiple branches under one business, with branch-scoped staff access in a later operational phase.
-- Only approved and active businesses/locations may appear publicly.
+- Only approved businesses with active locations may appear publicly. Draft, pending-review, needs-revision, rejected and suspended businesses remain hidden.
 - Collect only the minimum business and ownership information needed for verification. Keep identity evidence, contracts, private contact data, and internal review notes private.
-- Admin review must support submitted, needs-revision, approved/active, paused, and rejected states with an audit trail.
+- Super Admin review UI supports pending review, needs revision, approved, rejected and suspension of approved businesses. Each owner submission and Admin decision is recorded in an append-only review history. Reinstatement and appeal workflows remain future work.
 
 ## Offers and promotions
 
@@ -81,3 +81,14 @@ Before any in-app voucher redemption:
 At the time of this document, the homepage contains a staged Merchant Partner introduction only. There is no active Merchant Center, merchant onboarding, merchant business catalogue, structured offer engine, voucher issuance/redemption, or merchant checkout. Existing banner promotions do not satisfy those requirements.
 
 No database migration, production configuration, payment flow, or production data is changed by this product-scope document.
+
+
+## Current PR #287 implementation
+
+- Merchant Center route: `/merchant-center` for business registration, profile draft/revision edits, branch creation and review submission.
+- Public directory route: `/merchant-partner`; it queries only approved businesses and active branches and provides business detail/contact actions.
+- Super Admin review route: `/admin/merchant-partners`; server RPC `admin_review_merchant_business` requires the existing Super Admin check (`public.is_admin()`).
+- Homepage Merchant Partner card links to the directory. Navbar includes Merchant discovery and a Super Admin-only Review Merchant entry.
+- The Merchant Center query is scoped through the signed-in user's own memberships; it does not list all public businesses as the user's own workspace.
+- Merchant purchases remain direct-to-merchant. No merchant checkout, voucher, commission, escrow, payout or settlement has been added.
+- Migration `20261127003000_merchant_admin_review_and_directory.sql` adds the review history and server-side decision workflow. It is still unexecuted and requires staging validation.
