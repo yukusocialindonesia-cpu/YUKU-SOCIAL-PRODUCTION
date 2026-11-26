@@ -32,7 +32,8 @@ create policy merchant_review_history_owner_or_admin_read
   );
 
 revoke all on public.merchant_business_review_history from public, anon, authenticated;
-grant select on public.merchant_business_review_history to authenticated;
+grant select (id,business_id,from_status,to_status,decision_note,actor_role,created_at)
+  on public.merchant_business_review_history to authenticated;
 
 -- Replace submission RPC so resubmissions are recorded in the review timeline.
 create or replace function public.submit_merchant_business_for_review(p_business_id uuid)
