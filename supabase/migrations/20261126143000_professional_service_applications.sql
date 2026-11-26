@@ -92,3 +92,11 @@ create policy professional_service_documents_owner_read
 
 comment on table public.professional_service_applications is
   'Private provider onboarding submissions. Approval is not equivalent to publication; admin must create a corresponding approved listing only after reviewing required credentials.';
+
+drop policy if exists professional_service_documents_owner_delete on storage.objects;
+create policy professional_service_documents_owner_delete
+  on storage.objects for delete to authenticated
+  using (
+    bucket_id = 'professional-service-documents'
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+  );
