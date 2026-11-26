@@ -115,7 +115,8 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
       .from('merchant_offers')
       .select('id,business_id,title,description,offer_type,starts_at,ends_at,eligibility,quota,funded_by,terms,redemption_instructions,status')
       .in('status',['pending_review','approved'])
-      .order('created_at',{ascending:false});
+      .order('created_at',{ascending:false})
+      .limit(200);
     if (offerError) {
       setOfferRows([]); setOfferHistory([]);
       setError('Antrean promo belum tersedia. Pastikan migrasi Merchant Offers diterapkan di staging.');
