@@ -93,6 +93,12 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
   }, [groups, selectedGroup, mode, query]);
 
   const totalServices = groups.reduce((total, group) => total + (group.professional_service_subcategories?.length || 0), 0);
+  const visibleProviders = providers.filter((item) => {
+    const matchesQuery = !query.trim() || `${item.provider.display_name} ${item.provider.headline} ${item.subcategory.title} ${item.provider.city}`.toLocaleLowerCase('id').includes(query.trim().toLocaleLowerCase('id'));
+    const matchesCategory = selectedGroup === 'all' || groups.find((g) => g.id === selectedGroup)?.professional_service_subcategories.some((sub) => sub.id === item.subcategory.id);
+    const matchesMode = mode === 'all' || (item.delivery_modes || []).includes(mode);
+    return matchesQuery && matchesCategory && matchesMode;
+  });
 
   return (
     <div className="min-h-screen bg-[#F8F7FC] pb-10">
@@ -189,21 +195,16 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
           <section className="mt-8">
             <div className="mb-3 flex items-end justify-between gap-3">
               <div><h2 className="text-sm font-extrabold text-slate-900">Penyedia jasa tersedia</h2><p className="mt-1 text-[11px] text-slate-500">Profil yang sudah disetujui dan aktif di YUKU.</p></div>
-              <span className="text-[10px] font-semibold text-slate-500">{providers.length} profil</span>
+              <span className="text-[10px] font-semibold text-slate-500">{visibleProviders.length} profil</span>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {providers.filter((item) => {
-                const matchesQuery = !query.trim() || `${item.provider.display_name} ${item.provider.headline} ${item.subcategory.title} ${item.provider.city}`.toLocaleLowerCase('id').includes(query.trim().toLocaleLowerCase('id'));
-                const matchesCategory = selectedGroup === 'all' || groups.find((g) => g.id === selectedGroup)?.professional_service_subcategories.some((sub) => sub.id === item.subcategory.id);
-                const matchesMode = mode === 'all' || (item.delivery_modes || []).includes(mode);
-                return matchesQuery && matchesCategory && matchesMode;
-              }).map((item) => (
+              {visibleProviders.map((item) => (
                 <button key={item.id} type="button" onClick={() => onNavigate('/jasa-profesional/:id', { id: item.provider.id })} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left transition hover:border-violet-300 hover:shadow-md">
                   <img src={item.provider.avatar_url} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-slate-100 object-cover"/>
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-1 text-xs font-extrabold text-slate-900">{item.provider.display_name}{item.provider.is_approved && <BadgeCheck className="h-3 w-3 text-violet-600"/>}</span>
+                    <span className="flex items-center gap-1 text-xs font-extrabold text-slate-900">{item.provider.display_name}{item.provider.is_approved && <BadgeCheck aria-label="Profil Talent disetujui YUKU" className="h-3 w-3 text-violet-600"/>}</span>
                     <span className="mt-1 block truncate text-[10px] text-slate-500">{item.subcategory.title} · {item.provider.city}</span>
-                    <span className="mt-1 flex items-center gap-1 text-[10px] text-slate-500"><Star className="h-3 w-3 text-amber-500"/> {Number(item.provider.rating_average || 0).toFixed(1)} ({item.provider.review_count || 0})</span>
+                    <span className="mt-1 flex items-center gap-1 text-[10px] text-slate-500"><Star className="h-3 w-3 text-amber-500"/> {item.provider.review_count > 0 ? `${Number(item.provider.rating_average || 0).toFixed(1)} (${item.provider.review_count} ulasan)` : 'Belum ada ulasan'}</span>
                   </span>
                   <ChevronRight className="h-4 w-4 shrink-0 text-violet-500"/>
                 </button>
