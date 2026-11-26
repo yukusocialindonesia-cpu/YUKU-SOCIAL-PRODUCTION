@@ -310,3 +310,41 @@ No financial schema, RPC, production data, or payout behavior was changed by thi
 - All tests must run in staging against the exact migration set. Current Edge Function headers explicitly state that Xendit sandbox has not yet been tested; do not mark this as verified.
 
 No payment code, Edge Function, schema, production setting, or payment flag was changed by this audit.
+
+
+## Role and data-access audit — Admin, Finance, Support, Talent, Customer (2026-11-26)
+
+### Access boundaries confirmed in branch migrations
+
+- **Admin model:** one Admin account can receive multiple explicit module permissions: `talent`, `booking`, `finance`, `support`; Super Admin has full access. The permission source is private schema tables, not public signup metadata.
+- **Legacy generic Admin helper:** migration 62 changes `public.is_admin()` to true only for service_role or Super Admin. Anon EXECUTE is revoked; authenticated EXECUTE remains for internal compatibility. This prevents a scoped Admin from inheriting every legacy `is_admin()` path.
+- **Booking Admin:** reads bookings through `get_admin_bookings()`, guarded by `booking` permission and returning a minimal operational shape. Direct booking-table admin SELECT/UPDATE is restricted to Super Admin; Finance does not receive direct booking table access.
+- **Finance:** reads payment, refund, payout, earnings, payout allocations, QRIS and affiliate data through Finance-scoped RLS. Booking customer/talent labels and Talent labels are exposed through purpose-built RPCs. Finance does not receive direct access to the full booking row through the admin read RPC.
+- **Support:** reports are scoped to Support. A separate RPC returns only booking ID, booking code and status for a report. It does not expose booking financial columns.
+- **Talent moderation:** Talent permission controls Talent profiles/services/media and Talent KTP review. Customer KTP review requires Support permission. Storage KTP policy delegates to the same role-aware helper.
+- **Customer/Talent ownership:** booking messages/history and payment visibility are tied to booking participants; payout/earning rows are scoped to the owning Talent or Finance; refund visibility is scoped to the owning Customer or Finance.
+- **Super Admin-only controls:** Admin audit log, Admin account provisioning, branding, hero slides, promotions and activity-category management are restricted to Super Admin in the scoped migration set.
+- **Private professional documents:** separate professional application review policies allow Super Admin and Talent-permission Admin; documents are not made public. Finance/Support do not inherit this access merely by being Admin.
+
+### Important risks / verification gaps
+
+1. **Trigger guards have broad module bypasses.** Migration 62 lets any active Admin with booking, finance, or support permission bypass the generic booking status actor guard and booking update validator. RLS and guarded RPCs still provide outer controls, but the trigger itself no longer distinguishes which state/column each module is allowed to change. Before launch, review every RPC/update path that can execute with SECURITY DEFINER and prove that Finance cannot change booking service details or status outside Finance RPCs, Support cannot alter money or booking details outside report resolution, and Booking Admin cannot alter financial snapshots.
+2. **Role checks must remain inside every SECURITY DEFINER RPC.** A hidden frontend menu is not an access control. Keep explicit `has_admin_permission('finance')`, `('booking')`, `('support')`, or `('talent')` checks in each RPC and enforce ownership/target-role checks in the function body.
+3. **Admin dashboard overview is Super Admin-only.** Do not accidentally reuse the aggregate dashboard RPC for scoped Admin modules; expose a module-minimal metric RPC only if a real operational need is approved.
+4. **KTP approval changes age/account status.** The role-scoped KTP RPC updates `is_verified_18` and may activate a pending-verification account after approval. Keep this coupled to an actual KTP review, never use it as a general account activation or Admin provisioning mechanism.
+5. **Finance booking labels are still sensitive personal data.** The Finance label RPC should return only the minimum name fields required for reconciliation; do not expand it to address, phone, identity number, private documents, or chat.
+6. **MFA is currently an explicit product decision to defer.** This increases risk for payout/refund and Super Admin operations. At minimum require strong account security, audit every privileged action, and consider step-up confirmation before production financial actions.
+7. **Staging/Production parity is not established.** Prior Admin rollout notes document that the scoped Admin model was applied/tested in Staging, while Production lacked the private Admin schema and had different RLS policies and RPC definitions. The current feature branch must not be treated as proof that Production is protected.
+
+### Required authorization regression tests
+
+- Customer A cannot read Customer B bookings, payments, refunds, reports, or private uploads; Talent A cannot read Talent B private earnings, payout requests, KTP or professional documents.
+- Booking Admin can read operational booking fields but cannot read payment amount, platform fee, Talent earning, refund amount, bank details, QRIS proof, KTP or private professional documents.
+- Finance can reconcile payment/refund/payout and see only necessary customer/talent labels; Finance cannot read full booking details, messages, KTP, professional credential files, or change booking lifecycle/service details.
+- Support can read and resolve reports and Customer KTP cases; Support cannot access payout/payment ledgers or Talent KTP without Talent permission.
+- Talent Admin can review Talent profile/service/Talent KTP and professional credential files; Talent Admin cannot read Customer KTP, Finance ledgers, or change payout/refund.
+- Combined permissions are additive only for their modules; deactivated Admin loses all permissions immediately; Super Admin-only functions remain denied to scoped Admin.
+- Test direct REST table access, Storage object paths, RPC calls, and UI routes separately. Include anon, ordinary authenticated user, deactivated Admin, each single-permission Admin, combined-permission Admin, and Super Admin.
+- Specifically test that Finance/Support/Booking Admin cannot exploit the broad trigger bypass in migration 62 to update unrelated booking columns or status through any direct table or RPC path.
+
+No access policy, RPC, UI, production data, or Admin account was changed by this audit.
