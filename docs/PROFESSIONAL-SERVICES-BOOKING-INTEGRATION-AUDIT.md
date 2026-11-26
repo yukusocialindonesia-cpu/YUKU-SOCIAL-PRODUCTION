@@ -522,3 +522,29 @@ Read-only production inspection. No financial records were changed and no payout
 - The function is currently executable by `authenticated` and not by `anon`; the migration explicitly preserves that intended grant while revoking inherited PUBLIC/anon execution.
 - This change is committed to the feature branch only. It has **not** been applied to production. A disposable/staging database test is still required to verify direct INSERT denial, eligible RPC success, ineligible RPC rejection, and that Finance processing and balance reservations continue to work.
 - No payout request, balance, ledger row, production policy, function or grant was modified during this pass.
+
+
+## Booking RPC contract reconfirmed — 2026-11-26
+
+Read-only inspection of `supabase/migrations/19_create_booking_rpc.sql` and the professional provider profile confirms the following:
+
+- The current `create_booking` RPC accepts only `p_talent_id`, legacy `p_activity_category_id`, `p_booking_mode`, start time, numeric duration in hours, and meeting location fields. It has no professional listing ID or pricing-unit argument.
+- It requires a matching active `activity_categories` row and a matching legacy `talent_services` row. A professional listing in `professional_talent_services` does not satisfy those checks.
+- It reads `custom_rate_override` or the Talent profile's hourly/online rate, multiplies that rate by `p_duration_hours`, and rejects durations over five hours.
+- It enforces a two-hour booking lead time, customer age/KTP/account checks, active/visible Talent checks, mode checks, availability, and the global pending-payment guard.
+- It writes the legacy booking financial snapshots and sets `pending_payment`; payment is not collected by this RPC. The server-side `payment_checkout` feature flag is initially false.
+- The professional provider profile displays the selected service's unit-based rate and explicitly says booking is not open. It does not call the legacy booking RPC.
+
+### Confirmed release decision
+
+Do not add a button that calls `create_booking` from a professional profile. Do not synthesize a legacy activity category, use a fake one-hour duration, or convert per-session/per-day/per-project prices into hourly rates.
+
+The safe implementation sequence remains:
+1. Add an explicit booking kind and professional listing reference while preserving legacy activity rows.
+2. Add immutable service, unit, quantity, rate, fee and delivery snapshots.
+3. Implement a dedicated idempotent professional booking RPC with server-side price calculation and locking.
+4. Update booking history and all payment, escrow, cancellation, refund, dispute, payout, chat, review, notification and admin consumers to branch by booking kind.
+5. Run activity regression tests and professional-service end-to-end financial/security tests in a disposable staging database.
+6. Enable the professional booking CTA only after every gate passes.
+
+No code in the existing booking/payment path was changed in this audit. No production database writes, migrations, deployments or feature-flag changes were performed.
