@@ -166,3 +166,14 @@ The review page now applies the selected status filter in the database, retrieve
 - The existing notification bell already subscribes to inserts on `public.notifications` and routes using metadata; its empty-state copy now includes professional-service application updates.
 - This is an in-app notification trail, not yet a dedicated immutable application-event ledger. A formal status-history timeline with actor and timestamp remains a separate enhancement if operations require audit-grade history.
 - The migration is committed to the draft branch only. It has not been applied to production Supabase; runtime notification delivery and RLS/realtime behavior still require disposable-environment validation.
+
+
+## Immutable application status history
+
+- Added `professional_service_application_status_history`, an append-only record created by database triggers when an application is submitted or its status changes.
+- Each event records the previous and new status, the note visible at that decision, actor user ID when available, actor class (Talent, Admin, or system), and timestamp.
+- The table grants authenticated users read access only through RLS: applicants can see history for their own applications; Super Admins and admins with Talent permission can review the full queue history.
+- No client insert, update, or delete policy is provided. The trigger function is SECURITY DEFINER with an empty search path; status and history writes commit atomically.
+- Talent application history and Admin review cards now render the chronological timeline with actor class, timestamp, status transition, and recorded note.
+- This is an application-status audit trail, not a full record of every field edit or a legal credential verification record.
+- Migration is branch-only and has not been applied to production. RLS tests, actor attribution tests through the review RPC, and concurrent update tests remain part of staging validation.
