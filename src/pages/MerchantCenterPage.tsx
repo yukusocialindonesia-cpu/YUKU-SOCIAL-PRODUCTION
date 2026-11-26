@@ -60,8 +60,12 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
     [businesses, activeBusinessId],
   );
-  const canEdit = activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision';
   const memberships = accessSnapshot?.capabilities.merchantMemberships || [];
+  const activeMembership = memberships.find((membership) => membership.businessId === activeBusiness?.id);
+  const isOwner = activeMembership?.role === 'owner' && activeMembership.status === 'active';
+  const canEdit = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
+  const canManageLocations = ['owner', 'manager'].includes(activeMembership?.role || '') && activeMembership?.status === 'active';
+  const canSubmitForReview = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
 
   const load = useCallback(async () => {
     if (!user) { setLoading(false); return; }
@@ -269,11 +273,12 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                   </div>
                   <label className="mt-4 block"><span className={labelClass}>Deskripsi</span><textarea className={inputClass} rows={3} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={2000} disabled={!canEdit} /></label>
                   {canEdit && <button disabled={saving} className="mt-4 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900 disabled:opacity-60">Simpan Profil</button>}
+                  {!isOwner && activeMembership?.role === 'manager' && <p className="mt-3 text-[11px] text-slate-500">Akses Manager: dapat mengelola lokasi, tetapi perubahan identitas bisnis dan pengajuan verifikasi hanya dapat dilakukan Owner.</p>}
                 </form>
                 <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between"><div><h2 className="text-base font-extrabold text-slate-900">Lokasi & cabang</h2><p className="mt-1 text-[11px] text-slate-500">{locations.length} lokasi terdaftar</p></div><MapPin className="h-5 w-5 text-purple-700" /></div>
                   {locations.map((location) => <div key={location.id} className="mb-2 rounded-xl border border-slate-100 bg-slate-50 p-3"><p className="text-xs font-bold text-slate-800">{location.location_name}</p><p className="mt-1 text-[11px] leading-5 text-slate-500">{location.address_text}{location.city ? `, ${location.city}` : ''}{location.province ? `, ${location.province}` : ''}</p></div>)}
-                  {canEdit && <form onSubmit={addLocation} className="mt-4 border-t border-slate-100 pt-4">
+                  {canManageLocations && <form onSubmit={addLocation} className="mt-4 border-t border-slate-100 pt-4">
                     <h3 className="mb-3 text-xs font-extrabold text-slate-800">Tambah lokasi</h3>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label><span className={labelClass}>Nama lokasi *</span><input className={inputClass} value={locationName} onChange={(e) => setLocationName(e.target.value)} maxLength={120} required /></label>
@@ -285,7 +290,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                     <button disabled={saving} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900"><Plus className="h-4 w-4" /> Tambah Lokasi</button>
                   </form>}
                 </section>
-                {canEdit && <button onClick={submitForReview} disabled={saving || locations.length === 0} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-800 to-fuchsia-700 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-purple-900/15 disabled:cursor-not-allowed disabled:opacity-50"><Send className="h-4 w-4" /> Ajukan Verifikasi Bisnis</button>}
+                {canSubmitForReview && <button onClick={submitForReview} disabled={saving || locations.length === 0} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-800 to-fuchsia-700 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-purple-900/15 disabled:cursor-not-allowed disabled:opacity-50"><Send className="h-4 w-4" /> Ajukan Verifikasi Bisnis</button>}
               </>}
             </section>
             <aside className="h-fit rounded-2xl border border-amber-200 bg-amber-50/80 p-5">
