@@ -88,7 +88,7 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
     setLoading(true); setError(''); setHistoryReady(false);
     let query = supabase.from('merchant_businesses')
       .select('id,business_name,description,business_category,public_phone,website_url,review_status,created_at')
-      .order('created_at',{ascending:false});
+      .order('created_at',{ascending:false}).limit(200);
     if(filter === 'pending_review') query = query.eq('review_status','pending_review');
     if(filter === 'approved') query = query.eq('review_status','approved');
     const {data,error:queryError}=await query;
