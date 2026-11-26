@@ -61,6 +61,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
   const maxDobString = maxDobDate.toISOString().split('T')[0];
 
   const [ktpFile, setKtpFile] = useState<File | null>(null);
+  const [selfieFile, setSelfieFile] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
 
@@ -239,12 +240,20 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       setSubmitError('Unggah foto e-KTP terlebih dahulu agar identitas dapat diverifikasi.');
       return;
     }
+    if (!selfieFile) {
+      setSubmitError('Unggah selfie sambil memegang e-KTP untuk verifikasi identitas.');
+      return;
+    }
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(ktpFile.type)) {
       setSubmitError('Format foto e-KTP harus JPG, PNG, atau WebP.');
       return;
     }
     if (ktpFile.size === 0 || ktpFile.size > 5 * 1024 * 1024) {
       setSubmitError('Ukuran foto e-KTP harus lebih dari 0 KB dan maksimal 5 MB.');
+      return;
+    }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(selfieFile.type) || selfieFile.size === 0 || selfieFile.size > 5 * 1024 * 1024) {
+      setSubmitError('Selfie harus berupa JPG, PNG, atau WebP dengan ukuran maksimal 5 MB.');
       return;
     }
 
@@ -387,23 +396,23 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
         }
       }
 
-      // 5. Upload KTP to storage bucket ktp-documents if provided (using user folder prefix as required by RLS)
-      let uploadedKtpPath: string | null = null;
-
-      if (ktpFile) {
-        const fileExt = ktpFile.name.split('.').pop() || 'jpg';
-        const storagePath = `${activeUserId}/ktp_${Date.now()}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('ktp-documents')
-          .upload(storagePath, ktpFile, {
-            upsert: false,
-          });
-
-        if (uploadError || !uploadData) {
-          throw new Error(`Gagal mengunggah dokumen KTP: ${uploadError?.message || 'Upload gagal'}`);
-        }
-
-        uploadedKtpPath = storagePath;
+      // 5. Upload KTP and selfie evidence to the private identity bucket.
+      const evidenceTimestamp = Date.now();
+      const ktpExt = ktpFile.name.split('.').pop() || 'jpg';
+      const selfieExt = selfieFile.name.split('.').pop() || 'jpg';
+      const uploadedKtpPath = `${activeUserId}/ktp_${evidenceTimestamp}.${ktpExt}`;
+      const uploadedSelfiePath = `${activeUserId}/selfie_${evidenceTimestamp}.${selfieExt}`;
+      const { data: ktpUploadData, error: ktpUploadError } = await supabase.storage
+        .from('ktp-documents')
+        .upload(uploadedKtpPath, ktpFile, { upsert: false });
+      if (ktpUploadError || !ktpUploadData) {
+        throw new Error(`Gagal mengunggah dokumen KTP: ${ktpUploadError?.message || 'Upload gagal'}`);
+      }
+      const { data: selfieUploadData, error: selfieUploadError } = await supabase.storage
+        .from('ktp-documents')
+        .upload(uploadedSelfiePath, selfieFile, { upsert: false });
+      if (selfieUploadError || !selfieUploadData) {
+        throw new Error(`Gagal mengunggah selfie dengan KTP: ${selfieUploadError?.message || 'Upload gagal'}`);
       }
 
       // 6. Save public.user_identities (select first: update without id if exists, insert with id if new; trigger manages ktp_verification_status)
@@ -809,7 +818,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
                       <input
                         type="text"
                         maxLength={16}
-                        placeholder="16 digit NIK resmi (opsional saat daftar)"
+                        placeholder="16 digit NIK sesuai e-KTP"
                         value={formData.ktpNumber}
                         onChange={(e) => setFormData({ ...formData, ktpNumber: e.target.value.replace(/\D/g, '') })}
                         className="w-full p-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs"
@@ -831,6 +840,21 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
                       />
                       <span className="text-[10px] text-slate-400 mt-1 block">
                         *Tersimpan di bucket storage privat terisolasi (hanya diverifikasi oleh Admin YUKU).
+                      </span>
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">
+                        Unggah Selfie Sambil Memegang e-KTP *
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        required
+                        onChange={(e) => setSelfieFile(e.target.files?.[0] || null)}
+                        className="w-full min-w-0 p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-100 file:text-purple-800 hover:file:bg-purple-200 cursor-pointer"
+                      />
+                      <span className="text-[10px] text-slate-400 mt-1 block">
+                        *Wajib untuk mencocokkan wajah pemohon dengan identitas pada e-KTP.
                       </span>
                     </div>
                   </div>
