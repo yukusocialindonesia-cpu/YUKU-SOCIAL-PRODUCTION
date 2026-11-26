@@ -32,6 +32,14 @@ interface MerchantMember {
   invited_at: string | null;
   accepted_at: string | null;
 }
+interface MerchantReviewEvent {
+  id: string;
+  from_status: string | null;
+  to_status: string;
+  decision_note: string | null;
+  actor_role: 'owner' | 'admin' | 'system';
+  created_at: string;
+}
 
 const statusCopy: Record<MerchantBusiness['review_status'], string> = {
   draft: 'Lengkapi profil dan lokasi, lalu ajukan verifikasi',
@@ -70,6 +78,8 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'manager' | 'staff'>('staff');
   const [pendingInvitationIds, setPendingInvitationIds] = useState<Record<string,string>>({});
+  const [reviewHistory, setReviewHistory] = useState<MerchantReviewEvent[]>([]);
+  const [reviewHistoryLoading, setReviewHistoryLoading] = useState(false);
 
   const activeBusiness = useMemo(
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
@@ -156,6 +166,25 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   }, [activeBusiness?.id, activeMembership?.role, activeMembership?.status]);
 
   useEffect(() => { void loadTeam(); }, [loadTeam]);
+
+  const loadReviewHistory = useCallback(async () => {
+    if (!activeBusiness || !isOwner) {
+      setReviewHistory([]);
+      return;
+    }
+    setReviewHistoryLoading(true);
+    const { data, error: historyError } = await supabase
+      .from('merchant_business_review_history')
+      .select('id,from_status,to_status,decision_note,actor_role,created_at')
+      .eq('business_id', activeBusiness.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (!historyError) setReviewHistory((data || []) as MerchantReviewEvent[]);
+    else setReviewHistory([]);
+    setReviewHistoryLoading(false);
+  }, [activeBusiness?.id, isOwner]);
+
+  useEffect(() => { void loadReviewHistory(); }, [loadReviewHistory]);
 
   useEffect(() => {
     if (!activeBusiness) return;
@@ -369,6 +398,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                   {canEdit && <button disabled={saving} className="mt-4 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900 disabled:opacity-60">Simpan Profil</button>}
                   {!isOwner && activeMembership?.role === 'manager' && <p className="mt-3 text-[11px] text-slate-500">Akses Manager: dapat mengelola lokasi, tetapi perubahan identitas bisnis dan pengajuan verifikasi hanya dapat dilakukan Owner.</p>}
                 </form>
+                {isOwner && <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
+                  <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-base font-extrabold text-slate-900">Riwayat verifikasi</h2><p className="mt-1 text-[11px] text-slate-500">Catatan pemeriksaan dan perubahan status bisnis.</p></div><Clock3 className="h-5 w-5 text-purple-700" /></div>
+                  {reviewHistoryLoading ? <p className="text-xs text-slate-500">Memuat riwayat...</p> : reviewHistory.length === 0 ? <p className="rounded-xl bg-slate-50 p-3 text-[11px] text-slate-500">Belum ada catatan pemeriksaan.</p> : <div className="space-y-3">{reviewHistory.map((event) => <div key={event.id} className="border-l-2 border-purple-200 pl-3"><div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-bold text-slate-800">{event.to_status === 'pending_review' ? 'Diajukan untuk verifikasi' : event.to_status === 'approved' ? 'Bisnis disetujui' : event.to_status === 'needs_revision' ? 'Perlu perbaikan' : event.to_status === 'rejected' ? 'Pengajuan ditolak' : event.to_status === 'suspended' ? 'Bisnis dinonaktifkan' : event.to_status}</p><time className="text-[10px] text-slate-400">{new Date(event.created_at).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'})}</time></div>{event.decision_note && <p className="mt-1 rounded-lg bg-amber-50 p-2.5 text-[11px] leading-5 text-amber-900">{event.decision_note}</p>}<p className="mt-1 text-[10px] text-slate-400">{event.actor_role === 'owner' ? 'Dikirim oleh Owner' : event.actor_role === 'admin' ? 'Tim Verifikasi YUKU' : 'Sistem YUKU'}</p></div>)}</div>}
+                </section>}
                 <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between"><div><h2 className="text-base font-extrabold text-slate-900">Lokasi & cabang</h2><p className="mt-1 text-[11px] text-slate-500">{locations.length} lokasi terdaftar</p></div><MapPin className="h-5 w-5 text-purple-700" /></div>
                   {locations.map((location) => <div key={location.id} className="mb-2 rounded-xl border border-slate-100 bg-slate-50 p-3"><p className="text-xs font-bold text-slate-800">{location.location_name}</p><p className="mt-1 text-[11px] leading-5 text-slate-500">{location.address_text}{location.city ? `, ${location.city}` : ''}{location.province ? `, ${location.province}` : ''}</p>{typeof location.opening_hours?.display === 'string' && <p className="mt-1 text-[10px] text-slate-500">Jam operasional: {location.opening_hours.display}</p>}</div>)}
