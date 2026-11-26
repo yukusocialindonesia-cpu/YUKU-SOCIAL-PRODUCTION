@@ -190,3 +190,29 @@ The current PR #287 branch source for `supabase/functions/xendit-webhook/index.t
 - Both Edge Function files state that sandbox tests remain outstanding. There is no evidence in this audit that these source files or their required secrets/callback configuration are deployed and working in Production.
 
 Before enabling Xendit, run Staging tests for invalid callback token, malformed external ID, wrong invoice ID, wrong amount, wrong currency, wrong provider/route, expired booking, duplicate identical callback, conflicting invoice ID for an already-settled booking, concurrent callbacks, provider timeout/retry, and provider-side invoice lookup/reconciliation. Keep new Xendit checkout disabled until that evidence is recorded.
+
+
+### Cancellation, refund, earning reversal and payout ledger — read-only Production inspection
+
+Inspected Production definitions for `request_customer_cancellation`, `request_talent_cancellation`, `admin_resolve_customer_cancellation_case`, `handle_booking_refund_financials`, `admin_process_refund`, `request_talent_payout`, `validate_payout_request_before_insert`, `allocate_payout_earnings_after_insert`, `handle_payout_status_update`, and payout/dispute guard triggers. Also inspected refund/payout/earning constraints and indexes. No function was invoked and no row was changed.
+
+**Positive controls confirmed**
+- Customer cancellation locks the booking row, verifies Customer ownership, allows only pre-session pending/paid/confirmed states, rejects sessions whose start time has arrived, and prevents duplicate cancellation cases.
+- Customer cancellation policy is computed server-side from time remaining: >24 hours full automatic refund; 6–24 hours 50% automatic refund and the retained portion goes to Admin review; under 6 hours no automatic refund and the full retained amount goes to Admin review.
+- Talent cancellation requires the authenticated Talent to own the booking and creates a full refund request before changing the booking status. The status guard independently checks that a full refund request exists.
+- Cancellation/refund trigger holds Talent earnings while retained customer funds await Admin review. For full cancellation/refund, it reverses unallocated/unpaid Talent earnings and cancels referral rewards. It refuses to silently reverse earnings already allocated to a payout or paid out.
+- Admin case resolution requires Finance permission, locks the case/booking/payment, requires automatic refunds to have been processed before deciding the retained amount, records Admin notes and decision history, and prevents refund reversal if earnings have already been allocated or paid.
+- Refund provider references have a database-level unique partial index (`uq_refunds_provider_refund_id`), protecting against duplicate provider refund references even under concurrent requests.
+- Payout requests have unique idempotency keys and provider references. The payout insert path locks the Talent profile and available earning rows, checks aggregate available balance, then atomically reserves exact earning allocations. If allocation cannot cover the entire payout, the insert transaction fails.
+- Payout completion moves reserved allocations to paid-out amounts; rejected/failed payouts release the reserved amounts. Database CHECK constraints prevent allocated + paid-out totals from exceeding earning/reward amounts.
+- A payout completion guard blocks settlement where any reserved source earning is in `disputed_hold`.
+
+**P1/P2 — Talent cancellation lacks the explicit session-start time guard present in Customer cancellation**
+
+`request_customer_cancellation` rejects cancellation once `bookings.start_time <= NOW()`. `request_talent_cancellation` checks ownership, booking status and escrow payment, but has no equivalent start-time check. Since `confirmed_by_talent` remains a cancellable state until the booking is moved to `in_progress`, a Talent may be able to cancel and initiate a full refund after the scheduled start time if the session-state transition has not yet occurred. The booking status guard does not enforce a time boundary either. Confirm the intended policy; if late Talent cancellation should instead be a support/dispute case, add a time guard and explicit post-start resolution path, then test in Staging. No Production change was made.
+
+**Additional verification note**
+- The current payout design uses manual provider settlement: Admin must supply a non-empty transfer reference before marking payout complete. This is a valid manual workflow, but the reference is an operator-entered assertion; it is not an automatic bank/provider confirmation. Reconciliation against bank statements remains an operational control outside these database functions.
+- Refund and payout functions were inspected at definition/constraint level only. No concurrent transactions, actual bank transfers, or real user-role flows were simulated.
+
+No database writes, migration applications, policy/function changes, or deployments were performed during this audit stage.
