@@ -13,6 +13,8 @@ export type AppRoute =
   | '/cara-kerja'
   | '/daftar-talent'
   | '/merchant-center'
+  | '/merchant-partner'
+  | '/admin/merchant-partners'
   | '/dashboard-talent'
   | '/riwayat-booking'
   | '/profil-saya'
