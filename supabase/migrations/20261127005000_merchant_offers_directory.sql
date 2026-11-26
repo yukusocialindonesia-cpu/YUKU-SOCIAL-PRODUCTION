@@ -12,6 +12,9 @@ create table if not exists public.merchant_offers (
   offer_type text not null check (offer_type in ('discount','bundle','event','benefit','other')),
   starts_at timestamptz not null default now(),
   ends_at timestamptz null,
+  eligibility text null check (eligibility is null or char_length(eligibility) <= 500),
+  quota integer null check (quota is null or quota >= 1),
+  funded_by text not null default 'merchant' check (funded_by = 'merchant'),
   terms text null check (terms is null or char_length(terms) <= 1000),
   redemption_instructions text null check (redemption_instructions is null or char_length(redemption_instructions) <= 500),
   status text not null default 'draft'
@@ -95,6 +98,8 @@ create or replace function public.save_merchant_offer(
   p_offer_type text,
   p_starts_at timestamptz,
   p_ends_at timestamptz,
+  p_eligibility text,
+  p_quota integer,
   p_terms text,
   p_redemption_instructions text
 )
@@ -123,6 +128,8 @@ begin
      or p_description is null or char_length(trim(p_description)) not between 10 and 1200
      or p_offer_type is null or p_offer_type not in ('discount','bundle','event','benefit','other')
      or (p_ends_at is not null and p_ends_at <= coalesce(p_starts_at,now()))
+     or (p_eligibility is not null and char_length(p_eligibility) > 500)
+     or (p_quota is not null and p_quota < 1)
      or (p_terms is not null and char_length(p_terms) > 1000)
      or (p_redemption_instructions is not null and char_length(p_redemption_instructions) > 500) then
     raise exception 'Informasi promo tidak valid' using errcode = '22023';
@@ -130,11 +137,11 @@ begin
 
   if p_offer_id is null then
     insert into public.merchant_offers (
-      business_id,title,description,offer_type,starts_at,ends_at,terms,
+      business_id,title,description,offer_type,starts_at,ends_at,eligibility,quota,funded_by,terms,
       redemption_instructions,created_by
     ) values (
       p_business_id,trim(p_title),trim(p_description),p_offer_type,
-      coalesce(p_starts_at,now()),p_ends_at,nullif(trim(p_terms),''),
+      coalesce(p_starts_at,now()),p_ends_at,nullif(trim(p_eligibility),''),p_quota,'merchant',nullif(trim(p_terms),''),
       nullif(trim(p_redemption_instructions),''),auth.uid()
     ) returning id into v_offer_id;
     insert into public.merchant_offer_history (
@@ -163,6 +170,9 @@ begin
          offer_type = p_offer_type,
          starts_at = coalesce(p_starts_at,now()),
          ends_at = p_ends_at,
+         eligibility = nullif(trim(p_eligibility),''),
+         quota = p_quota,
+         funded_by = 'merchant',
          terms = nullif(trim(p_terms),''),
          redemption_instructions = nullif(trim(p_redemption_instructions),''),
          status = 'draft',
@@ -311,13 +321,13 @@ begin
 end;
 $merchant$;
 
-revoke all on function public.save_merchant_offer(uuid,uuid,text,text,text,timestamptz,timestamptz,text,text)
+revoke all on function public.save_merchant_offer(uuid,uuid,text,text,text,timestamptz,timestamptz,text,integer,text,text)
   from public,anon,authenticated;
 revoke all on function public.submit_merchant_offer_for_review(uuid)
   from public,anon,authenticated;
 revoke all on function public.admin_review_merchant_offer(uuid,text,text)
   from public,anon,authenticated;
-grant execute on function public.save_merchant_offer(uuid,uuid,text,text,text,timestamptz,timestamptz,text,text)
+grant execute on function public.save_merchant_offer(uuid,uuid,text,text,text,timestamptz,timestamptz,text,integer,text,text)
   to authenticated;
 grant execute on function public.submit_merchant_offer_for_review(uuid)
   to authenticated;
@@ -328,7 +338,7 @@ comment on table public.merchant_offers is
   'Informational merchant promotions. Redemption and payment happen directly with the merchant; no YUKU checkout.';
 comment on table public.merchant_offer_history is
   'Append-only review history for Merchant Partner offers.';
-comment on function public.save_merchant_offer(uuid,uuid,text,text,text,timestamptz,timestamptz,text,text) is
+comment on function public.save_merchant_offer(uuid,uuid,text,text,text,timestamptz,timestamptz,text,integer,text,text) is
   'Owner/manager can create or edit draft offers; only owner can submit them for review.';
 
 commit;
