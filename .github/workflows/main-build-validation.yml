@@ -6,6 +6,7 @@ on:
       - main
       - fix/talent-media-moderation
       - feat/professional-services-categories
+      - feat/independent-professional-provider-identity
     paths:
       - "src/**"
       - "public/**"
@@ -15,6 +16,7 @@ on:
       - "tsconfig.json"
       - "vite.config.*"
       - ".github/workflows/main-build-validation.yml"
+      - "supabase/migrations/**"
   pull_request:
     branches:
       - main
