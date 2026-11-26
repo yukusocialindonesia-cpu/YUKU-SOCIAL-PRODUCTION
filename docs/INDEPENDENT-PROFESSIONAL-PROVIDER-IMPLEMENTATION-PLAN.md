@@ -3,7 +3,7 @@
 Branch: `feat/independent-professional-provider-identity`  
 Base: `fix/yuku-final-service-taxonomy`  
 Scope: architecture and implementation contract for Professional-only provider accounts.  
-Status: planning checkpoint; no application code, schema, production data, or deployment changed.
+Status: Phase A foundation migration committed to this feature branch only. Not applied to any database; no production data or deployment changed.
 
 ## Product requirement
 
@@ -41,11 +41,13 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 ## Safe migration sequence
 
 ### Phase A — additive identity and compatibility
+<progress>Implementation checkpoint: additive profile table, owner/admin RLS, public-approved-listing read gate, and legacy presentation backfill are committed in `20261127004000_create_independent_professional_provider_profiles.sql`. The migration is not applied to any database.</progress>
+
 1. Create `professional_provider_profiles` with RLS enabled and narrowly scoped owner-write/admin-read/public-approved-read policies.
 2. Backfill one professional profile for every existing professional listing provider and application applicant, copying only presentation fields from `talent_profiles` where present. Existing provider IDs are already user IDs; do not mint new identities.
 3. For legacy providers without a Talent profile, create a minimal profile only from existing application data and require the provider to complete presentation fields before publication.
 4. Add the new FK to listings as a staged constraint (initially nullable or NOT VALID as appropriate); validate backfill before switching ownership.
-5. Preserve the old FK/compatibility read path until all application, admin, public discovery, and profile consumers are switched.
+5. Preserve the old FK/compatibility read path until all application, admin, public discovery, and profile consumers are switched. This FK transition is intentionally deferred until the dependent code and RPCs can move together.
 
 ### Phase B — provider application
 1. Replace `hasTalentProfile` with a professional-provider-profile state in `ProfessionalServiceApplicationPage`.
