@@ -127,7 +127,6 @@ create policy merchant_memberships_owner_or_admin_read
   for select to authenticated
   using (
     user_id = auth.uid()
-    or private.has_merchant_business_access(business_id, array['owner','manager']::text[])
     or private.is_merchant_admin()
   );
 
@@ -157,7 +156,10 @@ grant select (
   website_url, review_status, created_at, updated_at
 ) on public.merchant_businesses to anon, authenticated;
 grant select on public.merchant_locations to anon, authenticated;
-grant select on public.merchant_memberships to authenticated;
+-- Members can read only their own membership identifiers/status. The roster RPC
+-- returns scoped email/role details to Owner/Manager without exposing raw rows.
+grant select (id,business_id,user_id,membership_status)
+  on public.merchant_memberships to authenticated;
 
 create or replace function public.create_merchant_business(
   p_business_name text,
