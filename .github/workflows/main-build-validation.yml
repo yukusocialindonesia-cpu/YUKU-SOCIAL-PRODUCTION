@@ -20,7 +20,10 @@ on:
   pull_request:
     branches:
       - main
+      - fix/jelajah-companion-professional-separation
       - fix/yuku-final-service-taxonomy
+      - feat/independent-professional-provider-identity
+      - design/beranda-premium-compact
     paths:
       - "src/**"
       - "public/**"
