@@ -72,3 +72,7 @@ The latest guardrail also enforces that an applicant's selected online/offline m
 
 ## Latest repository checks
 The latest PR head has successful GitHub Actions results for account-management build/type checks, account-management security checks, admin simple-management checks, notification branch checks, and manual bank-transfer branch validation. These are repository CI checks only; they do not replace applying the migrations to a disposable Supabase project, exercising RLS/RPC with separate user roles, or completing mobile and financial end-to-end tests.
+
+
+## Public listing visibility guard
+A follow-up RLS migration now hides a professional listing unless its provider profile, listing, subcategory, and parent category are all currently approved/active. It also verifies that the listing's delivery modes remain a subset of the current subcategory taxonomy. This means deactivating a service type or changing its allowed modes immediately removes incompatible listings from public reads without deleting their records.
