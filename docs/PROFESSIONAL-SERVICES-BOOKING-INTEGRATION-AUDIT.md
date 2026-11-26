@@ -308,3 +308,52 @@ Source inspection: migrations 05, 12, 21, 25, 49–51 and professional-applicati
 
 ### Release blocker
 The Support direct-UPDATE bypass is a concrete authorization/audit-integrity gap in the reviewed migration chain. Close it and test Support-vs-Finance-vs-Talent-vs-Super-Admin role matrices in staging before enabling professional-service checkout. The existing application status-history feature is useful but does not replace a dispute/case event log.
+
+
+## Account security, abuse prevention and customer/Talent protection audit — 2026-11-26
+
+Source inspection: `AuthContext`, LoginPage, AccountManagementPanel, the `account-management` Edge Function, community moderation services/migrations, active-account session migration, review/report schema, and the live Supabase Security Advisor. This is a source/configuration audit; no penetration test, load test, or production write was performed.
+
+### Controls already present
+
+- Login verifies the matching `public.users` row and rejects accounts outside `active` / `pending_verification`; AuthContext re-checks role and account status and signs out restricted accounts.
+- The account-management Edge Function validates the bearer token with Auth, confirms the acting Admin account is active, and requires Super Admin access. It prevents self-suspension through this panel, requires a reason, updates the database status with an optimistic condition, applies an Auth ban, and writes an Admin audit event. It attempts compensating rollback if Auth or audit persistence fails.
+- Migration `20261124081950_enforce_active_account_sessions.sql` adds a restrictive authenticated RLS policy using `private.is_current_user_active()` to RLS-enabled public tables (except the self-readable `users` table), and a BEFORE write trigger across public table roots plus Storage objects. This is important defense in depth: a still-unexpired access token should not, by itself, allow authenticated table reads/writes after the account status becomes suspended/banned. The Auth ban blocks new login/session refresh; existing access tokens can remain cryptographically valid until expiry, but database policy/trigger checks are intended to deny their application access.
+- Professional-service publication has a separate database guard that blocks active public listings when the provider is suspended/banned, unapproved, or the taxonomy/delivery mode is no longer eligible.
+- Community content has bounded text lengths, owner-scoped insert/update, report target ownership, one pending report per reporter per target, and a Support/Super Admin-only moderation RPC. Moderation writes the actor, time, and note onto the content/report record.
+- Booking reviews are unique per booking and rating is constrained to 1–5. Review visibility is controlled through RLS, with Talent-permission Admin read access.
+
+### Gaps and release risks
+
+1. **Pending-verification accounts pass the generic active-account guard.** The global helper treats both `active` and `pending_verification` as eligible for authenticated table access and writes. This may be intentional for onboarding, but it is broader than a blanket abuse-prevention rule. Define a table/action matrix for pending accounts; community posting/commenting, likes, reports, booking, payment, messaging and payouts should each have explicit verification requirements. Keep the stricter checks in the domain RPCs even if the generic guard remains permissive.
+2. **No app-level abuse throttling was verified in the inspected community service.** Community posts/comments have length bounds and duplicate pending reports are prevented for the same target, but the client service simply submits inserts; no per-account/IP rate limit, cooldown, spam score, new-account posting limit, or automated abuse detection was found in the inspected code. Confirm Supabase Auth rate limits/CAPTCHA settings separately and add server-side throttling for public interaction endpoints. Client-side disabling alone is not a security control.
+3. **Account ban is not instant cryptographic token revocation.** The UI correctly discloses that an already-issued access token may remain valid until expiry. The active-account RLS/write guards materially reduce this risk, but every SECURITY DEFINER RPC and Edge Function that reads or mutates private data must be checked for an explicit current-account-status gate, because SECURITY DEFINER can bypass ordinary RLS. Do not treat the global trigger as proof that all privileged read RPCs are covered.
+4. **SECURITY DEFINER inventory needs manual authorization review.** The live Security Advisor (observed 2026-11-26 06:14 UTC) reports 5 SECURITY DEFINER functions executable by `anon` and 60 executable by `authenticated`. This lint is a permission inventory, not proof that all 65 functions are exploitable: some authenticated RPCs are intentionally callable and enforce role/ownership checks internally. Nevertheless, inspect each function body and grants, especially media access, Admin permission helpers, account summaries, payment instructions, booking, payout and moderation RPCs. Revoke anonymous EXECUTE wherever public access is not intended; keep only deliberately public, non-sensitive helpers.
+5. **Leaked-password protection is disabled.** Supabase Auth Advisor explicitly reports compromised-password checking disabled. Enable leaked-password protection and confirm password strength, email confirmation, recovery flow, MFA policy for Admins, and Auth rate-limit/CAPTCHA settings in the Supabase Auth dashboard before public launch.
+6. **Community moderation history is not fully append-only.** Moderation currently stores latest status/actor/note on the content/report row. There is no immutable event stream for repeat reports, moderator actions, appeals, or user sanctions. Add append-only moderation events and a separate account-sanction history with reason, scope, expiry, actor, appeal status and reversal.
+7. **Community reports are not an account sanction system.** A moderator can hide/remove a post or comment or dismiss a report, but the reviewed RPC does not automatically warn, rate-limit, suspend, or ban an abusive account. Add graduated enforcement and an appeal path; do not auto-ban solely from raw report counts without anti-brigading safeguards.
+8. **Booking review integrity requires staging tests.** The review table has one review per booking and a 1–5 constraint, but the inspected base table definition alone does not prove that every insert path verifies the booking is completed, paid, and belongs to the stated customer/Talent. Confirm the exact review insert RLS/trigger/RPC chain and test attempts to review another user's booking or an unpaid/cancelled booking.
+9. **Credential and identity controls need operational lifecycle.** KTP/Talent verification and professional credential review exist, but credential expiry/revocation, re-verification schedule, document-access audit, and fast suspension/reinstatement procedures remain to be completed as noted above. Never expose KTP, bank details, or professional evidence through public buckets or unrestricted signed URLs.
+10. **Edge Function CORS is wildcarded.** The account-management function returns `Access-Control-Allow-Origin: *`. Bearer-token and Super Admin checks still protect its actions, so wildcard CORS alone is not an authorization bypass; nevertheless, restrict allowed origins to the production app domains as hardening and verify no secrets are exposed to browser clients.
+
+### Security Advisor interpretation
+
+- Three RLS-enabled private tables (`private.admin_accounts`, `private.admin_permissions`, `private.talent_service_locations`) have no policies. This is deny-by-default, not evidence of public exposure; access should remain through narrowly permission-checked functions.
+- Five anonymous SECURITY DEFINER grants require function-by-function review. Trigger-only functions should not be callable through the exposed RPC API.
+- Sixty authenticated SECURITY DEFINER grants also require manual review, but the advisor warning does not establish that the functions lack authorization checks. Verify actor identity, role/permission, ownership, active account status, safe `search_path`, input validation and audit behavior for each.
+- Leaked-password protection is explicitly disabled and should be enabled.
+
+### Required pre-launch acceptance tests
+
+- Suspended/banned user with an old access token cannot read private rows, write any application table, upload/download private Storage objects, call any privileged RPC, send messages, create bookings, submit payment proofs, request payout, or use referral/review/community actions.
+- Pending-verification user can perform only the explicitly allowed onboarding actions; all other writes are denied server-side.
+- Customer and Talent cannot spoof each other's IDs in booking, chat, review, report, payment, identity, or payout requests.
+- Duplicate/replayed requests do not duplicate bookings, reports, reviews, payment proofs, ledger rows, or payouts; rate limits/cooldowns apply server-side.
+- Admin permission matrix is tested for Support, Finance, Talent, Booking and Super Admin, including denied cross-permission actions and inactive Admin accounts.
+- Review insertion requires a legitimate completed booking and exact participant IDs; one review per booking remains enforced.
+- Abuse report brigading, false reports, moderator appeal, sanction expiry and reinstatement are tested.
+- Auth leaked-password protection, email confirmation, recovery, CAPTCHA/rate limits, Admin MFA, CORS allowlist, and session lifetime are verified in project configuration.
+
+### Current decision
+
+Account status enforcement has meaningful database-level protection already; do not describe the old access-token lifetime as an unmitigated bypass. The release blockers are the unreviewed SECURITY DEFINER inventory, disabled leaked-password protection, unclear pending-verification permissions, and missing server-side anti-spam/rate-limit and sanction/appeal controls. Professional-service checkout remains disabled until the booking/finance/support gates and these account-safety gates pass staging.
