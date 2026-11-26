@@ -75,3 +75,33 @@ The connected Supabase project currently lists only its default `main` branch, a
 - Professional Services booking or payment.
 - Merchant Partner schema or vouchers.
 - Any production database migration or deployment.
+
+
+## Payment, refund and payout consumer audit
+
+A follow-up source audit traced the existing financial consumers. The exact service ID is booking identity metadata; it must not become a new pricing or ledger source after booking creation.
+
+- Payment settlement is booking-keyed. The payment aggregate links to `booking_id`; the settlement/ledger path reads the frozen booking amounts rather than recalculating price from a mutable service listing.
+- `auto_generate_booking_financial_ledgers()` creates the commission and Talent earning rows from `bookings.gross_amount`, `platform_fee_amount`, and `talent_gross_share`. Referral reward reservation is also tied to the booking. Keep these frozen amount fields as the financial source of truth.
+- Refund rows link both `payment_id` and `booking_id`. Finance processing locks the refund/payment, validates the relationship and external provider reference, rejects duplicate refund references, and prevents cumulative processed refunds from exceeding the payment amount.
+- `handle_booking_refund_financials()` reverses/adjusts the booking-linked Talent earning and referral reward on cancellation/refund/dispute paths. Payout allocation consumes earning rows and protects already allocated/paid amounts; do not bypass this ledger with direct balance edits.
+- No payment, refund, payout, commission, or earning consumer identified in this pass requires a direct join to the mutable service listing to reconstruct the booked amount. The immutable booking financial snapshots remain authoritative.
+
+### Release boundaries found
+
+1. Keep `service_id` nullable for historical bookings that cannot be mapped, but require it for every new booking created through the new exact-offer RPC.
+2. Keep the service title/description snapshots and financial snapshots immutable after booking creation. A later service edit must not rewrite an existing booking or its ledger.
+3. Preserve the existing one-service-per-Talent/category unique constraint. The current financial trigger still resolves the rate from that pair; removing the constraint can make pricing ambiguous even though the frontend now carries a service UUID.
+4. Do not enable Professional Services checkout/payout by reusing the activity flow unchanged. Existing refund reversal is booking-keyed but is not a complete proportional allocation contract for partial refunds across Talent, platform fee, referral, reserved payout and already-paid payout. Project acceptance and partial delivery also need separate lifecycle rules.
+5. The payment/refund source audit does not establish successful gateway settlement or runtime behavior. Staging replay and concurrency tests remain mandatory.
+
+### Additional Stage D / pre-release checks
+
+- Assert the exact service ID and service display snapshots are present on all new bookings created through the exact-offer RPC; allow NULL only for historical legacy rows or legacy RPC compatibility during migration.
+- Assert service ID and service display snapshots cannot be changed after insert, including by privileged application roles except an explicitly designed repair path.
+- Assert edits to the current service title, description or rate do not alter existing booking snapshots or financial amounts.
+- Assert payment settlement creates at most one booking-linked payment/commission/Talent earning/referral reward under duplicate callbacks and concurrent retries.
+- Assert refund processing is tied to the same booking/payment, is idempotent, and never exceeds the original payment; verify refund reversal cannot spend or reverse already paid payout allocations.
+- Re-run cancellation, dispute-hold, escrow-release and payout-allocation regression suites before release.
+
+This audit was source-level/read-only. It did not execute payment/refund/payout flows, apply migrations, alter production data, or deploy any service.
