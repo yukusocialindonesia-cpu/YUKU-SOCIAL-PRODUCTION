@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, BriefcaseBusiness, CalendarDays, CarFront, GraduationCap, HeartHandshake, House, MapPinned, Palette, PawPrint, Sparkles, UserRound, Wrench, ChevronDown } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { PROFESSIONAL_SERVICES_CATALOG } from '../../data/professionalServicesCatalog';
 
 interface ServiceSubcategory {
   id: string;
@@ -45,14 +46,13 @@ export const ProfessionalServicesSection: React.FC<{ onViewAll: () => void }> = 
         .order('sort_order', { ascending: true });
 
       if (!active) return;
-      if (error) {
-        // Migration may not have been applied yet. Keep the existing homepage healthy.
-        console.info('YUKU Professional Services belum tersedia:', error.message);
-        setLoaded(true);
-        return;
+      if (error || !data?.length) {
+        // Keep the homepage catalog visible before the database taxonomy is deployed.
+        if (error) console.info('YUKU Professional Services memakai katalog bawaan:', error.message);
+        setCategories(PROFESSIONAL_SERVICES_CATALOG as ServiceCategory[]);
+      } else {
+        setCategories(data as ServiceCategory[]);
       }
-
-      setCategories((data || []) as ServiceCategory[]);
       setLoaded(true);
     };
 
