@@ -269,7 +269,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (inviteError) setError(inviteError.message);
     else {
       setInviteEmail('');
-      setSuccess('Undangan berhasil dicatat. Beri tahu anggota secara langsung; akses baru aktif setelah mereka menerima undangan di Merchant Center.');
+      setSuccess('Undangan berhasil dibuat dan notifikasi YUKU dikirim ke akun penerima. Akses baru aktif setelah undangan diterima.');
       await loadTeam();
       await refreshRole();
     }
@@ -393,7 +393,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                     <h3 className="mb-3 flex items-center gap-2 text-xs font-extrabold text-slate-800"><UserPlus className="h-4 w-4 text-purple-700" /> Undang anggota</h3>
                     <label className="block"><span className={labelClass}>Email akun YUKU</span><input type="email" required maxLength={254} value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} placeholder="nama@email.com" className={inputClass} /></label>
                     <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]"><label><span className={labelClass}>Hak akses</span><select value={inviteRole} onChange={(event) => setInviteRole(event.target.value as 'manager' | 'staff')} className={inputClass}><option value="staff">Staff — akses operasional terbatas</option><option value="manager">Manager — kelola lokasi & lihat tim</option></select></label><button disabled={saving || !inviteEmail.trim()} className="inline-flex items-center justify-center gap-2 self-end rounded-xl bg-purple-800 px-4 py-3 text-xs font-bold text-white disabled:opacity-50"><UserPlus className="h-4 w-4" /> Buat undangan</button></div>
-                    <p className="mt-2 text-[10px] leading-5 text-slate-500">Undangan hanya untuk akun YUKU aktif. Notifikasi email otomatis belum tersedia; beri tahu penerima secara langsung. Mereka harus masuk dengan akun tersebut dan menerima undangan sebelum akses aktif.</p>
+                    <p className="mt-2 text-[10px] leading-5 text-slate-500">Undangan hanya untuk akun YUKU aktif. Penerima mendapat notifikasi di lonceng YUKU dan harus menerima undangan sebelum akses aktif.</p>
                   </form>}
                   {!isOwner && <p className="mt-3 text-[10px] text-slate-500">Manager dapat melihat daftar tim, tetapi undangan dan pencabutan akses hanya dapat dilakukan Owner.</p>}
                 </section>}
