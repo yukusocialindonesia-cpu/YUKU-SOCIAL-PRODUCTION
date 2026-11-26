@@ -175,6 +175,8 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
 
     const channel = supabase.channel(`booking-chat:${booking.id}`, {
       config: {
+        // Presence and typing broadcasts must pass realtime.messages RLS.
+        private: true,
         presence: { key: currentUserId },
       },
     });
