@@ -158,3 +158,26 @@ The follow-up review included the latest trigger-hardening migration. Booking/Fi
 - restore that exact recorded status after all related reports are no longer open/investigating, while clearing the dispute snapshot.
 
 The Stage D.4 assertions now check that both database guards retain this Support-only, exact-state boundary and do not introduce generic Booking/Finance bypasses. This remains a source/catalog assertion; role-matrix runtime tests with real JWT claims are still required in staging.
+
+
+## Cancellation, refund and payout allocation audit
+
+The migration chain includes an important later hardening step that supersedes the original booking refund handler. The effective handler in migration 24:
+- keeps Talent earnings in a non-payable dispute hold while retained Customer cancellation funds await Admin review;
+- refuses automatic cancellation/refund reversal if the Talent earning already has any payout allocation or paid-out amount;
+- writes the full earning reversal only when the cancellation/refund path is eligible and no earlier reversal exists;
+- prevents Admin retained-fund refund or compensation decisions from proceeding if the associated Talent earning has already been reserved or paid.
+
+The payout allocator locks earning rows, reserves only the unallocated/unpaid balance, and fails if the requested payout cannot be fully covered. Failed/rejected payout releases reservations; provider-confirmed payout settles allocations and increments paid-out totals. A separate guard blocks payout completion when an allocated earning is in dispute hold.
+
+### Confirmed limitations and release gates
+
+1. The current refund processor reconciles cumulative processed refunds against the payment amount under row locks and requires a provider refund reference. That protects the payment aggregate, but does not create proportional earning/commission/referral reversals for partial refunds.
+2. Existing booking-level reversal idempotency permits one reversal record per booking. It is not a multi-event proportional refund ledger. Keep partial refunds disabled as an end-to-end feature until refund events, commission adjustments, Talent earning adjustments, referral adjustments, and payout recovery are modelled together.
+3. If a Talent earning has already been allocated or paid, cancellation/refund deliberately fails and requires Finance reconciliation. Do not silently claw back paid money or mark a paid earning as reversed.
+4. A retained Customer cancellation case can be resolved as refund Customer, compensate Talent (100% of retained amount under current policy), or extend hold. This decision path is distinct from the automatic refund and must be separately audited.
+5. These controls were introduced across migrations 21, 24, 26 and 46. Verify the effective function definitions and trigger attachments in the target database after applying the full ordered migration chain; do not infer production state from repository source alone.
+
+Stage D.5 adds catalog/source-contract checks for the cancellation reversal guard, cumulative refund processor, retained-cancellation resolver, payout row-lock allocation, dispute payout guard and release/settlement of payout allocations. It does not replace staging tests for concurrent cancellation-vs-payout, duplicate refund callbacks, refund provider failure, payout failure/retry, or ledger reconciliation.
+
+No production ledger, booking, refund, payout, migration, or deployment was modified by this audit.
