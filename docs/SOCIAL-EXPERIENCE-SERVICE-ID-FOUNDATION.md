@@ -24,7 +24,9 @@ Move Social Experience booking identity from the ambiguous provider/category pai
 - Pending/inactive service rows are no longer included as public activity categories in the main talent discovery mapping.
 - Talent detail loads approved/active service IDs and maps the selected category to its exact offer.
 - Booking submission now calls `create_booking_for_service` with `p_service_id`, rather than sending only the category.
-- Booking TypeScript shape includes nullable service identity snapshots for legacy compatibility.
+- Customer/Talent booking history prefers the immutable service title snapshot and falls back to the legacy category label.
+- Talent dashboard reads the snapshot fields when migration 40 exists and falls back to the legacy select on environments where those columns are not yet present.
+- Booking TypeScript shapes include nullable service identity snapshots for legacy compatibility.
 
 ### Tests
 
