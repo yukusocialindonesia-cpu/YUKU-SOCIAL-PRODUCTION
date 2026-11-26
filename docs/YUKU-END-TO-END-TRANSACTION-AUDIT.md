@@ -238,3 +238,36 @@ This section adds read-only inspection of live Production function definitions, 
 ### Validation boundary
 
 Read-only Production catalog inspection only: function definitions/ACLs, RLS policies, table/column privileges, triggers and indexes. No financial, payout, refund, payment, bank-account or user rows were read. No SQL mutation, provider request, deployment, feature flag change, or Production data change occurred.
+
+
+## Production cancellation RPC review — 26 Nov 2026
+
+### Controls confirmed from live function definitions
+
+- `request_customer_cancellation()` locks the booking, verifies Customer ownership, allows only pending_payment / paid_held_in_escrow / confirmed_by_talent, rejects cancellation at/after session start, and prevents a second cancellation case. For paid bookings it locks the payment and requires `settled_held`.
+- Customer policy is calculated server-side from hours before session: more than 24h = full automatic refund; 6–24h = 50% automatic refund with the rest held for Finance; under 6h = no automatic refund and full amount held for Finance.
+- `request_talent_cancellation()` locks the booking and payment, verifies Talent ownership, allows only paid-held or Talent-confirmed bookings, requires escrow payment, and creates a full refund request before marking the booking cancelled by Talent.
+- `admin_resolve_customer_cancellation_case()` is Finance-permission scoped, locks case/booking/payment, requires a non-empty Admin note, verifies the automatic refund has already been processed, and requires provider refund reference for refund-to-Customer decisions. It supports refund Customer, compensate Talent, or extend hold; each decision is recorded in case decisions and Admin audit logs.
+- Refund execution serializes on the payment row and unique provider-refund index; cumulative processed refunds cannot exceed payment amount. Full refund reverses platform commission/referral and adjusts the Talent earning; payout allocations/paid amounts block unsafe reversal.
+
+### Policy and operational cautions
+
+- Cancellation rules are time-to-start rules for hourly activity sessions. They must not be reused for professional per-day/per-project delivery until the professional booking contract defines cancellation cutoffs and refund allocations.
+- The Talent cancellation RPC does not offer cancellation while booking is already in_progress; the incident/report route is the intended escalation. Verify that the UI consistently directs this case to Support.
+- Admin `extend_hold` keeps the case pending and records the extension. Finance needs a queue/report for overdue holds and a documented next action after `admin_hold_until`; a timestamp alone does not resolve the case automatically.
+- These functions are SECURITY DEFINER and callable by authenticated users, but enforce actor ownership or Finance permission internally. Keep their EXECUTE grants scoped and retain the body checks; do not rely on UI-only role checks.
+
+### Required Staging tests
+
+1. Customer cancellation at exact boundaries around 24h and 6h; timezone and daylight-saving assumptions; start-time already passed.
+2. Two concurrent Customer/Talent cancellation attempts; exactly one state transition/case/refund request wins.
+3. Customer cancellation after payment route selected but before payment; no refund record or payout ledger created.
+4. Customer partial/full cancellation refund plus retained-amount Finance decision; total processed refund never exceeds payment.
+5. Talent cancellation full refund; duplicate/replayed RPC fails safely.
+6. Attempt cancellation while in_progress/completed/disputed/refunded; rejected and guided to report workflow.
+7. Admin extend-hold repeated/expired; queue surfaces cases overdue for another decision.
+8. Cancellation/refund races with payout reservation, dispute hold and escrow release; no negative or silently over-allocated earning.
+
+### Validation boundary
+
+Read-only Production function/ACL inspection. No cancellation, refund, payout, booking or user rows were queried or modified. No RPC was invoked against a real booking. Runtime concurrency and policy-boundary tests remain for Staging.

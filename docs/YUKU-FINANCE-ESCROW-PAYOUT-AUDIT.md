@@ -109,3 +109,15 @@ Production also confirms:
 - New Xendit route selection is currently blocked by `claim_booking_payment_route()`; the Edge Function's Xendit path will fail closed for a new route. Keep it disabled until callback verification/receipt ledger and sandbox tests are complete.
 
 This is catalog-only validation, not a live payout/refund simulation. No financial rows or bank details were read and no Production changes were made.
+
+
+## Cancellation and refund RPC verification addendum — 26 Nov 2026
+
+Production function definitions were inspected read-only:
+- Customer cancellation is owner-scoped and row-locks booking/payment; server calculates full/partial/no automatic refund based on time before start, with retained funds sent to a Finance case.
+- Talent cancellation is owner-scoped and only available before the session starts, while escrow is held; it creates a full refund request.
+- Finance case resolution supports Customer refund, Talent compensation or extending the hold; it requires notes and, for an actual refund, a provider reference. Case decisions and Admin audit events are recorded.
+- Refund processing locks the payment and prevents cumulative refund from exceeding the paid amount. Unique provider-refund index protects duplicate references.
+- In-progress Talent cancellation is not available through the Talent cancellation RPC; users must use the incident/report workflow.
+
+The logic is appropriate for current time-bound activity sessions only. Professional per-day/per-project services still require their own delivery acceptance and cancellation/refund policy. Staging must prove cutoff boundaries, concurrent cancellation, replay, retained amount decisions, payout/dispute races and overdue hold operations. No Production transaction rows or RPC writes were performed.

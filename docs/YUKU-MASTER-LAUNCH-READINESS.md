@@ -196,3 +196,12 @@ Launch gate: no launch/enablement of Talent onboarding or paid booking until evi
 - **P2 operational control:** payout bank destination is length-validated but not matched to verified identity. Finance must manually verify account ownership before transfer.
 - Staging tests still required for payout/refund concurrency, idempotency, disputes, direct-table denial, late/duplicate callbacks and ledger reconciliation.
 - No Production data, schema, functions, payment routes or feature flags were changed.
+
+
+### Cancellation and refund gate — 26 Nov 2026
+
+- Production cancellation RPCs were inspected: Customer cancellation is server-calculated by time-to-start; Talent cancellation requests full refund while escrow is held; Finance resolves retained funds with audit notes and provider reference.
+- Refund processing locks payment and prevents cumulative refund from exceeding payment. Provider refund references are unique.
+- Cancellation rules are valid only for current time-bound activity sessions. Professional per-day/per-project work needs explicit delivery acceptance, cancellation windows and proportional refund allocation before checkout.
+- Staging tests remain mandatory for 24h/6h boundaries, concurrent Customer/Talent cancellation, replay, retained funds, payout/dispute/escrow races and overdue Finance holds.
+- No Production rows or RPCs were modified or invoked.
