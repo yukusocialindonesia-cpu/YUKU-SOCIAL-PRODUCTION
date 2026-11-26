@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Building2, MapPin, Plus, Send, Store, CheckCircle2, Clock3, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Building2, MapPin, Plus, Send, Store, CheckCircle2, Clock3, AlertCircle, Loader2, Users, UserPlus, UserMinus } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
@@ -22,6 +22,14 @@ interface MerchantLocation {
   city: string | null;
   province: string | null;
   is_active: boolean;
+}
+interface MerchantMember {
+  membership_id: string;
+  email: string | null;
+  member_role: 'owner' | 'manager' | 'staff';
+  membership_status: 'pending_invitation' | 'active' | 'suspended' | 'revoked';
+  invited_at: string | null;
+  accepted_at: string | null;
 }
 
 const statusCopy: Record<MerchantBusiness['review_status'], string> = {
@@ -55,6 +63,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [city, setCity] = useState('');
   const [province, setProvince] = useState('');
   const [locationPhone, setLocationPhone] = useState('');
+  const [teamMembers, setTeamMembers] = useState<MerchantMember[]>([]);
+  const [teamLoading, setTeamLoading] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'manager' | 'staff'>('staff');
 
   const activeBusiness = useMemo(
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
@@ -116,6 +128,26 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   }, [user, activeBusinessId]);
 
   useEffect(() => { void load(); }, [load]);
+
+  const loadTeam = useCallback(async () => {
+    if (!activeBusiness || !['owner','manager'].includes(activeMembership?.role || '') || activeMembership?.status !== 'active') {
+      setTeamMembers([]);
+      return;
+    }
+    setTeamLoading(true);
+    const { data, error: teamError } = await supabase.rpc('get_merchant_business_members', {
+      p_business_id: activeBusiness.id,
+    });
+    if (teamError) {
+      setError('Daftar anggota belum tersedia. Pastikan migrasi pengelolaan anggota sudah diterapkan di staging.');
+      setTeamMembers([]);
+    } else {
+      setTeamMembers((data || []) as MerchantMember[]);
+    }
+    setTeamLoading(false);
+  }, [activeBusiness?.id, activeMembership?.role, activeMembership?.status]);
+
+  useEffect(() => { void loadTeam(); }, [loadTeam]);
 
   useEffect(() => {
     if (!activeBusiness) return;
@@ -201,6 +233,41 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     });
     if (rpcError) setError(rpcError.message);
     else { setSuccess('Pengajuan verifikasi berhasil dikirim. Bisnis belum tampil publik sampai disetujui.'); await load(); }
+    setSaving(false);
+  };
+
+  const inviteMember = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!activeBusiness || !inviteEmail.trim()) return;
+    setSaving(true); setError(''); setSuccess('');
+    const { error: inviteError } = await supabase.rpc('invite_merchant_member_by_email', {
+      p_business_id: activeBusiness.id,
+      p_email: inviteEmail.trim(),
+      p_member_role: inviteRole,
+    });
+    if (inviteError) setError(inviteError.message);
+    else {
+      setInviteEmail('');
+      setSuccess('Undangan berhasil dibuat. Anggota harus menerima undangan sebelum memperoleh akses.');
+      await loadTeam();
+      await refreshRole();
+    }
+    setSaving(false);
+  };
+
+  const revokeMember = async (member: MerchantMember) => {
+    if (!activeBusiness || !window.confirm(`Cabut akses ${member.email || 'anggota ini'} dari bisnis?`)) return;
+    setSaving(true); setError(''); setSuccess('');
+    const { error: revokeError } = await supabase.rpc('revoke_merchant_business_member', {
+      p_business_id: activeBusiness.id,
+      p_membership_id: member.membership_id,
+    });
+    if (revokeError) setError(revokeError.message);
+    else {
+      setSuccess('Akses anggota berhasil dicabut.');
+      await loadTeam();
+      await refreshRole();
+    }
     setSaving(false);
   };
 
@@ -291,6 +358,23 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                   </form>}
                 </section>
                 {canSubmitForReview && <button onClick={submitForReview} disabled={saving || locations.length === 0} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-800 to-fuchsia-700 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-purple-900/15 disabled:cursor-not-allowed disabled:opacity-50"><Send className="h-4 w-4" /> Ajukan Verifikasi Bisnis</button>}
+                {['owner','manager'].includes(activeMembership?.role || '') && activeMembership?.status === 'active' && <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
+                  <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-base font-extrabold text-slate-900">Tim bisnis</h2><p className="mt-1 text-[11px] text-slate-500">Kelola akses orang yang membantu operasional bisnis.</p></div><Users className="h-5 w-5 text-purple-700" /></div>
+                  {teamLoading ? <p className="text-xs text-slate-500">Memuat anggota...</p> : <div className="space-y-2">
+                    {teamMembers.map((member) => <div key={member.membership_id} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-3">
+                      <div className="min-w-0"><p className="truncate text-xs font-bold text-slate-800">{member.email || 'Email tidak tersedia'}</p><p className="mt-1 text-[10px] text-slate-500">{member.member_role === 'owner' ? 'Owner' : member.member_role === 'manager' ? 'Manager' : 'Staff'} · {member.membership_status === 'active' ? 'Aktif' : member.membership_status === 'pending_invitation' ? 'Menunggu diterima' : member.membership_status}</p></div>
+                      {isOwner && member.member_role !== 'owner' && member.membership_status !== 'revoked' && <button type="button" onClick={() => void revokeMember(member)} disabled={saving} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-rose-200 bg-white px-2.5 py-2 text-[10px] font-bold text-rose-700 disabled:opacity-50"><UserMinus className="h-3 w-3" /> Cabut akses</button>}
+                    </div>)}
+                    {teamMembers.length === 0 && <p className="rounded-xl bg-slate-50 p-3 text-[11px] text-slate-500">Belum ada anggota lain di bisnis ini.</p>}
+                  </div>}
+                  {isOwner && <form onSubmit={inviteMember} className="mt-4 border-t border-slate-100 pt-4">
+                    <h3 className="mb-3 flex items-center gap-2 text-xs font-extrabold text-slate-800"><UserPlus className="h-4 w-4 text-purple-700" /> Undang anggota</h3>
+                    <label className="block"><span className={labelClass}>Email akun YUKU</span><input type="email" required maxLength={254} value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} placeholder="nama@email.com" className={inputClass} /></label>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]"><label><span className={labelClass}>Hak akses</span><select value={inviteRole} onChange={(event) => setInviteRole(event.target.value as 'manager' | 'staff')} className={inputClass}><option value="staff">Staff — akses operasional terbatas</option><option value="manager">Manager — kelola lokasi & lihat tim</option></select></label><button disabled={saving || !inviteEmail.trim()} className="inline-flex items-center justify-center gap-2 self-end rounded-xl bg-purple-800 px-4 py-3 text-xs font-bold text-white disabled:opacity-50"><UserPlus className="h-4 w-4" /> Kirim undangan</button></div>
+                    <p className="mt-2 text-[10px] leading-5 text-slate-500">Undangan hanya untuk akun YUKU aktif. Penerima harus masuk dengan email tersebut dan menerima undangan sebelum akses aktif.</p>
+                  </form>}
+                  {!isOwner && <p className="mt-3 text-[10px] text-slate-500">Manager dapat melihat daftar tim, tetapi undangan dan pencabutan akses hanya dapat dilakukan Owner.</p>}
+                </section>}
               </>}
             </section>
             <aside className="h-fit rounded-2xl border border-amber-200 bg-amber-50/80 p-5">
