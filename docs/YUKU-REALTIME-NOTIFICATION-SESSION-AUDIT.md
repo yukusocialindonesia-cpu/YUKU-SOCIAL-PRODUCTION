@@ -220,3 +220,78 @@ The connected Production project currently lists three active Edge Functions:
 - `yuku-push` — `verify_jwt=false`, with user JWT verification for subscribe/unsubscribe and a dedicated shared secret for the send webhook in the handler.
 
 Neither `create-checkout` nor `xendit-webhook` is currently deployed to Production. The branch config fix for `xendit-webhook` therefore addresses a future deployment/release consistency risk, not a currently deployed Production endpoint. Payment Edge Functions remain unavailable until deliberately deployed and tested in Staging.
+
+
+## Production notification delivery verification — 26 November 2026
+
+Read-only checks were run against Supabase project `yukuproduction`. No user identifiers, push endpoints, notification bodies, or secret values were selected.
+
+### Production infrastructure confirmed
+
+- `public.notifications` exists, is RLS-enabled, has 3 policies, and is included in `supabase_realtime`.
+- `public.push_subscriptions` exists, has 1 policy, and contains 3 rows at the time of the aggregate check. No endpoint, user ID, key material, or user-agent values were read.
+- Edge Function `yuku-push` is ACTIVE, version 4, with `verify_jwt=false`. The handler validates the signed-in user JWT for subscribe/unsubscribe and a separate webhook secret for send.
+- Database trigger `yuku_push_after_notification_insert` is enabled on `public.notifications`; the Vault secret name `yuku_push_webhook_secret` exists. Its value was not read.
+- The booking-status notification trigger and booking-message notification trigger are enabled in Production.
+- This supersedes the older `NOTIFICATION_PUSH_STATUS.md` snapshot that said no push table or Edge Functions existed. That document is stale relative to the current Production snapshot and should not be used as the current deployment status.
+- VAPID secret presence, canonical `APP_ORIGIN`, real delivery to Android Chrome, and the Database Webhook/HTTP queue success rate were not tested. The active DB trigger and Edge Function do not alone prove end-to-end delivery.
+
+### P1 — Chat text is included in push notification body
+
+- Current Production `notify_on_booking_message_insert()` reads the first 120 characters of `NEW.message` and stores that text as the notification message.
+- The active `yuku-push` function uses `notification.message` as the Web Push body. Therefore the actual chat preview can appear in an operating-system notification, potentially on a locked/shared phone.
+- This conflicts with the branch migration `43_booking_chat_push_notifications.sql`, which uses a generic message ("Anda menerima pesan baru pada booking ... Buka YUKU untuk membaca percakapan.") rather than copying chat content.
+- Recommended: keep any preview only inside the authenticated in-app notification panel if desired; send a generic push body for chat events. Do not include the chat text, meeting address, or private booking details in lock-screen payloads.
+- Production function source was inspected read-only. No notification or push was sent during this audit.
+
+### P1 — Production completion notification has stale escrow timing copy
+
+- Current Production `notify_on_booking_status_change()` still tells Talent that 80% compensation becomes available after a 24-hour waiting period.
+- The audited escrow release flow is immediate after both sides confirm completion, subject to active dispute hold and the release process. The current notification copy is inconsistent and can mislead Talent.
+- The branch migration 35 contains a dynamic text replacement intended to remove the old 24-hour copy, but the current Production function definition still contains it. Verify migration history/deployment and replace the full function body in a forward migration; do not rely on a conditional string replacement that may silently miss.
+- No Production function was modified.
+
+### P2 — Expired bookings have no explicit status notification
+
+- The Production booking status notification function has branches for paid escrow, Talent confirmation, session start, completion, Talent cancellation, paid Customer cancellation, and dispute hold.
+- It has no branch for `expired`. If the expiry worker transitions a booking to expired, the participants may not receive a corresponding notification. Add a neutral expiry notification to the Customer and, where operationally useful, Talent.
+- Pending-payment Customer cancellation is intentionally not broadcast to Talent by the current function.
+
+### Branch/Production migration drift
+
+- Production `notify_on_booking_status_change()` includes an idempotency guard that returns early when an UPDATE does not actually change `status`. The branch's original migration 13 source does not contain this guard.
+- Because migration 13 uses `CREATE OR REPLACE FUNCTION`, a clean replay of the branch migration chain can overwrite the Production guard. Add a forward migration to preserve it; do not edit an already-applied migration.
+- Production `notify_on_booking_message_insert()` uses chat previews, while branch migration 43 uses generic notification text. The branch is safer for lock-screen privacy; ensure the next release does not reintroduce the Production preview behavior.
+
+### Push-toggle account-switch behavior
+
+- `PushNotificationToggle` tracks `isAuthenticated`, not `userId`. On a shared device, a direct switch between two authenticated accounts can leave the displayed push status stale.
+- The Edge Function does prevent endpoint reassignment when an endpoint is already registered to a different user (HTTP 409), and unsubscribe is scoped to the current authenticated user. This is not evidence of cross-account database access, but the UI should refresh on `userId` changes and should distinguish browser-level subscription state from account ownership.
+- A complete account-aware status check needs a server-side status action that verifies the current user's endpoint ownership. Do not claim the local browser subscription alone proves that the currently signed-in account owns the push registration.
+
+### Notification coverage reviewed
+
+- Paid escrow: Customer and Talent notified.
+- Talent confirms: Customer notified.
+- Session starts: Customer notified.
+- Completion: Customer and Talent notified.
+- Talent cancellation: Customer notified.
+- Paid Customer cancellation: Talent notified.
+- Dispute hold: both parties notified.
+- New chat message: opposite participant notified.
+- Booking expiry: no explicit status notification branch found.
+- Refund, payout, QRIS rejection, and report status have separate notification triggers; ensure the report notification remains free of internal `admin_notes`.
+
+### Required follow-up before release
+
+1. Change the Production booking-message notification to generic text for push delivery; verify no message content appears in OS notification payloads.
+2. Replace the stale 24-hour completion copy and add an explicit expiry notification.
+3. Add a forward migration retaining the booking-status idempotency guard; test repeated same-status updates create no duplicate notifications.
+4. Reconcile the branch/Production function definitions before release.
+5. Verify VAPID secrets and `APP_ORIGIN` are present without exposing values; test opt-in, opt-out, delivery, expired endpoint cleanup, and Android Chrome with YUKU closed.
+6. Make PushNotificationToggle refresh on account-ID changes and verify the server-side subscription owner before displaying account-specific enabled status.
+7. Test that notifications and pushes only reach their intended recipient, and that lock-screen payloads contain no chat body, exact location, payment proof, or internal moderation note.
+
+### Validation boundary
+
+Production checks above were read-only. No notifications were inserted, no push test was sent, no user/device rows were read individually, no secret values were accessed, no database function/trigger/table/policy was modified, no Edge Function was deployed, and no Production setting was changed. Forward migrations and Android end-to-end tests remain outstanding.
