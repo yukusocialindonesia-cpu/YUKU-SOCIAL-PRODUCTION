@@ -165,11 +165,24 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         reviewed_by: null,
         reviewed_at: null,
       };
-      const result = editingApplicationId
-        ? await supabase.from('professional_service_applications').update(payload)
-            .eq('id', editingApplicationId).eq('applicant_id', user.id).eq('status', 'needs_revision')
-        : await supabase.from('professional_service_applications').insert(payload);
-      if (result.error) throw new Error('Pengajuan belum tersimpan: ' + result.error.message);
+      if (editingApplicationId) {
+        const { data: updatedApplication, error: updateError } = await supabase
+          .from('professional_service_applications')
+          .update(payload)
+          .eq('id', editingApplicationId)
+          .eq('applicant_id', user.id)
+          .eq('status', 'needs_revision')
+          .select('id')
+          .maybeSingle();
+        if (updateError || !updatedApplication) {
+          throw new Error('Pengajuan tidak berhasil diperbarui. Muat ulang riwayat dan coba lagi.');
+        }
+      } else {
+        const { error: insertError } = await supabase
+          .from('professional_service_applications')
+          .insert(payload);
+        if (insertError) throw new Error('Pengajuan belum tersimpan: ' + insertError.message);
+      }
       if (editingApplicationId) {
         const replacedPaths = [
           credentialFile && existingCredentialPath ? existingCredentialPath : null,
