@@ -94,3 +94,48 @@ Commit: `be5d647315802a4f5ed0c524dd115a5d4f9ee8b5`.
 ## Validation boundary
 
 The NotificationBell fix was committed and its source will be re-fetched for static verification. The chat/message and notification policies were inspected in the final migration chain. No Realtime Settings were changed, no private-channel migration was applied, no database was queried or modified, no functions were deployed, and no live WebSocket or cross-account tests were performed. Staging tests and a project-level Realtime configuration review remain required.
+
+
+## Fixed: Admin operational notifications now follow module permissions
+
+Finding:
+- The legacy `notify_all_admins()` sent Finance, Talent, and Support queue notifications to every active Admin, regardless of their assigned module permission.
+- This exposed unnecessary operational metadata (such as booking references, payment amounts, payout identifiers, and report identifiers) to Admins who did not own that workflow.
+
+Branch-only fix:
+- Migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` maps each known notification title to its required permission:
+  - Finance: QRIS, Xendit settlement, payout requests, refunds.
+  - Talent: KTP review and Talent service review.
+  - Support: incident reports.
+- Only active Admins with the matching permission, plus Super Admin, receive the notification.
+- Unknown notification titles fail closed instead of broadcasting to all Admins.
+- Professional-service application notifications were already limited to active Talent-permission Admins and Super Admin in migration `20261126182000_professional_service_application_notifications.sql`.
+
+## Fixed: booking chat Presence and typing use a private authorized channel
+
+Finding:
+- Booking chat previously joined `booking-chat:<booking UUID>` as a public Realtime channel.
+- Presence and typing broadcasts were not protected by booking-participant authorization.
+
+Branch-only fix:
+- Migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` adds SELECT/INSERT policies on the existing `realtime.messages` table.
+- Policies require an exact booking-chat topic, authenticated active account, and Customer/Talent participant relationship.
+- Presence is allowed only while the chat is visible; typing Broadcast is allowed only while the booking is in a sendable status.
+- The frontend now sets `config.private: true` for the booking chat channel.
+- Postgres Changes on `booking_messages` continue to rely on that table's own RLS policies; these new policies govern only Broadcast/Presence.
+
+## Validation still required
+
+Static source checks can verify the permission mapping, fail-closed behavior, topic matching, participant checks, status constraints, and private client configuration. They cannot prove the live project's Realtime settings or any pre-existing dashboard-created permissive policies.
+
+Required Staging checks:
+1. Confirm no broad permissive policies exist on `realtime.messages` that OR-bypass the new participant policies.
+2. Anonymous client cannot join the private booking chat channel.
+3. Unrelated Customer/Talent and Admin without a booking-participant role cannot join or publish.
+4. Both booking participants can receive Presence; only active-session statuses allow typing Broadcast.
+5. Suspended account cannot join after reconnect/token refresh; already-open sockets need a separate revocation/reconnect test.
+6. Finance/Talent/Support Admins receive only their own module notifications; Super Admin receives all; disabled Admin receives none.
+7. Verify push delivery follows the same scoped in-app notification recipient row.
+8. Review the project-level Realtime setting. Disabling public access globally is a separate project setting and was not changed by this repository migration.
+
+No SQL was run against Staging or Production, no project-level Realtime setting was changed, and no Edge Function was deployed.
