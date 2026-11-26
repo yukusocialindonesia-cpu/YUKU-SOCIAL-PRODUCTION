@@ -15,10 +15,10 @@ create policy professional_service_applications_owner_insert
       select 1
       from public.professional_service_subcategories sc
       join public.professional_service_categories c on c.id = sc.category_id
-      where sc.id = subcategory_id
+      where sc.id = public.professional_service_applications.subcategory_id
         and sc.is_active = true
         and c.is_active = true
-        and delivery_modes <@ sc.delivery_modes
+        and public.professional_service_applications.delivery_modes <@ sc.delivery_modes
     )
     and status = 'pending'
     and reviewed_by is null
@@ -57,10 +57,10 @@ create policy professional_service_applications_owner_revision_update
       select 1
       from public.professional_service_subcategories sc
       join public.professional_service_categories c on c.id = sc.category_id
-      where sc.id = subcategory_id
+      where sc.id = public.professional_service_applications.subcategory_id
         and sc.is_active = true
         and c.is_active = true
-        and delivery_modes <@ sc.delivery_modes
+        and public.professional_service_applications.delivery_modes <@ sc.delivery_modes
     )
     and (
       credential_document_path is null
