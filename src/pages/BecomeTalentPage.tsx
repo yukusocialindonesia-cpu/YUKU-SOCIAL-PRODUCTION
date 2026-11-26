@@ -271,6 +271,21 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
       return;
     }
 
+    // Simpan draf non-sensitif sebelum proses backend dimulai agar pengguna
+    // yang sudah login pun dapat melanjutkan setelah refresh atau kegagalan jaringan.
+    try {
+      const {
+        password: _password,
+        ktpNumber: _ktpNumber,
+        agreeTerms: _agreeTerms,
+        agreeAge18: _agreeAge18,
+        ...safeDraft
+      } = formData;
+      localStorage.setItem(TALENT_DRAFT_KEY, JSON.stringify(safeDraft));
+    } catch {
+      // Penyimpanan draf bersifat best-effort; proses pendaftaran tetap berjalan.
+    }
+
     setIsSubmitting(true);
 
     // Track only files uploaded during this attempt. If a later step fails,
