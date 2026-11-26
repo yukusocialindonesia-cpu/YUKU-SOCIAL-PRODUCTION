@@ -35,6 +35,42 @@ revoke all on public.merchant_membership_history from public, anon, authenticate
 grant select (id,business_id,membership_id,action,previous_role,new_role,previous_status,new_status,created_at)
   on public.merchant_membership_history to authenticated;
 
+-- Pending invitees may read the business identity needed to review and accept
+-- their own invitation. This grants no location or management access.
+create or replace function private.has_merchant_business_invitation(p_business_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $merchant$
+  select auth.uid() is not null and exists (
+    select 1
+      from public.merchant_memberships mm
+     where mm.business_id = p_business_id
+       and mm.user_id = auth.uid()
+       and mm.membership_status = 'pending_invitation'
+       and mm.member_role in ('manager','staff')
+  );
+$merchant$;
+
+revoke all on function private.has_merchant_business_invitation(uuid)
+  from public,anon;
+grant execute on function private.has_merchant_business_invitation(uuid)
+  to authenticated;
+
+drop policy if exists merchant_businesses_public_or_member_read
+  on public.merchant_businesses;
+create policy merchant_businesses_public_or_member_read
+  on public.merchant_businesses
+  for select to anon, authenticated
+  using (
+    review_status = 'approved'
+    or private.has_merchant_business_access(id)
+    or private.has_merchant_business_invitation(id)
+    or private.is_merchant_admin()
+  );
+
 -- Owner and manager may view the roster; email is returned only by this scoped RPC.
 create or replace function public.get_merchant_business_members(p_business_id uuid)
 returns table (
