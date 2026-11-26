@@ -163,3 +163,11 @@ Implemented on the feature branch:
 - Existing function signatures and returned columns are preserved for current AdminPage callers; anon/PUBLIC execute remains revoked and authenticated execute remains granted.
 
 Static review confirms the current AdminPage call sites pass IDs from the corresponding Talent, Customer identity, and report datasets, so the narrowed conditions preserve the intended UI use. PostgreSQL replay and authenticated role-matrix tests have not been run. No Staging/Production database was modified.
+
+Finance label RPC follow-up (same migration, commit `8c9ac61cb9c71f70bb1904e259d71df6eaf7c918`):
+- `get_admin_talent_labels` now returns Talent labels only for Talent IDs that have payout requests.
+- `get_admin_customer_labels` now returns Customer labels only for customers with refunds or cancellation cases.
+- `get_admin_finance_booking_labels` now returns booking codes only for bookings linked to refunds or cancellation cases.
+- Existing AdminPage callers already pass IDs from those respective datasets, so their intended use remains covered.
+
+Validation remains source-level only; no PostgreSQL replay or Staging tests have been run.
