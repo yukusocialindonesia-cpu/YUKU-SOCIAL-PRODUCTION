@@ -69,12 +69,13 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
       .from('professional_talent_services')
       .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)', { count: 'exact' })
       .eq('approval_status', 'approved')
+      .eq('provider.is_approved', true)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
       .range(0, PROVIDER_PAGE_SIZE - 1);
 
-    setProviderError(providerFetchError ? '' : '');
+    setProviderError(providerFetchError ? 'Daftar penyedia belum dapat dimuat. Coba lagi sebentar.' : '');
     setProviderCount(providerFetchError ? 0 : (providerTotal || 0));
     const normalized = (providerData || []).map((row: any) => ({
       ...row,
@@ -95,6 +96,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
       .from('professional_talent_services')
       .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)')
       .eq('approval_status', 'approved')
+      .eq('provider.is_approved', true)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
