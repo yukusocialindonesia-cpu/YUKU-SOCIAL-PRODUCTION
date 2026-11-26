@@ -44,6 +44,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [providerError, setProviderError] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -59,12 +60,14 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
       setGroups([]);
     } else {
       setGroups((data || []) as ServiceGroup[]);
-      const { data: providerData } = await supabase
+      const { data: providerData, error: providerFetchError } = await supabase
         .from('professional_talent_services')
         .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)')
         .eq('approval_status', 'approved')
         .eq('is_active', true)
-        .limit(24);
+        .order('created_at', { ascending: false })
+        .limit(100);
+      setProviderError(providerFetchError ? 'Daftar penyedia jasa belum dapat dimuat. Coba muat ulang halaman.' : '');
       const normalized = (providerData || []).map((row: any) => ({
         ...row,
         provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
@@ -188,6 +191,13 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
                 </div>
               </section>
             ))}
+          </div>
+        )}
+
+        {providerError && (
+          <div role="alert" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+            <span>{providerError}</span>
+            <button onClick={() => void load()} className="rounded-lg bg-amber-900 px-3 py-2 text-[10px] font-bold text-white">Coba lagi</button>
           </div>
         )}
 
