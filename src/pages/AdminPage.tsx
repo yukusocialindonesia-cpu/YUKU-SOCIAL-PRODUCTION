@@ -176,6 +176,7 @@ interface CustomerKtpItem {
   date_of_birth: string;
   ktp_number: string | null;
   ktp_storage_path: string | null;
+  selfie_storage_path: string | null;
   ktp_verification_status: 'unsubmitted' | 'pending_review' | 'verified' | 'rejected';
   ktp_rejection_reason: string | null;
   emergency_contact_phone: string | null;
@@ -2206,6 +2207,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         >
                           {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
                         </button>
+                        {c.selfie_storage_path && (
+                          <button
+                            type="button"
+                            onClick={() => handleViewCustomerKtp({
+                              id: c.id,
+                              ktp_storage_path: null,
+                              evidencePath: c.selfie_storage_path,
+                              evidenceLabel: 'Selfie dengan KTP',
+                              full_legal_name: c.full_legal_name,
+                            })}
+                            disabled={loadingCustomerKtpId === c.id}
+                            className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-800 text-white font-bold text-xs hover:bg-slate-900 disabled:opacity-50"
+                          >
+                            Lihat Selfie
+                          </button>
+                        )}
                       </div>
                       {c.ktp_rejection_reason && (
                         <div className="text-rose-700">
