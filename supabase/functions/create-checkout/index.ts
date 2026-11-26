@@ -53,8 +53,8 @@ Deno.serve(async (req) => {
     .select('account_status')
     .eq('id', userId)
     .maybeSingle();
-  if (accountError || !account || !['active', 'pending_verification'].includes(account.account_status)) {
-    return json({ error: 'Akun sedang dinonaktifkan dan tidak dapat memulai pembayaran.' }, 403, headers);
+  if (accountError || !account || account.account_status !== 'active') {
+    return json({ error: 'Akun harus aktif dan terverifikasi sebelum memulai pembayaran.' }, 403, headers);
   }
 
   let bookingId: string;
@@ -79,6 +79,14 @@ Deno.serve(async (req) => {
   if (bErr || !booking || booking.customer_id !== userId) return json({ error: 'Booking tidak ditemukan.' }, 404, headers);
   if (booking.status !== 'pending_payment') return json({ error: 'Booking tidak menunggu pembayaran.' }, 409, headers);
 
+  // Check the invoice's minimum remaining lifetime before locking the route.
+  // A failed short-lifetime attempt must not prevent the customer from choosing
+  // another valid payment attempt while the booking is still pending.
+  const secondsLeft = Math.floor((new Date(booking.payment_expires_at).getTime() - Date.now()) / 1000);
+  if (!Number.isFinite(secondsLeft) || secondsLeft < 60) {
+    return json({ error: 'Batas waktu pembayaran hampir/sudah habis.' }, 409, headers);
+  }
+
   // Atomically claim Xendit as the only payment route for this booking.
   // If QRIS has already been selected, this fails and no Xendit invoice is created.
   const { error: routeError } = await userClient.rpc('claim_booking_payment_route', {
@@ -86,9 +94,6 @@ Deno.serve(async (req) => {
     p_route: 'xendit',
   });
   if (routeError) return json({ error: routeError.message }, 409, headers);
-
-  const secondsLeft = Math.floor((new Date(booking.payment_expires_at).getTime() - Date.now()) / 1000);
-  if (secondsLeft < 60) return json({ error: 'Batas waktu pembayaran hampir/sudah habis.' }, 409, headers);
 
   const externalId = `yuku-${booking.id}`;
   const auth = 'Basic ' + btoa(`${xenditKey}:`);
