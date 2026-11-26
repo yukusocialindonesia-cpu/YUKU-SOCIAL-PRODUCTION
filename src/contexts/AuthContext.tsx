@@ -87,13 +87,15 @@ const normalizeAccessSnapshot = (value: unknown): AccountAccessSnapshot | null =
           typeof membership.businessId !== 'string' ||
           typeof membership.businessName !== 'string' ||
           !['owner', 'manager', 'staff'].includes(String(membership.role)) ||
-          !['active', 'invited', 'suspended'].includes(String(membership.status))
+          !['active', 'invited', 'pending_invitation', 'suspended'].includes(String(membership.status))
         ) return [];
         return [{
           businessId: membership.businessId,
           businessName: membership.businessName,
           role: membership.role as MerchantMembership['role'],
-          status: membership.status as MerchantMembership['status'],
+          status: membership.status === 'pending_invitation'
+            ? 'invited'
+            : membership.status as MerchantMembership['status'],
         }];
       })
     : [];
