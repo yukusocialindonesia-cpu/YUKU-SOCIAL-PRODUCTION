@@ -24,7 +24,7 @@ interface ProviderItem {
   rate_amount: number;
   pricing_unit: string;
   delivery_modes: string[];
-  provider: { id: string; display_name: string; avatar_url: string; city: string; headline: string; rating_average: number; review_count: number; is_approved: boolean };
+  provider: { user_id: string; display_name: string; avatar_url: string | null; city: string | null; headline: string | null; is_profile_complete: boolean };
   subcategory: { id: string; title: string; category_id: string };
 }
 interface Props {
@@ -67,9 +67,9 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
 
     const { data: providerData, error: providerFetchError, count: providerTotal } = await supabase
       .from('professional_talent_services')
-      .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)', { count: 'exact' })
+      .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:professional_provider_profiles!inner(user_id, display_name, avatar_url, city, headline, is_profile_complete), subcategory:professional_service_subcategories!inner(id, title, category_id)', { count: 'exact' })
       .eq('approval_status', 'approved')
-      .eq('provider.is_approved', true)
+      .eq('provider.is_profile_complete', true)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
@@ -135,7 +135,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
 
   const totalServices = groups.reduce((total, group) => total + (group.professional_service_subcategories?.length || 0), 0);
   const visibleProviders = providers.filter((item) => {
-    const matchesQuery = !query.trim() || `${item.provider.display_name} ${item.provider.headline} ${item.subcategory.title} ${item.provider.city}`.toLocaleLowerCase('id').includes(query.trim().toLocaleLowerCase('id'));
+    const matchesQuery = !query.trim() || `${item.provider.display_name} ${item.provider.headline || ''} ${item.subcategory.title} ${item.provider.city || ''}`.toLocaleLowerCase('id').includes(query.trim().toLocaleLowerCase('id'));
     const matchesCategory = selectedGroup === 'all' || groups.find((g) => g.id === selectedGroup)?.professional_service_subcategories.some((sub) => sub.id === item.subcategory.id);
     const matchesMode = mode === 'all' || (item.delivery_modes || []).includes(mode);
     return matchesQuery && matchesCategory && matchesMode;
@@ -256,12 +256,12 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {visibleProviders.map((item) => (
-                <button key={item.id} type="button" onClick={() => onNavigate('/jasa-profesional/:id', { id: item.provider.id })} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left transition hover:border-violet-300 hover:shadow-md">
+                <button key={item.id} type="button" onClick={() => onNavigate('/jasa-profesional/:id', { id: item.provider.user_id })} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left transition hover:border-violet-300 hover:shadow-md">
                   <img src={item.provider.avatar_url} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-slate-100 object-cover"/>
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-1 text-xs font-extrabold text-slate-900">{item.provider.display_name}{item.provider.is_approved && <BadgeCheck aria-label="Profil Talent disetujui YUKU" className="h-3 w-3 text-violet-600"/>}</span>
-                    <span className="mt-1 block truncate text-[10px] text-slate-500">{item.subcategory.title} · {item.provider.city}</span>
-                    <span className="mt-1 flex items-center gap-1 text-[10px] text-slate-500"><Star className="h-3 w-3 text-amber-500"/> {item.provider.review_count > 0 ? `${Number(item.provider.rating_average || 0).toFixed(1)} (${item.provider.review_count} ulasan)` : 'Belum ada ulasan'}</span>
+                    <span className="flex items-center gap-1 text-xs font-extrabold text-slate-900">{item.provider.display_name}{item.provider.is_profile_complete && <BadgeCheck aria-label="Profil profesional lengkap" className="h-3 w-3 text-violet-600"/>}</span>
+                    <span className="mt-1 block truncate text-[10px] text-slate-500">{item.subcategory.title} · {item.provider.city || 'Lokasi belum dicantumkan'}</span>
+                    <span className="mt-1 flex items-center gap-1 text-[10px] text-slate-500"><Star className="h-3 w-3 text-amber-500"/> Profil penyedia jasa profesional</span>
                   </span>
                   <ChevronRight className="h-4 w-4 shrink-0 text-violet-500"/>
                 </button>
