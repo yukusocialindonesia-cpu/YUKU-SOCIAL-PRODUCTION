@@ -22,7 +22,7 @@ interface ApplicationRow {
   admin_note: string | null;
   created_at: string;
   subcategory: { title: string; verification_level: string; category: { title: string } };
-  provider?: { display_name: string; avatar_url: string | null; city: string; is_approved: boolean };
+  provider?: { display_name: string; avatar_url: string | null; city: string | null; is_profile_complete: boolean };
   credential_url?: string | null;
   supporting_url?: string | null;
   credential_url_error?: boolean;
@@ -90,12 +90,12 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
     }, {}));
     const ids = [...new Set(appRows.map((row) => row.applicant_id))];
     const { data: profiles, error: profileQueryError } = ids.length
-      ? await supabase.from('talent_profiles').select('id,display_name,avatar_url,city,is_approved').in('id', ids)
+      ? await supabase.from('professional_provider_profiles').select('user_id,display_name,avatar_url,city,is_profile_complete').in('user_id', ids)
       : { data: [] as any[], error: null };
     if (profileQueryError) {
-      setError('Pengajuan berhasil dimuat, tetapi data profil Talent gagal dimuat. Periksa izin baca talent_profiles sebelum melakukan review.');
+      setError('Pengajuan berhasil dimuat, tetapi data profil profesional gagal dimuat. Periksa izin baca professional_provider_profiles sebelum melakukan review.');
     }
-    const profileMap = new Map((profiles || []).map((profile: any) => [profile.id, profile]));
+    const profileMap = new Map((profiles || []).map((profile: any) => [profile.user_id, profile]));
     const hydrated = await Promise.all(appRows.map(async (row) => {
       const subcategory = Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory;
       const credential = row.credential_document_path
@@ -185,7 +185,7 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
           <div className="mt-5 space-y-4">{rows.map((row) => (
             <article key={row.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-center gap-3">{row.provider?.avatar_url ? <img src={row.provider.avatar_url} alt="" className="h-12 w-12 rounded-xl object-cover"/> : <div className="h-12 w-12 rounded-xl bg-violet-50"/>}<div><p className="text-sm font-extrabold text-slate-900">{row.provider?.display_name || 'Talent tidak ditemukan'}</p><p className="mt-0.5 text-[10px] text-slate-500">{row.provider?.city || row.service_city} · {row.provider?.is_approved ? 'Profil Talent disetujui' : 'Profil Talent belum disetujui'}</p></div></div>
+                <div className="flex items-center gap-3">{row.provider?.avatar_url ? <img src={row.provider.avatar_url} alt="" className="h-12 w-12 rounded-xl object-cover"/> : <div className="h-12 w-12 rounded-xl bg-violet-50"/>}<div><p className="text-sm font-extrabold text-slate-900">{row.provider?.display_name || 'Profil profesional tidak ditemukan'}</p><p className="mt-0.5 text-[10px] text-slate-500">{row.provider?.city || row.service_city} · {row.provider?.is_profile_complete ? 'Profil profesional lengkap' : 'Profil profesional belum lengkap'}</p></div></div>
                 <span className="rounded-full bg-violet-50 px-3 py-1.5 text-[10px] font-bold text-violet-800">{({pending:'Menunggu',under_review:'Sedang diperiksa',needs_revision:'Perlu revisi',approved:'Disetujui',rejected:'Ditolak'} as Record<string,string>)[row.status] || row.status}</span>
               </div>
               <div className="mt-4"><p className="text-[10px] font-bold uppercase tracking-wide text-violet-700">{row.subcategory?.category?.title}</p><h2 className="mt-1 text-base font-extrabold text-slate-900">{row.subcategory?.title}</h2><p className="mt-2 whitespace-pre-line text-xs leading-relaxed text-slate-600">{row.service_description}</p></div>
@@ -198,7 +198,7 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
               {row.status !== 'approved' && row.status !== 'rejected' && <div className="mt-3 flex flex-wrap gap-2">
                 <button disabled={!!actingId} onClick={() => void review(row.id,'under_review')} className="rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-700 disabled:opacity-50"><Clock3 className="mr-1 inline h-3 w-3"/> Tandai diproses</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'needs_revision')} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-800 disabled:opacity-50">Minta revisi</button>
-                <button disabled={!!actingId || !row.provider?.is_approved || (verificationNotes[row.id] || '').trim().length < 20 || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && (!row.credential_document_path || !row.credential_url || row.credential_url_error)) || (!!row.credential_document_path && (!row.credential_url || row.credential_url_error)) || (row.subcategory?.verification_level === 'reference' && (!row.supporting_document_path || !row.supporting_url || row.supporting_url_error)) || (!!row.supporting_document_path && (!row.supporting_url || row.supporting_url_error))} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
+                <button disabled={!!actingId || !row.provider?.is_profile_complete || (verificationNotes[row.id] || '').trim().length < 20 || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && (!row.credential_document_path || !row.credential_url || row.credential_url_error)) || (!!row.credential_document_path && (!row.credential_url || row.credential_url_error)) || (row.subcategory?.verification_level === 'reference' && (!row.supporting_document_path || !row.supporting_url || row.supporting_url_error)) || (!!row.supporting_document_path && (!row.supporting_url || row.supporting_url_error))} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'rejected')} className="rounded-lg bg-rose-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-50"><XCircle className="mr-1 inline h-3 w-3"/> Tolak</button>
               </div>}
               {actingId === row.id && <p className="mt-2 flex items-center gap-2 text-[10px] text-slate-500"><Loader2 className="h-3 w-3 animate-spin"/> Menyimpan keputusan...</p>}
