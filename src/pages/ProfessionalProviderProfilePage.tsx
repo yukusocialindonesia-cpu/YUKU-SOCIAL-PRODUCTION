@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeft, BadgeCheck, BriefcaseBusiness, CalendarDays, MapPin, Monitor, ShieldCheck, Star, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AppRoute } from '../types/navigation';
+import { formatProfessionalRate } from '../lib/professionalServicePricing';
 
 interface Props {
   providerId: string;
@@ -141,8 +142,8 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="text-[10px] text-slate-500">Tarif</p>
-                  <p className="text-sm font-extrabold text-[#24105F]">{money(service.rate_amount)}</p>
-                  <p className="text-[10px] text-slate-500">{unitLabel[service.pricing_unit] || ''}</p>
+                  <p className="text-sm font-extrabold text-[#24105F]">{formatProfessionalRate(service.rate_amount, service.pricing_unit)}</p>
+                  
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
