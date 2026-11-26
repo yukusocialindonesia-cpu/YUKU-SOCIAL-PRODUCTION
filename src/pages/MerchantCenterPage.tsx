@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Building2, MapPin, Plus, Send, Store, CheckCircle2, Clock3, AlertCircle, Loader2, Users, UserPlus, UserMinus } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -124,6 +124,8 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [offerTerms, setOfferTerms] = useState('');
   const [offerInstructions, setOfferInstructions] = useState('');
   const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
+  // Prevent slower requests from a previous account/business from overwriting the current workspace.
+  const loadRequestRef = useRef(0);
 
   const activeBusiness = useMemo(
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
@@ -150,6 +152,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const canSubmitForReview = isOwner && (activeBusiness?.review_status === 'draft' || activeBusiness?.review_status === 'needs_revision');
 
   const load = useCallback(async (preferredBusinessId?: string) => {
+    const requestId = ++loadRequestRef.current;
+    const requestedUserId = user?.id ?? null;
+    const isCurrentRequest = () =>
+      requestId === loadRequestRef.current && requestedUserId === (user?.id ?? null);
     if (!user) {
       setBusinesses([]); setLocations([]); setOffers([]); setTeamMembers([]);
       setPendingInvitationIds({}); setReviewHistory([]); setOfferHistoryRows([]);
@@ -158,11 +164,18 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     }
     setLoading(true);
     setError('');
+    setBusinesses([]);
+    setLocations([]);
+    setOffers([]);
+    setTeamMembers([]);
+    setReviewHistory([]);
+    setOfferHistoryRows([]);
     const { data: ownMemberships, error: membershipError } = await supabase
       .from('merchant_memberships')
       .select('id,business_id,membership_status')
       .eq('user_id', user.id)
       .in('membership_status', ['active','pending_invitation']);
+    if (!isCurrentRequest()) return;
     if (membershipError) {
       setError('Fitur Merchant Partner belum tersedia di server. Migrasi Merchant Partner perlu diterapkan dan diuji di staging terlebih dahulu.');
       setBusinesses([]);
@@ -185,6 +198,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
           .in('id', businessIds)
           .order('created_at', { ascending: false })
       : { data: [] as any[], error: null };
+    if (!isCurrentRequest()) return;
     if (queryError) {
       setError('Profil bisnis milik akun ini belum dapat dimuat.');
       setBusinesses([]);
@@ -209,6 +223,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
         .select('id,business_id,location_name,address_text,city,province,public_phone,is_active,opening_hours')
         .eq('business_id', nextId)
         .order('created_at', { ascending: true });
+      if (!isCurrentRequest()) return;
       if (locationError) setError('Profil bisnis terbaca, tetapi daftar lokasi belum dapat dimuat.');
       setLocations((locationRows || []) as MerchantLocation[]);
       const { data: offerRows, error: offerError } = await supabase
@@ -217,6 +232,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
         .eq('business_id', nextId)
         .order('created_at', { ascending: false })
         .limit(100);
+      if (!isCurrentRequest()) return;
       if (offerError) {
         setOffers([]);
         setError('Fitur promo Merchant Partner belum tersedia di server. Pastikan migrasi Merchant Offers sudah diterapkan di staging.');
