@@ -97,7 +97,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
       {/* Professional services taxonomy; booking integration is intentionally not enabled yet. */}
-      <ProfessionalServicesSection />
+      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
 
       {/* Talent Pilihan dari profil publik Supabase */}
       <FeaturedTalentSection
