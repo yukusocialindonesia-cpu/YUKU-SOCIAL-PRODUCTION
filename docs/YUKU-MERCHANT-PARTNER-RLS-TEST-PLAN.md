@@ -175,7 +175,7 @@ This preflight has not been executed. No migration has been applied to Staging o
 ## Multi-profile navigation acceptance
 - [ ] An active account with Customer + Talent capabilities opens Customer Profile from the mobile bottom-nav Profile action; it must not force the Talent dashboard.
 - [ ] Customer-capable accounts open Booking History from the mobile Orders action, even when they also have Talent, Professional Provider, or Merchant memberships.
-- [ ] A Talent-only legacy account without Customer capability opens the Talent dashboard.
+- [ ] When the access snapshot explicitly marks Customer unavailable but Talent approved, the mobile Profile action opens the Talent dashboard.
 - [ ] A Professional Provider-only account without Customer/Talent capability opens the Professional Provider workspace.
 - [ ] A Merchant-only account without Customer/Talent/Professional capability opens Merchant Center when it has an active merchant membership.
 - [ ] Pending merchant invitations do not grant Merchant Center workspace access through the mobile Profile action; the account can still open the invitation from the account menu/notification.
