@@ -220,6 +220,13 @@ begin
   if v_previous_status not in ('draft','needs_revision') then
     raise exception 'Offer is not ready for submission' using errcode = '55000';
   end if;
+  if not exists (
+    select 1 from public.merchant_offers mo
+     where mo.id = p_offer_id
+       and (mo.ends_at is null or mo.ends_at > now())
+  ) then
+    raise exception 'Offer validity period has already ended' using errcode = '22023';
+  end if;
 
   update public.merchant_offers
      set status = 'pending_review',updated_at = now()
@@ -283,6 +290,12 @@ begin
      where mb.id = v_business_id and mb.review_status = 'approved'
   ) then
     raise exception 'Parent business must remain approved before an offer can be published' using errcode = '55000';
+  end if;
+  if p_decision = 'approved' and exists (
+    select 1 from public.merchant_offers mo
+     where mo.id = p_offer_id and mo.ends_at is not null and mo.ends_at <= now()
+  ) then
+    raise exception 'Expired offer cannot be approved' using errcode = '22023';
   end if;
 
   update public.merchant_offers
