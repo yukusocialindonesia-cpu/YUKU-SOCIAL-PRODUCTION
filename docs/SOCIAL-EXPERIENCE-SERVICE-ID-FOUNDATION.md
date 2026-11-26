@@ -105,3 +105,17 @@ A follow-up source audit traced the existing financial consumers. The exact serv
 - Re-run cancellation, dispute-hold, escrow-release and payout-allocation regression suites before release.
 
 This audit was source-level/read-only. It did not execute payment/refund/payout flows, apply migrations, alter production data, or deploy any service.
+
+
+## Refund allocation limitation confirmed from source
+
+A deeper read of the current cancellation/refund implementation found an important boundary that must not be hidden by the payment-level partial-refund cap:
+
+- `admin_process_refund()` prevents cumulative processed refunds from exceeding the payment amount and only marks the payment fully refunded when processed refunds reach the full payment amount.
+- However, `handle_booking_refund_financials()` is driven by booking status (`refunded`, `cancelled_by_customer`, or `cancelled_by_talent`) and creates a reversal for the full `talent_earnings.net_earning` when it first handles that terminal status.
+- Therefore a partial refund against a cancelled booking is not currently a proportional allocation contract across Customer refund, Talent earning, platform commission, referral reward, reserved payout and already-paid payout. The refund processor's payment cap alone does not make that distribution correct.
+- The existing reversal idempotency check is booking-level (`financial_adjustments_reversals.booking_id`), so it intentionally avoids a second full reversal for the same booking; it does not model multiple proportional refund events.
+
+**Decision:** do not implement or advertise partial-refund support for Social Experience or Professional Services as an end-to-end proportional finance feature until Finance defines the allocation policy and an auditable adjustment ledger covers allocated/paid earnings. Keep current cancellation/refund behavior unchanged in this service-ID foundation PR.
+
+Stage D.2 now checks that the booking financial snapshot guard, booking-keyed settlement ledger trigger/function, booking-linked refund reversal handler, and payout dispute guard remain present. These are catalog/source-contract assertions only; they do not prove runtime idempotency under concurrent provider callbacks or payout/refund races. Those require isolated staging scenario tests.
