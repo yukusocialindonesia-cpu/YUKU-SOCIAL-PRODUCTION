@@ -8,6 +8,7 @@ import { fetchTalentsFromSupabase, fetchTalentsByIdsFromSupabase, fetchCategorie
 import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 import { useAuth } from '../contexts/AuthContext';
+import { PROFESSIONAL_SERVICES_CATALOG } from '../data/professionalServicesCatalog';
 
 const getCreatedAtTimestamp = (createdAt?: string) => {
   const timestamp = Date.parse(createdAt || '');
@@ -71,6 +72,7 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [expandedServiceCategory, setExpandedServiceCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -461,6 +463,43 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             })()}
           </section>
         )}
+
+        {/* Katalog Jasa Profesional berada di halaman Jelajah yang sama; tetap tampil tanpa penyedia. */}
+        <section aria-labelledby="professional-service-catalog-title" className="mb-3 sm:mb-7 rounded-2xl sm:rounded-[26px] border border-purple-100/80 bg-white/90 p-3 sm:p-5 shadow-[0_8px_24px_rgba(76,29,149,0.06)]">
+          <div className="mb-3 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-purple-600">Katalog layanan</p>
+              <h2 id="professional-service-catalog-title" className="mt-1 text-sm sm:text-lg font-extrabold text-[#1E0938]">Jasa Profesional</h2>
+              <p className="mt-1 text-[10px] sm:text-xs text-slate-500">Pilih kategori untuk melihat jenis layanan yang tersedia di YUKU.</p>
+            </div>
+            <span className="shrink-0 rounded-full bg-purple-50 px-2.5 py-1 text-[9px] font-bold text-purple-700">12 kategori</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+            {PROFESSIONAL_SERVICES_CATALOG.map((category) => {
+              const expanded = expandedServiceCategory === category.id;
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  aria-expanded={expanded}
+                  onClick={() => setExpandedServiceCategory(expanded ? null : category.id)}
+                  className={`min-w-0 rounded-xl border p-2.5 text-left transition-colors sm:p-3 ${expanded ? 'border-purple-300 bg-purple-50 shadow-sm' : 'border-slate-100 bg-white hover:border-purple-200 hover:bg-purple-50/60'}`}
+                >
+                  <span className="block text-[11px] font-extrabold leading-snug text-slate-800 sm:text-xs">{category.title}</span>
+                  <span className="mt-1 block text-[9px] leading-relaxed text-slate-500">{category.professional_service_subcategories.length} jenis layanan</span>
+                  {expanded && (
+                    <span className="mt-2 block border-t border-purple-100 pt-2">
+                      {category.professional_service_subcategories.map((service) => (
+                        <span key={service.id} className="mb-1 block text-[10px] font-medium text-purple-800">• {service.title}</span>
+                      ))}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-[10px] leading-relaxed text-slate-500">Kategori tetap dapat dilihat meskipun penyedia jasa belum tersedia. Profil penyedia hanya muncul setelah aktif dan disetujui.</p>
+        </section>
 
         <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}

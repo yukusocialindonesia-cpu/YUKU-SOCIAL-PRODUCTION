@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, BriefcaseBusiness, Search, ShieldCheck, MapPin, Monitor, ChevronRight, AlertCircle, RefreshCw, Star, BadgeCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AppRoute } from '../types/navigation';
+import { PROFESSIONAL_SERVICES_CATALOG } from '../data/professionalServicesCatalog';
 
 interface ServiceItem {
   id: string;
@@ -59,28 +60,28 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
       .order('sort_order', { ascending: true })
       .order('sort_order', { referencedTable: 'professional_service_subcategories', ascending: true })
       .eq('professional_service_subcategories.is_active', true);
-    if (fetchError) {
-      setError('Kategori jasa belum tersedia. Pastikan migrasi kategori profesional sudah diterapkan.');
-      setGroups([]);
-    } else {
-      setGroups((data || []) as ServiceGroup[]);
-      const { data: providerData, error: providerFetchError, count: providerTotal } = await supabase
-        .from('professional_talent_services')
-        .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)', { count: 'exact' })
-        .eq('approval_status', 'approved')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false })
-        .range(0, PROVIDER_PAGE_SIZE - 1);
-      setProviderError(providerFetchError ? 'Daftar penyedia jasa belum dapat dimuat. Coba muat ulang halaman.' : '');
-      setProviderCount(providerFetchError ? 0 : (providerTotal || 0));
-      const normalized = (providerData || []).map((row: any) => ({
-        ...row,
-        provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
-        subcategory: Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory,
-      }));
-      setProviders(normalized as ProviderItem[]);
-    }
+
+    // Always show the complete service taxonomy, even before its database migration exists.
+    const liveGroups = !fetchError && data?.length ? data as ServiceGroup[] : PROFESSIONAL_SERVICES_CATALOG as ServiceGroup[];
+    setGroups(liveGroups);
+
+    const { data: providerData, error: providerFetchError, count: providerTotal } = await supabase
+      .from('professional_talent_services')
+      .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)', { count: 'exact' })
+      .eq('approval_status', 'approved')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(0, PROVIDER_PAGE_SIZE - 1);
+
+    setProviderError(providerFetchError ? '' : '');
+    setProviderCount(providerFetchError ? 0 : (providerTotal || 0));
+    const normalized = (providerData || []).map((row: any) => ({
+      ...row,
+      provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
+      subcategory: Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory,
+    }));
+    setProviders(normalized as ProviderItem[]);
     setLoading(false);
   };
 
@@ -192,7 +193,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
             <p className="mt-1 text-xs">{error}</p>
             <button onClick={() => void load()} className="mt-3 inline-flex items-center gap-2 rounded-lg bg-amber-900 px-3 py-2 text-xs font-bold text-white"><RefreshCw className="h-3 w-3" /> Coba lagi</button>
           </div>
-        ) : visibleGroups.length === 0 ? (
+         ) : visibleGroups.length === 0 ? (
           <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-8 text-center">
             <Search className="mx-auto h-7 w-7 text-slate-300" />
             <p className="mt-2 text-sm font-bold text-slate-800">Jasa tidak ditemukan</p>
@@ -233,6 +234,15 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
           <div role="alert" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
             <span>{providerError}</span>
             <button onClick={() => void load()} className="rounded-lg bg-amber-900 px-3 py-2 text-[10px] font-bold text-white">Coba lagi</button>
+          </div>
+        )}
+
+        {visibleProviders.length === 0 && !loading && !providerError && (
+          <div className="mt-6 rounded-2xl border border-dashed border-violet-200 bg-white p-5 text-center">
+            <BriefcaseBusiness className="mx-auto h-7 w-7 text-violet-400" />
+            <p className="mt-2 text-sm font-extrabold text-slate-800">Penyedia jasa segera hadir</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">Kategori dan jenis layanan sudah bisa dijelajahi. Saat ini belum ada penyedia jasa yang aktif dan disetujui untuk ditampilkan.</p>
+            <button onClick={() => onNavigate('/daftar-jasa-profesional')} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-[11px] font-bold text-white">Daftarkan jasa Anda</button>
           </div>
         )}
 
