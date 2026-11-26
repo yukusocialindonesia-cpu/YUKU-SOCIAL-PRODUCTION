@@ -98,9 +98,9 @@ language sql
 stable
 security definer
 set search_path = ''
-as $
+as $merchant$
   select auth.uid() is not null and public.is_admin();
-$;
+$merchant$;
 
 revoke all on function private.is_merchant_admin() from public;
 grant execute on function private.is_merchant_admin() to anon, authenticated;
@@ -211,7 +211,7 @@ returns boolean
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $merchant$
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -242,14 +242,14 @@ begin
   end if;
   return true;
 end;
-$;
+$merchant$;
 
 create or replace function public.submit_merchant_business_for_review(p_business_id uuid)
 returns boolean
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $merchant$
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -279,7 +279,7 @@ begin
    where id = p_business_id;
   return true;
 end;
-$;
+$merchant$;
 
 create or replace function public.add_merchant_location(
   p_business_id uuid,
@@ -446,7 +446,7 @@ language plpgsql
 stable
 security definer
 set search_path = ''
-as $
+as $merchant$
 declare
   v_user_id uuid := auth.uid();
   v_account_status text;
@@ -510,7 +510,7 @@ begin
     )
   );
 end;
-$;
+$merchant$;
 
 revoke all on function public.get_my_account_access_snapshot()
   from public, anon;
