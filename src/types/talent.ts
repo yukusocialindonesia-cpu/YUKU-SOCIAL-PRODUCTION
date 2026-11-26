@@ -15,6 +15,12 @@ export interface ActivityCategory {
 
 export type GenderType = 'Pria' | 'Wanita' | 'Semua';
 
+export interface TalentServiceOffer {
+  categoryId: ActivityCategoryId;
+  title: string;
+  description: string;
+}
+
 export interface TalentProfile {
   id: string;
   name: string;
@@ -30,6 +36,7 @@ export interface TalentProfile {
   completedHours?: number;
   avatarUrl?: string;
   activities: ActivityCategoryId[];
+  serviceOffers?: TalentServiceOffer[];
   hourlyRate?: number;
   onlineChatRate?: number;
   languages?: string[];
