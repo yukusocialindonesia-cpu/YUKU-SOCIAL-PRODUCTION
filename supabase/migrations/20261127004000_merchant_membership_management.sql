@@ -155,6 +155,13 @@ begin
   if not private.has_merchant_business_access(p_business_id, array['owner']::text[]) then
     raise exception 'Only the business owner can invite members' using errcode = '42501';
   end if;
+  if not exists (
+    select 1 from public.merchant_businesses mb
+     where mb.id = p_business_id
+       and mb.review_status not in ('rejected','suspended')
+  ) then
+    raise exception 'Invitations are unavailable for rejected or suspended businesses' using errcode = '55000';
+  end if;
   if p_member_role is null or p_member_role not in ('manager','staff') then
     raise exception 'Role undangan hanya Manager atau Staff' using errcode = '22023';
   end if;
