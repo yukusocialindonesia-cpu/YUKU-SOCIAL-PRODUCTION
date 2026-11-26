@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AppRoute } from '../types/navigation';
 import { getProfessionalVerificationGuide } from '../lib/professionalServiceVerification';
+import { professionalPricingUnits, getProfessionalPricingUnit } from '../lib/professionalServicePricing';
 
 interface Subcategory {
   id: string;
@@ -287,7 +288,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
           {editingApplicationId && <p className="-mt-2 text-[10px] text-slate-500">Jenis jasa dikunci selama revisi. Untuk menawarkan jenis jasa lain, buat pengajuan baru setelah pengajuan ini selesai.</p>}
           {selectedSubcategory && <div className="rounded-xl bg-violet-50 p-3 text-[11px] leading-relaxed text-violet-900"><ShieldCheck className="mr-1 inline h-3.5 w-3.5"/><strong>{verificationLabels[selectedSubcategory.verification_level]}</strong><p className="mt-1">{getProfessionalVerificationGuide(selectedSubcategory.id).applicant}</p></div>}
           <label className="block text-xs font-bold text-slate-700">Deskripsi layanan
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} maxLength={3000} required placeholder="Jelaskan keahlian, cakupan pekerjaan, dan layanan yang diberikan (minimal 30 karakter)." className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-xs outline-none focus:border-violet-500"/>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} maxLength={3000} required placeholder="Jelaskan keahlian dan cakupan pekerjaan. Untuk sesi: durasi. Untuk harian: jam kerja. Untuk proyek: hasil kerja, revisi, dan tenggat (minimal 30 karakter)." className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-xs outline-none focus:border-violet-500"/>
           </label>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block text-xs font-bold text-slate-700">Pengalaman (tahun)<input type="number" min="0" max="80" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs"/></label>
@@ -296,7 +297,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
           <fieldset><legend className="text-xs font-bold text-slate-700">Metode layanan</legend><div className="mt-2 flex gap-2">{(selectedSubcategory?.delivery_modes || ['offline']).map((mode) => <label key={mode} className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-xs font-semibold ${modes.includes(mode) ? 'border-violet-400 bg-violet-50 text-violet-800' : 'border-slate-200 text-slate-600'}`}><input type="checkbox" checked={modes.includes(mode)} onChange={() => toggleMode(mode)}/>{mode === 'offline' ? 'Offline' : 'Online'}</label>)}</div></fieldset>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block text-xs font-bold text-slate-700">Tarif (Rp)<input inputMode="numeric" value={rate} onChange={(e) => setRate(e.target.value.replace(/\D/g,''))} required placeholder="Contoh: 150000" className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs"/></label>
-            <label className="block text-xs font-bold text-slate-700">Satuan tarif<select value={unit} onChange={(e) => setUnit(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs"><option value="per_hour">Per jam</option><option value="per_session">Per sesi</option><option value="per_day">Per hari</option><option value="per_project">Per proyek</option></select></label>
+            <label className="block text-xs font-bold text-slate-700">Satuan tarif<select value={unit} onChange={(e) => setUnit(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs">{professionalPricingUnits.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
           </div>
 
           <section className="border-t border-slate-100 pt-4"><h2 className="text-sm font-extrabold text-slate-900">Dokumen verifikasi</h2><p className="mt-1 text-[11px] leading-relaxed text-slate-500">Dokumen disimpan di penyimpanan privat dan hanya dapat diakses pemilik akun serta admin yang berwenang. Maksimal 10 MB per file (PDF/JPG/PNG/WebP).</p></section>
