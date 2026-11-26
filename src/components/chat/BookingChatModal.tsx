@@ -269,7 +269,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!booking || !currentUserId || isSending) return;
+    if (!booking || !currentUserId || isSending || !['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress'].includes(booking.status)) return;
 
     const cleanText = draft.trim();
     if (!cleanText) return;
@@ -332,7 +332,8 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
     }
   };
 
-  if (!isOpen || !booking) return null;
+  if (!isOpen || !booking || !['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(booking.status)) return null;
+  const isReadOnlyChat = ['completed', 'disputed_hold'].includes(booking.status);
 
   const scheduleText = new Date(booking.start_time).toLocaleString('id-ID', {
     weekday: 'short',
@@ -537,6 +538,12 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
           </div>
         )}
 
+        {isReadOnlyChat && (
+          <div className="shrink-0 border-t border-slate-200 bg-slate-50 px-4 py-3 text-center text-xs text-slate-600">
+            Booking ini sudah selesai atau dalam peninjauan. Chat hanya dapat dibaca.
+          </div>
+        )}
+
         {/* Message Input Bar */}
         <form
           onSubmit={handleSendMessage}
@@ -546,7 +553,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
             rows={1}
             maxLength={1000}
             value={draft}
-            disabled={migrationMissing}
+            disabled={migrationMissing || isReadOnlyChat}
             onChange={(e) => {
               setDraft(e.target.value);
               emitTypingStatus(Boolean(e.target.value.trim()));
@@ -562,7 +569,7 @@ export const BookingChatModal: React.FC<BookingChatModalProps> = ({
           />
           <button
             type="submit"
-            disabled={isSending || !draft.trim() || migrationMissing}
+            disabled={isSending || !draft.trim() || migrationMissing || isReadOnlyChat}
             aria-label="Kirim pesan"
             className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 text-xs font-bold text-white shadow-[0_8px_20px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
           >
