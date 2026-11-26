@@ -154,7 +154,6 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     if (!/^\\d+$/.test(rate) || !Number.isSafeInteger(rateAmount) || rateAmount < 10000) { setError('Tarif minimal Rp10.000 dan harus berupa angka yang valid.'); return; }
     if (!city.trim()) { setError('Isi kota atau area layanan.'); return; }
     if (!modes.length) { setError('Pilih minimal satu metode layanan.'); return; }
-    if (!/^\d+$/.test(rate) || Number(rate) < 10000) { setError('Tarif minimal Rp10.000.'); return; }
     if (requiresCredential && !credentialFile && !existingCredentialPath) { setError('Jenis jasa ini wajib melampirkan sertifikat kompetensi atau izin profesi.'); return; }
     const fileError = validateFile(credentialFile, 'Dokumen kompetensi/izin profesi') || validateFile(supportingFile, 'Dokumen pendukung');
     if (fileError) { setError(fileError); return; }
