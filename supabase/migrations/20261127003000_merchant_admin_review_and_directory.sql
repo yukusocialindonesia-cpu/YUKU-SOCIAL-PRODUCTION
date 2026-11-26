@@ -100,7 +100,7 @@ begin
     raise exception 'Super Admin access required' using errcode = '42501';
   end if;
 
-  if p_decision not in ('approved','needs_revision','rejected','suspended') then
+  if p_decision is null or p_decision not in ('approved','needs_revision','rejected','suspended') then
     raise exception 'Unsupported merchant review decision' using errcode = '22023';
   end if;
   if p_decision in ('needs_revision','rejected','suspended')
