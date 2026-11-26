@@ -102,3 +102,55 @@ Until then, project listings may be displayed and reviewed, but their booking/pa
 5. Whether providers may accept multiple concurrent project reservations in a future release.
 
 Until these are approved and implemented, code must not guess these business rules.
+
+
+## Additive shared-booking data contract (design gate; not yet a migration)
+
+The existing `public.bookings` table is activity-first: `activity_category_id`, `start_time`, `end_time`, `duration_hours`, and `hourly_rate_snapshot` are NOT NULL and its exclusion constraint reserves a time range. Professional services must not be forced into fake hourly/activity values.
+
+### Proposed additive fields
+
+| Field | Type / rule | Purpose |
+|---|---|---|
+| `booking_kind` | text/enum, default `activity`, NOT NULL | Discriminates existing activity bookings from `professional_service`. Existing rows backfill to `activity`. |
+| `professional_listing_id` | uuid nullable FK to approved professional listing | Links the listing selected at checkout; historical snapshot remains authoritative. |
+| `service_title_snapshot` | text nullable | Frozen service title at checkout. |
+| `service_category_snapshot` | text nullable | Frozen category/subcategory labels. |
+| `pricing_unit_snapshot` | text nullable; `per_hour`, `per_session`, `per_day`, `per_project` | Defines the actual price unit. |
+| `unit_rate_snapshot` | bigint nullable, positive | Frozen unit price in integer rupiah. |
+| `quantity_snapshot` | numeric nullable, positive | Number of units, with precision/range bounded by unit. |
+| `delivery_mode_snapshot` | text nullable; `online`, `offline`, `hybrid` | Frozen delivery mode for professional service. |
+| `service_scope_snapshot` | jsonb nullable | Structured deliverables, inclusions, exclusions, and agreed notes. |
+| `service_due_at` | timestamptz nullable | Deadline for day/project services where applicable. |
+| `cancellation_policy_snapshot` | jsonb nullable | Frozen cancellation/refund policy and relevant cutoff values. |
+
+### Required invariants
+
+- For `booking_kind='activity'`, current legacy fields and existing behavior remain required and unchanged.
+- For `booking_kind='professional_service'`, professional listing and service/pricing snapshots are required; legacy activity category/hourly fields must not be fabricated.
+- `gross_amount`, `platform_fee_amount`, and `talent_gross_share` remain the canonical immutable financial snapshots consumed by payments, commissions, earning ledger, refund and payout systems.
+- Server RPC calculates every amount from the active listing and validated quantity. Client-submitted rates, fee, share, totals, service labels, or provider identity are never trusted.
+- A booking keeps the agreed snapshot even if the provider edits or deactivates their listing later.
+- Activity time-range exclusion remains activity-only. Professional capacity/availability must use a separate validated rule; do not insert arbitrary placeholder time ranges.
+- Existing RPC `create_booking()` and existing Admin `get_admin_bookings()` remain unchanged for compatibility. Add dedicated professional checkout RPC and `get_admin_bookings_v2()`; migrate consumers before deprecating legacy contracts.
+- The professional checkout RPC must be idempotent, lock the listing/provider availability rows, re-check account/KTP/profile eligibility, enforce service unit and quantity bounds, and create the shared booking/payment aggregate in one transaction.
+
+### Important decision still required before SQL
+
+The current service taxonomy supports four units, but quantity and scheduling semantics need explicit constraints:
+- `per_hour`: quantity in hours, start/end and capacity lock required.
+- `per_session`: quantity in sessions; decide whether one booking may contain multiple sessions and how each session is scheduled.
+- `per_day`: quantity in calendar days, with timezone and inclusive/exclusive end-date rule.
+- `per_project`: scope and deliverables must be accepted before checkout; checkout remains disabled until acceptance, revision limits, milestones, cancellation, partial-work refund and dispute rules are approved.
+
+### Safe rollout sequence
+
+1. Add nullable/additive columns and backfill existing rows to `booking_kind='activity'`; do not relax legacy NOT NULL fields yet.
+2. Add constraints that validate professional rows without changing activity rows. Validate existing production rows before adding strict constraints.
+3. Add dedicated professional checkout RPC and idempotency tests; do not call legacy `create_booking()`.
+4. Add v2 read RPCs and migrate Customer history, Talent dashboard, Admin booking, finance, refund, payout, notification and report consumers.
+5. Implement unit-specific availability, cancellation, refund and completion rules.
+6. Run staging migrations and regression/security tests for both booking kinds.
+7. Only after all consumers and finance paths pass, consider relaxing activity-only NOT NULL constraints and enabling the professional checkout feature flag.
+
+No schema change or production mutation is included in this design document. This contract is intentionally additive so the existing activity checkout remains operational during rollout.
