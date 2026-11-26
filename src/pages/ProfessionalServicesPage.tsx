@@ -145,15 +145,15 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
     <div className="min-h-screen bg-[#F8F7FC] pb-10">
       <div className="bg-gradient-to-br from-[#24105F] to-[#5416B8] px-4 pb-7 pt-5 text-white sm:pb-10 sm:pt-8">
         <div className="mx-auto max-w-6xl">
-          <button onClick={() => onNavigate('/')} className="mb-5 inline-flex items-center gap-2 text-xs font-semibold text-violet-100 hover:text-white">
-            <ArrowLeft className="h-4 w-4" /> Kembali ke Beranda
+          <button onClick={() => onNavigate('/talent')} className="mb-5 inline-flex items-center gap-2 text-xs font-semibold text-violet-100 hover:text-white">
+            <ArrowLeft className="h-4 w-4" /> Kembali ke Jelajah
           </button>
           <div className="flex items-start gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/15"><BriefcaseBusiness className="h-5 w-5" /></span>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-200">YUKU Professional Services</p>
-              <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Jelajahi Jasa Profesional</h1>
-              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-violet-100 sm:text-sm">Temukan berbagai keahlian dan layanan untuk kebutuhan pribadi, keluarga, perjalanan, hingga bisnis.</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-200">LAYANAN TAMBAHAN YUKU</p>
+              <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Jasa Profesional</h1>
+              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-violet-100 sm:text-sm">Temukan penyedia jasa berdasarkan keahlian. Katalog ini terpisah dari layanan Cari Teman (Paid Companion).</p>
               <button onClick={() => onNavigate('/daftar-jasa-profesional')} className="mt-4 rounded-xl bg-white px-4 py-2.5 text-[11px] font-extrabold text-[#24105F] shadow-sm">Daftarkan jasa Anda</button>
             </div>
           </div>
