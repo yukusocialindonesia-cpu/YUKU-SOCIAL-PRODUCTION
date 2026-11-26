@@ -35,6 +35,7 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [verificationNotes, setVerificationNotes] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState('pending');
   const [error, setError] = useState('');
 
@@ -97,17 +98,19 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
       p_application_id: id,
       p_decision: decision,
       p_admin_note: notes[id] || null,
+      p_verification_note: verificationNotes[id] || null,
     });
     if (actionError) setError(actionError.message);
     else {
       setNotes((current) => ({ ...current, [id]: '' }));
+      setVerificationNotes((current) => ({ ...current, [id]: '' }));
       await load();
     }
     setActingId(null);
   };
 
   if (isAuthLoading || authorized === null) return <div className="min-h-[50vh] p-8 text-center text-sm text-slate-500">Memeriksa akses admin...</div>;
-  if (!authorized) return <div className="min-h-[60vh] bg-[#F8F7FC] px-4 py-12 text-center"><ShieldCheck className="mx-auto h-9 w-9 text-rose-500"/><h1 className="mt-3 text-lg font-extrabold text-slate-900">Akses dibatasi</h1><p className="mt-2 text-xs text-slate-500">Halaman ini hanya untuk admin dengan izin Talent.</p><button onClick={() => onNavigate('/admin')} className="mt-5 rounded-xl bg-[#24105F] px-4 py-2.5 text-xs font-bold text-white">Kembali ke Admin</button></div>;
+  if (!authorized) return <div className="min-h-[60vh] bg-[#F8F7FC] px-4 py-12 text-center"><ShieldCheck className="mx-auto h-9 w-9 text-rose-500"/><h1 className="mt-3 text-lg font-extrabold text-slate-900">Akses dibatasi</h1><p className="mt-2 text-xs text-slate-500">Halaman ini hanya untuk admin Talent atau Super Admin.</p><button onClick={() => onNavigate('/admin')} className="mt-5 rounded-xl bg-[#24105F] px-4 py-2.5 text-xs font-bold text-white">Kembali ke Admin</button></div>;
 
   const filtered = rows.filter((row) => filter === 'all' || row.status === filter);
 
@@ -133,12 +136,13 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
               <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-slate-600"><span className="rounded-full bg-slate-100 px-2.5 py-1">{row.experience_years} tahun pengalaman</span><span className="rounded-full bg-slate-100 px-2.5 py-1">{row.service_city}</span><span className="rounded-full bg-slate-100 px-2.5 py-1">{row.delivery_modes.join(' / ')}</span><span className="rounded-full bg-slate-100 px-2.5 py-1">{money(row.rate_amount)} {units[row.pricing_unit] || ''}</span></div>
               <div className="mt-3 rounded-xl bg-amber-50 p-3 text-[10px] leading-relaxed text-amber-900"><strong>Standar verifikasi:</strong> {row.subcategory?.verification_level === 'license' ? 'Periksa lisensi/izin praktik yang masih berlaku, termasuk kesesuaian nama dan ruang lingkup profesi.' : row.subcategory?.verification_level === 'credential' ? 'Periksa sertifikat atau bukti kompetensi, penerbit, nama pemegang, dan masa berlaku.' : row.subcategory?.verification_level === 'reference' ? 'Lakukan pemeriksaan identitas dan referensi kerja.' : 'Lakukan pemeriksaan identitas.'}</div>
               <div className="mt-3 flex flex-wrap gap-2">{row.credential_url && <a href={row.credential_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-violet-700"><FileText className="h-3 w-3"/> Dokumen kompetensi <ExternalLink className="h-3 w-3"/></a>}{row.supporting_url && <a href={row.supporting_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-violet-700"><FileText className="h-3 w-3"/> Dokumen pendukung <ExternalLink className="h-3 w-3"/></a>}{!row.credential_url && !row.supporting_url && <span className="text-[10px] text-slate-500">Tidak ada dokumen lampiran.</span>}</div>
-              <label className="mt-4 block text-[10px] font-bold text-slate-700">Catatan pemeriksa<textarea rows={2} value={notes[row.id] || ''} onChange={(e) => setNotes((current) => ({ ...current, [row.id]: e.target.value }))} maxLength={1000} placeholder="Tulis alasan atau catatan untuk pemohon..." className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-xs font-normal"/></label>
+              <label className="mt-4 block text-[10px] font-bold text-slate-700">Catatan verifikasi internal (wajib saat menyetujui)<textarea rows={3} value={verificationNotes[row.id] || ''} onChange={(e) => setVerificationNotes((current) => ({ ...current, [row.id]: e.target.value }))} maxLength={2000} placeholder="Catat apa yang diperiksa: identitas, penerbit dokumen, kecocokan nama, masa berlaku, ruang lingkup izin, atau referensi kerja. Minimal 20 karakter." className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-xs font-normal"/></label>
+              <label className="mt-3 block text-[10px] font-bold text-slate-700">Catatan untuk pemohon<textarea rows={2} value={notes[row.id] || ''} onChange={(e) => setNotes((current) => ({ ...current, [row.id]: e.target.value }))} maxLength={1000} placeholder="Alasan revisi atau informasi yang perlu diketahui pemohon..." className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-xs font-normal"/></label>
               {row.admin_note && <p className="mt-2 text-[10px] text-slate-500">Catatan sebelumnya: {row.admin_note}</p>}
               {row.status !== 'approved' && row.status !== 'rejected' && <div className="mt-3 flex flex-wrap gap-2">
                 <button disabled={!!actingId} onClick={() => void review(row.id,'under_review')} className="rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-700 disabled:opacity-50"><Clock3 className="mr-1 inline h-3 w-3"/> Tandai diproses</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'needs_revision')} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-800 disabled:opacity-50">Minta revisi</button>
-                <button disabled={!!actingId || !row.provider?.is_approved || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && !row.credential_document_path)} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
+                <button disabled={!!actingId || !row.provider?.is_approved || (verificationNotes[row.id] || '').trim().length < 20 || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && !row.credential_document_path)} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'rejected')} className="rounded-lg bg-rose-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-50"><XCircle className="mr-1 inline h-3 w-3"/> Tolak</button>
               </div>}
               {actingId === row.id && <p className="mt-2 flex items-center gap-2 text-[10px] text-slate-500"><Loader2 className="h-3 w-3 animate-spin"/> Menyimpan keputusan...</p>}
