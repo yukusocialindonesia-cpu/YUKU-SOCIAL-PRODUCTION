@@ -27,7 +27,7 @@ All other role changes remain Super Admin or trusted service-role only. The tran
 
 ## Signup and metadata review
 
-- The signup trigger maps user-provided `user_role` metadata only to the two allowed self-service roles: Talent or Customer. It never creates Admin from signup metadata.
+- The branch's historical migration 18 maps user-provided signup metadata only to Talent or Customer and never creates Admin. The current Production function differs: it hard-codes the initial role to Customer, then the Talent application flow calls `become_talent()` after form submission. See the Production follow-up below; reconcile this migration drift before the next schema release.
 - Name/city metadata is profile content, not authorization.
 - Public role and account status are stored in `public.users`; the app reads those values from the database.
 - User-editable Auth metadata is not used as an Admin permission source.
