@@ -180,6 +180,18 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const loadTalentDetail = async () => {
     setLoading(true);
     setErrorMsg(null);
+    // A route change must never carry the previous provider's booking state
+    // into the next profile while its data is loading.
+    setTalent(null);
+    setSelectedActivity('');
+    setBookingError(null);
+    setCreatedBooking(null);
+    setIsBookingModalOpen(false);
+    setAvatarFailed(false);
+    setReviews([]);
+    setAvailabilitySlots([]);
+    setMediaItems([]);
+    setServiceRateOverrides({});
     try {
       const [talentData, categoriesData, reviewsRes, availabilityRes, mediaRes, serviceRatesRes] = await Promise.all([
         fetchTalentByIdFromSupabase(talentId),
