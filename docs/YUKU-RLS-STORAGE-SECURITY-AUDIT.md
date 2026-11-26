@@ -83,3 +83,25 @@ Commit: `dbe1ffff5e67d57171a336c8758bcea1727b1068`
 ## Validation boundary
 
 The two fixes were verified by re-fetching the migration source and checking the intended policy names, role targets, and predicates. No PostgreSQL migration replay, live RLS query, Storage object test, Security Advisor, Staging mutation, Production mutation, or deployment has been performed. CI workflows were not triggered by these migration-only commits.
+
+## Production Storage policy follow-up — 26 November 2026
+
+A read-only inspection of the effective Production `storage.objects` policies found a Talent-media integrity issue:
+
+- The deployed policy `talent_media_bucket_owner_update` permits an authenticated owner to UPDATE an existing object in their own Talent folder.
+- The media moderation row remains approved when the underlying object bytes are replaced. A caller can bypass the frontend's `upsert: false` by invoking the Storage API directly, potentially replacing a reviewed image/video/audio file without a new moderation decision.
+- This is not mitigated by the private bucket or signed URLs: those controls protect object retrieval, not the integrity of the stored bytes.
+
+### Branch remediation
+
+- Migration `20261127001300_make_talent_media_objects_immutable.sql` drops `talent_media_bucket_owner_update`.
+- The earlier migration 65 source was also corrected to leave this UPDATE policy absent on fresh database builds.
+- The current upload flow uses unique timestamped object paths and `upsert: false`; it inserts a new `talent_media` row whose trigger forces moderation status to `pending`.
+- Owners retain INSERT of new media and DELETE of their own media. Replacing content requires a new upload and new moderation review.
+
+### Validation required
+
+- After applying the new migration in Staging, confirm no permissive UPDATE policy remains for bucket `talent-media` (including policies created by older migrations).
+- As an owner, test UPDATE/upsert of an existing approved object: it must fail. Test upload to a new unique path: it must succeed and the new row must be pending.
+- Verify owner deletion still works and Talent Admin moderation remains functional.
+- Production currently still has the owner UPDATE policy until the new migration is applied through the approved release process. No Production write was made in this audit.
