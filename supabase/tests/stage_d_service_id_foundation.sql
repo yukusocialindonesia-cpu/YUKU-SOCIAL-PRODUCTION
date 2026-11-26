@@ -290,3 +290,70 @@ BEGIN
   END IF;
 END;
 $$;
+
+
+-- Stage D.5: cancellation/refund/payout allocation protection contract checks.
+DO $$
+DECLARE
+  v_refund_guard TEXT;
+  v_refund_processor TEXT;
+  v_case_resolver TEXT;
+  v_payout_allocator TEXT;
+  v_payout_guard TEXT;
+  v_payout_status TEXT;
+BEGIN
+  IF to_regprocedure('public.handle_booking_refund_financials()') IS NULL
+     OR to_regprocedure('public.admin_process_refund(uuid, public.refund_status_type, text, text)') IS NULL
+     OR to_regprocedure('public.admin_resolve_customer_cancellation_case(uuid, text, text, text, timestamp with time zone)') IS NULL
+     OR to_regprocedure('public.allocate_payout_earnings_after_insert()') IS NULL
+     OR to_regprocedure('public.guard_payout_completion_during_dispute()') IS NULL
+     OR to_regprocedure('public.handle_payout_status_update()') IS NULL THEN
+    RAISE EXCEPTION 'Required cancellation/refund/payout financial functions are missing';
+  END IF;
+
+  v_refund_guard := pg_get_functiondef('public.handle_booking_refund_financials()'::regprocedure);
+  IF position('allocated_payout_amount' IN v_refund_guard) = 0
+     OR position('paid_out_amount' IN v_refund_guard) = 0
+     OR position('RAISE EXCEPTION' IN v_refund_guard) = 0
+     OR position('disputed_hold' IN v_refund_guard) = 0 THEN
+    RAISE EXCEPTION 'Refund reversal must hold retained cases and refuse to reverse reserved/paid Talent earnings';
+  END IF;
+
+  v_refund_processor := pg_get_functiondef('public.admin_process_refund(uuid, public.refund_status_type, text, text)'::regprocedure);
+  IF position('FOR UPDATE' IN v_refund_processor) = 0
+     OR position('v_already_processed' IN v_refund_processor) = 0
+     OR position('provider_refund_id' IN v_refund_processor) = 0 THEN
+    RAISE EXCEPTION 'Refund processor must lock payment/refund, reconcile cumulative refunds and record provider reference';
+  END IF;
+
+  v_case_resolver := pg_get_functiondef('public.admin_resolve_customer_cancellation_case(uuid, text, text, text, timestamp with time zone)'::regprocedure);
+  IF position('allocated_payout_amount' IN v_case_resolver) = 0
+     OR position('paid_out_amount' IN v_case_resolver) = 0
+     OR position('refund_customer' IN v_case_resolver) = 0
+     OR position('compensate_talent' IN v_case_resolver) = 0
+     OR position('extend_hold' IN v_case_resolver) = 0 THEN
+    RAISE EXCEPTION 'Cancellation case resolver must protect existing payout allocations and retain explicit decision paths';
+  END IF;
+
+  v_payout_allocator := pg_get_functiondef('public.allocate_payout_earnings_after_insert()'::regprocedure);
+  IF position('FOR UPDATE' IN v_payout_allocator) = 0
+     OR position('allocated_payout_amount' IN v_payout_allocator) = 0
+     OR position('paid_out_amount' IN v_payout_allocator) = 0
+     OR position('released_unreserved' IN v_payout_allocator) > 0 THEN
+    RAISE EXCEPTION 'Payout allocation must lock earnings and reserve only unallocated unpaid balances';
+  END IF;
+
+  v_payout_guard := pg_get_functiondef('public.guard_payout_completion_during_dispute()'::regprocedure);
+  IF position('disputed_hold' IN v_payout_guard) = 0
+     OR position('completed_provider_confirmed' IN v_payout_guard) = 0 THEN
+    RAISE EXCEPTION 'Payout completion must be blocked for dispute-held earning allocations';
+  END IF;
+
+  v_payout_status := pg_get_functiondef('public.handle_payout_status_update()'::regprocedure);
+  IF position('released_unreserved' IN v_payout_status) = 0
+     OR position('paid_out_amount' IN v_payout_status) = 0
+     OR position('settled' IN v_payout_status) = 0 THEN
+    RAISE EXCEPTION 'Payout failure must release reservations and successful payout must settle allocations';
+  END IF;
+END;
+$$;
