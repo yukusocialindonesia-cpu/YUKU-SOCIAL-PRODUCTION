@@ -39,6 +39,7 @@ const maxFileSize = 10 * 1024 * 1024;
 export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate }) => {
   const { user } = useAuth();
   const [categories, setCategories] = useState<{ id: string; title: string; items: Subcategory[] }[]>([]);
+  const [hasTalentProfile, setHasTalentProfile] = useState<boolean | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [subcategoryId, setSubcategoryId] = useState('');
   const [description, setDescription] = useState('');
@@ -63,7 +64,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
   const load = async () => {
     if (!user) { setLoading(false); return; }
     setLoading(true);
-    const [{ data: categoryRows }, { data: applicationRows, error: applicationError }] = await Promise.all([
+    const [{ data: categoryRows }, { data: applicationRows, error: applicationError }, { data: talentProfile }] = await Promise.all([
       supabase.from('professional_service_categories')
         .select('id,title,professional_service_subcategories(id,title,description,verification_level,category_id)')
         .eq('is_active', true)
@@ -72,6 +73,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         .select('id,status,admin_note,created_at')
         .eq('applicant_id', user.id)
         .order('created_at', { ascending: false }),
+      supabase.from('talent_profiles').select('id').eq('id', user.id).maybeSingle(),
     ]);
     const normalized = (categoryRows || []).map((category: any) => ({
       id: category.id,
@@ -83,6 +85,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     }));
     setCategories(normalized);
     setApplications(applicationRows || []);
+    setHasTalentProfile(!!talentProfile);
     if (applicationError) setError('Riwayat pengajuan belum dapat dimuat.');
     setLoading(false);
   };
@@ -171,6 +174,17 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         <h1 className="mt-3 text-lg font-extrabold text-slate-900">Masuk untuk mendaftar</h1>
         <p className="mt-2 text-sm text-slate-500">Pengajuan jasa profesional hanya tersedia untuk pengguna yang sudah masuk ke YUKU.</p>
         <button onClick={() => onNavigate('/login')} className="mt-5 rounded-xl bg-[#24105F] px-5 py-3 text-xs font-bold text-white">Masuk ke akun</button>
+      </section>
+    </main>
+  );
+
+  if (hasTalentProfile === false) return (
+    <main className="min-h-[70vh] bg-[#F8F7FC] px-4 py-10">
+      <section className="mx-auto max-w-lg rounded-3xl border border-slate-200 bg-white p-6 text-center">
+        <BriefcaseBusiness className="mx-auto h-9 w-9 text-violet-700"/>
+        <h1 className="mt-3 text-lg font-extrabold text-slate-900">Buat profil Talent terlebih dahulu</h1>
+        <p className="mt-2 text-sm text-slate-500">Jasa profesional di YUKU ditawarkan melalui profil Talent. Daftarkan profil Talent Anda terlebih dahulu, lalu kembali untuk mengajukan layanan profesional.</p>
+        <button onClick={() => onNavigate('/daftar-talent')} className="mt-5 rounded-xl bg-[#24105F] px-5 py-3 text-xs font-bold text-white">Daftar sebagai Talent</button>
       </section>
     </main>
   );
