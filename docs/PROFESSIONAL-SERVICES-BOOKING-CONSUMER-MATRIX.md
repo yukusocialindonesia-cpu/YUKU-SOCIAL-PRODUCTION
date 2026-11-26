@@ -230,3 +230,48 @@ Professional booking checkout remains blocked until Product/Finance approves uni
 7. Run existing activity regression tests plus professional fixtures before any checkout flag is enabled.
 
 No runtime schema, UI, or production behavior was changed by this documentation audit.
+
+
+## Finance, escrow, refunds and payout consumer audit — direct source inspection (2026-11-26)
+
+### What is already reusable
+
+1. **One canonical transaction ledger:** `commission_records`, `talent_earnings`, and `referral_rewards` each use a unique `booking_id`. This is suitable for both booking kinds if a single shared booking row and frozen financial snapshot are created.
+2. **Payment settlement:** `settle_booking_payment(p_booking_id,...)` reads the booking's `gross_amount` and creates/updates the one payment row for that booking. It does not need to understand hourly pricing if the professional checkout RPC writes a valid canonical gross amount.
+3. **Escrow release:** `process_escrow_release()` works by booking ID and releases earning/reward/payment rows associated with the completed booking. Keep this single release worker; professional eligibility must gate when a booking can enter completed and when its release timestamp is set.
+4. **Talent payout:** payout requests and allocation rows draw from `talent_earnings`, not activity-category tables. The existing payout experience can include professional earnings without a second payout system.
+5. **Finance Admin:** refund and payout actions operate on payment/refund/payout IDs. Refund display resolves booking labels by booking ID. This is structurally reusable, but the booking label RPC should be extended compatibly to show professional service title/kind to Finance.
+6. **Admin overview:** gross marketplace volume is summed from completed booking `gross_amount`; platform revenue from completed booking `platform_fee_amount`. This can include both kinds if financial snapshots are canonical and completion semantics are correct.
+
+### Confirmed incompatibilities / financial blockers
+
+1. **Ledger generation depends on booking snapshot fields.** The payment trigger creates commission and Talent earning records from booking financial values. The professional checkout must populate `gross_amount`, `platform_fee_amount`, and `talent_gross_share` server-side before payment settlement. It must also preserve the existing unique booking idempotency.
+2. **Partial refund accounting is not complete for professional work.** `admin_process_refund()` correctly prevents cumulative processed refunds exceeding the payment amount and only marks the payment fully refunded after the cumulative total reaches the payment amount. However, the booking financial reversal trigger is driven by booking status becoming `refunded` or cancelled, and reverses the earning amount for the booking. There is no demonstrated proportional allocation of multiple partial refunds to Talent earning, platform fee, referral reward, and any already-reserved/paid-out payout allocations. Do not enable partial professional refunds until this reconciliation is designed and tested.
+3. **Customer cancellation is activity-time based.** `request_customer_cancellation()` computes refund bands from hours before `start_time`, with fixed 24h / 6h thresholds and an activity-specific cancellation case shape. It cannot be reused unchanged for per-session, per-day, or per-project work.
+4. **Talent cancellation assumes a full refund.** The booking status guard requires a refund request at least equal to the full booking gross amount for Talent cancellation. This must be explicitly retained for professional service provider cancellation or replaced with an approved unit-aware policy; it cannot handle partial delivery/project milestones as-is.
+5. **Completion drives money movement.** Completion confirmation is currently a two-party confirmation model, and the escrow worker releases associated funds when the booking reaches completed and its schedule is due. For professional work, the unit-specific completion rule must be authoritative before this status transition: elapsed hour/session, end of booked day, or accepted project deliverables. Project work must not inherit activity auto-completion.
+6. **Referral reward policy is global.** Referral reward is tied to the platform commission base and uses the shared booking ID. Product/Finance must explicitly decide whether professional bookings qualify and whether the current rate applies to every professional category. Do not silently apply affiliate incentives to new service categories.
+7. **Payout dispute guard is linked through earning allocations.** The guard prevents payout completion when reserved underlying earnings are on dispute hold. Preserve this same chain for professional earning rows; do not create a separate professional balance.
+
+### Required financial contract before implementation
+
+- For every professional booking, server-side calculation must satisfy: `gross_amount = platform_fee_amount + talent_gross_share` (subject to the approved rounding rule); all values are integer rupiah and immutable after payment settlement.
+- Exactly one payment row and one idempotent earning/commission ledger set per booking.
+- Refund requests must carry an explicit allocation policy for customer refund, Talent earning reversal, platform fee reversal, referral reward reversal, and any reserved/paid-out amounts. Partial refund cannot simply mark the whole earning `refund_adjusted`.
+- If money has already been allocated to a payout, the refund path must create an auditable debt/negative adjustment or block until Finance resolves it; never silently reduce a paid-out balance.
+- Professional service cancellation snapshots must specify unit, timezone, cutoff anchor, refund bands, provider cancellation, no-show, and any milestone/partial-delivery rules.
+- Referral eligibility and rate must be an explicit product/finance configuration, not inferred from activity defaults.
+- Escrow release must be idempotent and dispute-aware for both booking kinds; project acceptance and dispute windows must be resolved before setting completion/release timestamps.
+
+### Recommended implementation sequence
+
+1. Keep the current financial tables and payout RPCs; do not fork a second ledger.
+2. Implement the professional checkout RPC so canonical booking financial snapshots are complete before payment creation.
+3. Add a professional-specific cancellation/refund policy snapshot and RPC path; keep activity cancellation unchanged.
+4. Define full and partial refund allocation across Talent, platform, referral and payout ledgers, with idempotency and reversal tests.
+5. Define unit-specific completion and release scheduling; project remains disabled until acceptance, revision, milestone and dispute rules are approved.
+6. Add explicit referral eligibility configuration; default professional service referrals to disabled until approved.
+7. Extend Finance booking label RPC in a backward-compatible version to include booking kind/service title, without exposing private documents or service scope to unauthorized Admin roles.
+8. Run staging tests for full refund, partial refund, already-paid-out earning, active dispute, duplicate settlement webhook, duplicate escrow worker, and both booking kinds before enabling checkout.
+
+No financial schema, RPC, production data, or payout behavior was changed by this audit.
