@@ -997,6 +997,24 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </div>
               )}
 
+              {talent.serviceOffers && talent.serviceOffers.length > 0 && (
+                <div className="mt-5">
+                  <h3 className="mb-2 text-sm font-semibold text-slate-800">Layanan yang Ditawarkan</h3>
+                  <div className="space-y-2">
+                    {talent.serviceOffers.map((offer) => {
+                      const category = categories.find((item) => item.id === offer.categoryId);
+                      return (
+                        <div key={offer.categoryId} className="rounded-xl border border-purple-100 bg-white p-3">
+                          <div className="text-xs font-bold text-slate-900">{offer.title}</div>
+                          <div className="mt-0.5 text-[10px] font-semibold text-purple-700">{category?.title || 'Social Experience'}</div>
+                          {offer.description && <p className="mt-2 text-xs leading-relaxed text-slate-600">{offer.description}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
             </div>
 
             {/* Talent Availability Schedule Card */}
