@@ -99,7 +99,7 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
     if(!ids.length){setLocations([]);setHistory([]);setHistoryReady(true);setLoading(false);return;}
     const [{data:locationRows,error:locationError},{data:historyRows,error:historyError}]=await Promise.all([
       supabase.from('merchant_locations').select('id,business_id,location_name,address_text,city,province,public_phone,is_active').in('business_id',ids).order('created_at',{ascending:true}),
-      supabase.from('merchant_business_review_history').select('id,business_id,from_status,to_status,decision_note,actor_role,created_at').in('business_id',ids).order('created_at',{ascending:false}),
+      supabase.from('merchant_business_review_history').select('id,business_id,from_status,to_status,decision_note,actor_role,created_at').in('business_id',ids).order('created_at',{ascending:false}).limit(500),
     ]);
     if(locationError) setError('Profil bisnis terbaca, tetapi daftar lokasi gagal dimuat.');
     if(historyError) setError('Riwayat audit gagal dimuat. Keputusan review dikunci sampai riwayat dapat diperiksa.');
