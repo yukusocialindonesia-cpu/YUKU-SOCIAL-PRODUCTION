@@ -162,3 +162,6 @@ Run `supabase/ops/merchant_partner_staging_preflight.sql` only after applying dr
 This preflight has not been executed. No migration has been applied to Staging or Production.
 - [ ] Legacy `invite_merchant_member(uuid,uuid,text)` RPC is not executable by authenticated/anon; all invitations use the email-scoped audited flow with notification.
 - [ ] Every exposed Merchant Partner SECURITY DEFINER RPC is callable only by authenticated (never anon/public), checks `auth.uid()`, validates the caller's business role or Super Admin status, and uses an empty search_path with schema-qualified relations. Advisor findings for intentional per-user RPCs must be reviewed and documented rather than blindly ignored.
+- [ ] Creating a branch for a draft/needs_revision business is allowed to Owner/Manager; pending_review/rejected/suspended businesses reject branch creation.
+- [ ] Creating a branch for an approved business is Owner-only and atomically moves the business to needs_revision with a review-history event; Manager branch creation is denied.
+- [ ] Branch creation cannot race with Super Admin review to publish an unreviewed address; business row lock serializes branch creation and review decisions.
