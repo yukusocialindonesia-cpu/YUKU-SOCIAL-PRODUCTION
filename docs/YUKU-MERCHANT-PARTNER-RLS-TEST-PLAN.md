@@ -48,15 +48,22 @@ Create Business A and Business B, each with at least two branches. Do not reuse 
 
 ## Membership and invitation
 
-- [ ] Only the active owner can invite an existing account as manager or staff.
+- [ ] Only the active owner can invite an existing active YUKU account by email as manager or staff.
+- [ ] Email lookup returns no user directory data and only exposes whether an active account can be invited to this owner.
 - [ ] Manager and staff cannot invite, promote, or add memberships.
+- [ ] Owner and manager can read the member roster for their own business only; email addresses are not exposed outside the scoped roster RPC.
+- [ ] Staff cannot read the member roster or member email addresses.
+- [ ] Owner can revoke manager/staff access, but cannot revoke or demote the owner.
+- [ ] Revoked members lose business and branch access immediately.
+- [ ] Invitation, re-invitation, acceptance, and revocation are recorded in membership history.
+- [ ] Only the invited user can accept the invitation from their own account; acceptance activates the membership.
 - [ ] Owner cannot invite themselves or create another owner through the invitation RPC.
 - [ ] Unknown target account is rejected.
 - [ ] Invitation starts as `pending_invitation`; it grants no business access before acceptance.
 - [ ] Only the invited user can accept their invitation.
 - [ ] Another user cannot accept or activate someone else's invitation.
 - [ ] Accepted invitation becomes active and appears in that user's account snapshot as UI status `invited` before acceptance and `active` afterward.
-- [ ] Re-invitation of an existing non-owner membership follows the intended role/status transition and leaves an audit trail in application logs.
+- [ ] Re-invitation of an existing non-owner membership follows the intended role/status transition and leaves an audit event in merchant_membership_history.
 - [ ] Suspended/revoked memberships no longer grant branch or business access.
 - [ ] One user can hold memberships in multiple businesses without cross-business access.
 
@@ -84,7 +91,7 @@ Create Business A and Business B, each with at least two branches. Do not reuse 
 - [ ] Approved business becomes publicly visible only after explicit Super Admin review.
 - [ ] Public directory returns only approved businesses and active locations; it never returns a business without an active location.
 - [ ] Suspension removes public visibility without deleting the business or membership history.
-- [ ] Review and membership changes are auditable; add append-only audit events before enabling operational Admin review.
+- [ ] Review and membership changes are auditable through merchant_business_review_history and merchant_membership_history.
 
 ## Commercial isolation
 
