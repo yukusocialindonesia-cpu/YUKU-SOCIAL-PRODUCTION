@@ -45,6 +45,25 @@ BEGIN
     RAISE EXCEPTION 'Exact service ID is not propagated to the booking insert trigger';
   END IF;
 
+  IF position('current_setting' IN pg_get_functiondef('public.assign_booking_service_snapshot()'::regprocedure)) = 0 THEN
+    RAISE EXCEPTION 'Booking insert trigger does not consume the exact service ID';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_trigger assign_trigger
+    JOIN pg_trigger financial_trigger
+      ON financial_trigger.tgrelid = assign_trigger.tgrelid
+    WHERE assign_trigger.tgrelid = 'public.bookings'::regclass
+      AND assign_trigger.tgname = 'trg_assign_booking_service_snapshot'
+      AND financial_trigger.tgname = 'trg_calculate_booking_financials'
+      AND assign_trigger.tgname < financial_trigger.tgname
+      AND NOT assign_trigger.tgisinternal
+      AND NOT financial_trigger.tgisinternal
+  ) THEN
+    RAISE EXCEPTION 'Service identity trigger must run before financial snapshot trigger';
+  END IF;
+
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint
     WHERE conrelid = 'public.talent_services'::regclass
