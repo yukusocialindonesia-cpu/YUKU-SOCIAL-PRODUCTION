@@ -216,3 +216,31 @@ Inspected Production definitions for `request_customer_cancellation`, `request_t
 - Refund and payout functions were inspected at definition/constraint level only. No concurrent transactions, actual bank transfers, or real user-role flows were simulated.
 
 No database writes, migration applications, policy/function changes, or deployments were performed during this audit stage.
+
+
+### Storage privacy and account lifecycle — read-only Production inspection
+
+Inspected the live Storage bucket configuration, all storage.objects RLS policies, and the relevant account/admin authorization functions. Also compared the live Professional document-upload policy with the independent Professional Provider migrations on PR #287. No files were uploaded/downloaded, no policy/function was changed, and no account was modified.
+
+**Storage inventory and positive controls**
+- Production has 12 buckets. Public buckets are avatars, branding, hero, hero-slides, portfolios, promotions, and qris-payment-display. Private buckets include bank-transfer-payment-proofs, ktp-documents, professional-service-documents, qris-payment-proofs, and talent-media.
+- KTP documents are private. The object policy scopes reads to the owner or an Admin allowed by can_admin_access_ktp; that helper maps Talent accounts to the Talent permission and Customer accounts to Support permission, and returns false for other account roles. Upload paths must be under the caller's UUID folder.
+- Bank-transfer and QRIS proof buckets are private. Read access is limited to the submitting Customer or Finance Admin. Upload policies bind the object path to an eligible booking owned by the caller. Bank-transfer proof deletion is blocked while the submission is pending review.
+- talent-media is a private bucket. Its read policy delegates to can_read_talent_media_object, which checks that the object path matches a talent_media row and permits approved media for publicly visible Talent, the owner, or authorized Admins.
+- account_status_active_guard is a RESTRICTIVE policy on Storage objects for authenticated users, so it combines with the bucket-specific permissive policies rather than being bypassed by them.
+- Public buckets expose object contents by design. Keep legal identity, KTP, payment proof, and private credentials out of public buckets; review any future use of avatars/portfolios to ensure uploaded content is genuinely intended for public display.
+
+**P1 — Independent Professional Provider cannot upload required private documents in current Production**
+- The live professional_service_documents_owner_upload policy requires the caller to have a matching row in talent_profiles, in addition to an active users account and a UUID-scoped object path.
+- PR #287 introduces professional_provider_profiles and allows Professional-only application submission without a Talent profile, but the branch migrations inspected do not replace this Storage upload policy.
+- Therefore, an independent Professional Provider without talent_profiles can satisfy the new profile/application model but cannot upload credential/supporting files to the private professional-service-documents bucket in Production. This is a concrete onboarding inconsistency, not evidence of unauthorized document disclosure.
+- Remediation: add a migration that authorizes upload based on the active account plus the independent Professional Provider profile and UUID path, preserving owner/admin read boundaries and preventing overwrites of documents already referenced by an application. Resolve the migration timestamp collisions and test in Staging before applying anything.
+
+**Account and Admin authorization controls**
+- users RLS permits a user to read their own row; self-update is further protected by prevent_user_security_column_tampering. Ordinary users cannot change their role, ID, email, or creation timestamp. Changes to age-verification/account-status fields require the role-scoped KTP/Admin access check.
+- A write guard blocks end-user writes from suspended/banned accounts across protected profile/identity tables. Its null-identity bypass is explicitly intended for trusted service-role/backend/cron operations; ordinary anonymous access remains subject to table RLS and grants.
+- Admin permission checks resolve through private Admin account/permission tables and require an active Admin. Permission keys are allow-listed (talent, booking, finance, support); Super Admin receives the scoped permissions.
+- Scoped Admin provisioning requires a service-role JWT and an active Super Admin inviter. Admin activation/deactivation and permission changes require Super Admin identity and create audit-log entries.
+- These are source/definition-level controls. No authenticated JWT matrix, signup/deletion lifecycle, session revocation, or real role-transition test was run. The account lifecycle review is therefore not an end-to-end authorization certification.
+
+No Storage objects, user records, Admin roles, RLS policies, functions, database settings, migrations, or deployments were changed during this audit stage.
