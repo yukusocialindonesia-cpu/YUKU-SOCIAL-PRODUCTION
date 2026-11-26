@@ -42,6 +42,9 @@ interface OfferRow {
   offer_type: string;
   starts_at: string;
   ends_at: string | null;
+  eligibility: string | null;
+  quota: number | null;
+  funded_by: 'merchant';
   terms: string | null;
   redemption_instructions: string | null;
   status: string;
@@ -110,7 +113,7 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
     setOfferLoading(true); setOfferHistoryReady(false);
     const { data, error: offerError } = await supabase
       .from('merchant_offers')
-      .select('id,business_id,title,description,offer_type,starts_at,ends_at,terms,redemption_instructions,status')
+      .select('id,business_id,title,description,offer_type,starts_at,ends_at,eligibility,quota,funded_by,terms,redemption_instructions,status')
       .in('status',['pending_review','approved'])
       .order('created_at',{ascending:false});
     if (offerError) {
@@ -214,6 +217,8 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
           return <article key={offer.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-wide text-violet-700">{offer.business_name} · {offer.offer_type}</p><h3 className="mt-1 text-sm font-extrabold text-slate-900">{offer.title}</h3></div><span className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-bold text-violet-800">{statusLabel[offer.status]||offer.status}</span></div>
             <p className="mt-2 text-xs leading-5 text-slate-600">{offer.description}</p>
+            {offer.eligibility&&<p className="mt-1 text-[10px] text-slate-500">Syarat peserta: {offer.eligibility}</p>}
+            <p className="mt-1 text-[10px] text-slate-500">{offer.quota ? 'Kuota: '+offer.quota : 'Kuota: tidak dibatasi'} · Ditanggung merchant</p>
             {offer.ends_at&&<p className="mt-1 text-[10px] text-slate-500">Berakhir {new Date(offer.ends_at).toLocaleString('id-ID')}</p>}
             {offer.terms&&<p className="mt-2 rounded-lg bg-slate-50 p-2 text-[10px] leading-5 text-slate-600">Syarat: {offer.terms}</p>}
             {offer.redemption_instructions&&<p className="mt-2 rounded-lg bg-slate-50 p-2 text-[10px] leading-5 text-slate-600">Penukaran: {offer.redemption_instructions}</p>}
