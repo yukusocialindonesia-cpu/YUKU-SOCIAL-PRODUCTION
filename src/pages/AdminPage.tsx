@@ -2224,6 +2224,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           </button>
                         )}
                       </div>
+                      {!c.selfie_storage_path && (
+                        <div className="text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                          Selfie dengan KTP belum tertaut. Verifikasi belum dapat disetujui.
+                        </div>
+                      )}
                       {c.ktp_rejection_reason && (
                         <div className="text-rose-700">
                           <strong>Alasan Penolakan:</strong> {c.ktp_rejection_reason}
@@ -2242,7 +2247,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </button>
                         <button
                           onClick={() => handleReviewCustomerKtp(c, 'verified')}
-                          disabled={isSubmittingAction}
+                          disabled={
+                            isSubmittingAction ||
+                            !c.ktp_storage_path ||
+                            !c.selfie_storage_path ||
+                            !c.ktp_number ||
+                            !/^\d{16}$/.test(c.ktp_number)
+                          }
                           className="w-full sm:w-auto justify-center px-4 py-2.5 sm:py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
