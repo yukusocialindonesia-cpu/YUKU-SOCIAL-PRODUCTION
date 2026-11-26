@@ -113,8 +113,14 @@ begin
   end if;
 
   return query
-    select mm.id, au.email::text, mm.member_role, mm.membership_status,
-           mm.invited_at, mm.accepted_at
+    select mm.id,
+           case
+             when private.has_merchant_business_access(
+               p_business_id, array['owner']::text[]
+             ) then au.email::text
+             else null
+           end,
+           mm.member_role, mm.membership_status, mm.invited_at, mm.accepted_at
       from public.merchant_memberships mm
       join auth.users au on au.id = mm.user_id
      where mm.business_id = p_business_id
