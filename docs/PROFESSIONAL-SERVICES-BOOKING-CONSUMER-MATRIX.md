@@ -194,3 +194,39 @@ This is a source-level audit of the current activity booking financial lifecycle
 ### Release decision
 
 Professional booking checkout remains blocked until Product/Finance approves unit-specific cancellation and refund rules and the financial allocation path is tested in disposable Supabase. Project booking remains disabled until the separate acceptance/dispute workflow prevents premature escrow release.
+
+
+## Notifications, reviews, referral and operational UI audit — direct source inspection (2026-11-26)
+
+### Confirmed consumers and required changes
+
+| Consumer | Existing source behavior | Required professional-service support |
+|---|---|---|
+| Booking status notifications — migration 13 | Notification trigger sends activity-specific copy such as "Sesi Aktivitas Dimulai", "Sesi Selesai", and says Talent's 80% compensation becomes available after 24 hours. It triggers on shared booking status. | Replace hard-coded activity wording with booking-kind-aware copy and accurate escrow policy. Do not tell users a 24-hour delay when the current release policy is immediate after valid completion. Keep the same notification table and booking deep-link metadata. |
+| Customer booking history — `src/pages/BookingHistoryPage.tsx` | Loads activity category IDs and maps category title; booking card renders `start_time` and `duration_hours` as a session. It also loads review, report and refund rows by booking ID. | Render immutable professional service/category label and pricing unit/quantity snapshot; do not require an activity category join. Show correct date range/session/project status. Preserve report/refund/review relationships through the common booking ID. |
+| Talent dashboard — `src/pages/TalentDashboardPage.tsx` | `TalentBookingItem` requires `activity_category_id`, `start_time`, `end_time`, `duration_hours`; booking cards display duration as hours. | Add a discriminated booking-kind view model. Activity branch remains unchanged; professional branch reads service snapshot, unit/quantity, schedule or project due date, delivery mode and location. Actions must call the same guarded RPC transitions, not direct status updates. |
+| Admin booking list — migration 54 `get_admin_bookings()` | RPC returns a fixed activity-only shape: `booking_mode`, `start_time`, `duration_hours`, `meeting_location_name`; no service-kind or pricing snapshot. | Add a versioned/admin-safe read contract with booking kind and professional listing snapshot, but keep financial columns excluded from Booking Admin. Finance permission remains separate. |
+| Reviews — migration 11 | Trigger verifies booking exists, customer/talent match and status is `completed`; it does not require an activity category. | Database relationship is already compatible with a shared booking ID, but UI copy and review prompts must say "layanan" generically and display the correct professional service. Define whether one review per booking is still the intended rule; enforce it at DB level if not already guaranteed. |
+| Referral ledger — migration 45 | On first settled payment, records commission and Talent earning from booking snapshot fields; referral reward is a configured percentage of `platform_fee_amount`. | Shared ledger can support both booking kinds if the same frozen gross/fee/share fields are populated. Product/Finance must approve whether affiliate rewards apply to professional services and at what category-specific rate. Never calculate referral from a mutable listing price. |
+| Dispute notifications — migration 13 | Notification includes report and booking IDs; status trigger notifies reporter. | Keep booking ID linkage; Admin/support UI must expose professional service snapshot, scope and private evidence to authorized reviewers. Notification text should not imply every case is a timed activity session. |
+| Reports — existing `reports_complaints` | Report references nullable `booking_id`; booking hold checks active reports by booking ID. | Common booking reference is suitable. Add professional-service-specific report reasons/evidence prompts where needed without changing the booking-wide hold behavior for the first release. |
+
+### Additional verified mismatches
+
+1. Notification text in migration 13 says escrow compensation becomes available after 24 hours, while migration 20 sets the release schedule to the completion timestamp. The copy is stale even for the legacy activity path and should be corrected in a separately reviewed migration.
+2. Review insert validation itself is not activity-specific; the customer-facing UI and wording are. This is a lower-risk adaptation than cancellation/refund but still needs a professional service display snapshot.
+3. Referral creation is already generic around booking financial snapshots. Do not create a separate professional referral ledger. Confirm commercial policy before granting affiliate reward on professional categories.
+4. Admin's minimal booking RPC is explicitly activity-shaped. Do not change its return type in place if generated client types or callers depend on it; introduce a backward-compatible v2 RPC or migrate every caller atomically.
+5. Existing UI type interfaces are not database constraints, but they will fail to represent null legacy activity fields or professional bookings correctly. Use a discriminated union and preserve legacy fields until every consumer is migrated.
+
+### Next implementation order
+
+1. Define additive `booking_kind` and immutable service snapshot contract; retain legacy activity columns and their current semantics.
+2. Add a backward-compatible Admin booking read RPC v2 and frontend typed union.
+3. Update booking history and Talent dashboard to render both variants.
+4. Update status notification copy to be kind-aware and correct the stale 24-hour message.
+5. Adapt review prompts and Admin/support report detail.
+6. Add referral eligibility/rate policy only after Product/Finance decision.
+7. Run existing activity regression tests plus professional fixtures before any checkout flag is enabled.
+
+No runtime schema, UI, or production behavior was changed by this documentation audit.
