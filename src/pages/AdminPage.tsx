@@ -1206,6 +1206,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               >
                 Lihat Katalog <ChevronRight className="h-4 w-4" />
               </button>
+              {canAccess('talent') && (
+                <button
+                  onClick={() => onNavigate('/admin/jasa-profesional')}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-3 py-2.5 text-[11px] font-bold text-purple-900 transition hover:bg-purple-50"
+                >
+                  Review Jasa Profesional <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
         </section>
