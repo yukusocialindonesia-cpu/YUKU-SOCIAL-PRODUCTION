@@ -11,6 +11,7 @@ import { HomePage } from './pages/HomePage';
 // so the first screen remains available without an additional route-chunk request.
 const ProfessionalServicesPage = lazy(() => import('./pages/ProfessionalServicesPage').then((module) => ({ default: module.ProfessionalServicesPage })));
 const ProfessionalProviderProfilePage = lazy(() => import('./pages/ProfessionalProviderProfilePage').then((module) => ({ default: module.ProfessionalProviderProfilePage })));
+const ProfessionalServiceApplicationPage = lazy(() => import('./pages/ProfessionalServiceApplicationPage').then((module) => ({ default: module.ProfessionalServiceApplicationPage })));
 const CommunityPage = lazy(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })));
 const BrowseTalentPage = lazy(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })));
 const TalentDetailPage = lazy(() => import('./pages/TalentDetailPage').then((module) => ({ default: module.TalentDetailPage })));
@@ -42,6 +43,7 @@ export default function App() {
     if (pathname === '/aktivasi-admin' || inviteParams.get('type') === 'invite') return '/aktivasi-admin';
     if (pathname === '/talent') return '/talent';
     if (pathname === '/jasa-profesional') return '/jasa-profesional';
+    if (pathname === '/daftar-jasa-profesional') return '/daftar-jasa-profesional';
     if (pathname.startsWith('/jasa-profesional/')) return '/jasa-profesional/:id';
     if (pathname === '/komunitas') return '/komunitas';
     if (pathname.startsWith('/talent/')) return '/talent/:id';
@@ -94,6 +96,8 @@ export default function App() {
       setCurrentPath('/talent');
     } else if (pathname === '/jasa-profesional') {
       setCurrentPath('/jasa-profesional');
+    } else if (pathname === '/daftar-jasa-profesional') {
+      setCurrentPath('/daftar-jasa-profesional');
     } else if (pathname.startsWith('/jasa-profesional/')) {
       const id = pathname.replace('/jasa-profesional/', '');
       setActiveProfessionalProviderId(id || '');
@@ -207,6 +211,8 @@ export default function App() {
         return <HomePage onNavigate={handleNavigate} />;
       case '/jasa-profesional':
         return <ProfessionalServicesPage onNavigate={handleNavigate} />;
+      case '/daftar-jasa-profesional':
+        return <ProfessionalServiceApplicationPage onNavigate={handleNavigate} />;
       case '/jasa-profesional/:id':
         return <ProfessionalProviderProfilePage providerId={activeProfessionalProviderId} onNavigate={handleNavigate} />;
       case '/komunitas':
