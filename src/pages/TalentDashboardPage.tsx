@@ -2125,7 +2125,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                           ) : b.status === 'completed' ? (
                             <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg flex items-center gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Sesi Selesai · Menunggu Pelepasan Escrow</span>
+                              <span>Sesi Selesai</span>
                             </span>
                           ) : b.status === 'disputed_hold' ? (
                             <span className="px-2.5 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-lg flex items-center gap-1">
