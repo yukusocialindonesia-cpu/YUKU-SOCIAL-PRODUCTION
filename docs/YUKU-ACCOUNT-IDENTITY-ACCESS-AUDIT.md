@@ -164,3 +164,35 @@ A second source pass found that `BecomeTalentPage.tsx` has a separate identity u
 This means the current product has two different evidence standards. Decide one explicit policy for Customer and Talent before changing the schema: if selfie-with-KTP is required for both, make it mandatory in both onboarding flows and Admin review; if it is required only for Customer, document the role-based policy and ensure Talent identity review has its own clear requirements. Do not infer compliance from a KTP-only Admin screen.
 
 The Production aggregate status query returned 7 identity records, all `verified`, with no missing KTP storage paths. This is a count-only result; no personal identity data was inspected.
+
+## Talent approval vs account suspension — confirmed Production mismatch, 26 November 2026
+
+### P1: current Production admin_review_talent can reactivate a suspended/banned account
+
+Read-only inspection of the effective Production function definition found:
+- It requires an authenticated caller with talent Admin permission.
+- It locks the Talent profile, identity row, and user row.
+- Approval requires KTP status verified, and rejection requires a reason.
+- It updates the Talent profile approval, identity KTP status, 18+ flag, account status, and writes an Admin audit event.
+- **But it sets account_status = 'active' whenever p_is_approved = true, without checking the previous account status.** On rejection it similarly sets pending_verification unconditionally.
+
+Production enum values include pending_verification, active, suspended, and banned. The account-security trigger permits a KTP-authorized Admin to change account status for that target. Therefore, a Talent Admin approving the profile can potentially reactivate a suspended/banned account without the separate Super Admin sanction-lift process. This is an authorization/lifecycle defect, not merely a UI issue.
+
+The effective Production function is executable by authenticated, not anon or PUBLIC. Its permission guard is present; the defect is the state transition it performs after authorization.
+
+### Branch source is safer but differs from Production
+
+Branch migration 32_fix_admin_review_talent_sets_is_approved.sql has a safer approval transition: it only changes account_status from pending_verification to active. It leaves suspended and banned untouched. The subsequent migration 51 narrows the function's Admin permission check to Talent permission while preserving authentication.
+
+However, the read-only Production function definition does not match this safe branch implementation. The production database migration ledger contains timestamp-based versions, so the numbered branch migration name alone cannot prove which exact source body was deployed. Reconcile the deployed function definition and migration history before assuming the branch behavior is live.
+
+### Required correction and release checks
+
+1. Make approval transition only pending_verification -> active; preserve suspended and banned unchanged.
+2. On rejection, do not overwrite suspended or banned with pending_verification; preserve sanctions while independently setting profile/KTP review outcome.
+3. Keep account reactivation after suspension/ban in a separate explicitly authorized Super Admin action with reason, audit log, and any required appeal/review flow.
+4. Add Staging SQL tests for all four starting account states across Talent approval and rejection; assert only pending_verification may become active and suspended/banned never change.
+5. Test Talent Admin, Super Admin, Support Admin, unauthenticated, and disabled Admin callers. Confirm that role-specific permission does not silently grant sanction-lift authority.
+6. Compare pg_get_functiondef, function grants, trigger definitions, and migration history between Staging and Production after rollout.
+
+No Production function, account, role, identity, or migration was modified. This is a read-only finding and must be treated as a release blocker until the deployed function is corrected and verified.
