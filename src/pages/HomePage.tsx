@@ -23,8 +23,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
   const promoSectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Poster promosi berada di bawah Talent Pilihan. Ambil datanya saat area
-  // mendekati layar agar permintaan awal beranda lebih ringan.
+  // Pertahankan posisi poster setelah Talent dan Keamanan. Data dimuat
+  // ketika bagian promosi mendekati layar agar beban awal Beranda tetap ringan.
   useEffect(() => {
     const target = promoSectionRef.current;
     if (!target) return;
@@ -81,8 +81,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
-      {/* 2. Hero Section with Tagline ("Real Friends. Real Moments.") & 3. Tombol Jelajahi Talent */}
-      {/* 4. Pencarian berdasarkan aktivitas dan lokasi */}
+      {/* Alur lama dipertahankan: pengunjung memahami layanan sebelum memilih Talent. */}
       <HeroSection
         onExploreClick={() => onNavigate('/talent')}
         onSearch={handleSearch}
@@ -90,22 +89,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
       />
 
-      {/* Pilihan layanan utama: offline dan online */}
       <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
 
-      {/* Kategori Aktivitas */}
       <ActivityCategories onSelectCategory={handleSelectCategory} />
 
-      {/* Professional services taxonomy; booking integration is intentionally not enabled yet. */}
+      {/* Katalog jasa profesional ditambahkan tanpa menggantikan kategori aktivitas lama. */}
       <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
 
-      {/* Talent Pilihan dari profil publik Supabase */}
+      {/* Cara kerja tetap muncul sebelum daftar Talent, sesuai alur Beranda lama. */}
+      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Ruang Promosi Poster Berjalan */}
+      {/* Keamanan tetap diperlihatkan sebelum ruang promosi. */}
+      <SafetySection />
+
       <div ref={promoSectionRef}>
         <PromoCarousel
           promotions={promotions}
@@ -114,20 +115,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </div>
 
-      {/* Cara kerja setelah pengunjung melihat pilihan Talent dan promosi */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
-
-      {/* Keamanan dan Verifikasi */}
-      <SafetySection />
-
-      {/* 10. Ajakan Customer & Tautan Talent */}
       <TalentCtaSection
         onExploreClick={() => onNavigate('/talent')}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onRegisterClick={() => onNavigate('/daftar-talent')}
       />
 
-      {/* 11. FAQ */}
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
     </div>
   );
