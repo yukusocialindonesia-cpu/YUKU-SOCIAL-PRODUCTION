@@ -113,7 +113,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
             </div>
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-[10px]"><Star className="h-3 w-3"/> {Number(profile.rating_average || 0).toFixed(1)} ({profile.review_count || 0} ulasan)</span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-[10px]"><Star className="h-3 w-3"/> {profile.review_count > 0 ? `${Number(profile.rating_average || 0).toFixed(1)} (${profile.review_count} ulasan)` : 'Belum ada ulasan'}</span>
             <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-[10px]"><BriefcaseBusiness className="h-3 w-3"/> {profile.completed_hours || 0} jam pengalaman layanan tercatat</span>
           </div>
         </div>
