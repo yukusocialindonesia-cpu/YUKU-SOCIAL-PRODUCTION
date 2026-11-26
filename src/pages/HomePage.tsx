@@ -23,8 +23,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
   const promoSectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Pertahankan posisi poster setelah Talent dan Keamanan. Data dimuat
-  // ketika bagian promosi mendekati layar agar beban awal Beranda tetap ringan.
+  // Muat promosi saat mendekati viewport agar tampilan awal tetap ringan.
   useEffect(() => {
     const target = promoSectionRef.current;
     if (!target) return;
@@ -76,12 +75,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   const handleSelectTalent = (talentId: string) => {
-    onNavigate(`/talent/:id`, { id: talentId });
+    onNavigate('/talent/:id', { id: talentId });
   };
 
   return (
-    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
-      {/* Alur lama dipertahankan: pengunjung memahami layanan sebelum memilih Talent. */}
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-[#FBFAFF]">
+      {/* 1. Pintu masuk: pencarian utama dan identitas Social Experience. */}
       <HeroSection
         onExploreClick={() => onNavigate('/talent')}
         onSearch={handleSearch}
@@ -89,25 +88,28 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
       />
 
-      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+      {/* 2. Kebutuhan pelanggan: pilih cara berinteraksi, lalu jenis aktivitas. */}
+      <div className="bg-white">
+        <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+        <ActivityCategories onSelectCategory={handleSelectCategory} />
+      </div>
 
-      <ActivityCategories onSelectCategory={handleSelectCategory} />
-
-      {/* Companion adalah produk utama; tampilkan Talent sebelum layanan tambahan. */}
+      {/* 3. Social Experience adalah layanan utama YUKU. Harga tetap di halaman profil. */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Jasa Profesional tetap tersedia, tetapi menjadi akses layanan tambahan. */}
+      {/* 4. Lini kedua, dipisahkan jelas dari Paid Companion. */}
       <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
 
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+      {/* 5. Informasi pendukung diletakkan setelah katalog utama. */}
+      <div className="bg-white">
+        <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+        <SafetySection />
+      </div>
 
-      {/* Keamanan tetap diperlihatkan sebelum ruang promosi. */}
-      <SafetySection />
-
-      <div ref={promoSectionRef}>
+      <div ref={promoSectionRef} className="bg-[#FBFAFF]">
         <PromoCarousel
           promotions={promotions}
           isLoading={isLoadingPromotions}
@@ -122,6 +124,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       />
 
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
-    </div>
+    </main>
   );
 };
