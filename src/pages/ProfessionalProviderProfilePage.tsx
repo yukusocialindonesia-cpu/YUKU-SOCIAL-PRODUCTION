@@ -32,7 +32,6 @@ interface ProviderProfile {
   is_approved: boolean;
 }
 const money = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
-const unitLabel: Record<string, string> = { per_hour: '/ jam', per_session: '/ sesi', per_day: '/ hari', per_project: '/ proyek' };
 const verificationLabel: Record<string, string> = { identity: 'Standar pemeriksaan identitas', reference: 'Standar pemeriksaan referensi', credential: 'Standar pemeriksaan kompetensi', license: 'Wajib pemeriksaan izin profesi' };
 
 export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, onNavigate }) => {
