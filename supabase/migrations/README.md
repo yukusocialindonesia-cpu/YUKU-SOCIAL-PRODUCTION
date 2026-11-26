@@ -76,3 +76,34 @@ Booking, payment, escrow, komisi, affiliate, refund, dan payout merupakan data s
 - `supabase/ops/` — pemeriksaan operasional.
 - `docs/PRODUCTION_SAFETY.md` — batas tindakan Production.
 - `docs/FEATURE_STATUS.md` — status fitur yang pernah diverifikasi.
+
+
+## Rekonsiliasi nama file — 26 November 2026
+
+Audit baca-saja terhadap migration history project Production `sbqvltqzzcsqzijgumld` dibanding folder `supabase/migrations/` menemukan:
+
+- 107 versi tercatat di remote.
+- 125 file SQL di repository.
+- 73 versi remote memiliki pasangan nama/versi file yang dapat dipastikan; nama file tersebut telah diseragamkan ke format `<version>_<name>.sql`.
+- 34 versi remote belum memiliki file lokal yang dapat dipasangkan secara pasti.
+- 52 file lokal belum memiliki versi remote yang sama. Kelompok ini mencakup migration fitur baru yang belum diterapkan, serta file historis yang memerlukan pemeriksaan isi sebelum dipetakan.
+
+### Aturan penamaan dan urutan
+
+- Gunakan versi persis dari migration history sebagai awalan file; jangan membuat timestamp baru untuk migration yang sudah pernah diterapkan.
+- Format: `<version>_<descriptive_name>.sql`.
+- Nama harus menjelaskan satu perubahan, konsisten huruf kecil, dan memakai underscore.
+- Migration baru mendapat timestamp baru yang monoton meningkat, dibuat setelah migration terakhir yang benar-benar tercatat pada target environment.
+- Jangan memakai nomor urut manual seperti `28_`, `29_` untuk migration baru.
+- Jangan mengubah isi SQL hanya untuk menyamakan nama.
+- Jangan mengarang file placeholder untuk versi remote yang belum ditemukan. Pulihkan SQL historis dari sumber aslinya atau rekonstruksi dengan review skema dan audit log sebelum membuat file.
+- Jangan menghapus atau menandai migration remote sebagai reverted untuk menghilangkan mismatch.
+
+### Status yang belum selesai
+
+34 versi remote yang belum memiliki file pasangan harus dipulihkan atau dipetakan melalui pemeriksaan isi SQL dan Git history. 52 file lokal yang tidak memiliki versi remote harus diklasifikasikan satu per satu sebagai:
+1. migration baru yang memang belum diterapkan;
+2. file historis dengan versi/nama berbeda;
+3. file duplikat atau superseded yang perlu keputusan eksplisit.
+
+Sampai pekerjaan tersebut selesai, **jangan menjalankan `supabase db push`, `migration repair`, atau menerapkan migration pada Production**. Rekonsiliasi nama file tidak sama dengan penerapan SQL ke database.
