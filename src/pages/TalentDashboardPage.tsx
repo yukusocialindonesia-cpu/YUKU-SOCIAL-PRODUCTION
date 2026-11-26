@@ -2218,7 +2218,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                       {/* Bottom Action Buttons for Talent */}
                       <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
                         <div className="flex flex-wrap items-center gap-3">
-                          {b.status !== 'expired' && (
+                          {['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(b.status) && (
                             <button
                               type="button"
                               onClick={() => setChatTargetBooking(b)}
@@ -2241,7 +2241,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                             <span>Buka Peta Lokasi di Google Maps</span>
                           </a>
 
-                          {!b.report && b.status !== 'expired' && (
+                          {!b.report && ['paid_held_in_escrow', 'confirmed_by_talent', 'in_progress', 'completed', 'disputed_hold'].includes(b.status) && (
                             <button
                               type="button"
                               onClick={() => openReportModal(b)}
