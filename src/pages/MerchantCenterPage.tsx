@@ -63,6 +63,12 @@ const statusCopy: Record<MerchantBusiness['review_status'], string> = {
 
 const inputClass = 'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:ring-4 focus:ring-purple-100';
 const labelClass = 'mb-1.5 block text-xs font-semibold text-slate-600';
+const toLocalDateTimeInput = (value: string | null) => {
+  if (!value) return '';
+  const date = new Date(value);
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 16);
+};
 
 export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const { user, accessSnapshot, refreshRole } = useAuth();
@@ -98,6 +104,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [offerEnd, setOfferEnd] = useState('');
   const [offerTerms, setOfferTerms] = useState('');
   const [offerInstructions, setOfferInstructions] = useState('');
+  const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
 
   const activeBusiness = useMemo(
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
@@ -295,7 +302,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     setSaving(true); setError(''); setSuccess('');
     const { error: offerError } = await supabase.rpc('save_merchant_offer', {
       p_business_id: activeBusiness.id,
-      p_offer_id: null,
+      p_offer_id: editingOfferId,
       p_title: offerTitle.trim(),
       p_description: offerDescription.trim(),
       p_offer_type: offerType,
@@ -307,11 +314,23 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (offerError) setError(offerError.message);
     else {
       setOfferTitle(''); setOfferDescription(''); setOfferEnd('');
-      setOfferTerms(''); setOfferInstructions('');
+      setOfferTerms(''); setOfferInstructions(''); setEditingOfferId(null);
       setSuccess('Promo berhasil disimpan sebagai draft. Owner perlu mengajukannya untuk pemeriksaan YUKU.');
       await load();
     }
     setSaving(false);
+  };
+
+  const editOffer = (offer: MerchantOffer) => {
+    setEditingOfferId(offer.id);
+    setOfferTitle(offer.title);
+    setOfferDescription(offer.description);
+    setOfferType(offer.offer_type);
+    setOfferEnd(toLocalDateTimeInput(offer.ends_at));
+    setOfferTerms(offer.terms || '');
+    setOfferInstructions(offer.redemption_instructions || '');
+    setError('');
+    setSuccess('');
   };
 
   const submitOfferForReview = async (offerId: string) => {
@@ -465,8 +484,8 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                 </form>
                 {activeBusiness.review_status === 'approved' && <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-base font-extrabold text-slate-900">Promo & penawaran</h2><p className="mt-1 text-[11px] text-slate-500">Informasi promo merchant yang dapat ditukarkan langsung di lokasi.</p></div><Store className="h-5 w-5 text-purple-700" /></div>
-                  <div className="space-y-2">{offers.map((offer) => <div key={offer.id} className="rounded-xl border border-slate-100 bg-slate-50 p-3"><div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-extrabold text-slate-800">{offer.title}</p><span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-bold text-purple-800">{offer.status === 'pending_review' ? 'Menunggu pemeriksaan' : offer.status === 'approved' ? 'Tayang' : offer.status === 'needs_revision' ? 'Perlu perbaikan' : offer.status === 'rejected' ? 'Ditolak' : offer.status === 'suspended' ? 'Dinonaktifkan' : 'Draft'}</span></div><p className="mt-1 text-[11px] leading-5 text-slate-600">{offer.description}</p>{offer.ends_at && <p className="mt-1 text-[10px] text-slate-500">Berakhir {new Date(offer.ends_at).toLocaleDateString('id-ID')}</p>}{isOwner && ['draft','needs_revision'].includes(offer.status) && <button type="button" onClick={() => void submitOfferForReview(offer.id)} disabled={saving} className="mt-2 rounded-lg bg-purple-800 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-50">Ajukan pemeriksaan</button>}</div>)}{offers.length === 0 && <p className="rounded-xl bg-slate-50 p-3 text-[11px] text-slate-500">Belum ada promo untuk bisnis ini.</p>}</div>
-                  {['owner','manager'].includes(activeMembership?.role || '') && activeMembership?.status === 'active' && <form onSubmit={createOffer} className="mt-4 border-t border-slate-100 pt-4"><h3 className="mb-3 text-xs font-extrabold text-slate-800">Buat promo baru</h3><div className="grid gap-3 sm:grid-cols-2"><label><span className={labelClass}>Judul promo *</span><input className={inputClass} value={offerTitle} onChange={(e) => setOfferTitle(e.target.value)} maxLength={100} required placeholder="Contoh: Diskon 20% weekday" /></label><label><span className={labelClass}>Jenis penawaran</span><select className={inputClass} value={offerType} onChange={(e) => setOfferType(e.target.value as MerchantOffer['offer_type'])}><option value="discount">Diskon</option><option value="bundle">Paket / bundling</option><option value="event">Event</option><option value="benefit">Benefit khusus</option><option value="other">Lainnya</option></select></label></div><label className="mt-3 block"><span className={labelClass}>Deskripsi *</span><textarea className={inputClass} rows={3} value={offerDescription} onChange={(e) => setOfferDescription(e.target.value)} maxLength={1200} minLength={10} required placeholder="Jelaskan promo, manfaat, dan siapa yang bisa menggunakannya." /></label><div className="mt-3 grid gap-3 sm:grid-cols-2"><label><span className={labelClass}>Berlaku sampai (opsional)</span><input type="datetime-local" className={inputClass} value={offerEnd} onChange={(e) => setOfferEnd(e.target.value)} min={new Date().toISOString().slice(0,16)} /></label><label><span className={labelClass}>Cara penukaran</span><input className={inputClass} value={offerInstructions} onChange={(e) => setOfferInstructions(e.target.value)} maxLength={500} placeholder="Tunjukkan halaman promo ini di kasir" /></label></div><label className="mt-3 block"><span className={labelClass}>Syarat & ketentuan</span><textarea className={inputClass} rows={2} value={offerTerms} onChange={(e) => setOfferTerms(e.target.value)} maxLength={1000} placeholder="Ketentuan penggunaan promo..." /></label><button disabled={saving || !offerTitle.trim() || offerDescription.trim().length < 10} className="mt-3 rounded-xl bg-purple-800 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">Simpan draft promo</button><p className="mt-2 text-[10px] leading-5 text-slate-500">Promo harus disetujui YUKU sebelum tampil. Penukaran dan pembayaran dilakukan langsung dengan merchant; tidak ada checkout atau voucher saldo YUKU.</p></form>}
+                  <div className="space-y-2">{offers.map((offer) => <div key={offer.id} className="rounded-xl border border-slate-100 bg-slate-50 p-3"><div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-extrabold text-slate-800">{offer.title}</p><span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-bold text-purple-800">{offer.status === 'pending_review' ? 'Menunggu pemeriksaan' : offer.status === 'approved' ? 'Tayang' : offer.status === 'needs_revision' ? 'Perlu perbaikan' : offer.status === 'rejected' ? 'Ditolak' : offer.status === 'suspended' ? 'Dinonaktifkan' : 'Draft'}</span></div><p className="mt-1 text-[11px] leading-5 text-slate-600">{offer.description}</p>{offer.ends_at && <p className="mt-1 text-[10px] text-slate-500">Berakhir {new Date(offer.ends_at).toLocaleDateString('id-ID')}</p>}{['owner','manager'].includes(activeMembership?.role || '') && ['draft','needs_revision','approved'].includes(offer.status) && <button type="button" onClick={() => editOffer(offer)} disabled={saving} className="mt-2 mr-2 rounded-lg border border-purple-200 bg-white px-3 py-2 text-[10px] font-bold text-purple-800 disabled:opacity-50">Edit promo</button>}{isOwner && ['draft','needs_revision'].includes(offer.status) && <button type="button" onClick={() => void submitOfferForReview(offer.id)} disabled={saving} className="mt-2 rounded-lg bg-purple-800 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-50">Ajukan pemeriksaan</button>}</div>)}{offers.length === 0 && <p className="rounded-xl bg-slate-50 p-3 text-[11px] text-slate-500">Belum ada promo untuk bisnis ini.</p>}</div>
+                  {['owner','manager'].includes(activeMembership?.role || '') && activeMembership?.status === 'active' && <form onSubmit={createOffer} className="mt-4 border-t border-slate-100 pt-4"><div className="mb-3 flex items-center justify-between gap-2"><h3 className="text-xs font-extrabold text-slate-800">{editingOfferId ? 'Edit promo' : 'Buat promo baru'}</h3>{editingOfferId && <button type="button" onClick={() => {setEditingOfferId(null);setOfferTitle('');setOfferDescription('');setOfferEnd('');setOfferTerms('');setOfferInstructions('');}} className="text-[10px] font-bold text-slate-500">Batal edit</button>}</div><div className="grid gap-3 sm:grid-cols-2"><label><span className={labelClass}>Judul promo *</span><input className={inputClass} value={offerTitle} onChange={(e) => setOfferTitle(e.target.value)} maxLength={100} required placeholder="Contoh: Diskon 20% weekday" /></label><label><span className={labelClass}>Jenis penawaran</span><select className={inputClass} value={offerType} onChange={(e) => setOfferType(e.target.value as MerchantOffer['offer_type'])}><option value="discount">Diskon</option><option value="bundle">Paket / bundling</option><option value="event">Event</option><option value="benefit">Benefit khusus</option><option value="other">Lainnya</option></select></label></div><label className="mt-3 block"><span className={labelClass}>Deskripsi *</span><textarea className={inputClass} rows={3} value={offerDescription} onChange={(e) => setOfferDescription(e.target.value)} maxLength={1200} minLength={10} required placeholder="Jelaskan promo, manfaat, dan siapa yang bisa menggunakannya." /></label><div className="mt-3 grid gap-3 sm:grid-cols-2"><label><span className={labelClass}>Berlaku sampai (opsional)</span><input type="datetime-local" className={inputClass} value={offerEnd} onChange={(e) => setOfferEnd(e.target.value)} min={toLocalDateTimeInput(new Date().toISOString())} /></label><label><span className={labelClass}>Cara penukaran</span><input className={inputClass} value={offerInstructions} onChange={(e) => setOfferInstructions(e.target.value)} maxLength={500} placeholder="Tunjukkan halaman promo ini di kasir" /></label></div><label className="mt-3 block"><span className={labelClass}>Syarat & ketentuan</span><textarea className={inputClass} rows={2} value={offerTerms} onChange={(e) => setOfferTerms(e.target.value)} maxLength={1000} placeholder="Ketentuan penggunaan promo..." /></label><button disabled={saving || !offerTitle.trim() || offerDescription.trim().length < 10} className="mt-3 rounded-xl bg-purple-800 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{editingOfferId ? 'Simpan perubahan' : 'Simpan draft promo'}</button><p className="mt-2 text-[10px] leading-5 text-slate-500">Promo harus disetujui YUKU sebelum tampil. Penukaran dan pembayaran dilakukan langsung dengan merchant; tidak ada checkout atau voucher saldo YUKU.</p></form>}
                 </section>}
                 {isOwner && <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-base font-extrabold text-slate-900">Riwayat verifikasi</h2><p className="mt-1 text-[11px] text-slate-500">Catatan pemeriksaan dan perubahan status bisnis.</p></div><Clock3 className="h-5 w-5 text-purple-700" /></div>
