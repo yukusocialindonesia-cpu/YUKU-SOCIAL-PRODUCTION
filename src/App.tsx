@@ -186,9 +186,14 @@ export default function App() {
       setActiveTalentId(id);
       targetUrl = `/talent/${id}`;
     } else if (path === '/talent') {
-      if (params?.activity) setInitialActivityFilter(params.activity);
-      if (params?.city) setInitialCityFilter(params.city);
-      setInitialModeFilter(params?.mode === 'online' || params?.mode === 'offline' ? params.mode : 'all');
+      // Navigasi tanpa filter (mis. tombol "Lihat Semua Talent") harus
+      // menghapus filter lama, bukan mewariskannya diam-diam dari pencarian sebelumnya.
+      const activity = params?.activity || 'all';
+      const city = params?.city || 'Semua Kota';
+      const mode = params?.mode === 'online' || params?.mode === 'offline' ? params.mode : 'all';
+      setInitialActivityFilter(activity);
+      setInitialCityFilter(city);
+      setInitialModeFilter(mode);
 
       const qs = new URLSearchParams();
       if (params?.activity && params.activity !== 'all') qs.set('activity', params.activity);
