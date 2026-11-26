@@ -83,7 +83,6 @@ interface BookingItem {
     category: string;
     description: string;
     status: string;
-    admin_notes: string | null;
     created_at: string;
   } | null;
 }
@@ -196,7 +195,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
         bookingIds.length > 0
           ? supabase
               .from('reports_complaints')
-              .select('id, booking_id, category, description, status, admin_notes, created_at')
+              .select('id, booking_id, category, description, status, created_at')
               .eq('reporter_id', currentUser.id)
               .in('booking_id', bookingIds)
               .order('created_at', { ascending: false })
@@ -279,7 +278,6 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                 category: existingReport.category,
                 description: existingReport.description,
                 status: existingReport.status,
-                admin_notes: existingReport.admin_notes ?? null,
                 created_at: existingReport.created_at,
               }
             : null,
@@ -1048,12 +1046,6 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                             </span>
                           </div>
                           <p className="text-slate-700 leading-relaxed">{item.report.description}</p>
-                          {item.report.admin_notes && (
-                            <div className="p-2.5 rounded-lg bg-white border border-rose-100 text-[11px] text-slate-700">
-                              <strong className="text-purple-900">Catatan Tim Keamanan YUKU:</strong>{' '}
-                              {item.report.admin_notes}
-                            </div>
-                          )}
                         </div>
                       );
                     })()}
