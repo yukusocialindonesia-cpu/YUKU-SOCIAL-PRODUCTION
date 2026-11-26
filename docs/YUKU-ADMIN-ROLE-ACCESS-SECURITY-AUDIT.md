@@ -352,3 +352,25 @@ Recommended hardening: make the database the authoritative status state machine;
 ### Validation boundary
 
 All checks above were read-only inspection of Production function definitions, Edge Function source/version, role helper functions, trigger definitions, and column privileges. No user IDs/records, email lists, Auth sessions, or account-specific statuses were read. No Edge Function was deployed, no migration applied, no account or Admin permission changed, and no Production setting was modified. Production account-management version 1 remains behind the feature-branch source guard.
+### Follow-up: session revocation and stale Admin UI — 26 November 2026
+
+**Production controls confirmed:**
+- `private.is_active_admin(user_id)` requires the target to have an active private Admin registry row, `users.role='admin'`, and `users.account_status='active'`.
+- `private.has_admin_permission(user_id, permission)` accepts only the four known permission keys and delegates to the live active-Admin check. Public wrappers `has_admin_permission(text)` and `is_super_admin()` derive the actor from `auth.uid()`; their anon EXECUTE grant returns false for unauthenticated callers because `auth.uid()` is null.
+- Production contains 45 restrictive `account_status_active_guard` policies, 46 active `trg_guard_active_account_write` triggers, and `private.is_current_user_active()` is executable by authenticated users. This is database-side enforcement in addition to the UI.
+- `AuthContext` reloads role/account status on `TOKEN_REFRESHED`, `USER_UPDATED`, explicit `refreshRole()`, and browser window focus. It globally signs out the client when it next verifies an account as `suspended` or `banned`.
+- `set_admin_active()` and `set_admin_permissions()` are Super Admin-only and record audit events. Their changes are checked dynamically by database permission helpers, so revoked permissions should fail at the next protected database/RPC request even if the UI still displays a stale menu.
+
+**P2 — Revocation is not instantaneous in the visible UI.**
+- A browser tab that remains focused and has not refreshed its token may keep displaying a previously loaded Admin menu until the next focus/refresh event. Database/RPC authorization remains the security boundary; a stale button is not evidence that the protected action will succeed.
+- Existing JWT access tokens are not retroactively rewritten. The account suspension flow bans future Auth refresh/login, while database restrictive policies and write triggers block app-table access for suspended/banned users. The current browser will sign out when it next performs account-status verification.
+- No direct forced session revocation, realtime socket disconnect, or live client test was performed. Do not promise that an already-open Realtime connection closes immediately on Admin permission removal or account suspension.
+
+**Required Staging tests:**
+1. Revoke each Admin permission while the Admin tab remains open; verify direct RPC/Data API calls are denied immediately and UI refreshes after focus/token refresh.
+2. Deactivate an Admin registry row while the Admin tab remains open; verify `get_admin_access()` returns no Admin access and scoped RPCs fail.
+3. Suspend a Customer/Talent account while a session and Realtime channel are open; verify database reads/writes, Storage operations, new token refresh/login, and realtime authorization after reconnect.
+4. Verify current access token expiry behavior and ensure the app signs out on next account-status verification.
+5. Reconnect a previously open private booking chat after role/account revocation; ensure server-side channel authorization is re-evaluated.
+
+Validation boundary: policy/trigger/function counts and definitions were inspected read-only in Production. No session IDs, Auth user records, realtime payloads, or customer data were read; no session was revoked and no policy/trigger/function was changed.
