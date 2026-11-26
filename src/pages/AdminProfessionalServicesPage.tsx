@@ -95,6 +95,11 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
   }, [filter, page]);
 
   useEffect(() => {
+    const lastPage = Math.max(0, Math.ceil(totalRows / PAGE_SIZE) - 1);
+    if (!loading && page > lastPage) setPage(lastPage);
+  }, [loading, page, totalRows]);
+
+  useEffect(() => {
     if (isAuthLoading) return;
     const check = async () => {
       if (role !== 'admin' || !adminAccess) { setAuthorized(false); setLoading(false); return; }
@@ -157,7 +162,7 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
               {row.status !== 'approved' && row.status !== 'rejected' && <div className="mt-3 flex flex-wrap gap-2">
                 <button disabled={!!actingId} onClick={() => void review(row.id,'under_review')} className="rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-700 disabled:opacity-50"><Clock3 className="mr-1 inline h-3 w-3"/> Tandai diproses</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'needs_revision')} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-800 disabled:opacity-50">Minta revisi</button>
-                <button disabled={!!actingId || !row.provider?.is_approved || (verificationNotes[row.id] || '').trim().length < 20 || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && !row.credential_document_path)} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
+                <button disabled={!!actingId || !row.provider?.is_approved || (verificationNotes[row.id] || '').trim().length < 20 || ((row.subcategory?.verification_level === 'license' || row.subcategory?.verification_level === 'credential') && (!row.credential_document_path || !row.credential_url || row.credential_url_error))} onClick={() => void review(row.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & tampilkan</button>
                 <button disabled={!!actingId} onClick={() => void review(row.id,'rejected')} className="rounded-lg bg-rose-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-50"><XCircle className="mr-1 inline h-3 w-3"/> Tolak</button>
               </div>}
               {actingId === row.id && <p className="mt-2 flex items-center gap-2 text-[10px] text-slate-500"><Loader2 className="h-3 w-3 animate-spin"/> Menyimpan keputusan...</p>}
