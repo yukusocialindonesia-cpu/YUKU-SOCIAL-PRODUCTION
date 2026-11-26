@@ -517,7 +517,13 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               </div>
             );
           })()}
-          <p className="mt-2 text-[9px] leading-relaxed text-slate-400">Kategori tetap terlihat meskipun penyedia belum tersedia. Profil penyedia hanya ditampilkan setelah aktif dan disetujui.</p>
+          <div className="mt-3 flex flex-col gap-2 border-t border-purple-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[9px] leading-relaxed text-slate-500">Kategori tetap terlihat meskipun penyedia belum tersedia. Profil hanya tampil setelah aktif dan disetujui.</p>
+            <div className="flex shrink-0 gap-2">
+              <button type="button" onClick={() => onNavigate('/jasa-profesional')} className="flex-1 rounded-xl border border-purple-200 bg-white px-3 py-2 text-[10px] font-extrabold text-purple-800 transition hover:bg-purple-50 sm:flex-none">Lihat semua jasa</button>
+              <button type="button" onClick={() => onNavigate('/daftar-jasa-profesional')} className="flex-1 rounded-xl bg-[#4b1674] px-3 py-2 text-[10px] font-extrabold text-white shadow-sm transition hover:bg-[#32104f] sm:flex-none">Daftarkan jasa</button>
+            </div>
+          </div>
         </section>
 
         <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
