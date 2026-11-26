@@ -3,7 +3,7 @@
 Branch: `feat/independent-professional-provider-identity`  
 Base: `fix/yuku-final-service-taxonomy`  
 Scope: architecture and implementation contract for Professional-only provider accounts.  
-Status: Phase A identity foundation and Phase B applicant onboarding changes are committed to this feature branch only. Not applied to any database; no production data or deployment changed.
+Status: Phase A, Phase B, and the Phase C review/publication foundation are committed to this feature branch only. Phase D public discovery/profile migration remains outstanding. No database migration has been applied; no production data or deployment changed.
 
 ## Product requirement
 
