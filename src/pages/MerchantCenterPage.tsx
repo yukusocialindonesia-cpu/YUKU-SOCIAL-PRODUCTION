@@ -22,6 +22,7 @@ interface MerchantLocation {
   city: string | null;
   province: string | null;
   is_active: boolean;
+  opening_hours: Record<string, unknown>;
 }
 interface MerchantMember {
   membership_id: string;
@@ -63,6 +64,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [city, setCity] = useState('');
   const [province, setProvince] = useState('');
   const [locationPhone, setLocationPhone] = useState('');
+  const [openingHours, setOpeningHours] = useState('');
   const [teamMembers, setTeamMembers] = useState<MerchantMember[]>([]);
   const [teamLoading, setTeamLoading] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -122,7 +124,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (nextId) {
       const { data: locationRows, error: locationError } = await supabase
         .from('merchant_locations')
-        .select('id,business_id,location_name,address_text,city,province,is_active')
+        .select('id,business_id,location_name,address_text,city,province,is_active,opening_hours')
         .eq('business_id', nextId)
         .order('created_at', { ascending: true });
       if (locationError) setError('Profil bisnis terbaca, tetapi daftar lokasi belum dapat dimuat.');
@@ -221,11 +223,11 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       p_city: city || null,
       p_province: province || null,
       p_public_phone: locationPhone || null,
-      p_opening_hours: {},
+      p_opening_hours: openingHours.trim() ? { display: openingHours.trim() } : {},
     });
     if (rpcError) setError(rpcError.message);
     else {
-      setAddress(''); setSuccess('Lokasi usaha berhasil ditambahkan.');
+      setAddress(''); setOpeningHours(''); setSuccess('Lokasi usaha berhasil ditambahkan.');
       await load();
     }
     setSaving(false);
@@ -369,7 +371,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                 </form>
                 <section className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between"><div><h2 className="text-base font-extrabold text-slate-900">Lokasi & cabang</h2><p className="mt-1 text-[11px] text-slate-500">{locations.length} lokasi terdaftar</p></div><MapPin className="h-5 w-5 text-purple-700" /></div>
-                  {locations.map((location) => <div key={location.id} className="mb-2 rounded-xl border border-slate-100 bg-slate-50 p-3"><p className="text-xs font-bold text-slate-800">{location.location_name}</p><p className="mt-1 text-[11px] leading-5 text-slate-500">{location.address_text}{location.city ? `, ${location.city}` : ''}{location.province ? `, ${location.province}` : ''}</p></div>)}
+                  {locations.map((location) => <div key={location.id} className="mb-2 rounded-xl border border-slate-100 bg-slate-50 p-3"><p className="text-xs font-bold text-slate-800">{location.location_name}</p><p className="mt-1 text-[11px] leading-5 text-slate-500">{location.address_text}{location.city ? `, ${location.city}` : ''}{location.province ? `, ${location.province}` : ''}</p>{typeof location.opening_hours?.display === 'string' && <p className="mt-1 text-[10px] text-slate-500">Jam operasional: {location.opening_hours.display}</p>}</div>)}
                   {activeBusiness.review_status === 'approved' && isOwner && <p className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[10px] leading-5 text-amber-900">Penambahan cabang pada bisnis yang sudah tayang akan mengirim ulang profil untuk pemeriksaan YUKU. Bisnis disembunyikan sementara sampai pemeriksaan selesai.</p>}
                   {activeBusiness.review_status === 'approved' && !isOwner && <p className="mb-3 rounded-xl bg-slate-50 p-3 text-[10px] leading-5 text-slate-500">Cabang baru pada bisnis yang sudah tayang hanya dapat ditambahkan Owner agar alamat baru diperiksa terlebih dahulu.</p>}
                   {canManageLocations && <form onSubmit={addLocation} className="mt-4 border-t border-slate-100 pt-4">
@@ -380,6 +382,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
                       <label className="sm:col-span-2"><span className={labelClass}>Alamat lengkap *</span><input className={inputClass} value={address} onChange={(e) => setAddress(e.target.value)} maxLength={500} required placeholder="Jalan, nomor, gedung, patokan..." /></label>
                       <label><span className={labelClass}>Kota / Kabupaten</span><input className={inputClass} value={city} onChange={(e) => setCity(e.target.value)} maxLength={100} /></label>
                       <label><span className={labelClass}>Provinsi</span><input className={inputClass} value={province} onChange={(e) => setProvince(e.target.value)} maxLength={100} /></label>
+                      <label className="sm:col-span-2"><span className={labelClass}>Jam operasional</span><input className={inputClass} value={openingHours} onChange={(e) => setOpeningHours(e.target.value)} maxLength={160} placeholder="Contoh: Setiap hari, 09.00–21.00" /></label>
                     </div>
                     <button disabled={saving} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900"><Plus className="h-4 w-4" /> Tambah Lokasi</button>
                   </form>}
