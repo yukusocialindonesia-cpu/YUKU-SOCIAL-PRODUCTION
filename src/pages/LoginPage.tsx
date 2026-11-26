@@ -42,7 +42,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           .maybeSingle();
 
         if (userRowError || !userRow) {
-          await supabase.auth.signOut({ scope: 'global' });
+          // A transient profile-read failure must not revoke sessions on other devices.
+          await supabase.auth.signOut({ scope: 'local' });
           setErrorMsg('Data akun belum dapat diverifikasi. Silakan coba lagi.');
           return;
         }
