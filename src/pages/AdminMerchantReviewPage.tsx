@@ -219,7 +219,7 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
             <p className="mt-2 text-xs leading-5 text-slate-600">{offer.description}</p>
             {offer.eligibility&&<p className="mt-1 text-[10px] text-slate-500">Syarat peserta: {offer.eligibility}</p>}
             <p className="mt-1 text-[10px] text-slate-500">{offer.quota ? 'Kuota: '+offer.quota : 'Kuota: tidak dibatasi'} · Ditanggung merchant</p>
-            {offer.ends_at&&<p className="mt-1 text-[10px] text-slate-500">Berakhir {new Date(offer.ends_at).toLocaleString('id-ID')}</p>}
+            <p className="mt-1 text-[10px] text-slate-500">Mulai {new Date(offer.starts_at).toLocaleString('id-ID')}{offer.ends_at?' · berakhir '+new Date(offer.ends_at).toLocaleString('id-ID'):' · tanpa tanggal akhir'}</p>
             {offer.terms&&<p className="mt-2 rounded-lg bg-slate-50 p-2 text-[10px] leading-5 text-slate-600">Syarat: {offer.terms}</p>}
             {offer.redemption_instructions&&<p className="mt-2 rounded-lg bg-slate-50 p-2 text-[10px] leading-5 text-slate-600">Penukaran: {offer.redemption_instructions}</p>}
             {events.length>0&&<div className="mt-3 border-t border-slate-100 pt-3"><p className="mb-1 text-[9px] font-extrabold uppercase tracking-wide text-slate-400">Riwayat promo</p>{events.map((event)=><p key={event.id} className="mt-1 text-[10px] text-slate-600">{statusLabel[event.from_status||'draft']||event.from_status||'Draft'} → {statusLabel[event.to_status]||event.to_status} · {new Date(event.created_at).toLocaleString('id-ID')}{event.decision_note?' — '+event.decision_note:''}</p>)}</div>}
