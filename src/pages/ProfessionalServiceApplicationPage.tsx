@@ -135,10 +135,21 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     current.includes(mode) ? current.filter((item) => item !== mode) : [...current, mode],
   );
 
-  const validateFile = (file: File | null, label: string) => {
+  // Client-side signature checks are defense in depth only; server-side malware scanning
+  // and file inspection are still required before this feature is enabled in production.
+  const validateFile = async (file: File | null, label: string) => {
     if (!file) return '';
     if (!allowedTypes.includes(file.type)) return label + ' harus PDF, JPG, PNG, atau WebP.';
     if (file.size > maxFileSize) return label + ' maksimal 10 MB.';
+    const header = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+    const startsWith = (bytes: number[]) => bytes.every((value, index) => header[index] === value);
+    const isValidSignature =
+      (file.type === 'application/pdf' && startsWith([0x25, 0x50, 0x44, 0x46, 0x2d])) ||
+      (file.type === 'image/jpeg' && startsWith([0xff, 0xd8, 0xff])) ||
+      (file.type === 'image/png' && startsWith([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) ||
+      (file.type === 'image/webp' && startsWith([0x52, 0x49, 0x46, 0x46]) &&
+        header[8] === 0x57 && header[9] === 0x45 && header[10] === 0x42 && header[11] === 0x50);
+    if (!isValidSignature) return label + ' tidak cocok dengan format file yang dipilih.';
     return '';
   };
 
@@ -157,7 +168,11 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     if (!modes.length) { setError('Pilih minimal satu metode layanan.'); return; }
     if (requiresCredential && !credentialFile && !existingCredentialPath) { setError('Jenis jasa ini wajib melampirkan sertifikat kompetensi atau izin profesi.'); return; }
     if (requiresSupportingEvidence && !supportingFile && !existingSupportingPath) { setError('Jenis jasa ini wajib melampirkan bukti pengalaman atau referensi yang dapat diperiksa.'); return; }
-    const fileError = validateFile(credentialFile, 'Dokumen kompetensi/izin profesi') || validateFile(supportingFile, 'Dokumen pendukung');
+    const fileErrors = await Promise.all([
+      validateFile(credentialFile, 'Dokumen kompetensi/izin profesi'),
+      validateFile(supportingFile, 'Dokumen pendukung'),
+    ]);
+    const fileError = fileErrors.find(Boolean);
     if (fileError) { setError(fileError); return; }
 
     setSubmitting(true);
@@ -165,7 +180,13 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     try {
       const uploadPrivate = async (file: File | null, label: string) => {
         if (!file) return null;
-        const ext = file.name.split('.').pop()?.toLowerCase() || 'bin';
+        const extensionByMime: Record<string, string> = {
+          'application/pdf': 'pdf',
+          'image/jpeg': 'jpg',
+          'image/png': 'png',
+          'image/webp': 'webp',
+        };
+        const ext = extensionByMime[file.type] || 'bin';
         const path = `${user.id}/${crypto.randomUUID()}-${label}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from('professional-service-documents')
