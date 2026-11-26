@@ -30,6 +30,7 @@ interface IdentityRecord {
   date_of_birth: string;
   ktp_number: string | null;
   ktp_storage_path: string | null;
+  selfie_storage_path: string | null;
   ktp_verification_status: 'unsubmitted' | 'pending_review' | 'verified' | 'rejected';
   ktp_rejection_reason: string | null;
   emergency_contact_phone: string | null;
@@ -77,7 +78,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         supabase
           .from('user_identities')
           .select(
-            'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
+            'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, selfie_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
           )
           .eq('id', user.id)
           .maybeSingle(),
@@ -294,6 +295,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         date_of_birth: dateOfBirth,
         ktp_number: ktpNumber.trim(),
         ktp_storage_path: ktpStoragePath,
+        selfie_storage_path: selfieStoragePath,
         emergency_contact_phone: emergencyPhone.trim(),
       };
 
