@@ -32,7 +32,7 @@ interface ProviderProfile {
 }
 const money = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
 const unitLabel: Record<string, string> = { per_hour: '/ jam', per_session: '/ sesi', per_day: '/ hari', per_project: '/ proyek' };
-const verificationLabel: Record<string, string> = { identity: 'Pemeriksaan identitas', reference: 'Pemeriksaan referensi', credential: 'Pemeriksaan kompetensi', license: 'Memerlukan pemeriksaan izin profesi' };
+const verificationLabel: Record<string, string> = { identity: 'Standar pemeriksaan identitas', reference: 'Standar pemeriksaan referensi', credential: 'Standar pemeriksaan kompetensi', license: 'Wajib pemeriksaan izin profesi' };
 
 export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, onNavigate }) => {
   const [profile, setProfile] = useState<ProviderProfile | null>(null);
@@ -106,7 +106,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-extrabold sm:text-2xl">{profile.display_name}</h1>
-                {profile.is_approved && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-bold"><BadgeCheck className="h-3 w-3"/> Profil terverifikasi YUKU</span>}
+                {profile.is_approved && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-bold"><BadgeCheck className="h-3 w-3"/> Profil Talent disetujui</span>}
               </div>
               <p className="mt-1 text-xs text-violet-100">{profile.headline || 'Penyedia jasa profesional'}</p>
               <p className="mt-2 flex items-center gap-1 text-[11px] text-violet-100"><MapPin className="h-3 w-3"/>{profile.city || 'Lokasi belum dicantumkan'}</p>
@@ -150,7 +150,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
                 {service.delivery_modes.map((mode) => <span key={mode} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] text-slate-600">{mode === 'online' ? <Monitor className="h-3 w-3"/> : <MapPin className="h-3 w-3"/>}{mode === 'online' ? 'Online' : 'Offline'}</span>)}
                 {service.experience_years > 0 && <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] text-slate-600"><CalendarDays className="h-3 w-3"/>{service.experience_years} tahun pengalaman</span>}
               </div>
-              <div className="mt-3 flex items-start gap-2 rounded-xl bg-violet-50 p-3 text-[10px] leading-relaxed text-violet-800"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0"/>{verificationLabel[service.subcategory?.verification_level] || 'Persyaratan verifikasi mengikuti jenis layanan.'}. Persetujuan listing tidak menggantikan pemeriksaan izin profesi khusus.</div>
+              <div className="mt-3 flex items-start gap-2 rounded-xl bg-violet-50 p-3 text-[10px] leading-relaxed text-violet-800"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0"/>{verificationLabel[service.subcategory?.verification_level] || 'Persyaratan verifikasi mengikuti jenis layanan.'}. Status profil Talent dan persetujuan listing bukan bukti bahwa sertifikat atau izin profesi telah diverifikasi oleh instansi penerbit.</div>
             </article>
           ))}
         </section>
