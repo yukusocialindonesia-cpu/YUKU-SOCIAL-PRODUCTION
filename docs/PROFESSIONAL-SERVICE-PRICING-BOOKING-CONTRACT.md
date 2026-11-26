@@ -93,3 +93,24 @@ Use a discriminated booking view model: `activity` or `professional_service`.
 - No split payments or deposits.
 - No off-platform payment.
 - No professional-service booking/payment CTA until all release gates pass.
+
+
+## Current onboarding and display audit (2026-11-26)
+
+- The application schema already accepts exactly the four pricing units above and stores the provider-entered rate as an integer rupiah amount. The application form validates a minimum displayed tariff of Rp10,000; server-side booking validation must still validate the amount and compute totals independently.
+- The application form now explains the meaning of each unit. Applicants are prompted to include session duration, daily working hours/inclusions, or project deliverables/revisions/deadline in the service description.
+- Provider profile displays the price with its unit (for example, `Rp150.000 / jam` or `Rp500.000 / proyek`). The professional directory does not expose the price on browse cards, matching the YUKU product decision that price is shown after opening the provider profile.
+- Admin review cards use the same formatted price/unit representation.
+- The current application data model does **not** store session duration, daily start/end hours, project deliverables, revision count, deadline, or acceptance criteria as structured fields. At present those details are descriptive text only. Do not enable booking or calculate a final checkout total from this free text.
+- The existing listing and application schema support the four units, but the legacy activity booking schema is hourly and must remain isolated. A professional-service booking requires the separate booking-kind and immutable snapshot design described above.
+- No automatic per-service unit restrictions are imposed at onboarding because a service can legitimately be offered per session, hour, day, or project depending on its scope. Admin review must reject misleading or ambiguous unit/rate combinations.
+
+### Required before professional-service checkout
+
+1. Add structured scheduling/scope fields: session duration in minutes; daily service hours and date boundaries; project deliverables, included revisions, due date, and acceptance criteria.
+2. Add server-side constraints and a dedicated idempotent booking RPC that validates quantity against the selected unit and computes totals in integer rupiah.
+3. Snapshot the exact rate, unit, quantity, agreed scope, delivery mode, fee policy, and cancellation/acceptance policy at booking creation.
+4. Verify that payment, escrow, refund, dispute, settlement, and payout consumers handle the new booking kind without changing existing activity-booking calculations.
+5. Run migration, RLS, concurrency, idempotency, and end-to-end financial tests in a disposable/staging Supabase project.
+
+Until those gates pass, professional-service profiles are discovery and pricing information only; the booking/payment CTA stays disabled.
