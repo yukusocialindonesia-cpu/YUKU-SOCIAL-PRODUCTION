@@ -281,3 +281,28 @@ Related active triggers inspected:
 ### Related Production notification finding reaffirmed
 
 `notify_on_booking_message_insert()` remains configured to store the first 120 characters of the chat message in the recipient's notification body. Since the push function sends notification.message, private chat text can appear in push notification previews/lock screens. This was previously documented in `docs/YUKU-REALTIME-NOTIFICATION-SESSION-AUDIT.md`; verify the forward migration is deployed before treating generic chat notifications as active in Production.
+## Follow-up: KTP review audit attribution gap — 26 November 2026
+
+### P2: `admin_review_ktp()` does not persist a reviewer decision audit event
+
+Production function `public.admin_review_ktp(uuid, ktp_status_type, text)` and all active triggers on `public.user_identities` were inspected read-only.
+
+Confirmed behavior:
+- The RPC checks Talent permission for Talent targets and Support permission for Customer targets.
+- It accepts only `verified` or `rejected`, locks the `user_identities` row, and only processes `pending_review`.
+- It updates KTP status and triggers the corresponding user notification.
+- It does **not** insert a row into `admin_audit_logs`.
+- On approval, `verified_by_admin_id` records `auth.uid()` and `verified_at` is set.
+- On rejection, `verified_by_admin_id` and `verified_at` are both set to NULL. The rejection reason is retained, but the reviewer identity and decision timestamp are not.
+- The active `user_identities` triggers inspected enforce evidence, immutability, account eligibility and notifications; none writes a reviewer audit event.
+
+Impact: a KTP rejection has no durable database record identifying which Admin made the decision or when. An approval has partial attribution on the identity row, but no consistent append-only decision event. This weakens dispute handling, reviewer accountability and investigation of mistaken or abusive decisions. No identity rows or audit records were queried.
+
+Required remediation:
+1. Add an append-only Admin audit event inside the same transaction as the KTP decision, with server-derived actor `auth.uid()`, target user ID, prior/new KTP status, decision timestamp and a sanitized reason code/text.
+2. Do not place KTP numbers, document paths, signed URLs, images or other evidence in the audit payload.
+3. Preserve rejection reviewer attribution separately from `verified_by_admin_id` (which should continue to mean verifier only), either in the audit event or dedicated `reviewed_by_admin_id` / `reviewed_at` fields.
+4. Ensure Customer KTP review requires Support permission and Talent KTP review requires Talent permission, as the current function intends.
+5. Add tests proving Customer/Talent role boundaries, no duplicate review, actor attribution on both approval and rejection, and that authenticated clients cannot edit/delete audit events.
+
+**Validation boundary:** this is a Production function/trigger source inspection only. No migration, audit row, user identity, function, permission or Production setting was changed. Treat reviewer attribution as a release hardening requirement before operating KTP moderation at scale.
