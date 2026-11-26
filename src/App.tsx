@@ -89,6 +89,8 @@ export default function App() {
       setCurrentPath('/komunitas');
     } else if (pathname === '/talent') {
       setCurrentPath('/talent');
+    } else if (pathname === '/jasa-profesional') {
+      setCurrentPath('/jasa-profesional');
     } else if (pathname.startsWith('/talent/')) {
       const id = pathname.replace('/talent/', '');
       setActiveTalentId(id || '');
@@ -192,6 +194,8 @@ export default function App() {
     switch (currentPath) {
       case '/':
         return <HomePage onNavigate={handleNavigate} />;
+      case '/jasa-profesional':
+        return <ProfessionalServicesPage onNavigate={handleNavigate} />;
       case '/komunitas':
         return <CommunityPage onNavigate={handleNavigate} />;
       case '/talent':
