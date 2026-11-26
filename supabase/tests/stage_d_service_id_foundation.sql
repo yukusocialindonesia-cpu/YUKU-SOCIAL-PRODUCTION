@@ -256,3 +256,37 @@ BEGIN
   END IF;
 END;
 $$;
+
+
+-- Stage D.4: scoped Support dispute hold/restore must not become a broad Admin bypass.
+DO $$
+DECLARE
+  v_actor_guard TEXT;
+  v_update_guard TEXT;
+BEGIN
+  v_actor_guard := pg_get_functiondef('public.guard_booking_status_actor()'::regprocedure);
+  v_update_guard := pg_get_functiondef('public.validate_booking_update()'::regprocedure);
+
+  IF position('has_admin_permission(''support'')' IN v_actor_guard) = 0
+     OR position('status_before_dispute' IN v_actor_guard) = 0
+     OR position('reports_complaints' IN v_actor_guard) = 0 THEN
+    RAISE EXCEPTION 'Actor guard must scope Support hold/restore to recorded state and active reports';
+  END IF;
+
+  IF position('has_admin_permission(''support'')' IN v_update_guard) = 0
+     OR position('status_before_dispute' IN v_update_guard) = 0
+     OR position('OLD.status_before_dispute' IN v_update_guard) = 0 THEN
+    RAISE EXCEPTION 'Booking update validator must restrict Support restoration to the exact pre-dispute state';
+  END IF;
+
+  IF position('has_admin_permission(''finance'')' IN v_actor_guard) > 0
+     OR position('has_admin_permission(''booking'')' IN v_actor_guard) > 0 THEN
+    RAISE EXCEPTION 'Finance/Booking scoped roles must not receive a generic booking actor-guard bypass';
+  END IF;
+
+  IF position('has_admin_permission(''finance'')' IN v_update_guard) > 0
+     OR position('has_admin_permission(''booking'')' IN v_update_guard) > 0 THEN
+    RAISE EXCEPTION 'Finance/Booking scoped roles must not receive a generic booking update-validator bypass';
+  END IF;
+END;
+$$;
