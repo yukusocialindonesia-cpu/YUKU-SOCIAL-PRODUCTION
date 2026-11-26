@@ -82,11 +82,11 @@ Booking, payment, escrow, komisi, affiliate, refund, dan payout merupakan data s
 
 Audit baca-saja terhadap migration history project Production `sbqvltqzzcsqzijgumld` dibanding folder `supabase/migrations/` menemukan:
 
-- 107 versi tercatat di remote.
+- 129 versi tercatat di remote.
 - 125 file SQL di repository.
-- 73 versi remote memiliki pasangan nama/versi file yang dapat dipastikan; nama file tersebut telah diseragamkan ke format `<version>_<name>.sql`.
-- 34 versi remote belum memiliki file lokal yang dapat dipasangkan secara pasti.
-- 52 file lokal belum memiliki versi remote yang sama. Kelompok ini mencakup migration fitur baru yang belum diterapkan, serta file historis yang memerlukan pemeriksaan isi sebelum dipetakan.
+- 74 versi remote memiliki pasangan nama/versi file yang dapat dipastikan; nama file tersebut telah diseragamkan ke format `<version>_<name>.sql`.
+- 55 versi remote belum memiliki file lokal yang dapat dipasangkan secara pasti.
+- 51 file lokal belum memiliki versi remote yang sama. Kelompok ini mencakup migration fitur baru yang belum diterapkan, serta file historis yang memerlukan pemeriksaan isi sebelum dipetakan.
 
 ### Aturan penamaan dan urutan
 
@@ -101,7 +101,7 @@ Audit baca-saja terhadap migration history project Production `sbqvltqzzcsqzijgu
 
 ### Status yang belum selesai
 
-34 versi remote yang belum memiliki file pasangan harus dipulihkan atau dipetakan melalui pemeriksaan isi SQL dan Git history. 52 file lokal yang tidak memiliki versi remote harus diklasifikasikan satu per satu sebagai:
+55 versi remote yang belum memiliki file pasangan harus dipulihkan atau dipetakan melalui pemeriksaan isi SQL dan Git history. 51 file lokal yang tidak memiliki versi remote harus diklasifikasikan satu per satu sebagai:
 1. migration baru yang memang belum diterapkan;
 2. file historis dengan versi/nama berbeda;
 3. file duplikat atau superseded yang perlu keputusan eksplisit.
@@ -114,9 +114,9 @@ Sampai pekerjaan tersebut selesai, **jangan menjalankan `supabase db push`, `mig
 Standar nama untuk migration baru adalah `<version>_<deskripsi_snake_case>.sql`, dengan version unik dan urut secara kronologis. Gunakan versi timestamp UTC 14 digit untuk migration baru. Jangan menggunakan ulang nomor versi atau mengganti isi migration yang sudah diterapkan.
 
 Pada rekonsiliasi repository terhadap riwayat Production yang dibaca pada 26 November 2026:
-- 107 versi tercatat pada riwayat Production.
+- 129 versi tercatat pada riwayat Production.
 - 74 file lokal berhasil dipasangkan berdasarkan nama migration yang sama dan kemudian disamakan prefix versinya dengan versi Production.
-- 33 versi Production belum memiliki file SQL lokal yang dapat dipasangkan dengan yakin. File SQL-nya harus dipulihkan dari sumber historis yang benar sebelum folder migration dapat dianggap lengkap.
+- 55 versi Production belum memiliki file SQL lokal yang dapat dipasangkan dengan yakin. File SQL-nya harus dipulihkan dari sumber historis yang benar sebelum folder migration dapat dianggap lengkap.
 - File lokal lain yang belum ada di riwayat Production tidak otomatis dianggap gagal atau aman untuk diterapkan. Sebagian adalah migration fitur baru, sebagian masih bernomor legacy. Periksa isi SQL dan status skema sebelum menentukan urutan penerapannya.
 
 **Penting:** kesamaan nama bukan bukti kesamaan isi SQL atau checksum. Perubahan nama file hanya memperbaiki pemetaan versi di repository; ini tidak mengubah riwayat Supabase dan tidak menjalankan SQL. Jangan menjalankan `supabase db push` ke Production sampai seluruh versi historis, urutan, checksum/isi, dan environment Preview direkonsiliasi.
