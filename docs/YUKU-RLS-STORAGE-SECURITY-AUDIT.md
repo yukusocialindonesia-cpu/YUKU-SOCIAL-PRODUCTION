@@ -105,3 +105,18 @@ A read-only inspection of the effective Production `storage.objects` policies fo
 - As an owner, test UPDATE/upsert of an existing approved object: it must fail. Test upload to a new unique path: it must succeed and the new row must be pending.
 - Verify owner deletion still works and Talent Admin moderation remains functional.
 - Production currently still has the owner UPDATE policy until the new migration is applied through the approved release process. No Production write was made in this audit.
+
+
+## KTP evidence lifecycle finding — 26 November 2026
+
+A source-to-schema comparison found a separate identity-evidence handling defect:
+
+- `VerifyKtpPage.tsx` uploads both the KTP image and a selfie-with-KTP image into private `ktp-documents`.
+- The active `public.user_identities` schema contains only `ktp_storage_path`; it has no `selfie_storage_path` column. The client saves only the KTP path.
+- Admin KTP review UI generates a signed URL only for `ktp_storage_path`. The selfie is never linked to the identity record or shown in the review flow.
+- If one of the parallel uploads fails, or the identity-row lookup/save fails, the successful uploaded object is not cleaned up. Re-submitting a new KTP also leaves the previous KTP object behind because only the latest path is stored.
+- The result is orphaned sensitive identity material in the private bucket, and the stated selfie verification step is not actually part of the Admin review decision.
+
+This is a P1 identity workflow/privacy issue. Do not silently discard the selfie requirement or claim it is verified. A complete fix needs a schema field and migration for selfie evidence, typed client/admin review integration, signed-URL access through the same scoped KTP permission, plus failure cleanup and retention/deletion rules for superseded uploads. The existing upload path must also clean up any successfully uploaded object when a sibling upload or database write fails.
+
+No production data was read from object contents, deleted, or changed during this audit.
