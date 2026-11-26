@@ -13,6 +13,9 @@ interface MainLayoutProps {
 
 const HIDE_BOTTOM_NAV: string[] = [
   '/talent/:id',
+  '/jasa-profesional/:id',
+  '/daftar-jasa-profesional',
+  '/verifikasi-ktp',
   '/login',
   '/register',
   '/lupa-sandi',
