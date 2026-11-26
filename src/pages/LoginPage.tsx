@@ -79,7 +79,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         const targetRoute: AppRoute =
           userRow.role === 'admin'
             ? '/admin'
-            : hasTalentDraft && userRow.role === 'customer'
+            : hasTalentDraft && (userRow.role === 'customer' || userRow.role === 'talent')
             ? '/daftar-talent'
             : userRow.role === 'talent'
             ? '/dashboard-talent'
