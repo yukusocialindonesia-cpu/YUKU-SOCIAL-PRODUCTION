@@ -63,7 +63,7 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
       if(!mounted)return;
       if(locationError){setError('Lokasi merchant belum dapat dimuat. Coba muat ulang.');setBusinesses([]);setLoading(false);return;}
       const {data:offerRows}=ids.length
-        ? await supabase.from('merchant_offers').select('id,business_id,title,description,offer_type,starts_at,ends_at,eligibility,quota,funded_by,terms,redemption_instructions').in('business_id',ids).eq('status','approved').order('starts_at',{ascending:true})
+        ? await supabase.from('merchant_offers').select('id,business_id,title,description,offer_type,starts_at,ends_at,eligibility,quota,funded_by,terms,redemption_instructions').in('business_id',ids).eq('status','approved').order('starts_at',{ascending:true}).limit(300)
         : {data:[] as any[]};
       if(!mounted)return;
       const grouped=new Map<string,MerchantLocation[]>();
