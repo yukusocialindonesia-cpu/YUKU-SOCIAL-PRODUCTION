@@ -3,7 +3,7 @@
 Branch: `feat/independent-professional-provider-identity`  
 Base: `fix/yuku-final-service-taxonomy`  
 Scope: architecture and implementation contract for Professional-only provider accounts.  
-Status: Phase A–G are committed to this feature branch only: independent identity, independent applications/review/publication, independent public queries, server-derived profile completeness, non-recursive public RLS eligibility, and independent private-document upload access. Automated build/test and full regression verification remain outstanding. No database migration has been applied; no production data or deployment changed.
+Status: Phase A–H are committed to this feature branch only: independent identity, independent applications/review/publication, independent public queries, server-derived profile completeness, non-recursive public RLS eligibility, independent private-document upload access, and Super Admin profile-read parity. Automated build/test and full regression verification remain outstanding. No database migration has been applied; no production data or deployment changed.
 
 ## Product requirement
 
@@ -119,3 +119,13 @@ This branch is a code-planning checkpoint only. Do not run migrations against Pr
 - Run role-based RLS/storage tests for anon, customer, Professional-only provider, Companion-only provider, dual provider, and Talent Admin.
 - Confirm no booking/payment action becomes available; Professional Services remains display/application-only until a separate booking contract is approved and implemented.
 - No production migration, merge, or deploy is authorized by this implementation checkpoint.
+
+
+### Phase H — Super Admin review visibility
+- Finding: application and private-document review policies explicitly allow Super Admin, but the new independent provider profile SELECT policy initially allowed only owner and Talent-permission admins. A Super Admin without the Talent grant could see the application but not hydrate its provider profile in the review UI.
+- Fix: migration `20261127010000_allow_super_admin_professional_profile_review.sql` adds the same explicit Super Admin allowance to independent profile reads.
+- Verification still required: test both a Super Admin without Talent permission and a Talent-permission admin in staging.
+
+### CI wiring
+- The existing build workflow now includes the feature branch in push triggers and watches Supabase migrations. The workflow runs `npm ci`, `npm run lint`, and `npm run build`.
+- A successful run for the current branch head has not yet been observed. Do not treat CI as passed until GitHub reports a completed successful run.
