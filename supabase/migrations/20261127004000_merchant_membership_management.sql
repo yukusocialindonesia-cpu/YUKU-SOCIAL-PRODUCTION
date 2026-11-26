@@ -406,15 +406,18 @@ begin
     raise exception 'Active account required' using errcode = '42501';
   end if;
 
-  update public.merchant_memberships
+  update public.merchant_memberships mm
      set membership_status = 'active',
          accepted_at = now(),
          updated_at = now()
-   where id = p_membership_id
-     and user_id = auth.uid()
-     and membership_status = 'pending_invitation'
-     and member_role in ('manager','staff')
-  returning business_id,member_role into v_business_id,v_member_role;
+    from public.merchant_businesses mb
+   where mm.id = p_membership_id
+     and mm.user_id = auth.uid()
+     and mm.membership_status = 'pending_invitation'
+     and mm.member_role in ('manager','staff')
+     and mb.id = mm.business_id
+     and mb.review_status not in ('rejected','suspended')
+  returning mm.business_id,mm.member_role into v_business_id,v_member_role;
 
   if not found then
     return false;
