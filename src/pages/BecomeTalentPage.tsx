@@ -99,20 +99,26 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
     }
   }, []);
 
-  // Pulihkan isian formulir yang tersimpan sebelum konfirmasi email,
-  // supaya calon talent tidak perlu mengisi dua kali (password & KTP tidak pernah disimpan).
+  // Pulihkan draf hanya setelah email akun terautentikasi cocok.
+  // Draf browser bersama tidak boleh tampil ke akun lain.
   useEffect(() => {
+    if (!currentSessionUser) return;
     try {
       const raw = localStorage.getItem(TALENT_DRAFT_KEY);
       if (!raw) return;
-      const draft = JSON.parse(raw);
-      if (draft && typeof draft === 'object') {
-        setFormData((prev) => ({ ...prev, ...draft, password: '', ktpNumber: prev.ktpNumber }));
+      const draft = JSON.parse(raw) as { email?: unknown } & Record<string, unknown>;
+      const draftEmail = typeof draft.email === 'string' ? draft.email.trim().toLowerCase() : '';
+      const accountEmail = (currentSessionUser.email || '').trim().toLowerCase();
+      if (!draftEmail || !accountEmail || draftEmail !== accountEmail) {
+        localStorage.removeItem(TALENT_DRAFT_KEY);
+        return;
       }
+      setFormData((prev) => ({ ...prev, ...draft, password: '', ktpNumber: prev.ktpNumber }));
     } catch {
-      // Abaikan draf yang rusak atau penyimpanan yang tidak tersedia
+      // Draf rusak tidak boleh dipulihkan.
+      try { localStorage.removeItem(TALENT_DRAFT_KEY); } catch { /* storage unavailable */ }
     }
-  }, []);
+  }, [currentSessionUserId, currentSessionUser?.email]);
 
   // Isi otomatis formulir dari akun yang sudah login (data dari AuthContext).
   const currentSessionUserId = currentSessionUser?.id ?? null;
@@ -238,7 +244,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
             data: {
               full_name: formData.fullName.trim(),
               phone_number: formData.phone.trim(),
-              user_role: 'talent', // Triggers public.handle_new_user() with role 'talent'
+              user_role: 'talent', // The Auth trigger creates a Customer; become_talent() runs after email confirmation/session
             },
           },
         });
