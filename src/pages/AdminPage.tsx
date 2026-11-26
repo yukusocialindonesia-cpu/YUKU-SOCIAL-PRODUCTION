@@ -2675,6 +2675,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 >
                   {loadingCustomerKtpId === selectedKtpItem.id ? 'Membuka foto...' : 'Lihat Foto KTP Talent'}
                 </button>
+                {!selectedKtpItem.selfie_storage_path && (
+                  <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    Selfie dengan KTP belum tertaut. Persetujuan tidak tersedia sampai pengguna mengirim bukti lengkap.
+                  </p>
+                )}
                 {selectedKtpItem.selfie_storage_path && (
                   <button
                     type="button"
@@ -2718,7 +2723,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => handleApproveTalent(selectedKtpItem)}
-                disabled={isSubmittingAction || selectedKtpItem.is_approved}
+                disabled={
+                  isSubmittingAction ||
+                  selectedKtpItem.is_approved ||
+                  !selectedKtpItem.ktp_storage_path ||
+                  !selectedKtpItem.selfie_storage_path ||
+                  !selectedKtpItem.ktp_number ||
+                  !/^\d{16}$/.test(selectedKtpItem.ktp_number)
+                }
                 className="min-h-11 px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
