@@ -145,3 +145,54 @@ Branch already contains the intended mitigation in migration 65_talent_media_mod
 Required Staging tests: authenticated owner UPDATE/upsert existing approved object must fail; owner INSERT new unique object must succeed and create a pending row; owner DELETE only their own object; Talent Admin moderation must still work; unrelated user access must fail; approved object remains readable only through authorized short-lived access.
 
 No Production policy, bucket, media row, or object was modified in this recheck.
+
+
+## Production public-profile and cross-user privacy recheck — 26 November 2026
+
+This section records a read-only comparison of effective Production grants/policies against the current feature-branch migrations. The queries inspected catalog metadata only; no customer/Talent row contents, KTP values, exact coordinates, object contents, or user identifiers were read.
+
+### P1 — anonymous table-level SELECT remains on public.talent_profiles
+
+Production ACL inspection shows `public.talent_profiles` still has table-level SELECT granted to `anon` and `authenticated`. The effective public policy limits which Talent rows can be read to the owner, Talent Admin, or publicly visible Talent, but the table-level grant exposes every column of those visible rows to anonymous clients.
+
+The Production column privilege check confirmed anonymous SELECT on fields including `referral_code`, `hourly_rate`, `online_chat_rate`, `gender`, `languages`, `interests`, `completed_hours`, and public profile fields. In particular, `referral_code` is explicitly documented in the branch as intentionally excluded from anonymous catalog access.
+
+The feature branch already contains migration `20261127000300_limit_public_talent_profile_columns.sql`, which revokes table-level SELECT from anon and grants an explicit allowlist. The live Production ACL proves this migration has not yet taken effect there. This is a release blocker for the public profile privacy boundary; do not claim it is fixed in Production until the migration is applied through the approved rollout and `has_column_privilege` confirms `anon` cannot SELECT `referral_code` or other excluded columns.
+
+The current allowlist deliberately includes the existing public hourly/online rates for authenticated/anonymous catalog reads. This does not match the product UI preference to reveal price only after a user opens the Talent profile. It is a product/data-minimization issue rather than a private-credential leak; decide whether rates should remain publicly queryable before the next release and adjust the allowlist/UI contract consistently.
+
+### Other cross-user access checks
+
+The Production catalog/policy snapshot showed:
+- `public.users`: anon has no SELECT; authenticated SELECT is constrained by `users_select_self_or_admin`.
+- `public.user_identities`: anon has no SELECT; authenticated table SELECT is constrained to owner or the role-scoped KTP reviewer helper. KTP number, legal name, date of birth, emergency contact and storage path are not anonymous-readable.
+- `public.customer_profiles`: anon has no SELECT; authenticated rows are limited to the owner, Super Admin, or a Talent who has a booking with that Customer. That booking-linked Talent can read the Customer profile fields (display name, avatar, city, gender, bio) needed by the current post-booking UI. This is a deliberate relationship-based disclosure, but should remain limited to booking counterparties and should not be widened to all authenticated users.
+- `public.talent_profiles`: row visibility is still restricted by the live public-visibility helper; the problem above is excessive columns on each visible row, not unrestricted access to all Talent rows.
+- `public.talent_services`: visitor SELECT is scoped to approved, active services of publicly visible Talent, plus owner and Talent Admin access.
+- `public.talent_availability`: anon SELECT is scoped to the Talent owner, Talent Admin, or public-visibility helper. Exact Talent GPS coordinates are stored in the private schema and have no anon/authenticated direct table SELECT grant.
+- `public.bookings`: SELECT is limited to booking Customer/Talent parties or Super Admin. Booking row UPDATE has participant policy, but authenticated column UPDATE grants are limited to `status`, `cancellation_reason`, and `updated_at`; trigger validation remains part of the security boundary. Direct client UPDATE is not the booking creation/payment path.
+
+### P2 — public reviews expose stable Customer and booking identifiers
+
+Production grants SELECT on the entire `public.reviews` table to anon. The `reviews_select_public` RLS policy returns visible reviews, but public columns include `customer_id` and `booking_id` in addition to rating, review text, Talent ID, visibility and timestamps. These are persistent UUID identifiers, not names or contact details, but they permit correlation of a review author across public reviews and expose internal booking identifiers.
+
+Review whether public review cards need raw `customer_id` or `booking_id`. Prefer a public-safe view/RPC that returns a display label and review fields without internal foreign keys; keep the raw table SELECT limited to authenticated roles that need it, and preserve the existing moderation workflow. This is a privacy-minimization finding, not evidence that Customer names, emails, phone numbers, or booking addresses are publicly readable.
+
+### Storage findings reconfirmed
+
+- `ktp-documents`, `qris-payment-proofs`, `bank-transfer-payment-proofs`, and `professional-service-documents` are private buckets with owner/role-scoped read policies.
+- `talent-media` is a private bucket, but Production still has the owner UPDATE policy on `storage.objects`. Branch migration `20261127001300_make_talent_media_objects_immutable.sql` removes that policy so an approved media object cannot be replaced without a new moderation row. Production remains exposed until the migration is applied and verified.
+- `portfolios` is a public bucket with unconditional public SELECT. Historical implementation documents describe it as the public Talent portfolio gallery, but current branch frontend search did not find an active upload/read path. Inventory old objects and links before changing visibility; do not assume the bucket is empty or unused.
+- `avatars`, `hero`, `hero-slides`, `promotions`, `branding`, and `qris-payment-display` are public-facing assets. Public bucket visibility means anyone with an object URL can fetch its contents; never place KTP, private documents, payment evidence, or unapproved media there.
+
+### Required release and Staging checks
+
+1. Apply migration `20261127000300_limit_public_talent_profile_columns.sql` in Staging; confirm anonymous table-level SELECT is false and only the approved column allowlist is readable. Explicitly test `referral_code` denial.
+2. Decide whether public anonymous access to Talent rates is intentional given the product's click-to-reveal pricing rule.
+3. Test Customer A cannot read Customer B profile, identity, bookings, payment evidence, or private media; a Talent can read only profile fields of Customers with whom they have a booking; unrelated Talent cannot.
+4. Test public review access returns only intentionally public review fields; no raw customer or booking identifiers if the safe projection is adopted.
+5. Apply the talent-media immutable-object migration in Staging; verify owner UPDATE/upsert fails while new unique upload enters moderation.
+6. Inventory legacy `portfolios` objects and all public buckets for private material before any bucket visibility changes.
+7. Re-run effective ACL, RLS, Storage policy and role-matrix checks after rollout. Static migration presence on the feature branch is not proof of Production deployment.
+
+No Production grants, policies, buckets, rows, files, users, or settings were changed during this audit.
