@@ -46,7 +46,16 @@ begin
         )
       from public.users u
       where u.role = 'admin'::public.user_role_type
-        and u.account_status::text not in ('suspended', 'banned');
+        and private.is_active_admin(u.id)
+        and (
+          private.is_super_admin(u.id)
+          or exists (
+            select 1
+            from private.admin_permissions ap
+            where ap.admin_user_id = u.id
+              and ap.permission_key = 'talent'
+          )
+        );
 
       return new;
     end if;
@@ -111,7 +120,16 @@ begin
           )
         from public.users u
         where u.role = 'admin'::public.user_role_type
-          and u.account_status::text not in ('suspended', 'banned');
+          and private.is_active_admin(u.id)
+          and (
+            private.is_super_admin(u.id)
+            or exists (
+              select 1
+              from private.admin_permissions ap
+              where ap.admin_user_id = u.id
+                and ap.permission_key = 'talent'
+            )
+          );
       end if;
     end if;
   exception when others then
