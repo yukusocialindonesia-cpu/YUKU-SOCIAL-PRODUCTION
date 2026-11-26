@@ -88,7 +88,7 @@ Do not mass-replace these references. In particular, trigger guards, payout stat
 
 ## Validation boundary
 
-This is a Git source audit. No SQL was executed against Staging or Production, no Supabase advisor was run, no functions were deployed, and no database data or policies were changed. The PR remains a draft and unmerged.
+The original inventory section was a Git source audit. A later Production read-only follow-up and Security Advisor snapshot are recorded below. No SQL writes, migrations, function deployments, database data changes, or policy changes were performed. The PR remains a draft and unmerged.
 
 ## Production read-only follow-up — 26 November 2026
 
