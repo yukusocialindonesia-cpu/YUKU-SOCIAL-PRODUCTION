@@ -38,8 +38,6 @@ interface StatusHistoryEntry {
   created_at: string;
 }
 interface Props { onNavigate: (path: AppRoute) => void; }
-const money = (value: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
-const units: Record<string, string> = { per_hour: '/ jam', per_session: '/ sesi', per_day: '/ hari', per_project: '/ proyek' };
 const statusLabels: Record<string, string> = { pending: 'Menunggu', under_review: 'Sedang diperiksa', needs_revision: 'Perlu revisi', approved: 'Disetujui', rejected: 'Ditolak' };
 
 export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
