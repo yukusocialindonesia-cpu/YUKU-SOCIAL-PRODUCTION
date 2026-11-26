@@ -134,3 +134,15 @@ Implemented on the feature branch:
 Static source checks after commit confirmed the blanket permission bypass pattern is absent, the narrow Support hold/restore branches exist, financial snapshot protection remains present, and the disputed-hold restoration transition is guarded.
 
 **Not yet verified:** PostgreSQL migration replay, RPC integration, trigger execution order, and negative permission tests in Staging. In particular, test both the report-insert auto-hold trigger and Support report-resolution restore path with one and multiple active reports before production rollout. No Staging or Production database was modified.
+
+
+## Admin UI follow-up — booking status display
+
+Commit: `e4ccbf2e067e889be53f4609ecb0a198ce804827`
+
+- Confirmed scoped Booking Admin already uses the minimal `get_admin_bookings()` RPC; the direct `bookings.select('*')` path is inside the explicit Super Admin branch only. The earlier source review's broad concern about all Admins using direct table access was too broad.
+- Fixed the actual UI defect: mobile and desktop Booking tabs compared legacy status strings (`confirmed`, `cancelled`) that are not members of the current booking status enum. Most paid/confirmed/in-progress/disputed/refunded/expired bookings were therefore mislabeled as awaiting payment.
+- Both layouts now render labels for the actual lifecycle states: pending_payment, paid_held_in_escrow, confirmed_by_talent, in_progress, completed, disputed_hold, cancelled_by_customer, cancelled_by_talent, refunded and expired.
+- Source was re-fetched after commit: old status comparisons are absent, all current lifecycle states are represented, scoped Admin RPC use remains present, and direct full-row booking access remains Super Admin-only.
+
+No application build or browser test has been run yet.
