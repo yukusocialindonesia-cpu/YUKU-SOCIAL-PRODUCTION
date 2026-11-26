@@ -171,3 +171,40 @@ Finance label RPC follow-up (same migration, commit `8c9ac61cb9c71f70bb1904e259d
 - Existing AdminPage callers already pass IDs from those respective datasets, so their intended use remains covered.
 
 Validation remains source-level only; no PostgreSQL replay or Staging tests have been run.
+
+
+## Follow-up: account recovery endpoint and Admin provisioning — 26 November 2026
+
+### P2: backend previously accepted pending_verification -> active through the recovery endpoint
+
+The account-management Edge Function is restricted to an authenticated, active Super Admin via get_admin_access(). The UI correctly exposes the Aktifkan action only for suspended accounts. However, the backend previously accepted status=active for any Customer/Talent account except one already banned, including pending_verification. That created a direct-API path to bypass the initial identity-verification state transition (even though booking and Talent public visibility still have separate identity checks).
+
+Branch fix:
+- supabase/functions/account-management/index.ts now permits a transition to active only when the current account_status is suspended.
+- banned accounts remain non-reactivatable from this menu.
+- pending_verification -> active through this recovery endpoint is rejected server-side.
+- The normal KTP verification / Talent approval paths remain responsible for the initial pending_verification -> active transition.
+
+Static source validation: the new guard is placed after the target row is loaded and before the database status update. No deployed Edge Function was changed. The deployed Production account-management function remains version 1 and is still the pre-fix version until a separately approved deployment.
+
+### P2: status database/Auth/audit operations are compensating, not atomic
+
+The account-management function performs three separate steps: optimistic account_status update in Postgres, Auth ban_duration update, then admin_audit_logs insert. It attempts compensating rollback when Auth or audit writes fail. This is safer than a blind update, but the three systems are not one transaction.
+
+A concurrent suspend/reactivate pair can interleave after the database compare-and-set but before the Auth update/audit write, potentially leaving Auth ban state inconsistent with public.users.account_status or recording two successful operations whose external effects finish out of order. Current read-only Production aggregate snapshot showed zero status/Auth mismatches for Customer/Talent accounts; that does not rule out a race under concurrent requests.
+
+Recommended follow-up before relying on this as a high-assurance control:
+1. Introduce an idempotent, per-user serialized status-operation workflow (operation ID + expected previous status + pending/completed/failed state).
+2. Reconcile Auth ban state against the committed account status after each operation and through a periodic read-only mismatch monitor.
+3. Make audit events identify the operation ID and final outcome; do not return success until the final state is confirmed.
+4. Add Staging concurrency tests for suspend-vs-reactivate, duplicate request, Auth API failure, audit insert failure, and compensation failure.
+
+### Production Admin role and provisioning read-only checks
+
+- Production currently has 2 Admin profiles: 1 active Super Admin and 1 active scoped Admin; no Admin profile in this snapshot was inactive or suspended.
+- get_admin_access() returns Admin access only when private.is_active_admin(auth.uid()) is true. That helper requires private.admin_accounts.is_active=true, public.users.role='admin', and account_status='active'.
+- is_super_admin() additionally requires admin_level='super_admin'. Scoped permission checks require an active Admin and an allowlisted permission key (talent, booking, finance, support).
+- provision_scoped_admin_account_with_permissions() is not executable by anon/authenticated; it requires service_role and verifies the supplied creator is an active Super Admin. It locks the target user, prevents converting an existing Super Admin to a scoped Admin, replaces the permission set transactionally, and writes an audit record.
+- set_admin_permissions() requires an authenticated Super Admin, prevents self-editing the primary Super Admin permissions, and only targets an active scoped Admin.
+
+No Production data, Admin permission, Auth ban state, Edge Function, migration, or account status was changed during this review.
