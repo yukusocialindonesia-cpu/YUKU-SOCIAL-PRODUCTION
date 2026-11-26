@@ -69,6 +69,7 @@ interface TalentCurationItem {
   date_of_birth?: string;
   ktp_number?: string | null;
   ktp_storage_path?: string | null;
+  selfie_storage_path?: string | null;
   ktp_verification_status?: string;
   ktp_rejection_reason?: string | null;
   emergency_contact_phone?: string | null;
@@ -303,7 +304,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         const [{ data: identityRows }, { data: userRows }] = talentIds.length
           ? await Promise.all([
               supabase.from('user_identities')
-                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,selfie_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
                 .in('id', talentIds),
               supabase.rpc('get_admin_user_summaries', { p_user_ids: talentIds }),
             ])
@@ -324,6 +325,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             date_of_birth: idRecord?.date_of_birth,
             ktp_number: idRecord?.ktp_number,
             ktp_storage_path: idRecord?.ktp_storage_path,
+            selfie_storage_path: idRecord?.selfie_storage_path,
             ktp_verification_status: ktpStatus,
             ktp_rejection_reason: idRecord?.ktp_rejection_reason,
             emergency_contact_phone: idRecord?.emergency_contact_phone,
@@ -807,11 +809,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const handleViewCustomerKtp = async (item: {
     id: string;
     ktp_storage_path: string | null;
+    evidencePath?: string | null;
+    evidenceLabel?: string;
     full_legal_name?: string | null;
     display_name?: string | null;
   }) => {
-    if (!item.ktp_storage_path) {
-      setErrorMessage('Foto KTP belum diunggah oleh pengguna ini.');
+    const evidencePath = item.evidencePath ?? item.ktp_storage_path;
+    if (!evidencePath) {
+      setErrorMessage('Berkas identitas belum diunggah oleh pengguna ini.');
       return;
     }
 
@@ -820,15 +825,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     try {
       const { data, error } = await supabase.storage
         .from('ktp-documents')
-        .createSignedUrl(item.ktp_storage_path, 300);
+        .createSignedUrl(evidencePath, 300);
 
       if (error || !data?.signedUrl) {
-        throw new Error(error?.message || 'Tautan foto KTP tidak berhasil dibuat.');
+        throw new Error(error?.message || 'Tautan berkas identitas tidak berhasil dibuat.');
       }
 
       setSelectedCustomerKtpImage({
         url: data.signedUrl,
-        name: item.full_legal_name || item.display_name || 'Pengguna YUKU',
+        name: `${item.full_legal_name || item.display_name || 'Pengguna YUKU'} — ${item.evidenceLabel || 'Foto KTP'}`,
       });
     } catch (err: any) {
       setErrorMessage(`Foto KTP tidak dapat dibuka: ${err?.message || 'Terjadi kesalahan'}`);
@@ -2670,10 +2675,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 >
                   {loadingCustomerKtpId === selectedKtpItem.id ? 'Membuka foto...' : 'Lihat Foto KTP Talent'}
                 </button>
+                {selectedKtpItem.selfie_storage_path && (
+                  <button
+                    type="button"
+                    onClick={() => handleViewCustomerKtp({
+                      id: selectedKtpItem.id,
+                      ktp_storage_path: null,
+                      evidencePath: selectedKtpItem.selfie_storage_path,
+                      evidenceLabel: 'Selfie dengan KTP',
+                      full_legal_name: selectedKtpItem.full_legal_name,
+                      display_name: selectedKtpItem.display_name,
+                    })}
+                    disabled={loadingCustomerKtpId === selectedKtpItem.id}
+                    className="min-h-11 w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-800 text-white font-bold text-xs hover:bg-slate-900 disabled:opacity-50"
+                  >
+                    Lihat Selfie dengan KTP
+                  </button>
+                )}
               </div>
             ) : (
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-[11px]">
-                Talent belum mengunggah berkas foto fisik e-KTP saat pendaftaran awal. Anda tetap dapat menyetujui profil jika verifikasi identitas dilakukan via wawancara / kontak darurat resmi.
+                Bukti foto e-KTP belum tersedia. Persetujuan Talent tidak dapat dilakukan tanpa bukti identitas yang lengkap.
               </div>
             )}
 
