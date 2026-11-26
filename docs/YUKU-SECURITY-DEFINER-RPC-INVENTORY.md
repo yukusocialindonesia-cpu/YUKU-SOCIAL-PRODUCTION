@@ -89,3 +89,39 @@ Do not mass-replace these references. In particular, trigger guards, payout stat
 ## Validation boundary
 
 This is a Git source audit. No SQL was executed against Staging or Production, no Supabase advisor was run, no functions were deployed, and no database data or policies were changed. The PR remains a draft and unmerged.
+
+## Production read-only follow-up — 26 November 2026
+
+A further read-only inspection was performed against the connected Production database:
+
+### Effective SECURITY DEFINER execution and caller checks
+- Effective grants still show 5 anonymous-callable SECURITY DEFINER functions and 60 authenticated-callable SECURITY DEFINER functions, matching the Security Advisor snapshot.
+- The four anonymous boolean helpers (can_read_talent_media_object, has_admin_permission, is_super_admin, is_talent_publicly_visible) are used by RLS/Storage authorization and return only boolean results. Their public grants are intentional, subject to role-matrix tests proving anonymous identity resolves to false and no private row data is returned.
+- guard_talent_media_moderation_fields() remains directly executable by anon/authenticated in Production. It is a trigger-only helper and this is a confirmed privilege defect. The branch migration 20261127001200_revoke_talent_media_trigger_helper_execute.sql revokes PUBLIC/anon/authenticated while preserving trigger invocation, but it has NOT been applied to Production. Release blocker until applied through the normal migration process and verified with has_function_privilege.
+- Authenticated SECURITY DEFINER functions were checked for obvious in-body auth/permission references. The only non-helper result without a direct auth check was request_talent_services(...); it delegates every item to request_talent_service(...), which checks auth.uid(), Talent role, profile ownership, and category eligibility before writing. This is not currently classified as an access bypass.
+- All inspected SECURITY DEFINER functions use an empty search_path except two trigger-only functions (sync_talent_rating_stats, validate_review_insert) with search_path=public; both currently have no app-role EXECUTE grant. Keep them under review if grants or ownership change.
+
+### Exposed public-schema relation check
+- Read-only checks of effective anon/authenticated table privileges found no public table/view/materialized view that is both accessible to an app role and lacks RLS.
+- The public schema view inventory returned no views. This reduces the risk of a view bypassing table RLS, but does not replace column-level grant review or function result review.
+
+### Production Storage bucket inventory
+- Private: ktp-documents, qris-payment-proofs, bank-transfer-payment-proofs, talent-media.
+- Public: portfolios, promotions, qris-payment-display, hero-slides, hero, avatars, branding.
+- Private KTP/payment evidence and Talent media buckets have owner/authorized-admin or approved-public-media policies. Talent media public-read policy calls the boolean helper; it must be tested with pending/rejected/approved rows and unrelated viewers.
+- portfolios is a public bucket with a public SELECT policy. Treat every uploaded object there as intentionally public; do not store private, identity, or customer-only material in it. If portfolios should be selectively visible, migrate to a private bucket with a policy/signed-URL flow.
+- avatars, branding, promotions, hero, hero-slides, and QRIS display are public-facing assets by current bucket configuration. Confirm no private content is uploaded to those buckets.
+- Storage object RLS policies are permissive and combine with OR. The account-status guard is restrictive only where configured as a restrictive policy; verify its policy mode and behavior under anon/authenticated in Staging. Never assume one narrow policy cancels a broader permissive policy.
+
+### Security Advisor and validation boundary
+- Security Advisor was run read-only on Production. It reports 3 private-schema tables with RLS enabled and no policies (private.admin_accounts, private.admin_permissions, private.talent_service_locations), 5 anon-callable SECURITY DEFINER functions, and 60 authenticated-callable SECURITY DEFINER functions. The private tables are not exposed by public-schema grants; they are intentionally accessed through scoped helpers and should not receive broad policies.
+- Leaked-password protection remains disabled in Auth project settings; not changed.
+- No SQL writes, migrations, policy changes, bucket changes, function deployments, or project setting changes were performed in this follow-up.
+
+### Required before release
+1. Apply and verify the trigger-helper EXECUTE revoke migration in Staging, then Production through the approved release process.
+2. Role-matrix test all five anon-callable functions and the 60 authenticated-callable functions, including disabled/suspended users and module Admin roles.
+3. Test every private bucket with anon, owner, unrelated Customer/Talent, relevant module Admin, and Super Admin. Verify direct object URLs do not bypass authorization.
+4. Confirm all content in public portfolios and other public buckets is intended for unrestricted public access.
+5. Run Supabase Security Advisor after migration deployment and confirm the trigger-helper warning is gone; retain intentional boolean-helper findings with documented rationale.
+6. Enable leaked-password protection in Auth settings after reviewing sign-in impact and rollout communication.
