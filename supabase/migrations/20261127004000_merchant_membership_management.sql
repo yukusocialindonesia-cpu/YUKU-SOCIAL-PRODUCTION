@@ -125,6 +125,7 @@ declare
   v_membership_id uuid;
   v_previous_role text;
   v_previous_status text;
+  v_business_name text;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -190,6 +191,23 @@ begin
     v_previous_role,p_member_role,v_previous_status,'pending_invitation'
   );
 
+  select mb.business_name into v_business_name
+    from public.merchant_businesses mb where mb.id = p_business_id;
+  perform public.create_in_app_notification(
+    v_target_user_id,
+    'Undangan Tim Merchant Partner',
+    'Anda menerima undangan sebagai ' || case when p_member_role = 'manager' then 'Manager' else 'Staff' end
+      || ' untuk bisnis ' || coalesce(v_business_name,'Merchant Partner')
+      || '. Buka Merchant Center untuk meninjau dan menerima undangan.',
+    'system_alert'::public.notification_type,
+    jsonb_build_object(
+      'route','/merchant-center',
+      'merchant_business_id',p_business_id,
+      'merchant_membership_id',v_membership_id,
+      'event','merchant_invitation'
+    )
+  );
+
   return v_membership_id;
 end;
 $merchant$;
@@ -253,6 +271,8 @@ as $merchant$
 declare
   v_business_id uuid;
   v_member_role text;
+  v_owner_user_id uuid;
+  v_business_name text;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -286,6 +306,26 @@ begin
     v_business_id,p_membership_id,auth.uid(),auth.uid(),'accepted',
     v_member_role,v_member_role,'pending_invitation','active'
   );
+
+  select mb.owner_user_id,mb.business_name
+    into v_owner_user_id,v_business_name
+    from public.merchant_businesses mb where mb.id = v_business_id;
+  if v_owner_user_id is not null then
+    perform public.create_in_app_notification(
+      v_owner_user_id,
+      'Undangan Merchant Partner Diterima',
+      'Anggota baru telah menerima undangan dan kini memiliki akses sebagai '
+        || case when v_member_role = 'manager' then 'Manager' else 'Staff' end
+        || ' di bisnis ' || coalesce(v_business_name,'Merchant Partner') || '.',
+      'system_alert'::public.notification_type,
+      jsonb_build_object(
+        'route','/merchant-center',
+        'merchant_business_id',v_business_id,
+        'merchant_membership_id',p_membership_id,
+        'event','merchant_invitation_accepted'
+      )
+    );
+  end if;
   return true;
 end;
 $merchant$;
