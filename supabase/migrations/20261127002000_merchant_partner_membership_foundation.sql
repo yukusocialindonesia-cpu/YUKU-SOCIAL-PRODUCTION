@@ -451,7 +451,7 @@ comment on table public.merchant_memberships is
 comment on table public.merchant_locations is
   'Merchant branches/locations; public visibility follows approved business status.';
 comment on function public.create_merchant_business(text,text,text,text,text) is
-  'Creates a pending merchant business and its owner membership atomically.';
+  'Creates a draft merchant business and its owner membership atomically.';
 comment on function public.invite_merchant_member(uuid,uuid,text) is
   'Business owner may invite an existing YUKU account as manager or staff; invitee must accept.';
 
