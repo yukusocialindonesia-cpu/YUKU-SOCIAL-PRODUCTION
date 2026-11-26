@@ -46,9 +46,9 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
       setError('');
       const { data, error: queryError } = await supabase
         .from('professional_talent_services')
-        .select('id, service_description, experience_years, service_city, delivery_modes, rate_amount, pricing_unit, subcategory:professional_service_subcategories!inner(id, title, description, verification_level, category:professional_service_categories!inner(title)), provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, bio, rating_average, review_count, completed_hours, languages, is_approved)')
+        .select('id, service_description, experience_years, service_city, delivery_modes, rate_amount, pricing_unit, subcategory:professional_service_subcategories!inner(id, title, description, verification_level, category:professional_service_categories!inner(title)), provider:professional_provider_profiles!inner(user_id, display_name, avatar_url, city, headline, bio, is_profile_complete)')
         .eq('provider_id', providerId)
-        .eq('provider.is_approved', true)
+        .eq('provider.is_profile_complete', true)
         .eq('approval_status', 'approved')
         .eq('is_active', true);
 
@@ -98,7 +98,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
 
   return (
     <div className="min-h-screen bg-[#F8F7FC] pb-12">
-      <div className="bg-gradient-to-br from-[#24105F] to-[#5416B8] px-4 pb-16 pt-5 text-white">
+      <div className="bg-gradient-to-br from-[#24105F] to-[#5416B8] px-4 pb-10 pt-5 text-white">
         <div className="mx-auto max-w-4xl">
           <button onClick={() => onNavigate('/jasa-profesional')} className="mb-6 inline-flex items-center gap-2 text-xs font-semibold text-violet-100"><ArrowLeft className="h-4 w-4"/> Kembali ke jasa profesional</button>
           <div className="flex items-center gap-4">
@@ -106,7 +106,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-extrabold sm:text-2xl">{profile.display_name}</h1>
-                {profile.is_approved && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-bold"><BadgeCheck className="h-3 w-3"/> Profil Talent disetujui</span>}
+                {profile.is_profile_complete && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-bold"><BadgeCheck className="h-3 w-3"/> Profil profesional lengkap</span>}
               </div>
               <p className="mt-1 text-xs text-violet-100">{profile.headline || 'Penyedia jasa profesional'}</p>
               <p className="mt-2 flex items-center gap-1 text-[11px] text-violet-100"><MapPin className="h-3 w-3"/>{profile.city || 'Lokasi belum dicantumkan'}</p>
@@ -123,7 +123,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <h2 className="text-sm font-extrabold text-slate-900">Tentang penyedia</h2>
           <p className="mt-2 whitespace-pre-line text-xs leading-6 text-slate-600">{profile.bio || 'Penyedia belum menambahkan deskripsi.'}</p>
-          {!!profile.languages?.length && <p className="mt-3 text-[11px] text-slate-500">Bahasa: <span className="font-semibold text-slate-700">{profile.languages.join(', ')}</span></p>}
+
         </section>
 
         <section className="space-y-3">
@@ -150,7 +150,7 @@ export const ProfessionalProviderProfilePage: React.FC<Props> = ({ providerId, o
                 {service.delivery_modes.map((mode) => <span key={mode} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] text-slate-600">{mode === 'online' ? <Monitor className="h-3 w-3"/> : <MapPin className="h-3 w-3"/>}{mode === 'online' ? 'Online' : 'Offline'}</span>)}
                 {service.experience_years > 0 && <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] text-slate-600"><CalendarDays className="h-3 w-3"/>{service.experience_years} tahun pengalaman</span>}
               </div>
-              <div className="mt-3 flex items-start gap-2 rounded-xl bg-violet-50 p-3 text-[10px] leading-relaxed text-violet-800"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0"/>{verificationLabel[service.subcategory?.verification_level] || 'Persyaratan verifikasi mengikuti jenis layanan.'}. Status profil Talent dan persetujuan listing bukan bukti bahwa sertifikat atau izin profesi telah diverifikasi oleh instansi penerbit.</div>
+              <div className="mt-3 flex items-start gap-2 rounded-xl bg-violet-50 p-3 text-[10px] leading-relaxed text-violet-800"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0"/>{verificationLabel[service.subcategory?.verification_level] || 'Persyaratan verifikasi mengikuti jenis layanan.'}. Status profil profesional dan persetujuan listing bukan bukti bahwa sertifikat atau izin profesi telah diverifikasi oleh instansi penerbit.</div>
             </article>
           ))}
         </section>
