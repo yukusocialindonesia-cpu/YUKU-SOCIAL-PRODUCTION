@@ -94,9 +94,9 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
     const start = providers.length;
     const { data, error: fetchError } = await supabase
       .from('professional_talent_services')
-      .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:talent_profiles!inner(id, display_name, avatar_url, city, headline, rating_average, review_count, is_approved), subcategory:professional_service_subcategories!inner(id, title, category_id)')
+      .select('id, service_description, rate_amount, pricing_unit, delivery_modes, provider:professional_provider_profiles!inner(user_id, display_name, avatar_url, city, headline, is_profile_complete), subcategory:professional_service_subcategories!inner(id, title, category_id)')
       .eq('approval_status', 'approved')
-      .eq('provider.is_approved', true)
+      .eq('provider.is_profile_complete', true)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
