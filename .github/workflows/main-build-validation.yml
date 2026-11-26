@@ -21,6 +21,8 @@ on:
     branches:
       - main
       - fix/yuku-final-service-taxonomy
+      - feat/independent-professional-provider-identity
+      - design/beranda-premium-compact
     paths:
       - "src/**"
       - "public/**"
