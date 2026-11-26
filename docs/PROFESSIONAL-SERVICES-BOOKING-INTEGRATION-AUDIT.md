@@ -140,3 +140,13 @@ No professional-service booking or payment CTA may be enabled until:
 
 ## Current state
 Professional-service taxonomy, provider applications, private document handling, admin review and public approved listings are in the feature branch. Booking/payment remains intentionally disabled. The production database has not been modified for this feature.
+
+
+## Additional audit notes — latest branch pass
+
+- Confirmed in the production schema (read-only) that `talent_profiles.id` is a foreign key to `public.users.id`. The application applicant ID therefore matches the Talent profile key model used by the professional listing FK; this specific mapping is not a blocker.
+- The admin professional-service review page currently fetches only the newest 100 applications and filters the selected status in the browser. Older pending or needs-revision applications can be hidden when the queue exceeds 100 rows. This remains a release blocker for operational completeness; add server-side pagination or status-scoped pagination before launch.
+- The admin review page previously ignored errors from the secondary Talent-profile hydration query and rendered a misleading “Talent tidak ditemukan” fallback. The feature branch now surfaces this query failure as an explicit warning instead.
+- The review RPC and admin UI use a verification attestation. This is a human reviewer record, not automatic credential validation; the operating procedure must retain issuer, holder identity, validity, and scope checks.
+
+No production writes were made during this pass. The schema check was read-only; the frontend warning fix and audit note are committed only to the feature branch.
