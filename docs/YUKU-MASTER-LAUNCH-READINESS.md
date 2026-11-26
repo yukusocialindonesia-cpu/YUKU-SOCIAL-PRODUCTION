@@ -134,3 +134,16 @@ Exit criteria: pilot stabil, transaksi direkonsiliasi, support siap, tidak ada b
 ## Definisi “siap launching”
 
 YUKU belum siap launching hanya karena halaman tampil atau build berhasil. Siap launching berarti pengguna bisa menemukan layanan yang benar, memahami harga dan syarat, membuat transaksi yang tervalidasi server, berkomunikasi dengan aman, menyelesaikan layanan, menerima refund/payout yang benar, dan memperoleh bantuan ketika terjadi masalah — semuanya diuji di Staging dan dipantau saat pilot.
+
+## Follow-up launch blocker: account and Admin role lifecycle — 26 November 2026
+
+Gate 2 and Gate 5 remain blocked pending verification of account status and Admin revocation paths.
+
+- Production `account-management` Edge Function version 1 is missing the server-side guard that only allows reactivation from `suspended`; the feature-branch source contains the guard. A direct Super Admin invocation can currently request `pending_verification -> active`.
+- The account status endpoint updates the database, Auth ban state, and audit log in separate operations with compensating rollback, not one atomic transaction. Add concurrency and forced-failure tests and a reconciliation mechanism before relying on it for high-volume moderation.
+- `account_status_type` includes `banned`, but the current Admin UI/API only supports `active` and `suspended`. Define whether permanent ban is needed and its appeal/retention rules before adding the control.
+- KTP review rejection currently lacks consistent durable reviewer ID/time attribution in Production.
+- Talent approval RPC Production definition can overwrite `suspended`/`banned` account state; preserve current Talent permission checks and audit logging while restricting activation to `pending_verification`.
+- Admin role deactivation and permission changes are database-backed and checked dynamically; verify active-session behavior and stale UI after revocation in Staging.
+
+Exit criteria: Production/branch function parity verified; direct RPC/Edge Function negative tests pass; suspend/reactivate/role-revoke race tests pass; every sensitive decision has an append-only actor/time audit record; no account restriction can be bypassed by a different approval path.
