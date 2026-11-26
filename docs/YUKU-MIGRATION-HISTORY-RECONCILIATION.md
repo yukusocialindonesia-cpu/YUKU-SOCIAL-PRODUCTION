@@ -62,3 +62,29 @@ Idempotent SQL tidak otomatis aman untuk replay. `CREATE OR REPLACE FUNCTION`, G
 - Supabase breaking changes: https://supabase.com/changelog?types=breaking-change
 - `supabase/migrations/README.md`
 - `docs/PRODUCTION_SAFETY.md`
+## Rekonsiliasi nama — hasil pemetaan awal
+
+Pembacaan Production menghasilkan 107 migration records. Folder branch berisi 140 file `.sql` jika dihitung seluruh artefak SQL di folder tersebut. Pencocokan nama yang dinormalisasi menemukan 73 file dengan pasangan nama Production yang jelas. Angka ini adalah pencocokan nama, bukan bukti byte-for-byte SQL identik.
+
+Contoh file lama bernomor pendek yang memiliki pasangan Production timestamp:
+- `01`–`07` memiliki version Production `01`–`07`.
+- `08`–`19` memiliki pasangan timestamp Production `2026111718...`.
+- `20`–`27`, `31`, `34`, `40`–`64`, serta beberapa file bertimestamp memiliki pasangan nama/version Production yang tercatat.
+- Dua file prefix `62` cocok dengan dua version Production berbeda seperti tabel di atas.
+
+Contoh mismatch timestamp yang harus dipetakan dengan isi SQL, bukan nama:
+- Branch `20261121020000_create_push_subscriptions.sql` berpasangan nama dengan Production version `20261120185433`.
+- Branch `20261121021500_add_yuku_push_notification_webhook.sql` berpasangan nama dengan Production version `20261120185621`.
+- Branch `20261124081950_enforce_active_account_sessions.sql` tercatat di Production dengan version `20261124081950`, tetapi recorded name menyimpan timestamp lama `20261124120000_enforce_active_account_sessions`.
+- Branch `20261124150000_public_talent_availability_read.sql` berpasangan nama dengan Production version `20261124084839`.
+- Branch `20261124165900_add_manual_bank_transfer_provider.sql` berpasangan nama dengan Production version `20261124144625`.
+
+File yang tidak cocok berdasarkan nama belum otomatis berarti belum diterapkan. Kelompok ini mencakup migration branch-only yang lebih baru, file test/arsip, migration dengan nama berbeda, dan kemungkinan perubahan yang sudah digabung ke migration lain. Setiap file harus ditinjau SQL dan dependency-nya sebelum diberi status.
+
+## Status verifikasi yang belum dilakukan
+
+- Belum dilakukan hash/diff SQL terhadap definisi historis yang diterapkan di Production.
+- Belum dipastikan apakah semua file lama 28–39 dan 43 merupakan migration terpisah, telah digabung, atau hanya arsip.
+- Belum dipastikan migration branch-only mana yang sudah diterapkan pada environment lain.
+- Belum ada Staging aktif yang dikonfirmasi dan belum ada replay migration.
+- Tidak ada DDL atau migration mutation yang dijalankan.
