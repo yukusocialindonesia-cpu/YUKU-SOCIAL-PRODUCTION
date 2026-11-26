@@ -255,11 +255,12 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         <form onSubmit={submit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
           <section><h2 className="text-sm font-extrabold text-slate-900">{editingApplicationId ? 'Perbaiki pengajuan layanan' : 'Informasi layanan'}</h2><p className="mt-1 text-[11px] text-slate-500">Pilih satu jenis jasa per pengajuan.</p></section>
           <label className="block text-xs font-bold text-slate-700">Jenis jasa
-            <select value={subcategoryId} onChange={(e) => { const nextId = e.target.value; setSubcategoryId(nextId); const nextItem = categories.flatMap((category) => category.items).find((item) => item.id === nextId); setModes(nextItem?.delivery_modes || ['offline']); }} required className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium">
+            <select value={subcategoryId} disabled={!!editingApplicationId} onChange={(e) => { const nextId = e.target.value; setSubcategoryId(nextId); const nextItem = categories.flatMap((category) => category.items).find((item) => item.id === nextId); setModes(nextItem?.delivery_modes || ['offline']); }} required className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500">
               <option value="">Pilih jenis jasa</option>
               {categories.map((category) => <optgroup key={category.id} label={category.title}>{category.items.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</optgroup>)}
             </select>
           </label>
+          {editingApplicationId && <p className="-mt-2 text-[10px] text-slate-500">Jenis jasa dikunci selama revisi. Untuk menawarkan jenis jasa lain, buat pengajuan baru setelah pengajuan ini selesai.</p>}
           {selectedSubcategory && <div className="rounded-xl bg-violet-50 p-3 text-[11px] leading-relaxed text-violet-900"><ShieldCheck className="mr-1 inline h-3.5 w-3.5"/>{verificationLabels[selectedSubcategory.verification_level]}</div>}
           <label className="block text-xs font-bold text-slate-700">Deskripsi layanan
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} maxLength={3000} required placeholder="Jelaskan keahlian, cakupan pekerjaan, dan layanan yang diberikan (minimal 30 karakter)." className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-xs outline-none focus:border-violet-500"/>
