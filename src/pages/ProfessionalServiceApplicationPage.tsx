@@ -94,7 +94,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     if (!user) { setLoading(false); return; }
     setLoading(true);
     setError('');
-    const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: professionalProfile, error: professionalProfileError }, { data: historyRows, error: historyError }] = await Promise.all([
+    const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: professionalProfile, error: professionalProfileError }] = await Promise.all([
       supabase.from('professional_service_categories')
         .select('id,title,professional_service_subcategories(id,title,description,verification_level,delivery_modes,category_id)')
         .eq('is_active', true)
@@ -105,11 +105,15 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         .eq('applicant_id', user.id)
         .order('created_at', { ascending: false }),
       supabase.from('professional_provider_profiles').select('user_id,display_name,city,headline,bio').eq('user_id', user.id).maybeSingle(),
-      supabase.from('professional_service_application_status_history')
-        .select('id,application_id,from_status,to_status,admin_note,actor_role,created_at')
-        .order('created_at', { ascending: true })
-        .order('id', { ascending: true }),
     ]);
+    const ownedApplicationIds = (applicationRows || []).map((application) => application.id);
+    const { data: historyRows, error: historyError } = ownedApplicationIds.length
+      ? await supabase.from('professional_service_application_status_history')
+          .select('id,application_id,from_status,to_status,admin_note,actor_role,created_at')
+          .in('application_id', ownedApplicationIds)
+          .order('created_at', { ascending: true })
+          .order('id', { ascending: true })
+      : { data: [], error: null };
     const normalized = (categoryRows || []).map((category: any) => ({
       id: category.id,
       title: category.title,
