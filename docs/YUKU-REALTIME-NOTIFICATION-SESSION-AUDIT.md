@@ -159,3 +159,12 @@ Other Advisor findings:
 - Advisor snapshot is a point-in-time Production inspection; it is not a substitute for staging role-matrix tests.
 
 The absence of `realtime.messages` policies in Production confirms that the private booking-chat authorization migration remains a deployment blocker. Project-level Realtime public-access configuration was not inspected or changed.
+
+
+Production privilege verification:
+- A read-only `has_function_privilege` query confirmed `anon` and `authenticated` can directly execute `public.guard_talent_media_moderation_fields()` in the connected Production database.
+- The same query confirmed `can_read_talent_media_object(text)` is executable by anon/authenticated. That second grant is intentional for Storage RLS evaluation, and the helper returns only a boolean; it is not treated as equivalent to the trigger-helper defect.
+
+Realtime project setting requirement:
+- Current Supabase documentation states that project-level Realtime Settings → **Allow public access** must be disabled to enforce private-only channels. The database migration and `private: true` client option do not change that project-level toggle.
+- The setting was not inspected or changed in this audit. Production remains unverified until an authorized operator checks it and disables public access after confirming all app Realtime channels are private/authorized.
