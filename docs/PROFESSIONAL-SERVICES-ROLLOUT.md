@@ -34,3 +34,14 @@ The existing `talent_services.activity_category_id` and `bookings.activity_categ
 3. Design talent-service and booking compatibility before enabling booking.
 4. Add credential verification workflows and admin tooling.
 5. Run RLS, authorization, integration, and mobile UI tests.
+
+
+## Provider listings and profile page
+A second additive migration creates `public.professional_talent_services`, linking an existing approved Talent profile to a professional-service subcategory with service description, experience, service location, delivery modes, rate, and pricing unit. Public SELECT is limited to active/approved listings whose linked Talent profile is approved. No client INSERT/UPDATE policy is granted yet; provider onboarding and admin review must be implemented before creating listings.
+
+Frontend additions:
+- `/jasa-profesional` shows approved provider cards when any are available.
+- `/jasa-profesional/:id` displays the provider's public profile, approved services, price, service mode, experience, and verification requirements.
+- The profile intentionally has no booking/payment action. A YUKU profile approval badge is not a substitute for regulated professional license verification.
+
+The new provider-listing migration is also not applied to production. Validate both migrations in a disposable Supabase project before any production rollout.
