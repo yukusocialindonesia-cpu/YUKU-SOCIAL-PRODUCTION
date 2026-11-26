@@ -61,8 +61,13 @@ Deno.serve(async (req) => {
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
   // Cocokkan nominal dengan database (bukan percaya payload).
-  const { data: booking } = await admin
+  const { data: booking, error: bookingError } = await admin
     .from('bookings').select('id, gross_amount').eq('id', bookingId).maybeSingle();
+  if (bookingError) {
+    console.error('Gagal membaca booking untuk callback Xendit', bookingId, bookingError.message);
+    // A transient database/API failure must return 5xx so Xendit retries.
+    return fail(500, 'Gagal memverifikasi booking');
+  }
   if (!booking) return ok({ ignored: 'booking tidak ditemukan' });
 
   const paid = rawPaid;
