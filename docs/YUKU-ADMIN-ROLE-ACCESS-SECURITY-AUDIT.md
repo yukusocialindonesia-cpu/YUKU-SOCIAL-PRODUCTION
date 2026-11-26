@@ -374,3 +374,48 @@ All checks above were read-only inspection of Production function definitions, E
 5. Reconnect a previously open private booking chat after role/account revocation; ensure server-side channel authorization is re-evaluated.
 
 Validation boundary: policy/trigger/function counts and definitions were inspected read-only in Production. No session IDs, Auth user records, realtime payloads, or customer data were read; no session was revoked and no policy/trigger/function was changed.
+## Follow-up: signup, Talent role transition and password recovery — 26 November 2026
+
+### P1 — Production blocks the Customer-to-Talent self-service role transition
+
+Read-only inspection of active Production definitions found:
+- `public.handle_new_user()` currently creates every new `public.users` row with role `customer`, regardless of `raw_user_meta_data.user_role`. This safely prevents signup metadata from creating an Admin, but differs from the current feature-branch migration 18 behavior that allows the `talent` signup choice.
+- `public.become_talent()` is SECURITY DEFINER, requires `auth.uid()`, locks the caller's own `public.users` row, and only permits `customer -> talent` or idempotent `talent -> talent`. It does not grant Admin or change account status/age verification.
+- Production `public.prevent_user_security_column_tampering()` rejects every role change by a non-Super-Admin. It has no exception for the narrow self-service Customer-to-Talent transition.
+- The `users` table has `trg_prevent_user_security_column_tampering` BEFORE UPDATE, so the `UPDATE users SET role='talent'` inside `become_talent()` is rejected by the trigger for an ordinary Customer.
+- `BecomeTalentPage.tsx` calls `become_talent()` after signup (or after the email-confirmation/login continuation). The call fails before the rest of the Talent application flow can complete. The UI surfaces the RPC error.
+
+**Conclusion:** this is a confirmed Production source-level incompatibility between the active `become_talent()` RPC and the active role-tampering trigger. It can prevent Customers from completing Talent registration. No user-level reproduction was run.
+
+**Existing branch remediation:** `supabase/migrations/20261127000900_allow_self_service_customer_to_talent_transition.sql` adds a narrowly constrained exception requiring `auth.uid() = OLD.id`, exact Customer-to-Talent transition, unchanged identity fields, and unchanged verification/account-status fields. It does not permit Customer-to-Admin, arbitrary role changes, status changes, or age-verification changes. This migration is present only on `feat/professional-services-categories`; it has not been applied to Production.
+
+**Required rollout/test:** reconcile this forward migration with the authoritative Production trigger definition and migration history before applying. In Staging, test Customer -> Talent success; Talent -> Talent idempotency; Customer -> Admin denial; changes to another user's role denial; role + status/verification field tampering denial; suspended/banned actor denial; and Admin provisioning/revocation behavior. Confirm the `become_talent()` RPC remains authenticated-only.
+
+### Signup and identity verification observations
+
+- `RegisterPage.tsx` only offers Customer signup; selecting Talent navigates to `/daftar-talent`. The Talent form uses a separate `signUp()` call with `user_role='talent'` metadata.
+- Production `handle_new_user()` deliberately ignores that metadata and always inserts Customer. The Talent onboarding depends on the subsequent `become_talent()` RPC, which is currently blocked by the trigger described above.
+- New accounts are created with `is_verified_18=false` and `account_status='pending_verification'` in Production. This is a safe default; signup metadata/checkboxes do not make an account verified or active.
+- The Talent form's date-of-birth and age check is client-side. Actual account age verification is handled later by KTP/identity review. Do not treat browser DOB or the checkbox as verified identity.
+- Signup's age and Terms acceptance checkboxes are required in the UI but this review did not find a durable server-side acceptance record (policy version, timestamp, and user). Add a server-authoritative consent record before relying on it as legal evidence.
+
+### Password reset and confirmation flow
+
+- `ForgotPasswordPage.tsx` always displays a neutral response ('Jika email terdaftar...'), which is appropriate to reduce account/email enumeration. It ignores the returned Supabase `error` object as well as thrown errors, so SMTP/rate-limit/redirect failures are indistinguishable from successful dispatch to the user. This is a UX/operations limitation, not an account-enumeration vulnerability.
+- `ResetPasswordPage.tsx` listens for `PASSWORD_RECOVERY`, checks error parameters in the URL, and calls `auth.updateUser({password})`. Invalid/expired-link and replay behavior has not been runtime-tested.
+- The recovery page leaves the recovery token/code in the browser URL/history after success and leaves the recovery session active until the user signs out or the session expires. Recommend removing sensitive URL parameters after the auth client has consumed them and testing session cleanup after a successful reset.
+- Both reset/change-password pages enforce an 8-character minimum client-side. Production Auth password policy (minimum length, leaked-password checks, CAPTCHA, email rate limits, SMTP delivery, and redirect allow-list) was not exposed by the read-only project metadata tool and remains unverified; do not infer it from the UI.
+
+### Required Staging auth regression matrix
+
+1. Customer signup with email confirmation on/off; verify `handle_new_user()` creates one Customer row and no duplicate profile.
+2. Talent signup with confirmation on; verify the draft resumes after email confirmation/login and `become_talent()` succeeds exactly once.
+3. Tampered `user_role='admin'` metadata; verify no Admin role or private Admin registry row is created.
+4. Direct REST attempt to update own/another user's role, account status, and verification columns; all must be denied except the scoped RPC.
+5. Password reset: valid link, expired link, reused link, malformed URL, email not registered, SMTP/rate-limit failure, and reset from an already signed-in session.
+6. After password reset, verify token URL cleanup, intended session behavior, ability to log in with the new password, and old refresh-session behavior.
+7. Signup and Talent application Terms/age consent evidence must be persisted with policy version and server timestamp; changing browser state or bypassing the UI must not forge consent.
+
+### Validation boundary
+
+Production review was read-only: active definitions and grants for `handle_new_user`, `become_talent`, `prevent_user_security_column_tampering`, and `guard_active_account_write`, plus trigger definitions. No signup, login, password reset email, account record, Auth user, email, or session was created/read/changed. No SMTP settings, Auth settings, redirect allow-list, migration, or Production function was modified. The self-service role-transition fix remains branch-only.
