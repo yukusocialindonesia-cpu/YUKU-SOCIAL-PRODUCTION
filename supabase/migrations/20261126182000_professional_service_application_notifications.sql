@@ -86,13 +86,33 @@ begin
         v_message,
         'system_alert'::public.notification_type,
         jsonb_build_object(
-          'route', '/dashboard-talent',
+          'route', '/daftar-jasa-profesional',
           'application_id', new.id,
           'status', new.status,
           'admin_note', new.admin_note,
           'event', 'professional_service_application_status_changed'
         )
       );
+
+      -- A corrected application is a fresh review task for the admin team.
+      if new.status = 'pending' and old.status = 'needs_revision' then
+        insert into public.notifications (user_id, title, message, type, metadata)
+        select
+          u.id,
+          'Pengajuan jasa profesional dikirim ulang',
+          'Talent telah mengirim perbaikan pengajuan dan perlu diperiksa kembali.',
+          'system_alert'::public.notification_type,
+          jsonb_build_object(
+            'route', '/admin/jasa-profesional',
+            'application_id', new.id,
+            'applicant_id', new.applicant_id,
+            'status', new.status,
+            'event', 'professional_service_application_resubmitted'
+          )
+        from public.users u
+        where u.role = 'admin'::public.user_role_type
+          and u.account_status::text not in ('suspended', 'banned');
+      end if;
     end if;
   exception when others then
     -- A notification failure must never roll back an application submission/review.
