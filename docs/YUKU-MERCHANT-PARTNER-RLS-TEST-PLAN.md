@@ -122,3 +122,14 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 
 - [ ] Only the business Owner and Super Admin can read business review history and decision notes; Manager/Staff cannot read internal review notes.
 - [ ] Owner receives an in-app notification for approved, needs_revision, rejected, and suspended review decisions, containing only the owner-facing decision note and linking to Merchant Center.
+
+## Merchant offers lifecycle
+- [ ] Only active Owner/Manager members can create or edit offers for their own approved business.
+- [ ] Staff cannot create, edit, or submit offers.
+- [ ] Only Owner can submit an offer for review.
+- [ ] Public/anonymous users can read only approved offers whose parent business is approved and whose validity window is active.
+- [ ] Draft, pending_review, needs_revision, rejected, and suspended offers are never public.
+- [ ] Editing an approved offer returns it to draft and removes it from the public directory until it is reviewed again.
+- [ ] Only Super Admin can approve, request revision, reject, or suspend offers; meaningful notes are required for non-approval decisions.
+- [ ] Offer review decisions notify the business Owner and are written to the append-only offer history.
+- [ ] Merchant offer redemption remains direct with the merchant; no YUKU checkout, coupon wallet, payment, commission, or settlement exists in this release.
