@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BriefcaseBusiness, Search, ShieldCheck, MapPin, Monitor, ChevronRight, AlertCircle, RefreshCw, Star, BadgeCheck } from 'lucide-react';
+import { ArrowLeft, BriefcaseBusiness, Search, ShieldCheck, MapPin, Monitor, ChevronRight, AlertCircle, RefreshCw, BadgeCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AppRoute } from '../types/navigation';
 import { PROFESSIONAL_SERVICES_CATALOG } from '../data/professionalServicesCatalog';
