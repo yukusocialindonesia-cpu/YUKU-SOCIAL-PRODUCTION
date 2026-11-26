@@ -268,3 +268,26 @@ Compared the four Merchant Partner migrations on PR #287 with the live Productio
 - No direct checkout, escrow, payout, voucher balance, or YUKU commission is implemented by these Merchant offer migrations; redemption remains directly with the merchant, consistent with the current product scope.
 
 No Merchant migration was applied to Production, and no Merchant table, policy, RPC, membership, offer, or business record was created or changed during this audit stage.
+
+
+### Deployed Supabase Edge Functions and account lifecycle — live inventory/source inspection
+
+Listed the Edge Functions deployed to the Production Supabase project and inspected the deployed source for account-management, admin-management, and yuku-push. This is deployed-source inspection, not a live HTTP penetration test.
+
+**Production deployment inventory**
+- Three functions are ACTIVE: account-management (version 1, JWT verification enabled), admin-management (version 3, JWT verification enabled), and yuku-push (version 4, JWT verification disabled but protected by its own request authentication).
+- No xendit-webhook or create-checkout function is deployed in this project. The Xendit source reviewed earlier on PR #287 is therefore not a live Production integration. Do not represent Xendit checkout/webhook as active; keep the existing payment routes and provider rollout status explicit.
+
+**Positive controls**
+- account-management validates the bearer token with Supabase Auth getUser, requires an active actor, and checks get_admin_access.is_super_admin before exposing Customer/Talent account management.
+- Its list/preflight actions are read-only. Preflight explicitly reports permanentDeletionEnabled=false; no permanent account deletion action is implemented in the deployed function.
+- Status changes are limited to Customer/Talent accounts, disallow self-change and permanent-ban reactivation, require a reason, use an optimistic status predicate, and attempt compensating rollback if Auth ban or audit logging fails.
+- admin-management validates the JWT and requires get_admin_access.is_super_admin before inviting an Admin. It allow-lists the four scoped permission keys, refuses to convert an existing Customer/Talent account into Admin, provisions the role/permissions through the service-only database RPC, and attempts to delete the newly invited Auth user if provisioning fails.
+- yuku-push has JWT verification disabled at the platform layer, but its subscribe/unsubscribe actions validate the caller's bearer token with getUser; the send action requires the configured YUKU_PUSH_WEBHOOK_SECRET. It also checks the configured application origin when an Origin header is present. This is a custom-authenticated endpoint, not an unauthenticated public send API.
+
+**Account suspension limitation**
+- account-management sets a long Auth ban duration when an account is suspended and documents that already-issued access tokens remain valid until they expire. The source does not revoke all existing sessions as part of the status-change workflow.
+- Protected table/Storage RLS and write guards add defense in depth, but SECURITY DEFINER RPCs can bypass ordinary RLS. Before launch, verify that every sensitive user-facing SECURITY DEFINER RPC independently rejects suspended/banned callers, or revoke their active sessions and test the exact behavior with a previously issued JWT.
+- The function's rollback strategy is compensating rather than a single transaction across Auth, Postgres, and audit logging. It returns an explicit manual-intervention error if rollback fails; monitor and rehearse this failure path in Staging.
+
+No Edge Function was deployed/replaced, no Auth user was invited/suspended/deleted, and no Production setting or database record was changed during this audit stage.
