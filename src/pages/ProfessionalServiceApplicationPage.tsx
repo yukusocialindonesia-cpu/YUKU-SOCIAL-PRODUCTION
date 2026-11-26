@@ -60,7 +60,10 @@ const maxFileSize = 10 * 1024 * 1024;
 export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate }) => {
   const { user } = useAuth();
   const [categories, setCategories] = useState<{ id: string; title: string; items: Subcategory[] }[]>([]);
-  const [hasTalentProfile, setHasTalentProfile] = useState<boolean | null>(null);
+  const [profileName, setProfileName] = useState('');
+  const [profileCity, setProfileCity] = useState('');
+  const [profileHeadline, setProfileHeadline] = useState('');
+  const [profileBio, setProfileBio] = useState('');
   const [applications, setApplications] = useState<Application[]>([]);
   const [statusHistory, setStatusHistory] = useState<Record<string, StatusHistoryEntry[]>>({});
   const [editingApplicationId, setEditingApplicationId] = useState<string | null>(null);
@@ -91,7 +94,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     if (!user) { setLoading(false); return; }
     setLoading(true);
     setError('');
-    const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: talentProfile, error: talentProfileError }, { data: historyRows, error: historyError }] = await Promise.all([
+    const [{ data: categoryRows, error: categoryError }, { data: applicationRows, error: applicationError }, { data: professionalProfile, error: professionalProfileError }, { data: historyRows, error: historyError }] = await Promise.all([
       supabase.from('professional_service_categories')
         .select('id,title,professional_service_subcategories(id,title,description,verification_level,delivery_modes,category_id)')
         .eq('is_active', true)
@@ -101,7 +104,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         .select('id,status,admin_note,created_at,subcategory_id,service_description,experience_years,service_city,delivery_modes,rate_amount,pricing_unit,credential_document_path,supporting_document_path')
         .eq('applicant_id', user.id)
         .order('created_at', { ascending: false }),
-      supabase.from('talent_profiles').select('id').eq('id', user.id).maybeSingle(),
+      supabase.from('professional_provider_profiles').select('user_id,display_name,city,headline,bio').eq('user_id', user.id).maybeSingle(),
       supabase.from('professional_service_application_status_history')
         .select('id,application_id,from_status,to_status,admin_note,actor_role,created_at')
         .order('created_at', { ascending: true })
@@ -121,9 +124,16 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
       (acc[entry.application_id] ||= []).push(entry);
       return acc;
     }, {}));
-    setHasTalentProfile(talentProfileError ? null : !!talentProfile);
+    if (professionalProfile) {
+      setProfileName(professionalProfile.display_name || '');
+      setProfileCity(professionalProfile.city || '');
+      setProfileHeadline(professionalProfile.headline || '');
+      setProfileBio(professionalProfile.bio || '');
+    } else {
+      setProfileName((user.user_metadata?.full_name || user.user_metadata?.name || '').toString());
+    }
     if (categoryError) setError('Daftar jenis jasa belum dapat dimuat. Coba muat ulang halaman atau hubungi admin YUKU.');
-    else if (talentProfileError) setError('Status profil Talent belum dapat diperiksa. Silakan muat ulang halaman.');
+    else if (professionalProfileError) setError('Profil profesional belum dapat dimuat. Periksa migrasi profil profesional lalu muat ulang halaman.');
     else if (applicationError) setError('Riwayat pengajuan belum dapat dimuat.');
     else if (historyError) setError('Riwayat perubahan status belum dapat dimuat. Coba muat ulang halaman.');
     setLoading(false);
@@ -158,6 +168,10 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     setError('');
     setSuccess('');
     if (!user) { setError('Silakan masuk ke akun YUKU terlebih dahulu.'); return; }
+    if (profileName.trim().length < 2) { setError('Isi nama tampilan profesional minimal 2 karakter.'); return; }
+    if (profileCity.trim().length < 2) { setError('Isi kota domisili profil profesional.'); return; }
+    if (profileHeadline.trim().length < 3) { setError('Isi judul keahlian profesional minimal 3 karakter.'); return; }
+    if (profileBio.trim().length < 20) { setError('Bio profesional minimal 20 karakter.'); return; }
     if (!selectedSubcategory) { setError('Pilih jenis jasa yang ingin ditawarkan.'); return; }
     if (description.trim().length < 30) { setError('Deskripsi layanan minimal 30 karakter.'); return; }
     const experienceYears = Number(experience);
@@ -178,6 +192,16 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     setSubmitting(true);
     const uploadedPaths: string[] = [];
     try {
+      const { error: profileSaveError } = await supabase.from('professional_provider_profiles').upsert({
+        user_id: user.id,
+        display_name: profileName.trim(),
+        city: profileCity.trim(),
+        headline: profileHeadline.trim(),
+        bio: profileBio.trim(),
+        is_profile_complete: true,
+      }, { onConflict: 'user_id' });
+      if (profileSaveError) throw new Error('Profil profesional belum berhasil disimpan: ' + profileSaveError.message);
+
       const uploadPrivate = async (file: File | null, label: string) => {
         if (!file) return null;
         const extensionByMime: Record<string, string> = {
@@ -279,17 +303,6 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
     </main>
   );
 
-  if (hasTalentProfile === false) return (
-    <main className="min-h-[70vh] bg-[#F8F7FC] px-4 py-10">
-      <section className="mx-auto max-w-lg rounded-3xl border border-slate-200 bg-white p-6 text-center">
-        <BriefcaseBusiness className="mx-auto h-9 w-9 text-violet-700"/>
-        <h1 className="mt-3 text-lg font-extrabold text-slate-900">Buat profil Talent terlebih dahulu</h1>
-        <p className="mt-2 text-sm text-slate-500">Jasa profesional di YUKU ditawarkan melalui profil Talent. Daftarkan profil Talent Anda terlebih dahulu, lalu kembali untuk mengajukan layanan profesional.</p>
-        <button onClick={() => onNavigate('/daftar-talent')} className="mt-5 rounded-xl bg-[#24105F] px-5 py-3 text-xs font-bold text-white">Daftar sebagai Talent</button>
-      </section>
-    </main>
-  );
-
   return (
     <main className="min-h-screen bg-[#F8F7FC] pb-12">
       <header className="bg-gradient-to-br from-[#24105F] to-[#5416B8] px-4 py-6 text-white">
@@ -305,7 +318,12 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
         {error && <div className="flex gap-2 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-900"><AlertCircle className="h-4 w-4 shrink-0"/>{error}</div>}
 
         <form onSubmit={submit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-          <section><h2 className="text-sm font-extrabold text-slate-900">{editingApplicationId ? 'Perbaiki pengajuan layanan' : 'Informasi layanan'}</h2><p className="mt-1 text-[11px] text-slate-500">Pilih satu jenis jasa per pengajuan.</p></section>
+          <section><h2 className="text-sm font-extrabold text-slate-900">Profil penyedia profesional</h2><p className="mt-1 text-[11px] text-slate-500">Profil ini berdiri sendiri dan tidak membuat profil Companion. Profil baru tampil publik setelah layanan disetujui Admin.</p></section>
+          <label className="block text-xs font-bold text-slate-700">Nama tampilan profesional<input value={profileName} onChange={(e) => setProfileName(e.target.value)} maxLength={100} required placeholder="Nama yang ingin ditampilkan" className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs outline-none focus:border-violet-500" /></label>
+          <label className="block text-xs font-bold text-slate-700">Kota domisili<input value={profileCity} onChange={(e) => setProfileCity(e.target.value)} maxLength={100} required placeholder="Contoh: Bogor" className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs outline-none focus:border-violet-500" /></label>
+          <label className="block text-xs font-bold text-slate-700">Judul keahlian<input value={profileHeadline} onChange={(e) => setProfileHeadline(e.target.value)} maxLength={200} required placeholder="Contoh: Fotografer dan videografer profesional" className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 text-xs outline-none focus:border-violet-500" /></label>
+          <label className="block text-xs font-bold text-slate-700">Tentang penyedia<textarea value={profileBio} onChange={(e) => setProfileBio(e.target.value)} rows={3} maxLength={2000} required placeholder="Ceritakan pengalaman, pendekatan kerja, dan keahlian Anda (minimal 20 karakter)." className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-xs outline-none focus:border-violet-500" /></label>
+          <div className="border-t border-slate-100 pt-4"><h2 className="text-sm font-extrabold text-slate-900">{editingApplicationId ? 'Perbaiki pengajuan layanan' : 'Informasi layanan'}</h2><p className="mt-1 text-[11px] text-slate-500">Pilih satu jenis jasa per pengajuan.</p></div>
           <label className="block text-xs font-bold text-slate-700">Jenis jasa
             <select value={subcategoryId} disabled={!!editingApplicationId} onChange={(e) => { const nextId = e.target.value; setSubcategoryId(nextId); const nextItem = categories.flatMap((category) => category.items).find((item) => item.id === nextId); setModes(nextItem?.delivery_modes || ['offline']); }} required className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500">
               <option value="">Pilih jenis jasa</option>
