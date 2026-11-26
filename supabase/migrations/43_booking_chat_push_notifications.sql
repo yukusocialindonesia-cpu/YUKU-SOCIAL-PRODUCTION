@@ -36,7 +36,6 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  v_preview := left(regexp_replace(coalesce(NEW.message, ''), '\s+', ' ', 'g'), 120);
 
   PERFORM public.create_in_app_notification(
     v_recipient_id,
