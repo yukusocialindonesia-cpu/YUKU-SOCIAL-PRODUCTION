@@ -68,3 +68,7 @@ When an admin requests revisions, the applicant can edit and resubmit that same 
 
 
 The latest guardrail also enforces that an applicant's selected online/offline modes are a subset of the modes configured for that subcategory. The same check is repeated in the admin approval RPC, so changing the taxonomy after an application is submitted cannot bypass the constraint.
+
+
+## Latest repository checks
+The latest PR head has successful GitHub Actions results for account-management build/type checks, account-management security checks, admin simple-management checks, notification branch checks, and manual bank-transfer branch validation. These are repository CI checks only; they do not replace applying the migrations to a disposable Supabase project, exercising RLS/RPC with separate user roles, or completing mobile and financial end-to-end tests.
