@@ -89,6 +89,11 @@ export const MerchantPartnerPage: React.FC<Props> = ({ onNavigate }) => {
 
   const selected=visible.find((item)=>item.id===selectedId)||visible[0]||null;
 
+  useEffect(()=>{
+    if(visible.length===0){if(selectedId)setSelectedId('');return;}
+    if(!visible.some((item)=>item.id===selectedId))setSelectedId(visible[0].id);
+  },[visible,selectedId]);
+
   const safeWebsite=(url:string|null)=>{
     if(!url)return null;
     try{const parsed=new URL(url);return parsed.protocol==='https:'||parsed.protocol==='http:'?parsed.toString():null;}catch{return null;}
