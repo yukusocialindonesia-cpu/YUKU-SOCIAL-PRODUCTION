@@ -234,7 +234,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
             </p>
             <button type="button" onClick={() => onNavigate('/talent')}
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-3 text-xs font-extrabold text-white shadow-md transition hover:-translate-y-0.5 hover:brightness-105">
-              Jelajahi talent <ArrowUpRight className="h-4 w-4" />
+              Cari Companion <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>
         </div>
