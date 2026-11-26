@@ -92,6 +92,7 @@ export const ProfessionalServiceApplicationPage: React.FC<Props> = ({ onNavigate
       supabase.from('professional_service_categories')
         .select('id,title,professional_service_subcategories(id,title,description,verification_level,delivery_modes,category_id)')
         .eq('is_active', true)
+        .eq('professional_service_subcategories.is_active', true)
         .order('sort_order', { ascending: true }),
       supabase.from('professional_service_applications')
         .select('id,status,admin_note,created_at,subcategory_id,service_description,experience_years,service_city,delivery_modes,rate_amount,pricing_unit,credential_document_path,supporting_document_path')
