@@ -29,6 +29,7 @@ on:
       - "tsconfig.json"
       - "vite.config.*"
       - ".github/workflows/main-build-validation.yml"
+      - "supabase/migrations/**"
   workflow_dispatch:
 
 permissions:
