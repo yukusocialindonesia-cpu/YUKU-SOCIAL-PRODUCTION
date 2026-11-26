@@ -49,3 +49,36 @@ The current profile renderer keys custom offers by category ID. That is only uni
 ## Release boundary
 
 This audit is documentation only. It does not run migrations, modify production data, enable bookings/payments, merge a PR, or deploy the production application.
+
+
+## 5. Professional-only provider onboarding is also blocked
+
+The current Professional Services application is not independent of the Companion provider identity:
+
+- `professional_talent_services.provider_id` has a foreign key to `public.talent_profiles(id)`.
+- `ProfessionalServiceApplicationPage` checks for a `talent_profiles` row before it can treat the user as an eligible provider.
+- `ProfessionalProviderProfilePage` reads provider presentation fields by joining `talent_profiles`.
+- The professional application approval workflow creates/updates a listing whose provider identity is still the Talent profile.
+
+Removing only the frontend check would therefore leave database foreign keys, approval, public profile rendering, and provider eligibility inconsistent.
+
+### Required architecture change
+
+Create an independent professional-provider identity/profile linked directly to `public.users(id)`. Keep Companion `talent_profiles` optional. Then migrate the professional application/listing ownership, Admin review, public discovery/profile query, account eligibility helper, and RLS policies to that identity. Preserve existing professional listings by backfilling their provider identity from the current `talent_profiles.id` to the corresponding user ID, and retain a compatibility path until all consumers are switched.
+
+Do not auto-create a public Companion listing merely to satisfy the current foreign key. A Professional-only provider must not appear in Social Experience unless they separately apply and are approved for that service line.
+
+## 6. Professional Services also currently limits one listing per subcategory
+
+The `professional_talent_services` table has `UNIQUE(provider_id, subcategory_id)`. Multiple distinct professional offers under one subcategory will need the same exact-listing identity discipline as Social Experience: each listing needs its own stable ID in the provider editor, Admin queue, public profile, and (when professional checkout is separately approved) booking snapshot. Do not drop the uniqueness constraint until listing edits/revisions and Admin decisions are keyed to an individual listing ID.
+
+## 7. Updated safe implementation order
+
+1. Establish independent provider identity for Professional Services while preserving existing providers/listings.
+2. Complete exact-offer IDs and booking compatibility for Social Experience before enabling multiple same-category offers.
+3. Add multi-listing professional submissions keyed by listing ID, retaining qualification/document review rules.
+4. Update public profile and Admin review to operate on individual listing IDs.
+5. Add regression tests for Companion-only, Professional-only, dual-line accounts, historical bookings, repeated same-category listings, and all approval states.
+6. Keep professional checkout disabled until the separate booking lifecycle, fee, cancellation, and completion policies are approved and tested.
+
+This section is an implementation audit only; it does not change schema, application behavior, production data, or release state.
