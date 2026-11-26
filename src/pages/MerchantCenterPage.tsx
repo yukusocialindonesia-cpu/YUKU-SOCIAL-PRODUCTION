@@ -67,6 +67,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const [teamLoading, setTeamLoading] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'manager' | 'staff'>('staff');
+  const [pendingInvitationIds, setPendingInvitationIds] = useState<Record<string,string>>({});
 
   const activeBusiness = useMemo(
     () => businesses.find((business) => business.id === activeBusinessId) || businesses[0] || null,
@@ -85,7 +86,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     setError('');
     const { data: ownMemberships, error: membershipError } = await supabase
       .from('merchant_memberships')
-      .select('business_id')
+      .select('id,business_id,membership_status')
       .eq('user_id', user.id)
       .in('membership_status', ['active','pending_invitation']);
     if (membershipError) {
@@ -95,7 +96,9 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       setLoading(false);
       return;
     }
-    const businessIds = [...new Set((ownMemberships || []).map((membership: { business_id: string }) => membership.business_id))];
+    const membershipRows = (ownMemberships || []) as { id: string; business_id: string; membership_status: string }[];
+    const businessIds = [...new Set(membershipRows.map((membership) => membership.business_id))];
+    setPendingInvitationIds(Object.fromEntries(membershipRows.filter((membership) => membership.membership_status === 'pending_invitation').map((membership) => [membership.business_id,membership.id])));
     const { data, error: queryError } = businessIds.length
       ? await supabase.from('merchant_businesses')
           .select('id,business_name,description,business_category,public_phone,website_url,review_status')
@@ -236,6 +239,24 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     setSaving(false);
   };
 
+  const acceptInvitation = async () => {
+    if (!activeBusiness) return;
+    const membershipId = pendingInvitationIds[activeBusiness.id];
+    if (!membershipId) return;
+    setSaving(true); setError(''); setSuccess('');
+    const { data, error: acceptError } = await supabase.rpc('accept_merchant_invitation', {
+      p_membership_id: membershipId,
+    });
+    if (acceptError) setError(acceptError.message);
+    else if (data !== true) setError('Undangan tidak lagi tersedia atau sudah diproses.');
+    else {
+      setSuccess('Undangan diterima. Akses bisnis sekarang aktif.');
+      await refreshRole();
+      await load();
+    }
+    setSaving(false);
+  };
+
   const inviteMember = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!activeBusiness || !inviteEmail.trim()) return;
@@ -326,6 +347,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
             <section className="space-y-5">
               {businesses.length > 1 && <label className="block"><span className={labelClass}>Pilih bisnis</span><select className={inputClass} value={activeBusiness?.id || ''} onChange={(e) => setActiveBusinessId(e.target.value)}>{businesses.map((business) => <option key={business.id} value={business.id}>{business.business_name}</option>)}</select></label>}
               {activeBusiness && <>
+                {activeMembership?.status === 'invited' && <section className="rounded-2xl border border-purple-200 bg-purple-50 p-4"><p className="text-xs font-extrabold text-purple-950">Undangan bergabung ke bisnis</p><p className="mt-1 text-[11px] leading-5 text-purple-800">Anda diundang sebagai {activeMembership.role === 'manager' ? 'Manager' : 'Staff'} di bisnis {activeBusiness.business_name}. Terima undangan untuk mengaktifkan akses.</p><button type="button" onClick={() => void acceptInvitation()} disabled={saving || !pendingInvitationIds[activeBusiness.id]} className="mt-3 rounded-xl bg-purple-800 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">Terima undangan</button></section>}
                 <form onSubmit={saveBusiness} className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <div><h2 className="text-base font-extrabold text-slate-900">Profil bisnis</h2><p className="mt-1 text-[11px] text-slate-500">Informasi publik Merchant Partner</p></div>
