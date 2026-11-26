@@ -90,3 +90,54 @@ These are source changes on the feature branch only. No function deployment or P
 ## Safety boundary
 
 This is a branch source audit and two branch-only Edge Function changes. It did not call Xendit, deploy Edge Functions, run SQL, alter Supabase, enable payment flags, merge the PR, or write Production data.
+
+
+## Booking privacy, participant access & communication follow-up — 26 November 2026
+
+Scope: static review of branch migrations and React client code. No live RLS queries or Realtime session tests were run.
+
+### P1 — Reporter can potentially read internal Admin report notes
+
+- Migration 49 scopes `reports_select_reporter_or_admin` to `auth.uid() = reporter_id OR has_admin_permission('support')`.
+- This is row-level filtering only. It does not hide individual columns from the reporter.
+- `reports_complaints.admin_notes` is an internal moderation field, but `BookingHistoryPage.tsx` directly selects `admin_notes` along with the reporter's own report row.
+- Therefore, unless a separate column-level privilege restriction exists in the effective database (not established by this source review), the reporter can read the internal Admin note through the Data API. The prior migration `20261127001000_stop_leaking_internal_report_notes.sql` removes notes from status-change notifications, but does not itself prevent direct table SELECT.
+- Treat as a P1 privacy issue. Verify effective column grants in Staging/Production before claiming exploitability.
+- Safe remediation direction: revoke authenticated table-wide SELECT and grant only explicit user-safe columns; provide Support Admin notes through a narrowly permission-checked Admin RPC or a private schema function. Update BookingHistoryPage to stop selecting `admin_notes`. Preserve Support Admin workflow through the scoped RPC. Do not rely on UI hiding.
+
+### Booking and meeting-location visibility
+
+- `bookings` RLS in migration 54 allows the Customer and Talent parties to select their booking row; Super Admin is separately allowed. Booking Admin receives a minimal scoped summary RPC, not unrestricted booking-table SELECT.
+- Booking rows include `meeting_location_name` and `meeting_location_address`. Both participants can therefore read the stored meeting location while the booking row is visible, including pending-payment states. This is consistent with the current product goal of letting both parties coordinate distance/location before finalizing an offline arrangement, but it means users must not put private home/access details in the location field before they are ready to share them.
+- No phone number is included in the `bookings` table definition inspected. Direct contact details may still exist in user/profile records; verify those separately before claiming no contact-data exposure.
+- The client displays the meeting location in the booking chat header. Keep exact GPS Talent coordinates separate from this user-entered meeting location.
+
+### Booking chat protections found in branch source
+
+- Chat message SELECT is restricted to booking participants and allowed conversation states; terminal cancelled/expired states are not readable. Completed/disputed conversations remain readable.
+- INSERT requires sender_id = auth.uid(), participant membership, and a writable paid/active status.
+- Authenticated clients cannot insert forged id/read-state/timestamp columns; column grants permit only booking_id, sender_id, message.
+- Participants cannot edit message content; UPDATE is limited to the `is_read` receipt field and only for the other participant's messages.
+- The client uses a private Realtime channel `booking-chat:<booking UUID>`. The UUID is a lookup key, not an authorization secret. Migration `20261127001100_scope_admin_notifications_and_private_booking_chat.sql` adds participant/account/status checks for Broadcast and Presence.
+- Production previously had zero policies on `realtime.messages` in the read-only snapshot. These branch policies must be deployed and tested before private Presence/typing features can be considered protected in Production. Also verify project-level Realtime public access is disabled after inventorying all channels.
+
+### Financial row access
+
+- Migration 49 scopes payment rows to booking participants or Finance Admin; refunds to the Customer or Finance Admin. Talent does not receive direct refund row access.
+- `BookingHistoryPage.tsx` reads refunds by booking IDs, but RLS remains the effective boundary. It also reads payment-method settings only to determine which payment UI is available.
+- Do not expose provider webhook payload history, provider charge IDs, or full payment records to general profile pages. Current client query shown in this page reads only refund amount/status/provider_refund_id for the Customer's own booking set.
+
+### Required verification and remediation
+
+1. Query effective `information_schema.column_privileges` / `has_column_privilege` for `reports_complaints.admin_notes` as anon, authenticated, Support Admin, and Super Admin. Then test reporter direct SELECT and Admin notes RPC.
+2. Remove `admin_notes` from BookingHistoryPage query and user-facing type/model.
+3. Add a Support-scoped Admin RPC to read internal notes only if the Admin UI needs them; keep function SECURITY DEFINER narrowly scoped, fixed search_path, authenticated caller check, active Support permission, and explicit grants.
+4. Test two unrelated booking participants cannot read each other's booking, messages, payment/refund rows, reports, or meeting location.
+5. Test the two participants can read their own booking location and messages only in intended statuses; verify chat closes after cancellation/expiry and is read-only after completion/dispute.
+6. Test Realtime private topic authorization as anon, unrelated Customer, booking Customer, booking Talent, disabled account, Booking Admin, Support Admin, and Super Admin.
+7. Verify private Realtime project setting and inspect all channels before disabling public access globally.
+8. Verify no phone/email/precise GPS is included in participant chat metadata or booking summaries unless explicitly needed.
+
+### Validation boundary
+
+This is a source-level finding. No live column privilege query, RLS test, Realtime authorization test, database migration, project setting change, or Production data change was performed. Do not state that the `admin_notes` exposure is confirmed in Production until effective column grants and a reporter-session SELECT are tested.
