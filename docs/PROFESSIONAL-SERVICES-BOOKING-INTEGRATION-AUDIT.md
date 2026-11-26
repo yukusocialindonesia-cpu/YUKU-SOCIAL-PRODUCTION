@@ -150,3 +150,8 @@ Professional-service taxonomy, provider applications, private document handling,
 - The review RPC and admin UI use a verification attestation. This is a human reviewer record, not automatic credential validation; the operating procedure must retain issuer, holder identity, validity, and scope checks.
 
 No production writes were made during this pass. The schema check was read-only; the frontend warning fix and audit note are committed only to the feature branch.
+
+
+## Admin queue pagination follow-up
+
+The review page now applies the selected status filter in the database, retrieves 20 rows per page with an exact count, and uses created_at plus id as stable ordering keys. This replaces the previous newest-100 client-side filtering behavior. Concurrent inserts and review status transitions can still shift offset pages; a cursor-based pagination improvement may be appropriate at higher scale.
