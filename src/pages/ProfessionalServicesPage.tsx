@@ -242,9 +242,25 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
         {visibleProviders.length === 0 && !loading && !providerError && (
           <div className="mt-6 rounded-2xl border border-dashed border-violet-200 bg-white p-5 text-center">
             <BriefcaseBusiness className="mx-auto h-7 w-7 text-violet-400" />
-            <p className="mt-2 text-sm font-extrabold text-slate-800">Penyedia jasa segera hadir</p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">Kategori dan jenis layanan sudah bisa dijelajahi. Saat ini belum ada penyedia jasa yang aktif dan disetujui untuk ditampilkan.</p>
-            <button onClick={() => onNavigate('/daftar-jasa-profesional')} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-[11px] font-bold text-white">Daftarkan jasa Anda</button>
+            <p className="mt-2 text-sm font-extrabold text-slate-800">
+              {providers.length < providerCount
+                ? 'Belum ada hasil pada daftar yang dimuat'
+                : providerCount === 0
+                  ? 'Penyedia jasa segera hadir'
+                  : 'Tidak ada penyedia yang cocok'}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+              {providers.length < providerCount
+                ? 'Masih ada penyedia lain yang belum dimuat. Lanjutkan memuat daftar untuk melihat hasil berikutnya.'
+                : providerCount === 0
+                  ? 'Kategori dan jenis layanan sudah bisa dijelajahi. Penyedia jasa aktif yang disetujui belum tersedia saat ini.'
+                  : 'Coba ubah kata kunci atau filter kategori dan metode layanan.'}
+            </p>
+            {providers.length >= providerCount && (
+              <button onClick={() => providers.length === 0 ? onNavigate('/daftar-jasa-profesional') : (setQuery(''), setSelectedGroup('all'), setMode('all'))} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-[11px] font-bold text-white">
+                {providerCount === 0 ? 'Daftarkan jasa Anda' : 'Reset pencarian'}
+              </button>
+            )}
           </div>
         )}
 
