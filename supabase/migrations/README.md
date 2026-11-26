@@ -107,3 +107,16 @@ Audit baca-saja terhadap migration history project Production `sbqvltqzzcsqzijgu
 3. file duplikat atau superseded yang perlu keputusan eksplisit.
 
 Sampai pekerjaan tersebut selesai, **jangan menjalankan `supabase db push`, `migration repair`, atau menerapkan migration pada Production**. Rekonsiliasi nama file tidak sama dengan penerapan SQL ke database.
+
+
+## Rekonsiliasi nama file terhadap Production (26 November 2026)
+
+Standar nama untuk migration baru adalah `<version>_<deskripsi_snake_case>.sql`, dengan version unik dan urut secara kronologis. Gunakan versi timestamp UTC 14 digit untuk migration baru. Jangan menggunakan ulang nomor versi atau mengganti isi migration yang sudah diterapkan.
+
+Pada rekonsiliasi repository terhadap riwayat Production yang dibaca pada 26 November 2026:
+- 107 versi tercatat pada riwayat Production.
+- 74 file lokal berhasil dipasangkan berdasarkan nama migration yang sama dan kemudian disamakan prefix versinya dengan versi Production.
+- 33 versi Production belum memiliki file SQL lokal yang dapat dipasangkan dengan yakin. File SQL-nya harus dipulihkan dari sumber historis yang benar sebelum folder migration dapat dianggap lengkap.
+- File lokal lain yang belum ada di riwayat Production tidak otomatis dianggap gagal atau aman untuk diterapkan. Sebagian adalah migration fitur baru, sebagian masih bernomor legacy. Periksa isi SQL dan status skema sebelum menentukan urutan penerapannya.
+
+**Penting:** kesamaan nama bukan bukti kesamaan isi SQL atau checksum. Perubahan nama file hanya memperbaiki pemetaan versi di repository; ini tidak mengubah riwayat Supabase dan tidak menjalankan SQL. Jangan menjalankan `supabase db push` ke Production sampai seluruh versi historis, urutan, checksum/isi, dan environment Preview direkonsiliasi.
