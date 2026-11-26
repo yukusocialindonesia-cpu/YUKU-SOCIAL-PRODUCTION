@@ -3,9 +3,10 @@ import { ArrowUpRight, Building2, MapPin, MessageCircle, Store, UsersRound } fro
 
 interface EcosystemSectionProps {
   onCommunityClick: () => void;
+  onMerchantClick: () => void;
 }
 
-export const EcosystemSection: React.FC<EcosystemSectionProps> = ({ onCommunityClick }) => (
+export const EcosystemSection: React.FC<EcosystemSectionProps> = ({ onCommunityClick, onMerchantClick }) => (
   <section className="relative overflow-hidden bg-[#160B2B] py-7 text-white sm:py-10">
     <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-fuchsia-600/20 blur-3xl" />
     <div className="pointer-events-none absolute -bottom-28 -left-16 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl" />
@@ -44,7 +45,7 @@ export const EcosystemSection: React.FC<EcosystemSectionProps> = ({ onCommunityC
               <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Lokasi</span>
               <span className="inline-flex items-center gap-1"><MessageCircle className="h-3 w-3" /> Promo & penawaran</span>
             </div>
-            <p className="mt-3 text-[10px] font-semibold text-fuchsia-200">Program partner disiapkan bertahap</p>
+            <div className="mt-3 flex items-center justify-between gap-3"><p className="text-[10px] font-semibold text-fuchsia-200">Bisnis terverifikasi tampil di sini</p><button type="button" onClick={onMerchantClick} className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-[10px] font-extrabold text-violet-950 transition hover:bg-fuchsia-100">Jelajahi <ArrowUpRight className="h-3 w-3" /></button></div>
           </div>
         </article>
       </div>
