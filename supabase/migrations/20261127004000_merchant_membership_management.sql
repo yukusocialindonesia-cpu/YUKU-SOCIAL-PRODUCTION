@@ -178,18 +178,22 @@ begin
     raise exception 'Only the business owner can revoke members' using errcode = '42501';
   end if;
 
-  update public.merchant_memberships
-     set membership_status = 'revoked', updated_at = now()
-   where id = p_membership_id
-     and business_id = p_business_id
-     and member_role in ('manager','staff')
-     and membership_status in ('active','pending_invitation')
-  returning user_id,member_role,membership_status
-       into v_target_user_id,v_previous_role,v_previous_status;
+  select mm.user_id,mm.member_role,mm.membership_status
+    into v_target_user_id,v_previous_role,v_previous_status
+    from public.merchant_memberships mm
+   where mm.id = p_membership_id
+     and mm.business_id = p_business_id
+     and mm.member_role in ('manager','staff')
+     and mm.membership_status in ('active','pending_invitation')
+   for update;
 
   if not found then
     raise exception 'Anggota tidak ditemukan atau tidak dapat dicabut' using errcode = 'P0002';
   end if;
+
+  update public.merchant_memberships
+     set membership_status = 'revoked', updated_at = now()
+   where id = p_membership_id;
 
   insert into public.merchant_membership_history (
     business_id,membership_id,target_user_id,actor_user_id,action,
