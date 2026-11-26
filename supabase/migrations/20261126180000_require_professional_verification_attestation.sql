@@ -85,6 +85,11 @@ begin
       raise exception 'Dokumen kompetensi atau izin profesi wajib tersedia.' using errcode = '55000';
     end if;
 
+    if v_verification_level = 'reference'
+       and v_application.supporting_document_path is null then
+      raise exception 'Bukti pengalaman atau referensi wajib tersedia untuk jenis jasa ini.' using errcode = '55000';
+    end if;
+
     insert into public.professional_talent_services (
       provider_id, subcategory_id, service_description, experience_years,
       service_city, delivery_modes, rate_amount, pricing_unit,
