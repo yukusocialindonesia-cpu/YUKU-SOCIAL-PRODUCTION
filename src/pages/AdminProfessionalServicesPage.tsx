@@ -39,22 +39,30 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [verificationNotes, setVerificationNotes] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState('pending');
+  const [page, setPage] = useState(0);
+  const [totalRows, setTotalRows] = useState(0);
   const [error, setError] = useState('');
+  const PAGE_SIZE = 20;
 
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
-    const { data, error: queryError } = await supabase
+    let query = supabase
       .from('professional_service_applications')
-      .select('id, applicant_id, subcategory_id, service_description, experience_years, service_city, delivery_modes, rate_amount, pricing_unit, credential_document_path, supporting_document_path, status, admin_note, created_at, subcategory:professional_service_subcategories!inner(title, verification_level, category:professional_service_categories!inner(title))')
+      .select('id, applicant_id, subcategory_id, service_description, experience_years, service_city, delivery_modes, rate_amount, pricing_unit, credential_document_path, supporting_document_path, status, admin_note, created_at, subcategory:professional_service_subcategories!inner(title, verification_level, category:professional_service_categories!inner(title))', { count: 'exact' })
       .order('created_at', { ascending: false })
-      .limit(100);
+      .order('id', { ascending: false })
+      .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
+    if (filter !== 'all') query = query.eq('status', filter);
+    const { data, error: queryError, count } = await query;
     if (queryError) {
       setError('Data pengajuan belum dapat dimuat. Pastikan migrasi aplikasi profesional sudah diterapkan dan akses admin Talent tersedia.');
       setRows([]);
+      setTotalRows(0);
       setLoading(false);
       return;
     }
+    setTotalRows(count || 0);
     const appRows = (data || []) as any[];
     const ids = [...new Set(appRows.map((row) => row.applicant_id))];
     const { data: profiles, error: profileQueryError } = ids.length
@@ -84,7 +92,7 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
     }));
     setRows(hydrated as ApplicationRow[]);
     setLoading(false);
-  }, []);
+  }, [filter, page]);
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -119,7 +127,7 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
   if (isAuthLoading || authorized === null) return <div className="min-h-[50vh] p-8 text-center text-sm text-slate-500">Memeriksa akses admin...</div>;
   if (!authorized) return <div className="min-h-[60vh] bg-[#F8F7FC] px-4 py-12 text-center"><ShieldCheck className="mx-auto h-9 w-9 text-rose-500"/><h1 className="mt-3 text-lg font-extrabold text-slate-900">Akses dibatasi</h1><p className="mt-2 text-xs text-slate-500">Halaman ini hanya untuk admin Talent atau Super Admin.</p><button onClick={() => onNavigate('/admin')} className="mt-5 rounded-xl bg-[#24105F] px-4 py-2.5 text-xs font-bold text-white">Kembali ke Admin</button></div>;
 
-  const filtered = rows.filter((row) => filter === 'all' || row.status === filter);
+  const totalPages = Math.max(1, Math.ceil(totalRows / PAGE_SIZE));
 
   return (
     <main className="min-h-screen bg-[#F8F7FC] pb-12">
@@ -129,11 +137,11 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
       </div></header>
       <div className="mx-auto max-w-5xl px-4">
         <div className="-mt-4 flex gap-2 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-          {['pending','under_review','needs_revision','approved','rejected','all'].map((value) => <button key={value} onClick={() => setFilter(value)} className={`shrink-0 rounded-full px-3 py-2 text-[10px] font-bold ${filter === value ? 'bg-[#24105F] text-white' : 'bg-slate-100 text-slate-600'}`}>{({pending:'Menunggu',under_review:'Diproses',needs_revision:'Perlu revisi',approved:'Disetujui',rejected:'Ditolak',all:'Semua'} as Record<string,string>)[value]}</button>)}
+          {['pending','under_review','needs_revision','approved','rejected','all'].map((value) => <button key={value} onClick={() => { setFilter(value); setPage(0); }} className={`shrink-0 rounded-full px-3 py-2 text-[10px] font-bold ${filter === value ? 'bg-[#24105F] text-white' : 'bg-slate-100 text-slate-600'}`}>{({pending:'Menunggu',under_review:'Diproses',needs_revision:'Perlu revisi',approved:'Disetujui',rejected:'Ditolak',all:'Semua'} as Record<string,string>)[value]}</button>)}
         </div>
         {error && <div className="mt-4 flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800"><AlertCircle className="h-4 w-4"/>{error}</div>}
-        {loading ? <div className="py-12 text-center text-xs text-slate-500">Memuat pengajuan...</div> : filtered.length === 0 ? <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-10 text-center"><FileText className="mx-auto h-8 w-8 text-slate-300"/><p className="mt-2 text-sm font-bold text-slate-800">Tidak ada pengajuan</p></div> : (
-          <div className="mt-5 space-y-4">{filtered.map((row) => (
+        {loading ? <div className="py-12 text-center text-xs text-slate-500">Memuat pengajuan...</div> : rows.length === 0 ? <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-10 text-center"><FileText className="mx-auto h-8 w-8 text-slate-300"/><p className="mt-2 text-sm font-bold text-slate-800">Tidak ada pengajuan</p></div> : (
+          <div className="mt-5 space-y-4">{rows.map((row) => (
             <article key={row.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-center gap-3">{row.provider?.avatar_url ? <img src={row.provider.avatar_url} alt="" className="h-12 w-12 rounded-xl object-cover"/> : <div className="h-12 w-12 rounded-xl bg-violet-50"/>}<div><p className="text-sm font-extrabold text-slate-900">{row.provider?.display_name || 'Talent tidak ditemukan'}</p><p className="mt-0.5 text-[10px] text-slate-500">{row.provider?.city || row.service_city} · {row.provider?.is_approved ? 'Profil Talent disetujui' : 'Profil Talent belum disetujui'}</p></div></div>
@@ -156,6 +164,14 @@ export const AdminProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) =
             </article>
           ))}</div>
         )}
+        {!loading && totalRows > 0 && <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3">
+          <p className="text-[10px] text-slate-500">Menampilkan {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, totalRows)} dari {totalRows} pengajuan</p>
+          <div className="flex items-center gap-2">
+            <button type="button" disabled={page === 0 || loading} onClick={() => setPage((current) => Math.max(0, current - 1))} className="rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-700 disabled:opacity-40">Sebelumnya</button>
+            <span className="text-[10px] font-semibold text-slate-600">{page + 1}/{totalPages}</span>
+            <button type="button" disabled={page + 1 >= totalPages || loading} onClick={() => setPage((current) => Math.min(totalPages - 1, current + 1))} className="rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-700 disabled:opacity-40">Berikutnya</button>
+          </div>
+        </div>}
       </div>
     </main>
   );
