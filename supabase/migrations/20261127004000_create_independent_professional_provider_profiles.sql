@@ -73,8 +73,9 @@ create policy professional_provider_profiles_owner_update
   with check (user_id = (select auth.uid()));
 
 -- Public presentation is visible only when the account already has at least
--- one approved, active professional listing and the account is not suspended.
--- This does not grant public visibility to draft or applicant-only profiles.
+-- one approved, active professional listing. The listing's own public RLS and
+-- publication guard remain responsible for account-status eligibility.
+-- This does not grant visibility to draft or applicant-only profiles.
 drop policy if exists professional_provider_profiles_public_read
   on public.professional_provider_profiles;
 create policy professional_provider_profiles_public_read
@@ -83,11 +84,8 @@ create policy professional_provider_profiles_public_read
   using (
     exists (
       select 1
-      from public.users u
-      join public.professional_talent_services pts
-        on pts.provider_id = professional_provider_profiles.user_id
-      where u.id = professional_provider_profiles.user_id
-        and coalesce(u.account_status::text, 'active') not in ('suspended', 'banned')
+      from public.professional_talent_services pts
+      where pts.provider_id = professional_provider_profiles.user_id
         and pts.approval_status = 'approved'
         and pts.is_active = true
     )
