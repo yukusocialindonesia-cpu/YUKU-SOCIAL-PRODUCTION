@@ -165,3 +165,5 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] Creating a branch for a draft/needs_revision business is allowed to Owner/Manager; pending_review/rejected/suspended businesses reject branch creation.
 - [ ] Creating a branch for an approved business is Owner-only and atomically moves the business to needs_revision with a review-history event; Manager branch creation is denied.
 - [ ] Branch creation cannot race with Super Admin review to publish an unreviewed address; business row lock serializes branch creation and review decisions.
+- [ ] Legacy `invite_merchant_member(uuid,uuid,text)` is not executable by authenticated clients; all invitations must use the audited email-based RPC.
+- [ ] Run `supabase/ops/merchant_partner_staging_preflight.sql` after applying migrations 02000–05000 in disposable Staging; all required tables, functions, column grants, RLS flags, and privilege assertions pass.
