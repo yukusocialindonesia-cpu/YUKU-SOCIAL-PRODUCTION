@@ -41,6 +41,10 @@ BEGIN
     RAISE EXCEPTION 'Service identity snapshot trigger is missing';
   END IF;
 
+  IF position('set_config' IN pg_get_functiondef(to_regprocedure('public.create_booking_for_service(uuid,public.booking_mode_type,timestamp with time zone,numeric,text,text)'))) = 0 THEN
+    RAISE EXCEPTION 'Exact service ID is not propagated to the booking insert trigger';
+  END IF;
+
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint
     WHERE conrelid = 'public.talent_services'::regclass
