@@ -78,7 +78,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
         ...row,
         provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
         subcategory: Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory,
-      })).filter((row: any) => row.provider?.is_approved === true);
+      }));
       setProviders(normalized as ProviderItem[]);
     }
     setLoading(false);
@@ -105,7 +105,7 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
         ...row,
         provider: Array.isArray(row.provider) ? row.provider[0] : row.provider,
         subcategory: Array.isArray(row.subcategory) ? row.subcategory[0] : row.subcategory,
-      })).filter((row: any) => row.provider?.is_approved === true) as ProviderItem[];
+      })) as ProviderItem[];
       setProviders((current) => {
         const existing = new Set(current.map((item) => item.id));
         return [...current, ...normalized.filter((item) => !existing.has(item.id))];
@@ -236,19 +236,11 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
           </div>
         )}
 
-        {providers.length < providerCount && !providerError && (
-          <div className="mt-4 flex flex-col items-center gap-2">
-            <p className="text-[10px] text-slate-500">Memuat {providers.length} dari {providerCount} layanan penyedia</p>
-            <button type="button" onClick={() => void loadMoreProviders()} disabled={loadingMoreProviders} className="rounded-xl border border-violet-200 bg-white px-5 py-2.5 text-[11px] font-bold text-violet-800 disabled:opacity-50">
-              {loadingMoreProviders ? 'Memuat...' : 'Muat penyedia lainnya'}
-            </button>
-          </div>
-        )}
         {visibleProviders.length > 0 && (
           <section className="mt-8">
             <div className="mb-3 flex items-end justify-between gap-3">
               <div><h2 className="text-sm font-extrabold text-slate-900">Penyedia jasa tersedia</h2><p className="mt-1 text-[11px] text-slate-500">Profil yang sudah disetujui dan aktif di YUKU.</p></div>
-              <span className="text-[10px] font-semibold text-slate-500">{visibleProviders.length} profil</span>
+              <span className="text-[10px] font-semibold text-slate-500">{visibleProviders.length} layanan</span>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {visibleProviders.map((item) => (
@@ -266,11 +258,19 @@ export const ProfessionalServicesPage: React.FC<Props> = ({ onNavigate }) => {
           </section>
         )}
 
+        {providers.length < providerCount && !providerError && (
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <p className="text-[10px] text-slate-500">Memuat {providers.length} dari {providerCount} layanan penyedia</p>
+            <button type="button" onClick={() => void loadMoreProviders()} disabled={loadingMoreProviders} className="rounded-xl border border-violet-200 bg-white px-5 py-2.5 text-[11px] font-bold text-violet-800 disabled:opacity-50">
+              {loadingMoreProviders ? 'Memuat...' : 'Muat penyedia lainnya'}
+            </button>
+          </div>
+        )}
         {providerError && providers.length > 0 && providers.length < providerCount && (
           <div className="mt-3 text-center"><button type="button" onClick={() => void loadMoreProviders()} disabled={loadingMoreProviders} className="text-[11px] font-bold text-violet-700">Coba muat penyedia lainnya</button></div>
         )}
 
-                <div className="mt-7 rounded-2xl border border-violet-100 bg-violet-50 p-4 sm:p-5">
+        <div className="mt-7 rounded-2xl border border-violet-100 bg-violet-50 p-4 sm:p-5">
           <p className="text-xs font-extrabold text-violet-950">Layanan sedang dipersiapkan dengan standar keamanan YUKU.</p>
           <p className="mt-1 text-[11px] leading-relaxed text-violet-800">Kategori dan profil penyedia yang telah disetujui dapat dilihat. Fitur pemesanan, jadwal, transaksi, dan pembayaran jasa profesional belum dibuka sampai integrasi serta perlindungan pengguna selesai.</p>
         </div>
