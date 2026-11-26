@@ -268,8 +268,9 @@ export async function fetchPromotionsFromSupabase(): Promise<PromotionRow[]> {
 
 /**
  * Ambil slide hero Beranda yang aktif (diurutkan sort_order).
- * Jika tabel belum dimigrasi atau kosong, mengembalikan array kosong
- * sehingga Beranda memakai hero bawaan.
+ * Jika query berhasil tetapi tabel kosong, mengembalikan array kosong
+ * sehingga Beranda memakai hero bawaan. Jika query gagal, error diteruskan
+ * agar Hero dapat mempertahankan cache lokal terakhir.
  */
 export async function fetchHeroSlidesFromSupabase(): Promise<HeroSlideRow[]> {
   const { data, error } = await supabase
@@ -279,6 +280,6 @@ export async function fetchHeroSlidesFromSupabase(): Promise<HeroSlideRow[]> {
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 
-  if (error) return [];
+  if (error) throw error;
   return (data as HeroSlideRow[]) || [];
 }
