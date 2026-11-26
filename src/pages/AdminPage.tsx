@@ -143,6 +143,32 @@ interface AdminBookingItem {
   talent_name?: string;
 }
 
+const getBookingStatusMeta = (status: string): { label: string; className: string } => {
+  switch (status) {
+    case 'completed':
+      return { label: 'Selesai', className: 'bg-emerald-100 text-emerald-800' };
+    case 'paid_held_in_escrow':
+      return { label: 'Pembayaran diterima · Escrow', className: 'bg-sky-100 text-sky-800' };
+    case 'confirmed_by_talent':
+      return { label: 'Dikonfirmasi Talent', className: 'bg-purple-100 text-purple-900' };
+    case 'in_progress':
+      return { label: 'Sedang berlangsung', className: 'bg-indigo-100 text-indigo-800' };
+    case 'disputed_hold':
+      return { label: 'Ditahan · Sengketa', className: 'bg-rose-100 text-rose-800' };
+    case 'cancelled_by_customer':
+      return { label: 'Dibatalkan Customer', className: 'bg-slate-100 text-slate-600' };
+    case 'cancelled_by_talent':
+      return { label: 'Dibatalkan Talent', className: 'bg-slate-100 text-slate-600' };
+    case 'refunded':
+      return { label: 'Refund selesai', className: 'bg-amber-100 text-amber-800' };
+    case 'expired':
+      return { label: 'Kedaluwarsa', className: 'bg-slate-100 text-slate-600' };
+    case 'pending_payment':
+    default:
+      return { label: 'Menunggu pembayaran', className: 'bg-amber-100 text-amber-800' };
+  }
+};
+
 interface CustomerKtpItem {
   id: string;
   full_legal_name: string;
@@ -2024,15 +2050,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         <p className="mt-1 text-[11px] text-slate-500">{new Date(b.created_at).toLocaleString('id-ID')}</p>
                       </div>
                       <div className="shrink-0">
-                        {b.status === 'completed' ? (
-                          <span className="inline-block px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Selesai</span>
-                        ) : b.status === 'confirmed' ? (
-                          <span className="inline-block px-2 py-1 rounded-full bg-purple-100 text-purple-900 text-[10px] font-bold">Terkonfirmasi</span>
-                        ) : b.status === 'cancelled' ? (
-                          <span className="inline-block px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">Dibatalkan</span>
-                        ) : (
-                          <span className="inline-block px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">Menunggu Bayar</span>
-                        )}
+                        {(() => {
+                          const statusMeta = getBookingStatusMeta(b.status);
+                          return <span className={`inline-block px-2 py-1 rounded-full text-[10px] font-bold ${statusMeta.className}`}>{statusMeta.label}</span>;
+                        })()}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -2097,23 +2118,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           </>
                         )}
                         <td className="p-3.5">
-                          {b.status === 'completed' ? (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-                              Selesai (Released)
-                            </span>
-                          ) : b.status === 'confirmed' ? (
-                            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 text-[11px] font-bold">
-                              Terkonfirmasi (Held)
-                            </span>
-                          ) : b.status === 'cancelled' ? (
-                            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">
-                              Dibatalkan
-                            </span>
-                          ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold">
-                              Menunggu Pembayaran
-                            </span>
-                          )}
+                          {(() => {
+                            const statusMeta = getBookingStatusMeta(b.status);
+                            return <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${statusMeta.className}`}>{statusMeta.label}</span>;
+                          })()}
                         </td>
                       </tr>
                     ))}
