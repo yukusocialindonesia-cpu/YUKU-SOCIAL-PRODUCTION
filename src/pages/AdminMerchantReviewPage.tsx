@@ -51,9 +51,10 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
   const [actingId,setActingId] = useState<string|null>(null);
   const [error,setError] = useState('');
   const [success,setSuccess] = useState('');
+  const [historyReady,setHistoryReady] = useState(false);
 
   const load = useCallback(async () => {
-    setLoading(true); setError('');
+    setLoading(true); setError(''); setHistoryReady(false);
     let query = supabase.from('merchant_businesses')
       .select('id,business_name,description,business_category,public_phone,website_url,review_status,created_at')
       .order('created_at',{ascending:false});
@@ -64,13 +65,14 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
     const businesses=(data||[]) as MerchantRow[];
     setRows(businesses);
     const ids=businesses.map((item)=>item.id);
-    if(!ids.length){setLocations([]);setHistory([]);setLoading(false);return;}
+    if(!ids.length){setLocations([]);setHistory([]);setHistoryReady(true);setLoading(false);return;}
     const [{data:locationRows,error:locationError},{data:historyRows,error:historyError}]=await Promise.all([
       supabase.from('merchant_locations').select('id,business_id,location_name,address_text,city,province,public_phone,is_active').in('business_id',ids).order('created_at',{ascending:true}),
       supabase.from('merchant_business_review_history').select('id,business_id,from_status,to_status,decision_note,actor_role,created_at').in('business_id',ids).order('created_at',{ascending:false}),
     ]);
     if(locationError) setError('Profil bisnis terbaca, tetapi daftar lokasi gagal dimuat.');
-    if(historyError) setError('Riwayat audit gagal dimuat. Jangan mengambil keputusan sampai riwayat dapat diperiksa.');
+    if(historyError) setError('Riwayat audit gagal dimuat. Keputusan review dikunci sampai riwayat dapat diperiksa.');
+    setHistoryReady(!historyError && !locationError);
     setLocations((locationRows||[]) as LocationRow[]);
     setHistory((historyRows||[]) as HistoryRow[]);
     setLoading(false);
@@ -125,8 +127,8 @@ export const AdminMerchantReviewPage: React.FC<Props> = ({ onNavigate }) => {
             <div className="mt-4 rounded-xl bg-slate-50 p-3"><div className="mb-2 flex items-center gap-2 text-xs font-extrabold text-slate-800"><MapPin className="h-4 w-4 text-violet-700"/> Lokasi usaha ({branchRows.length})</div>{branchRows.map((location)=><div key={location.id} className="border-t border-slate-200 py-2 text-[11px]"><p className="font-bold text-slate-800">{location.location_name} {location.is_active?'':'· nonaktif'}</p><p className="mt-0.5 text-slate-600">{location.address_text}{location.city?`, ${location.city}`:''}{location.province?`, ${location.province}`:''}</p>{location.public_phone&&<p className="text-slate-500">{location.public_phone}</p>}</div>)}</div>
             {events.length>0&&<div className="mt-3 rounded-xl border border-slate-100 p-3"><p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Riwayat keputusan</p><ol className="space-y-2">{events.map((event)=><li key={event.id} className="text-[10px]"><p className="font-bold text-slate-800">{statusLabel[event.from_status||'draft']||event.from_status||'Dibuat'} → {statusLabel[event.to_status]||event.to_status} · {new Date(event.created_at).toLocaleString('id-ID')}</p>{event.decision_note&&<p className="mt-0.5 text-slate-600">{event.decision_note}</p>}</li>)}</ol></div>}
             {(isPending||isApproved)&&<div className="mt-4 border-t border-slate-100 pt-4"><label className="block text-[10px] font-bold text-slate-700">{isPending?'Catatan keputusan / alasan revisi':'Catatan penonaktifan (wajib jika menonaktifkan)'}<textarea rows={2} maxLength={1200} value={notes[business.id]||''} onChange={(e)=>setNotes((old)=>({...old,[business.id]:e.target.value}))} placeholder="Tuliskan catatan yang jelas untuk pemilik bisnis..." className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-xs font-normal"/></label>
-              <div className="mt-3 flex flex-wrap gap-2">{isPending&&<><button disabled={!!actingId||branchRows.filter((b)=>b.is_active).length===0} onClick={()=>void decide(business.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & publikasikan</button><button disabled={!!actingId||(notes[business.id]||'').trim().length<8} onClick={()=>void decide(business.id,'needs_revision')} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-900 disabled:opacity-40">Minta revisi</button><button disabled={!!actingId||(notes[business.id]||'').trim().length<8} onClick={()=>void decide(business.id,'rejected')} className="rounded-lg bg-rose-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><XCircle className="mr-1 inline h-3 w-3"/> Tolak</button></>}
-                {isApproved&&<button disabled={!!actingId||(notes[business.id]||'').trim().length<8} onClick={()=>void decide(business.id,'suspended')} className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[10px] font-bold text-rose-800 disabled:opacity-40">Nonaktifkan bisnis</button>}</div>
+              <div className="mt-3 flex flex-wrap gap-2">{isPending&&<><button disabled={!!actingId||!historyReady||branchRows.filter((b)=>b.is_active).length===0} onClick={()=>void decide(business.id,'approved')} className="rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><CheckCircle2 className="mr-1 inline h-3 w-3"/> Setujui & publikasikan</button><button disabled={!!actingId||!historyReady||(notes[business.id]||'').trim().length<8} onClick={()=>void decide(business.id,'needs_revision')} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-900 disabled:opacity-40">Minta revisi</button><button disabled={!!actingId||!historyReady||(notes[business.id]||'').trim().length<8} onClick={()=>void decide(business.id,'rejected')} className="rounded-lg bg-rose-700 px-3 py-2 text-[10px] font-bold text-white disabled:opacity-40"><XCircle className="mr-1 inline h-3 w-3"/> Tolak</button></>}
+                {isApproved&&<button disabled={!!actingId||!historyReady||(notes[business.id]||'').trim().length<8} onClick={()=>void decide(business.id,'suspended')} className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[10px] font-bold text-rose-800 disabled:opacity-40">Nonaktifkan bisnis</button>}</div>
             </div>}
             {actingId===business.id&&<p className="mt-3 flex items-center gap-2 text-[10px] text-slate-500"><Loader2 className="h-3 w-3 animate-spin"/> Menyimpan keputusan...</p>}
           </article>;
