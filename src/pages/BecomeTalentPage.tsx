@@ -579,7 +579,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
             savedIdentity?.selfie_storage_path,
           ].filter((storagePath): storagePath is string => Boolean(storagePath)));
           const orphanedEvidence = [uploadedKtpPath, uploadedSelfiePath].filter(
-            (storagePath): storagePath is string => Boolean(storagePath) && !referencedPaths.has(storagePath),
+            (storagePath): storagePath is string => typeof storagePath === 'string' && !referencedPaths.has(storagePath),
           );
           if (orphanedEvidence.length > 0) {
             const { error: cleanupError } = await supabase.storage
