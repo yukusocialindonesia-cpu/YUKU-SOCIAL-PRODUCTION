@@ -125,6 +125,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onExploreClick={() => onNavigate('/talent')}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onRegisterClick={() => onNavigate('/daftar-talent')}
+        onProfessionalRegisterClick={() => onNavigate('/daftar-jasa-profesional')}
       />
 
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
