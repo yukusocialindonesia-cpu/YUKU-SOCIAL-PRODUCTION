@@ -140,3 +140,4 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Offer quota is never decremented, reserved, or represented as real-time availability; public copy explicitly tells customers to confirm directly with merchant.
 - [ ] Offer funding source remains merchant-only in this release and cannot be changed to YUKU/platform-funded through client RPC input.
 - [ ] One YUKU account can create and switch between multiple merchant businesses while also holding memberships in other businesses; creating a new business selects that new business without losing existing memberships.
+- [ ] When a Manager edits an approved/live offer, the offer is hidden as draft and the business Owner receives an in-app notification to resubmit it.
