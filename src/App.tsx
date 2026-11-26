@@ -12,6 +12,7 @@ import { HomePage } from './pages/HomePage';
 const ProfessionalServicesPage = lazy(() => import('./pages/ProfessionalServicesPage').then((module) => ({ default: module.ProfessionalServicesPage })));
 const ProfessionalProviderProfilePage = lazy(() => import('./pages/ProfessionalProviderProfilePage').then((module) => ({ default: module.ProfessionalProviderProfilePage })));
 const ProfessionalServiceApplicationPage = lazy(() => import('./pages/ProfessionalServiceApplicationPage').then((module) => ({ default: module.ProfessionalServiceApplicationPage })));
+const AdminProfessionalServicesPage = lazy(() => import('./pages/AdminProfessionalServicesPage').then((module) => ({ default: module.AdminProfessionalServicesPage })));
 const CommunityPage = lazy(() => import('./pages/CommunityPage').then((module) => ({ default: module.CommunityPage })));
 const BrowseTalentPage = lazy(() => import('./pages/BrowseTalentPage').then((module) => ({ default: module.BrowseTalentPage })));
 const TalentDetailPage = lazy(() => import('./pages/TalentDetailPage').then((module) => ({ default: module.TalentDetailPage })));
@@ -52,6 +53,7 @@ export default function App() {
     if (pathname === '/dashboard-talent') return '/dashboard-talent';
     if (pathname === '/riwayat-booking') return '/riwayat-booking';
     if (pathname === '/profil-saya') return '/profil-saya';
+    if (pathname === '/admin/jasa-profesional') return '/admin/jasa-profesional';
     if (pathname === '/admin') return '/admin';
     if (pathname === '/tentang') return '/tentang';
     if (pathname === '/faq') return '/faq';
@@ -116,6 +118,8 @@ export default function App() {
       setCurrentPath('/riwayat-booking');
     } else if (pathname === '/profil-saya') {
       setCurrentPath('/profil-saya');
+    } else if (pathname === '/admin/jasa-profesional') {
+      setCurrentPath('/admin/jasa-profesional');
     } else if (pathname === '/admin') {
       setCurrentPath('/admin');
     } else if (pathname === '/tentang') {
@@ -243,6 +247,8 @@ export default function App() {
         return <BookingHistoryPage onNavigate={handleNavigate} />;
       case '/profil-saya':
         return <CustomerProfilePage onNavigate={handleNavigate} />;
+      case '/admin/jasa-profesional':
+        return <AdminProfessionalServicesPage onNavigate={handleNavigate} />;
       case '/admin':
         return <AdminPage onNavigate={handleNavigate} />;
       case '/tentang':
