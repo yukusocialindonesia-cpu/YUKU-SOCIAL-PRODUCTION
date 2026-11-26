@@ -20,11 +20,15 @@ type NavEntry = {
  * Tujuan menu dan hak akses tetap mengikuti role yang sudah ada.
  */
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, onNavigate }) => {
-  const { user, role, isAuthLoading } = useAuth();
+  const { user, role, accessSnapshot, isAuthLoading } = useAuth();
   const loggedIn = Boolean(user);
   const icon = 'w-5 h-5 sm:w-[21px] sm:h-[21px]';
+  const customerAvailable = accessSnapshot?.capabilities.customer.available ?? (role === 'customer' || role === 'talent');
+  const talentWorkspaceAvailable = accessSnapshot
+    ? accessSnapshot.capabilities.talent?.status === 'approved'
+    : role === 'talent';
   const ordersRoute: AppRoute | null =
-    role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : role === 'customer' ? '/riwayat-booking' : null;
+    role === 'admin' ? '/admin' : customerAvailable ? '/riwayat-booking' : talentWorkspaceAvailable ? '/dashboard-talent' : null;
 
   const openProfile = () => {
     if (!loggedIn) {
@@ -48,7 +52,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     { label: 'Jelajah', route: '/talent', icon: <Search className={icon} strokeWidth={2.1} />, onPress: () => onNavigate('/talent') },
     { label: 'Komunitas', route: '/komunitas', icon: <Users className={icon} strokeWidth={2.1} />, onPress: () => onNavigate('/komunitas') },
     {
-      label: role === 'admin' ? 'Admin' : role === 'talent' ? 'Dashboard' : role === 'customer' ? 'Pesanan' : 'Menu',
+      label: role === 'admin' ? 'Admin' : customerAvailable ? 'Pesanan' : talentWorkspaceAvailable ? 'Dashboard' : 'Menu',
       route: ordersRoute,
       icon: <Bookmark className={icon} strokeWidth={2.1} />,
       onPress: () => {
