@@ -106,3 +106,52 @@ AuthContext source review confirms that `TOKEN_REFRESHED` and `USER_UPDATED` for
 ### Validation boundary
 
 These are read-only Production observations and source comparisons. No Auth users, sessions, user profiles, migrations, or Production settings were modified. Staging tests are still required for a suspended account with existing sessions across Data API, RPC, Storage, Edge Functions, and open Realtime connections.
+
+
+## KTP + selfie evidence workflow audit — Production read-only, 26 November 2026
+
+### Confirmed P1: selfie evidence is uploaded but never attached to the identity record or reviewed
+
+Source flow in `src/pages/VerifyKtpPage.tsx`:
+1. Requires both an e-KTP image and a selfie holding the e-KTP.
+2. Uploads both objects to the private `ktp-documents` bucket using separate paths and `upsert: false`.
+3. Saves only `ktp_storage_path` to `public.user_identities`; no selfie path is saved.
+4. On a failed upload, failed identity lookup, or failed database save, successful Storage uploads are not rolled back.
+
+Production schema read-only check confirms `public.user_identities` has `ktp_storage_path` but no `selfie_storage_path`. AdminPage selects only KTP path for both Customer and Talent identity review. The Customer KTP preview creates a 300-second signed URL for the KTP only. There is no selfie preview or review step.
+
+Production Storage metadata-only aggregate snapshot:
+- `ktp-documents` exists and is private.
+- File size limit is 5 MiB; allowed MIME types are JPEG, PNG, WebP.
+- 16 objects were present: 7 named as KTP uploads and 9 named as selfie uploads.
+- All 9 selfie objects were unreferenced by the current schema because there is no selfie path column.
+- 0 KTP objects were unreferenced by `user_identities.ktp_storage_path` at the snapshot time.
+
+No object content, filenames, user IDs, or signed URLs were read. No Storage object was deleted or modified.
+
+### Additional lifecycle defects in the client
+
+- The two uploads run concurrently with `Promise.all`. If one succeeds and the other fails, the successful object is left behind.
+- If both uploads succeed but identity lookup or database save fails, both objects remain.
+- When a rejected user resubmits, the current code selects only the existing identity `id`, then replaces `ktp_storage_path` without retaining the old path for cleanup. This can orphan the previous KTP image.
+- The current KTP bucket policies allow owner/admin SELECT and owner INSERT; there is no owner DELETE policy for `ktp-documents`. A naive client-side rollback using Storage `remove()` would therefore fail under current RLS. Do not add broad delete access merely to make cleanup work.
+
+### Existing controls verified
+
+- `user_identities` owner INSERT and owner UPDATE are scoped to `auth.uid() = id`; SELECT is owner or role-scoped KTP Admin.
+- The identity trigger forces user INSERT with KTP number + KTP path to `pending_review`, clears user-supplied review metadata, and blocks owners from editing legal identity fields while pending or verified.
+- A rejected submission can be resubmitted; changing its KTP number/path resets status to `pending_review` and clears the rejection reason.
+- `admin_review_ktp` checks the target role and requires Talent permission for Talent identities or Support permission for Customer identities. It locks the identity row and only accepts a decision while status is `pending_review`.
+- Successful approval sets `is_verified_18=true` and activates only accounts in `pending_verification`; rejection clears the 18+ flag. It does not automatically reactivate suspended/banned accounts.
+- KTP evidence is private. Admin signed URLs are short-lived (300 seconds) and require Storage SELECT authorization.
+
+### Required complete remediation (do not ship a partial fix)
+
+1. Add nullable `selfie_storage_path` to `public.user_identities` with the same owner/admin read boundary as KTP path; do not expose the column publicly or include it in generic user summaries.
+2. Update VerifyKtpPage typed record, lookup, insert/update, and success handling to persist both paths.
+3. Update AdminPage's Customer and Talent review projections and UI to create separate short-lived signed URLs for KTP and selfie, show both images, and make approval/rejection decisions only after both required files are available. Handle missing legacy selfie as an explicit legacy exception, not as an approved evidence check.
+4. Implement safe cleanup for partial upload failures and DB failures through a narrowly scoped server-side operation or policy that can delete only the caller's unreferenced objects. Never allow deletion of evidence currently referenced by a pending/verified identity. Preserve old paths until the replacement row transaction succeeds; then schedule controlled deletion of superseded evidence.
+5. Define retention, deletion, and audit-log rules for superseded/rejected evidence, including orphan discovery and cleanup. Do not delete the 9 existing selfie objects until their ownership and retention implications are reconciled.
+6. Test Customer and Talent flows, first submission, rejected resubmission, partial upload failure, database failure, concurrent resubmission, admin role matrix, expired signed URL, owner denial of admin evidence, and retention cleanup in Staging.
+
+This follow-up is documentation and read-only Production inspection only. No Production schema, policies, bucket settings, identity rows, Auth users, or Storage objects were changed. No migration was applied. The complete remediation is not yet implemented and must remain a release blocker for the identity verification workflow until the full flow is shipped and tested.
