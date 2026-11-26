@@ -495,7 +495,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
         {loading ? (
           <div className="flex min-h-40 items-center justify-center gap-2 text-sm text-slate-500"><Loader2 className="h-4 w-4 animate-spin" /> Memuat Merchant Center...</div>
         ) : businesses.length === 0 || showCreateBusinessForm ? (
-          <form onSubmit={createBusiness className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm sm:p-7">
+          <form onSubmit={createBusiness} className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm sm:p-7">
             <div className="flex items-center justify-between gap-3"><h2 className="text-lg font-extrabold text-slate-900">{businesses.length === 0 ? 'Daftarkan bisnis pertama' : 'Tambah bisnis Merchant Partner'}</h2>{businesses.length > 0 && <button type="button" onClick={() => setShowCreateBusinessForm(false)} className="text-xs font-bold text-slate-500">Batal</button>}</div>
             <p className="mb-5 mt-1 text-xs leading-5 text-slate-500">Gunakan nama dan informasi bisnis yang benar. Pengajuan akan berstatus draft sampai lokasi ditambahkan dan dikirim untuk verifikasi.</p>
             <div className="grid gap-4 sm:grid-cols-2">
