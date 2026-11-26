@@ -127,3 +127,37 @@ These are branch source changes only. They are not deployed to Production and ha
 Production database checks were read-only. No payment was initiated, no refund or payout was executed, no proof was uploaded or downloaded, no account-specific rows or secret values were read, no Storage object was changed, no feature flag or policy was changed, no Edge Function was deployed, and no Production migration was applied.
 
 Branch-only source fixes are not yet validated by workflow runs or Staging runtime tests. PR #263 remains draft and unmerged.
+
+## Follow-up: cancellation-note exposure and retained-refund notification
+
+### Admin UI read minimization (branch fix)
+
+- `src/pages/AdminPage.tsx` previously queried `customer_cancellation_cases.select('*')`.
+- Replaced it with an explicit allowlist of operational fields:
+  `id, booking_id, customer_id, gross_amount, automatic_refund_amount, retained_pending_admin_amount, hours_before_session, policy_code, status, admin_hold_until, created_at`.
+- This prevents the Admin page from requesting `admin_notes`, `resolved_by_admin_id`, `resolved_at`, or any future columns by default.
+- Commit: `391649545b1e2b14b4ce3ce779502b0605013f95`.
+- Static verification: fetched the committed source and confirmed the explicit select list.
+
+### Database-level cancellation note exposure remains a release blocker
+
+- The earlier Production read-only audit found authenticated has column-level SELECT on `customer_cancellation_cases.admin_notes`; the Customer row policy permits reading their own case.
+- UI query minimization is defense-in-depth only. It does not revoke direct Data API access.
+- Required database change: revoke table-wide SELECT from authenticated, grant only Customer-safe columns, and provide a narrowly scoped Finance/Super Admin RPC for internal cancellation notes and decision metadata. Preserve the current Admin workflow without restoring broad table SELECT.
+- Update the Admin page to call that RPC only for authorized Finance/Super Admin roles if internal notes are needed in the interface.
+- Required Staging checks: `has_column_privilege` false for authenticated on `admin_notes`; Customer direct SELECT of `admin_notes` denied; Customer-safe fields still readable; Finance/Super Admin RPC succeeds; Support and unrelated Admin roles denied unless explicitly authorized.
+
+### Retained-amount refund notification remains a release blocker
+
+- Migration 26 inserts the retained-amount refund row with `status='processed'` directly. Migration 35 only notifies on UPDATE from a non-processed status to processed.
+- Therefore the retained-amount refund path can complete without invoking `notify_refund_processed()`.
+- Required database change: make the notification handler safe for both INSERT and UPDATE; notify only when the resulting status is processed, and on UPDATE only when status transitions into processed. Keep the message generic and do not expose internal Admin notes or provider references.
+- Add a durable idempotency key/event record or an equivalent unique guard so retries/replays cannot create duplicate Customer notifications.
+- Required Staging checks: retained refund INSERT creates exactly one Customer notification; ordinary refund UPDATE creates exactly one; repeated update/replay creates none; requested/rejected refund creates none; notification failure does not roll back a financial transaction.
+
+### Implementation boundary
+
+- This follow-up only changed the Admin UI query on the GitHub feature branch.
+- The Supabase migration CLI is not available in this execution environment, so no new migration file was fabricated around the required `supabase migration new` workflow.
+- No Production or Staging database changes, grants, functions, triggers, notifications, payments, or refunds were made.
+- No workflow runs were returned for commit `391649545b1e2b14b4ce3ce779502b0605013f95`; static source verification is not a CI or runtime test.
