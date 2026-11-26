@@ -20,7 +20,7 @@ Activity categories:
 - Entertainment & Events: cinema, concerts, celebrations, and event companionship.
 - Online Experience: chat, voice calls, and gaming together.
 
-The current six legacy activity-category records remain the Social Experience discovery taxonomy. Their labels/examples should be updated in place to preserve existing category IDs and booking references.
+The current six legacy activity-category records remain the Social Experience discovery taxonomy. Their labels/examples should be updated in place to preserve existing category IDs and booking references.\n\nEach Talent may submit a custom service title and description under a YUKU category, with an optional custom rate. Admin approval is required before the custom offer is shown on the public Talent profile. The current legacy data model allows one offer per Talent per category; do not add multiple same-category listings until booking is redesigned to reference a specific service ID.
 
 ## Professional Services
 
