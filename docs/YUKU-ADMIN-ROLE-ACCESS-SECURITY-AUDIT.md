@@ -116,3 +116,21 @@ Logs must be append-only to Admin clients, actor IDs must be server-derived, and
 ## Validation boundary
 
 This is a source-level audit of the feature branch. No SQL was executed, no Staging/Production data was modified, and no database policies were deployed. Negative permission tests and migration replay remain mandatory before release.
+
+
+## Follow-up implementation — narrowed booking trigger bypass
+
+Commit: `649299c04c659b07b343912ecc77aa44464ad924`  
+Migration: `supabase/migrations/20261127000500_narrow_scoped_admin_booking_trigger_bypass.sql`
+
+Implemented on the feature branch:
+- Removed Booking, Finance and Support permission-based blanket early returns from both booking trigger guards.
+- Financial amount snapshots, participant IDs and activity category relationship are now checked for scoped Admin updates too.
+- Added a narrow Support-only exception to place a booking in `disputed_hold` only when a related report remains open/investigating and the prior status snapshot is preserved.
+- Added a narrow Support-only restoration exception: the booking must return to the exact recorded pre-dispute status, clear the snapshot, and have no remaining active reports.
+- Prevented standalone edits to `status_before_dispute`.
+- Preserved trusted service-role/database operations and nested trigger cascades.
+
+Static source checks after commit confirmed the blanket permission bypass pattern is absent, the narrow Support hold/restore branches exist, financial snapshot protection remains present, and the disputed-hold restoration transition is guarded.
+
+**Not yet verified:** PostgreSQL migration replay, RPC integration, trigger execution order, and negative permission tests in Staging. In particular, test both the report-insert auto-hold trigger and Support report-resolution restore path with one and multiple active reports before production rollout. No Staging or Production database was modified.
