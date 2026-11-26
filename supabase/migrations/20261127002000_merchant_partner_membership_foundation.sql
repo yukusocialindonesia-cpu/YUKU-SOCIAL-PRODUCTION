@@ -145,7 +145,12 @@ create policy merchant_locations_public_or_member_read
 -- Client roles receive read-only table access. All writes go through scoped RPCs.
 revoke all on public.merchant_businesses, public.merchant_memberships, public.merchant_locations
   from public, anon, authenticated;
-grant select on public.merchant_businesses, public.merchant_locations to anon, authenticated;
+-- Never expose owner_user_id through public business-directory reads.
+grant select (
+  id, business_name, description, business_category, public_phone,
+  website_url, review_status, created_at, updated_at
+) on public.merchant_businesses to anon, authenticated;
+grant select on public.merchant_locations to anon, authenticated;
 grant select on public.merchant_memberships to authenticated;
 
 create or replace function public.create_merchant_business(
