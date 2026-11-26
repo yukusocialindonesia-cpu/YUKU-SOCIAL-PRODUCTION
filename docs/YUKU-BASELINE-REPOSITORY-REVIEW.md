@@ -28,7 +28,7 @@ Workflow `.github/workflows/main-build-validation.yml` hanya menjalankan push pa
 
 Commit: `8a4429a7345f3365e3cbf499c00961d764d03dad`.
 
-**Validasi:** GitHub Actions run #83 dibuat untuk PR #263. Saat laporan ini disusun, job telah melewati checkout dan setup Node, sedang menginstal locked dependencies; TypeScript check dan production build belum berjalan/selesai. Hasil final wajib diperbarui dari run yang sama.
+**Validasi:** GitHub Actions run #83 untuk PR #263 selesai dengan conclusion `success`. `npm ci`, `npm run lint` (TypeScript check), dan `npm run build` semuanya berhasil pada source commit `8a4429a7345f3365e3cbf499c00961d764d03dad`. Dua commit setelahnya hanya menambahkan/memperbarui dokumen baseline, tidak mengubah source aplikasi atau workflow.
 
 ### B0-02 — Dua migration memakai version prefix `62`
 
@@ -70,12 +70,16 @@ Route awal ditentukan dari pathname saat state dibuat, kemudian `parseCurrentLoc
 - Workflow: YUKU main build validation.
 - Steps: `npm ci`, `npm run lint`, `npm run build`.
 - Run: #83 (PR #263).
-- Status pada saat baseline disusun: dependency installation sedang berjalan; belum ada hasil TypeScript/build.
+- Status akhir: `success`.
+- `npm ci`: success.
+- `npm run lint`: success.
+- `npm run build`: success.
+- Source commit yang diuji: `8a4429a7345f3365e3cbf499c00961d764d03dad`.
 - Run URL: https://github.com/yukusocialindonesia-cpu/YUKU-id/actions/runs/45797045271
 
 ## Langkah lanjutan
 
-1. Tunggu dan catat hasil CI #83; perbaiki semua kegagalan pada branch.
+1. CI baseline hijau pada source commit tersebut; jalankan ulang setelah perubahan source berikutnya.
 2. Rekonsiliasi duplicate migration version 62 sebelum Staging replay.
 3. Periksa referensi file backup dan bersihkan bila aman.
 4. Tambah smoke tests route/deep-link dan 404 behavior.
