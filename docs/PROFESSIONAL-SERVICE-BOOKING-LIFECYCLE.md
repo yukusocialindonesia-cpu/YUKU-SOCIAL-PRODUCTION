@@ -154,3 +154,41 @@ The current service taxonomy supports four units, but quantity and scheduling se
 7. Only after all consumers and finance paths pass, consider relaxing activity-only NOT NULL constraints and enabling the professional checkout feature flag.
 
 No schema change or production mutation is included in this design document. This contract is intentionally additive so the existing activity checkout remains operational during rollout.
+
+
+## Schedule changes, lateness, extensions and off-platform payment — audit gate (2026-11-26)
+
+### Existing behavior verified
+
+- Booking creation snapshots the agreed start time, end time, duration, location, rate and total on the server. Legacy activity checkout requires at least 2 hours' lead time, a duration up to 5 hours, and checks the Talent availability window in Asia/Jakarta.
+- Once a booking is paid/escrow-held or confirmed, the booking update validator rejects unilateral changes to start/end time, duration and meeting location. This is an important protection against either party silently changing the paid contract.
+- There is no dedicated Customer/Talent reschedule request-and-accept RPC or UI flow in the inspected pages. Therefore, the current product should not imply that a booking can be rescheduled in chat.
+- Customer cancellation is allowed only before the booked start time; the server RPC locks the booking, checks ownership/status, and snapshots a cancellation policy based on time before `start_time`. Talent cancellation is available only while paid funds are held in escrow or Talent-confirmed; it creates a full-payment refund request and cancels the booking.
+- The Customer cancellation policy currently uses >24 hours (full automatic refund request), 6–24 hours (50% refund request and 50% retained for Admin decision), and <6 hours (no automatic refund and full amount retained for Admin decision). Actual refunds are manually executed by Finance and require an external provider/bank reference before being marked processed.
+- Customer cancellation after the start time is rejected by the RPC and directs the user to report the issue to Admin. The current booking UI only offers cancellation for future start times.
+- No separate booking extension / add-hours / add-day / add-scope RPC or UI was found in the inspected Customer history and Talent dashboard flows. Chat is communication, not a payment or contract amendment mechanism.
+
+### Product/security decision
+
+1. **Never settle extra time or scope privately.** If Customer and Talent agree in chat to add time, an extra day, a changed location with extra travel cost, or additional deliverables, that agreement must not create an off-platform cash obligation. Chat agreement alone must not modify the paid booking or escrow amount.
+2. **No unilateral schedule edit after payment.** Preserve the current immutable booking snapshot. A future reschedule flow must be an explicit request by one party and acceptance by the other, with both parties seeing old and proposed time/location, expiry, cancellation consequence and any price difference before acceptance.
+3. **Reschedule must re-check availability atomically.** The server must lock the booking and relevant Talent availability/capacity rows, verify booking state and lead time, reject overlap, and write an immutable before/after audit record. Never trust a client-side availability check.
+4. **Paid price changes need a first-class amendment.** If a change adds cost, create a separate amendment/add-on record linked to the booking, calculate the amount server-side, collect payment through YUKU's existing payment rails, and hold it in escrow before the extra work begins. Do not overwrite the original gross/fee/share snapshots or reuse the original payment as if the extra amount were paid.
+5. **If no add-on checkout exists, do not allow paid extensions.** Offer only the originally purchased duration/scope. For a request beyond it, require a new booking or wait until a proper in-app add-on flow exists. Clearly tell both parties that cash/transfer outside YUKU is not protected by YUKU escrow.
+6. **No-show, lateness and waiting time need an explicit policy.** Define grace period, how either party records arrival, evidence requirements, who can report no-show, when a session can start/complete, and whether unused time is refunded/compensated. Until defined, do not automatically mark a booking completed merely because the scheduled end time passes.
+7. **Project scope must be accepted before checkout.** Per-project booking requires a versioned scope/deliverables, milestones, revision limits, due date, acceptance window, evidence, late delivery, cancellation and partial-refund rules. It must not use the hourly activity cancellation calculation.
+8. **Cancellation policy must be versioned and unit-aware.** Keep the existing activity policy unchanged. Professional per-hour/per-session/per-day/per-project services need their own policy snapshots and timezone-aware anchors; the current fixed activity 24h/6h formula must not be inherited.
+9. **Support path after start time.** When cancellation is no longer available, provide a booking-specific report/support route for late Talent, Customer no-show, unsafe meeting point, service mismatch or inability to contact. Evidence and timestamps must be retained and visible only to authorized Support/Admin reviewers.
+10. **User-facing terms must be explicit before payment.** Show booked duration/scope, start/end, location or delivery mode, what is included, what counts as extra work, cancellation/no-show rules, and a warning that extra payment outside YUKU is not escrow-protected.
+
+### Required regression tests
+
+- Paid/confirmed booking: Customer and Talent direct UPDATE attempts to start/end/duration/location are rejected; only an authorized amendment workflow can change schedule.
+- Reschedule request: one party proposes; other party rejects/accepts; expired proposal cannot be accepted; two concurrent proposals cannot both win; availability overlap is rejected under row lock; old schedule remains on rejection.
+- Add-on: price is server-calculated; one payment route per add-on; add-on payment is held before extra work; duplicate checkout/webhook does not double charge or double-credit; refund/dispute reconciles original booking and add-on separately.
+- No add-on feature: UI does not expose an “extend” action or promise additional time; chat cannot change the amount or booking duration.
+- No-show/late: test both parties late, no-show, arrival evidence, grace-period expiry, report during/after scheduled window, and prevent automatic completion/release without valid completion.
+- Cancellation: test unpaid, >24h, 6–24h, <6h, after start, Talent cancellation, duplicate requests, payment route variants, Finance provider reference, partial refund, active dispute and payout already allocated.
+- Professional units: verify per-hour/per-session/per-day/per-project use their own cancellation, scheduling and completion rules; project remains checkout-disabled until acceptance/partial-refund lifecycle is approved.
+
+No reschedule, extension, pricing, cancellation, or production behavior was changed by this audit.
