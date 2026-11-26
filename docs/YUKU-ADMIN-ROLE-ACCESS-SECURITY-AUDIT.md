@@ -306,3 +306,9 @@ Required remediation:
 5. Add tests proving Customer/Talent role boundaries, no duplicate review, actor attribution on both approval and rejection, and that authenticated clients cannot edit/delete audit events.
 
 **Validation boundary:** this is a Production function/trigger source inspection only. No migration, audit row, user identity, function, permission or Production setting was changed. Treat reviewer attribution as a release hardening requirement before operating KTP moderation at scale.
+### Implementation note: do not replay migration 32 verbatim
+
+Follow-up comparison of the exact repository file `supabase/migrations/32_fix_admin_review_talent_sets_is_approved.sql` confirms its conditional account activation (`WHERE account_status = 'pending_verification'`) is the desired invariant. However, that historical function body is not a drop-in replacement for today's Production function:
+- Migration 32 checks `public.is_admin()`. Production `is_admin()` was later narrowed to Super Admin/service_role, while the active `admin_review_talent()` uses `has_admin_permission('talent')` so scoped Talent Admins can review.
+- Production's active function also writes a before/after `admin_audit_logs` record and requires a rejection reason; migration 32 does not include those later behaviors.
+- Therefore the remediation must be a new forward migration based on the current Production function body, preserving current Talent permission checks, row locks, evidence validation, notifications and audit logging while fixing only the unsafe account-status transition. Do not copy/paste migration 32 as a whole.
