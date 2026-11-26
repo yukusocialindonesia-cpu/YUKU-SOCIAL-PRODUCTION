@@ -156,3 +156,13 @@ Exit criteria: Production/branch function parity verified; direct RPC/Edge Funct
 - Production `account-management` Edge Function version 1 still lacks the feature-branch guard that restricts reactivation to accounts whose current status is `suspended`. This remains a P1 rollout blocker.
 
 Exit criteria: direct API/RPC access is denied after revocation; UI refreshes cleanly; suspended users cannot use Data API, Storage or reconnect private Realtime channels; and session/token behavior is documented from observed Staging results.
+### Follow-up launch blocker: Talent signup and Customer-to-Talent role transition
+
+- Production `become_talent()` updates the caller's own Customer role to Talent, but the active `users` trigger `prevent_user_security_column_tampering()` currently rejects that role change for non-Super-Admins. This blocks the normal Talent onboarding path at the role-transition RPC.
+- The branch contains `20261127000900_allow_self_service_customer_to_talent_transition.sql`, a narrow exception for the caller's own Customer -> Talent transition while keeping ID, email, created_at, age-verification and account-status fields unchanged. It is not applied to Production.
+- Production `handle_new_user()` defaults every new account to Customer, including Talent signup metadata. The Talent application therefore depends on the blocked `become_talent()` call after email confirmation/login.
+- New accounts are pending_verification and not age-verified by default. Keep this default. Actual age verification must remain tied to the KTP review process, not the client-side date-of-birth field or checkbox.
+- Age/Terms checkboxes are UI-only in the inspected flows; a durable server-side consent record with policy version and timestamp was not found. Add before treating consent as auditable.
+- Password reset currently uses a neutral response (good anti-enumeration), but does not surface SMTP/rate-limit errors; recovery token parameters remain in URL/history after reset. Auth password policy, SMTP, CAPTCHA, rate limits and redirect allow-list are not yet verified.
+
+Gate 2 / Gate 5 exit criteria: safely deploy the narrow role-transition migration after reconciliation; Staging tests prove Customer -> Talent works and all other role/status/verification tampering remains denied; Talent signup works with email confirmation; Admin metadata cannot create Admin; consent evidence is server-persisted; password recovery valid/expired/replayed/error paths and post-reset session behavior pass.
