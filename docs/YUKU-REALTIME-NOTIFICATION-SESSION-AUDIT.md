@@ -210,3 +210,13 @@ The Supabase documentation confirms that `verify_jwt` defaults to true and that 
 4. Test account-management rollback when Auth ban or audit-log write fails.
 
 No Auth configuration, sessions, database rows, migrations, Edge Functions, or Production settings were changed in this follow-up.
+
+
+### Production Edge Function inventory — read-only
+
+The connected Production project currently lists three active Edge Functions:
+- `account-management` — `verify_jwt=true`.
+- `admin-management` — `verify_jwt=true`.
+- `yuku-push` — `verify_jwt=false`, with user JWT verification for subscribe/unsubscribe and a dedicated shared secret for the send webhook in the handler.
+
+Neither `create-checkout` nor `xendit-webhook` is currently deployed to Production. The branch config fix for `xendit-webhook` therefore addresses a future deployment/release consistency risk, not a currently deployed Production endpoint. Payment Edge Functions remain unavailable until deliberately deployed and tested in Staging.
