@@ -168,3 +168,6 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] Legacy `invite_merchant_member(uuid,uuid,text)` is not executable by authenticated clients; all invitations must use the audited email-based RPC.
 - [ ] Run `supabase/ops/merchant_partner_staging_preflight.sql` after applying migrations 02000–05000 in disposable Staging; all required tables, functions, column grants, RLS flags, and privilege assertions pass.
 - [ ] Owner cannot invite Manager/Staff while the business is rejected or suspended; invitation acceptance remains scoped to the invited user's own active account.
+- [ ] Concurrent business suspension/revision and offer approval serialize on the parent business row; no offer is newly approved against a non-approved parent.
+- [ ] Approved offers are publicly visible only while the parent business is approved and the offer validity window is active; verify visibility after business suspension, needs-revision, and re-approval.
+- [ ] Manager edits to an approved offer return it to draft and notify the Owner; only Owner can resubmit it.
