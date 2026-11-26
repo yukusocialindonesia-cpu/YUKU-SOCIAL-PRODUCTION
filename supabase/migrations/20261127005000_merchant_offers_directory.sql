@@ -83,8 +83,8 @@ create policy merchant_offer_history_owner_admin_read
 revoke all on public.merchant_offers,public.merchant_offer_history
   from public,anon,authenticated;
 grant select (
-  id,business_id,title,description,offer_type,starts_at,ends_at,terms,
-  redemption_instructions,status,created_at,updated_at
+  id,business_id,title,description,offer_type,starts_at,ends_at,
+  eligibility,quota,funded_by,terms,redemption_instructions,status,created_at,updated_at
 ) on public.merchant_offers to anon,authenticated;
 grant select (
   id,offer_id,business_id,from_status,to_status,decision_note,actor_role,created_at
