@@ -59,6 +59,8 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 5. Keep duplicate/open-application controls and status history intact.
 
 ### Phase C — admin review and publication
+**Implementation checkpoint:** Migration `20261127006000_decouple_professional_review_and_publication.sql` switches the listing FK, review RPC, publication guard, and public listing policy to the independent provider identity. `AdminProfessionalServicesPage.tsx` hydrates applicant details from `professional_provider_profiles`. Super Admin read parity is added in `20261127010000_allow_super_admin_professional_profile_review.sql`.
+
 1. Update the admin queue to hydrate applicant presentation from `professional_provider_profiles`, not `talent_profiles`.
 2. Update the transactional review RPC to validate account status and professional profile readiness; do not require Companion approval.
 3. Keep admin permission checks, document ownership/existence checks, credential gates, audit history, and atomic listing publication.
@@ -66,6 +68,8 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 5. Public RLS must expose only approved, active listings with approved/active professional profiles and active accounts.
 
 ### Phase D — public discovery/profile
+**Implementation checkpoint:** `ProfessionalServicesPage.tsx` and `ProfessionalProviderProfilePage.tsx` now query the independent professional profile relation and no longer require `talent_profiles`. Public eligibility is finalized by the non-recursive RLS helper in migration `20261127008000_prevent_professional_public_rls_recursion.sql`.
+
 1. Update `ProfessionalServicesPage` provider joins and card data to use `professional_provider_profiles`.
 2. Update `ProfessionalProviderProfilePage` to read the independent profile and its approved active listings.
 3. Do not query or require `talent_profiles` for professional public identity.
@@ -92,13 +96,13 @@ Professional applications already use `applicant_id references auth.users(id)`; 
 - Admin review still enforces credential/license and reference evidence requirements.
 - Unapproved, inactive, or deleted professional profiles do not leak public listings.
 
-## Current functional boundary
+## Functional boundary after Phase A–H
 
-Phase B alone is not an end-to-end launch: the existing Admin approval RPC, `professional_talent_services.provider_id` foreign key, publication trigger, Admin applicant hydration, and public provider/profile queries still depend on `talent_profiles`. Until Phase C and Phase D are implemented together, a Professional-only user may be able to submit an application after the migrations are applied, but Admin cannot safely approve/publish it. Do not apply the new migrations as a standalone production release.
+The independent provider flow is implemented in this feature branch at the code level, including application, Admin review, publication, public discovery/profile, RLS eligibility, and private evidence upload. It is **not yet verified as an end-to-end release**: migrations have not been executed against staging, and build/typecheck plus role-based regression tests are still outstanding. Do not apply the migrations independently or treat the feature as production-ready.
 
 ## Release and safety boundary
 
-This branch is a code-planning checkpoint only. Do not run migrations against Production, merge, deploy, enable professional checkout, or change payment behavior without separate explicit approval. A future implementation PR must include migration review, type/build checks, RLS tests, and a documented rollback/compatibility plan.
+This branch contains an implementation draft and a draft pull request for review/CI. Do not run migrations against Production, merge, deploy, enable professional checkout, or change payment behavior without separate explicit approval. Before release, require migration review, successful type/build checks, RLS/storage tests, and a documented rollback/compatibility plan.
 
 
 ## Additional security audit checkpoints
