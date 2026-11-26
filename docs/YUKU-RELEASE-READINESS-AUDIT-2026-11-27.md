@@ -124,3 +124,17 @@ The two multiple-permissive-policy findings are on `professional_service_applica
 3. Review the 61 authenticated-callable functions by privilege class and verify identity/ownership/admin checks; do not mass-revoke.
 4. Resolve the independent Professional Provider/Talent coupling in a reviewed migration sequence, then prove it in Staging.
 5. Handle RLS-initplan and index warnings only after correctness tests and workload evidence.
+
+### Booking, payment, refund and payout RLS spot-check
+
+A read-only catalog inspection covered `bookings`, `payments`, `payout_requests`, `refunds`, `booking_messages`, `booking_status_history`, `customer_cancellation_cases`, `bank_transfer_submissions`, `qris_payment_submissions`, `talent_earnings`, and `payout_earnings_allocations`.
+
+- RLS is enabled on all 11 inspected tables.
+- The `anon` role has no direct SELECT privilege on the inspected tables.
+- Authenticated direct INSERT/UPDATE privileges are absent on core booking, payment, refund, payout, and cancellation tables in the inspected grant results.
+- `bookings` creation and sensitive payment/payout transitions are therefore expected to go through RPCs rather than direct table writes.
+- `booking_messages` is the exception for direct INSERT privilege; its policy requires `sender_id = auth.uid()` and that the caller is a participant in the referenced booking.
+- `payout_requests` still has a legacy INSERT policy, but authenticated table INSERT privilege is revoked. This is defense-in-depth consistent with the payout RPC migration; keep the grant/policy state aligned and test the intended RPC path.
+- This was a schema/policy/grant spot-check, not an end-to-end negative test with real anon/customer/Talent/Admin JWTs. It does not prove every RPC transition or Storage object path is correct.
+
+No direct database write was performed during this check.
