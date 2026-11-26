@@ -67,12 +67,27 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     if (!user) { setLoading(false); return; }
     setLoading(true);
     setError('');
-    const { data, error: queryError } = await supabase
-      .from('merchant_businesses')
-      .select('id,business_name,description,business_category,public_phone,website_url,review_status')
-      .order('created_at', { ascending: false });
-    if (queryError) {
+    const { data: ownMemberships, error: membershipError } = await supabase
+      .from('merchant_memberships')
+      .select('business_id')
+      .eq('user_id', user.id)
+      .in('membership_status', ['active','pending_invitation']);
+    if (membershipError) {
       setError('Fitur Merchant Partner belum tersedia di server. Migrasi Merchant Partner perlu diterapkan dan diuji di staging terlebih dahulu.');
+      setBusinesses([]);
+      setLocations([]);
+      setLoading(false);
+      return;
+    }
+    const businessIds = [...new Set((ownMemberships || []).map((membership: { business_id: string }) => membership.business_id))];
+    const { data, error: queryError } = businessIds.length
+      ? await supabase.from('merchant_businesses')
+          .select('id,business_name,description,business_category,public_phone,website_url,review_status')
+          .in('id', businessIds)
+          .order('created_at', { ascending: false })
+      : { data: [] as any[], error: null };
+    if (queryError) {
+      setError('Profil bisnis milik akun ini belum dapat dimuat.');
       setBusinesses([]);
       setLocations([]);
       setLoading(false);
@@ -105,7 +120,7 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
     setCategory(activeBusiness.business_category || '');
     setPhone(activeBusiness.public_phone || '');
     setWebsite(activeBusiness.website_url || '');
-  }, [activeBusiness?.id]);
+  }, [activeBusiness?.id, activeBusiness?.business_name, activeBusiness?.description, activeBusiness?.business_category, activeBusiness?.public_phone, activeBusiness?.website_url]);
 
   const runAction = async (action: () => Promise<{ error: { message: string } | null }>, done: string) => {
     setSaving(true); setError(''); setSuccess('');
