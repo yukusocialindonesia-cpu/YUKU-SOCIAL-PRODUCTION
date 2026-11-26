@@ -30,7 +30,7 @@ const verificationLabels: Record<string, string> = {
   license: 'Pemeriksaan izin profesi',
 };
 
-export const ProfessionalServicesSection: React.FC = () => {
+export const ProfessionalServicesSection: React.FC<{ onViewAll: () => void }> = ({ onViewAll }) => {
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -71,7 +71,7 @@ export const ProfessionalServicesSection: React.FC = () => {
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Jasa Profesional</h2>
             <p className="mt-1 max-w-xl text-xs leading-relaxed text-slate-500 sm:text-sm">Temukan tenaga ahli dan layanan terpercaya untuk kebutuhan sehari-hari maupun profesional.</p>
           </div>
-          <span className="hidden rounded-full bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700 sm:inline-flex">Professional Services</span>
+          <button type="button" onClick={onViewAll} className="inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-50 px-3 py-2 text-[10px] font-bold text-violet-700 transition hover:bg-violet-100 sm:text-[11px]">Lihat semua <ArrowRight className="h-3 w-3" /></button>
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
