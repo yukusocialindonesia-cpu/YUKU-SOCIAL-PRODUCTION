@@ -207,3 +207,68 @@ The review page now applies the selected status filter in the database, retrieve
 - This remains a UI-level safeguard backed by the existing private-bucket RLS and RPC evidence-existence checks. It does not establish that a document is authentic or legally valid; an authorized reviewer must inspect issuer, holder identity, scope, and expiry.
 - The signed URL is short-lived (5 minutes at generation). If it expires before inspection, the admin should refresh the queue to obtain a fresh link before approving. A future improvement is on-demand signed URL generation at the moment the reviewer opens an attachment.
 - File MIME/size allowlists are configured on the private bucket and checked in the form, but browser-provided MIME metadata is not proof of file contents. Manual review remains mandatory; malware scanning and file-signature validation are not yet implemented.
+
+
+## Cancellation, refund, commission and payout audit — 2026-11-26
+
+This section is based on direct source inspection of migrations 21–29 and 45–46, plus finance RPC migrations 57–58. It is a repository-code audit, not a live transaction simulation.
+
+### Confirmed existing rules
+
+**Completion**
+- Migration 21 requires both customer and Talent completion timestamps before a booking can become `completed`.
+- `confirm_booking_completion` locks the booking row and records each participant's confirmation. The second confirmation completes the booking.
+- Migration 20 schedules escrow release immediately on the transition to `completed`; migration 33 invokes the release worker every minute. Active open/investigating reports block release.
+- This means the existing completion contract is two-party confirmation, not a 24-hour customer review period. Project delivery acceptance cannot safely be inferred from a due date or generic completion click.
+
+**Talent cancellation**
+- Migration 22 only permits Talent cancellation for paid/confirmed bookings whose payment is still `settled_held`.
+- It creates a full refund request for the payment amount and changes the booking to `cancelled_by_talent`.
+- Finance must perform the actual refund externally and record a provider/bank reference before the refund is marked processed. The database workflow itself does not transfer money.
+
+**Customer cancellation**
+- Migration 23 bases cancellation on `start_time` and remaining hours:
+  - unpaid pending booking: cancellation without refund;
+  - more than 24 hours: full refund;
+  - 6–24 hours: half refund and half retained for Admin review;
+  - under 6 hours: no automatic refund; full amount retained for Admin review.
+- A customer cancellation case is unique per booking. The booking is then marked `cancelled_by_customer`.
+- Migration 24 holds/reverses Talent earnings according to the retained amount and blocks reversal if payout has already been allocated or paid.
+- Migration 26 provides Admin resolution for retained cancellation funds, records decisions and requires a real provider refund reference when returning funds.
+- These time windows are activity-oriented and cannot be copied blindly to per-session, per-day, or project services. In particular, a project may have a due date rather than a single service `start_time`.
+
+**Refund and ledger**
+- Migration 29 makes ledger generation idempotent for a payment entering `settled_held`, including recovery from a previously failed payment. It independently inserts commission, Talent earning and referral reward rows.
+- Refunds are manual operational workflows today. The code records provider references; it is not an integrated automatic provider refund API.
+- Financial reversal checks protect earnings already allocated to payouts or paid out. A professional refund design must preserve these guards and handle partial refunds without marking the entire payment refunded prematurely.
+
+**Commission and affiliate**
+- The booking financial ledger stores gross booking amount, platform commission, Talent gross share, reserved referral payout and net platform revenue.
+- Migration 45 configures a one-tier Talent affiliate commission (default 10% of platform commission, configurable and enable/disable). Migration 46 mirrors credited referral rewards into a separate affiliate earning ledger and lets the shared payout allocator allocate booking and affiliate earnings.
+- Affiliate rewards are distinct from the service provider's booking earning. They must not be conflated with professional-service provider share.
+- The affiliate percentage is read when payment settles; it is not visibly frozen as a booking-time policy field in the inspected function. If policy changes between booking and settlement, the resulting affiliate allocation follows the settlement-time setting. Decide whether that is intentional before extending to professional services.
+
+### New professional-service risks / required changes
+
+1. **Cancellation basis:** replace the assumption that every booking has one meaningful `start_time` with unit-aware policy inputs: start/end for hour/session, date range and defined working hours for day, and milestone/due-date plus work-start evidence for project.
+2. **Partial refund accounting:** snapshot the agreed cancellation policy at booking creation; use a cumulative refund ceiling per payment; make repeated Admin actions idempotent; never exceed the original paid amount; keep partial refunds distinct from full payment-refunded status.
+3. **Project work state:** add deliverable submission, revision count, acceptance, timeout and dispute states. Customer cancellation after work begins must not be decided using the activity's under-six-hour rule.
+4. **Escrow:** only map professional work to `completed` after its own completion authority is satisfied. For projects, acceptance must be an explicit validated prerequisite before the generic release worker can see the booking as completed.
+5. **Commission:** persist the exact professional fee-policy version and amounts at booking creation. Clarify whether affiliate commission is based on platform fee, whether it applies to all professional categories, and whether the percentage is fixed at booking or settlement.
+6. **Payout:** preserve the single shared payout allocator and its row locks / available-balance checks. Verify that refund/dispute transitions can reverse both booking earnings and any affiliate reward without touching already allocated/paid amounts.
+7. **Finance/admin:** extend booking kind, service unit, scope, cancellation policy and refund breakdown in finance views and exports; current finance RPCs return only booking code and status, which is insufficient context for project disputes.
+
+### Product and policy decisions still required
+- Cancellation/refund schedule for hourly, session, day, and project services.
+- Whether professional services have the same two-party completion rule or a separate customer acceptance window.
+- Project cancellation compensation after work starts, including partial work and non-refundable milestones (milestones remain out of MVP until separately modelled).
+- Whether affiliate commission applies to professional services and which frozen base/rate applies.
+- Whether the existing 20% platform fee applies to every professional category. Do not infer this from the legacy activity financial function.
+
+### Release blockers
+- No professional booking kind or booking RPC exists in the current implementation.
+- No professional cancellation/refund policy snapshot exists.
+- No project deliverable/acceptance state machine exists.
+- No professional-specific finance/export view model exists.
+- No automated provider refund integration was identified in the inspected migrations.
+- Professional checkout must remain disabled until these are implemented and tested in a disposable/staging Supabase project.
