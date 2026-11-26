@@ -104,6 +104,8 @@ BEFORE INSERT ON public.bookings
 FOR EACH ROW
 EXECUTE FUNCTION public.assign_booking_service_snapshot();
 
+REVOKE ALL ON FUNCTION public.assign_booking_service_snapshot() FROM PUBLIC, anon, authenticated;
+
 CREATE OR REPLACE FUNCTION public.prevent_booking_service_identity_change()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -125,6 +127,8 @@ CREATE TRIGGER trg_prevent_booking_service_identity_change
 BEFORE UPDATE ON public.bookings
 FOR EACH ROW
 EXECUTE FUNCTION public.prevent_booking_service_identity_change();
+
+REVOKE ALL ON FUNCTION public.prevent_booking_service_identity_change() FROM PUBLIC, anon, authenticated;
 
 -- New exact-offer RPC. The legacy create_booking RPC remains available for
 -- existing clients and keeps its original signature. The provider/category
