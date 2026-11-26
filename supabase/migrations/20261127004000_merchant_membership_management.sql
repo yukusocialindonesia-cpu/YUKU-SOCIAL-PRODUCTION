@@ -622,6 +622,10 @@ $merchant$;
 revoke all on function public.invite_merchant_member(uuid,uuid,text)
   from public,anon,authenticated;
 
+-- Disable the legacy UUID-target invitation RPC. All invitations must use
+-- the audited email-based flow above.
+revoke all on function public.invite_merchant_member(uuid,uuid,text)
+  from public,anon,authenticated;
 revoke all on function public.get_merchant_business_members(uuid)
   from public,anon,authenticated;
 revoke all on function public.invite_merchant_member_by_email(uuid,text,text)
