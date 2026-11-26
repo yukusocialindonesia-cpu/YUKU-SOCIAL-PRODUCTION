@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, MapPin, Coffee, AlertCircle, RefreshCw } from 'lucide-react';
-import { ActivityCategory, TalentProfile } from '../../types/talent';
-import { fetchCategoriesFromSupabase, fetchTalentsFromSupabase } from '../../utils/supabaseMarketplace';
+import { ActivityCategory } from '../../types/talent';
+import { fetchCategoriesFromSupabase } from '../../utils/supabaseMarketplace';
 import { buildCityFilterOptions } from '../../utils/cities';
 
 interface SearchActivityWidgetProps {
@@ -10,7 +10,6 @@ interface SearchActivityWidgetProps {
 
 export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSearch }) => {
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
-  const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -21,12 +20,8 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
     setLoading(true);
     setErrorMsg(null);
     try {
-      const [catsData, talentsData] = await Promise.all([
-        fetchCategoriesFromSupabase(),
-        fetchTalentsFromSupabase(),
-      ]);
+      const catsData = await fetchCategoriesFromSupabase();
       setCategories(catsData);
-      setTalents(talentsData);
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal memuat pilihan pencarian dari Supabase.');
     } finally {
@@ -38,9 +33,9 @@ export const SearchActivityWidget: React.FC<SearchActivityWidgetProps> = ({ onSe
     loadSearchData();
   }, []);
 
-  const availableCities = useMemo(() => {
-    return buildCityFilterOptions(talents.map((t) => t.city));
-  }, [talents]);
+  // Kota berasal dari direktori statis Indonesia; jangan memuat seluruh profil Talent
+  // hanya untuk membangun opsi lokasi di widget pencarian Beranda.
+  const availableCities = useMemo(() => buildCityFilterOptions([]), []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
