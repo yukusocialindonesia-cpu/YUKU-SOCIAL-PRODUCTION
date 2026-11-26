@@ -27,7 +27,7 @@ create policy merchant_review_history_owner_or_admin_read
   on public.merchant_business_review_history
   for select to authenticated
   using (
-    private.has_merchant_business_access(business_id)
+    private.has_merchant_business_access(business_id, array['owner']::text[])
     or private.is_merchant_admin()
   );
 
