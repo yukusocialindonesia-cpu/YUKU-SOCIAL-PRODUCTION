@@ -275,3 +275,38 @@ No runtime schema, UI, or production behavior was changed by this documentation 
 8. Run staging tests for full refund, partial refund, already-paid-out earning, active dispute, duplicate settlement webhook, duplicate escrow worker, and both booking kinds before enabling checkout.
 
 No financial schema, RPC, production data, or payout behavior was changed by this audit.
+
+
+## Payment rails and webhook audit — direct source inspection (2026-11-26)
+
+### Confirmed protections already present
+
+- **Single payment route lock:** `claim_booking_payment_route()` locks the booking row and only permits one of Xendit, manual QRIS, or manual bank transfer while the booking is pending and unexpired. Route switching is rejected.
+- **Xendit checkout amount:** `create-checkout` obtains the caller identity from JWT, verifies booking ownership/status, checks the server-side `payment_checkout` flag, and derives amount from `bookings.gross_amount`, not the browser. It uses a stable `external_id = yuku-<booking UUID>` and retrieves a pending invoice on duplicate invoice creation.
+- **Xendit callback authentication:** `xendit-webhook` compares the callback token using constant-time byte comparison and only settles PAID/SETTLED callbacks. It checks the external ID shape and compares the callback amount with the database gross amount.
+- **Settlement serialization/idempotency:** `settle_booking_payment()` locks the booking row; only pending bookings can be settled; already-paid/in-progress/completed bookings return success; payment row is upserted on unique booking ID; ledger generation is triggered from payment writes.
+- **Manual QRIS:** one pending proof per booking is enforced by a partial unique index; upload is private and tied to an owned booking locked to manual QRIS; Finance review locks submission and booking; approval checks booking status and payment route before creating/updating the payment and moving booking to escrow.
+- **Manual bank transfer:** one pending submission per booking is enforced; proof path is constrained to the booking folder; Finance approval verifies owner, exact claimed amount, booking expiry/status, locked route, saved account snapshot, non-empty unique transfer reference, and proof object existence. It writes an audit record.
+- **Route separation:** QRIS, bank transfer, and Xendit are mutually exclusive for one booking; a QRIS/transfer booking cannot later create a Xendit invoice through the route claim.
+
+### Gaps and risks to close before production activation
+
+1. **Xendit callback does not validate currency or fetch the invoice from Xendit.** It checks the callback token, external ID, status and amount, but does not compare the invoice ID / currency / payer or independently retrieve the invoice. Add provider-side verification (at minimum invoice ID, external ID, IDR currency, amount and final status) before settlement; store the provider invoice ID distinctly from a charge ID if the provider payload semantics require it.
+2. **The webhook idempotency key is booking-only.** Duplicate callbacks for the same booking are safe at the booking/payment-row level, but the database does not persist and uniquely enforce the provider event/invoice ID. Add a provider event/invoice receipt ledger with a unique provider + event/invoice identifier, payload hash, processed state and retry-safe transaction boundary. This also makes reconciliation auditable.
+3. **Callback payload amount fallback is permissive.** `paid_amount ?? amount` should be checked against the exact documented Xendit callback contract for the configured invoice API version. Reject missing/non-numeric amount and non-IDR currency; do not silently accept a fallback field unless verified against provider docs and sandbox fixtures.
+4. **Checkout route claim precedes the final expiry-window check.** A request with less than 60 seconds remaining can lock the booking to Xendit and then return an error without creating an invoice. Move the minimum invoice-duration check before route claim, while keeping expiry and route checks atomic server-side (ideally one checkout-preparation RPC).
+5. **Xendit checkout accepts `pending_verification` accounts.** Review whether that status should be allowed to initiate payment. For the new professional service checkout, require the same fully active customer eligibility enforced at booking creation; do not broaden account access.
+6. **Manual QRIS/bank transfer are human-reviewed, not provider-confirmed.** Finance approval is a privileged manual assertion. Keep audit logs, require evidence/reference and independent reconciliation; never describe an uploaded screenshot as automatic confirmation.
+7. **Manual payment review and gateway settlement share the same `payments` row.** This is good for one ledger, but regression tests must cover route mismatch, duplicate transfer reference, two Finance reviewers racing, late callback after expiry, callback racing with manual approval, rejected-proof resubmission and repeated webhook delivery.
+8. **Legacy settlement accepts provider types and stores raw webhook payload history.** Ensure raw payloads do not contain unnecessary personal/payment secrets, restrict read access, and set retention/redaction rules. Never expose payload history to Customer/Talent.
+9. **Booking-level idempotency does not yet establish professional-specific eligibility.** New checkout must create a professional booking snapshot and validate listing/provider/account/document eligibility before a payment route can be claimed. Existing payment rails should only receive a booking after this succeeds.
+
+### Required test matrix before enabling any professional checkout
+
+- Xendit: success; duplicate callback; wrong token; wrong external ID; wrong invoice ID; wrong currency; amount too low/high; missing amount; expired invoice; late paid callback after booking expiry; provider API timeout; duplicate invoice create retry.
+- QRIS: inactive settings; route race with Xendit/bank; upload to another booking folder; second pending proof; rejected proof then replacement; duplicate Finance approval; approval after expiry; wrong route.
+- Bank transfer: inactive settings; route race; altered amount; duplicate transfer reference across bookings; missing/deleted proof; duplicate Finance approval; two Admin reviewers concurrently; approval after expiry; rejected proof then replacement.
+- Shared ledger: payment row created once; commission/earning/referral ledger rows created once; no double escrow release; full refund and partial refund reconciliation; dispute hold; payout already reserved or completed.
+- All tests must run in staging against the exact migration set. Current Edge Function headers explicitly state that Xendit sandbox has not yet been tested; do not mark this as verified.
+
+No payment code, Edge Function, schema, production setting, or payment flag was changed by this audit.
