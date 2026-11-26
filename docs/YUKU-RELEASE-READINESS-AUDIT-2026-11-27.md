@@ -12,7 +12,7 @@ YUKU has substantial product and security work in progress, but the current bran
 
 ### P0 — Supabase migration timestamps collide
 
-The active branch contains 143 migration files. The following version prefixes occur more than once:
+The active PR #287 branch contains 143 migration files. A live read-only query on 27 November found 129 migrations recorded in Production, latest version `20261126124423` (`harden_professional_application_revision_attestation_fields`). PR #265's separate branch contains 125 migration files and can match only 74 Production entries by exact version or normalized name; 55 Production entries remain unmatched. PR #287 does not include PR #265's filename reconciliation. The following version prefixes occur more than once in PR #287:
 
 | Version | Files |
 |---|---|
@@ -25,7 +25,7 @@ The active branch contains 143 migration files. The following version prefixes o
 | `20261127004000` | `20261127004000_create_independent_professional_provider_profiles.sql`; `20261127004000_merchant_membership_management.sql` |
 | `20261127005000` | `20261127005000_allow_professional_only_applications.sql`; `20261127005000_merchant_offers_directory.sql` |
 
-Supabase migration files require unique timestamps and are applied in timestamp order. Do not run `db push` or attempt to repair remote history until each collision is reconciled against the target project's actual migration history and dependency order. PR #265 separately proposes reconciling historical migration filenames; it is still open and is not in this branch's PR ancestry.
+Supabase migration files require unique versions and are applied in version order. The collision list is a filename-level finding only; do not simply assign arbitrary timestamps. First determine dependencies and whether any file has already been applied in Staging or another environment. The 55 unmatched Production entries must also be recovered/mapped. Do not run `db push` or attempt to repair remote history until these issues are reconciled against the target project's actual migration history and dependency order. PR #265 separately proposes reconciling historical migration filenames; it is still open and is not in this branch's PR ancestry.
 
 ### P0 — Current PR stack is not receiving the main build workflow
 
@@ -61,7 +61,7 @@ PR #284 and PR #287 are sibling branches, not a single linear stack. Do not assu
 
 ## Release gate order
 
-1. Reconcile migration timestamp collisions with migration history and SQL dependency order. Resolve PR #265 ancestry/rebase implications first.
+1. Reconcile the 55 unmatched Production migration entries and the 8 duplicate version groups; integrate/rebase PR #265 only after its mapping is refreshed and verified.
 2. Make CI run on every intended PR base branch; require a visible green typecheck/build result.
 3. Add and execute Staging SQL/RLS/RPC/storage tests for Professional Provider and Merchant Partner, including negative cross-account and cross-business tests.
 4. Run end-to-end regression for signup/session restore, provider onboarding/review, discovery, booking, payment route lock, cancellations/refunds, notifications, Admin actions, and mobile navigation.
