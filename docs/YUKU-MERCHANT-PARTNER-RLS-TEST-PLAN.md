@@ -147,3 +147,5 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 - [ ] Admin offer review queries can read the approved/pending offer fields and owner-only review history without exposing actor_user_id.
 - [ ] Merchant business review decision RPC compiles and sends owner notifications for approve/revise/reject/suspend transitions.
 - [ ] Owner roster RPC returns member emails for their own business; Manager roster RPC returns the same scoped roles/statuses but masks all member emails. Staff cannot call the roster RPC.
+- [ ] Owner cannot submit a promo unless its parent business is currently approved; a business returned for revision or suspended cannot submit new promo reviews.
+- [ ] Pending team invitations cannot be accepted after the parent business is rejected or suspended.
