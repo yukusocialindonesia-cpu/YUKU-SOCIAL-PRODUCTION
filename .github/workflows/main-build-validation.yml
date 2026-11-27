@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - release/main-supabase-fix
       - fix/talent-media-moderation
       - feat/professional-services-categories
     paths:
@@ -14,6 +15,7 @@ on:
       - "package-lock.json"
       - "tsconfig.json"
       - "vite.config.*"
+      - "wrangler.toml"
       - ".github/workflows/main-build-validation.yml"
   pull_request:
     branches:
@@ -26,6 +28,7 @@ on:
       - "package-lock.json"
       - "tsconfig.json"
       - "vite.config.*"
+      - "wrangler.toml"
       - ".github/workflows/main-build-validation.yml"
   workflow_dispatch:
 
@@ -33,14 +36,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: yuku-main-validation
+  group: yuku-main-validation-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   validate:
-    name: TypeScript and production build
+    name: TypeScript, production build, and Cloudflare deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -54,8 +57,27 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Validate Supabase production configuration
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          test -n "$VITE_SUPABASE_URL" || { echo "::error::Missing GitHub Actions secret VITE_SUPABASE_URL"; exit 1; }
+          test -n "$VITE_SUPABASE_PUBLISHABLE_KEY" || { echo "::error::Missing GitHub Actions secret VITE_SUPABASE_PUBLISHABLE_KEY"; exit 1; }
+
       - name: TypeScript check
         run: npm run lint
 
       - name: Production build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
+
+      - name: Deploy built assets to Cloudflare Production
+        if: ${{ github.event_name == 'push' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 8e92427ca4a3a2eb73bf9a910812659e
+          command: deploy --config wrangler.toml
