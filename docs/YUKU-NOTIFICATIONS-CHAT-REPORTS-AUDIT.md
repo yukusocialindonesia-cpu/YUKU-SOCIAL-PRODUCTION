@@ -90,3 +90,10 @@ Still unresolved:
 - Direct UPDATE grants on report moderation columns still require a forward migration to revoke them while preserving the `admin_resolve_report()` RPC's SECURITY DEFINER owner path.
 - Staging tests for chat participant isolation, lock-screen payload, account switching and report direct-write denial remain outstanding.
 - No build, Deno check, automated test, push send or live Realtime test has been run for this commit.
+
+
+## Canonical branch update — 28 Nov 2026
+- Report moderation direct UPDATE revocation is prepared in `20261127191000_revoke_direct_report_moderation_updates.sql`; the audited Support RPC is retained.
+- Report notification privacy fix has a unique migration version `20261127001050_stop_leaking_internal_report_notes.sql`; Stage C C19 checks that internal notes are absent from reporter notifications.
+- Xendit is retired from new checkout in the canonical branch. Historical booking records remain readable; legacy pending records must be handled by YUKU Support.
+- Chat/Realtime, notification routing, and lock-screen push behavior still require isolated Staging and device-level tests. Nothing here has been applied to Production.
