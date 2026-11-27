@@ -40,6 +40,7 @@ BEGIN
 
   IF position('manual_qris' IN lower(v_claim)) = 0
      OR position('manual_bank_transfer' IN lower(v_claim)) = 0
+     OR position('xendit' IN lower(v_claim)) > 0
      OR position('metode pembayaran tidak tersedia' IN lower(v_claim)) = 0
      OR position('for update' IN lower(v_claim)) = 0 THEN
     RAISE EXCEPTION 'STAGE D failed: payment route claim RPC is missing required allowlist/locking guards.';
@@ -51,6 +52,7 @@ BEGIN
 
   IF position('manual_qris' IN lower(v_settle)) = 0
      OR position('manual_bank_transfer' IN lower(v_settle)) = 0
+     OR position('xendit' IN lower(v_settle)) > 0
      OR position('provider pembayaran tidak lagi didukung' IN lower(v_settle)) = 0
      OR position('for update' IN lower(v_settle)) = 0 THEN
     RAISE EXCEPTION 'STAGE D failed: settlement RPC is missing manual-provider allowlist/locking guards.';
