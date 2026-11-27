@@ -36,16 +36,19 @@ BEGIN
   SELECT pg_get_functiondef('public.protect_and_verify_user_identities()'::regprocedure)
     INTO v_protect;
   IF position('selfie_storage_path' IN lower(v_protect)) = 0
-     OR position('customer' IN lower(v_protect)) = 0 THEN
-    RAISE EXCEPTION 'STAGE E failed: identity protection trigger function does not include Customer selfie rules.';
+     OR position('public.customer_profiles' IN lower(v_protect)) = 0
+     OR position('v_user_role' IN lower(v_protect)) > 0 THEN
+    RAISE EXCEPTION 'STAGE E failed: identity protection must require selfie by Customer profile, not legacy primary role.';
   END IF;
 
   SELECT pg_get_functiondef('public.guard_ktp_verified_requires_valid_identity()'::regprocedure)
     INTO v_guard;
   IF position('selfie_storage_path' IN lower(v_guard)) = 0
+     OR position('public.customer_profiles' IN lower(v_guard)) = 0
+     OR position('v_user_role' IN lower(v_guard)) > 0
      OR position('o.owner = new.id' IN lower(v_guard)) = 0
      OR position('o.owner_id = new.id::text' IN lower(v_guard)) = 0 THEN
-    RAISE EXCEPTION 'STAGE E failed: verified identity guard lacks selfie/Storage ownership checks.';
+    RAISE EXCEPTION 'STAGE E failed: verified identity guard lacks Customer-profile selfie/Storage ownership checks.';
   END IF;
 
   SELECT qual INTO v_delete_policy
