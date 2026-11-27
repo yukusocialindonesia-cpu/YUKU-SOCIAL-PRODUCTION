@@ -23,6 +23,7 @@
 --  C13 Signup email/metadata 'admin' TIDAK menghasilkan role admin (migrasi 18)
 --  C14 Booking pending kedaluwarsa tidak memblokir create_booking berikutnya (fix guard 23)
 --  C15 Bucket promotions punya batas ukuran & tipe file (migrasi 23)
+--  C16 Settlement server-side menolak provider Xendit setelah retirement
 -- ============================================================================
 
 CREATE TEMP TABLE IF NOT EXISTS _c_results (n INT, name TEXT, passed BOOLEAN, detail TEXT);
@@ -201,6 +202,22 @@ BEGIN
   END;
   PERFORM set_config('request.jwt.claims', '', true);
   INSERT INTO _c_results VALUES (7, 'settle idempotent', v_ok, v_msg);
+
+  -- ----------------------------- C16 -----------------------------------------
+  v_ok := FALSE; v_msg := NULL;
+  BEGIN
+    PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
+    SET LOCAL ROLE service_role;
+    PERFORM public.settle_booking_payment(v_b, 'xendit', 'INV-RETIRED', 'qris', '{}'::jsonb);
+    RESET ROLE;
+    v_msg := 'Settlement Xendit tidak semestinya diterima';
+  EXCEPTION WHEN OTHERS THEN
+    RESET ROLE;
+    v_ok := SQLERRM ILIKE '%Provider pembayaran tidak lagi didukung%';
+    v_msg := SQLERRM;
+  END;
+  PERFORM set_config('request.jwt.claims', '', true);
+  INSERT INTO _c_results VALUES (16, 'Settlement Xendit ditolak oleh server', v_ok, v_msg);
 
   -- ----------------------------- C8 ------------------------------------------
   v_ok := FALSE; v_msg := NULL;
