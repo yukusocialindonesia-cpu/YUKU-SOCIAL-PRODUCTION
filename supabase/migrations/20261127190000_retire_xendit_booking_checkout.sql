@@ -108,7 +108,7 @@ BEGIN
     RAISE EXCEPTION 'Akses Ditolak: settlement hanya boleh dipanggil dari server.';
   END IF;
 
-  IF p_provider NOT IN (
+  IF p_provider IS NULL OR p_provider NOT IN (
     'manual_qris'::public.payment_provider_type,
     'manual_bank_transfer'::public.payment_provider_type
   ) THEN
