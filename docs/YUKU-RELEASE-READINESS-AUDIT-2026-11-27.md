@@ -376,3 +376,13 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 - No branch was created. Branch creation can incur hourly compute charges and requires cost disclosure/approval; it must also wait until the parent migration chain is repaired or a separate clean disposable Supabase project is provisioned.
 - Safe next step: identify the exact failed migration/error in the parent branch's deployment history, reconcile its migration source/history without touching Production, then provision a clean disposable Staging target and replay the canonical chain. If the parent is Production, do not repair it as a staging exercise; use a separate project instead.
 - This is a provisioning/dependency finding, not a claim that any feature migration has passed SQL execution. No database, migration history, or deployment was changed.
+
+
+**Production runtime/schema mismatch observed from read-only logs — 27 Nov 2026**
+- PostgreSQL error logs include repeated `column talent_services.custom_title does not exist` errors (SQLSTATE `42703`) on 26 Nov 2026.
+- A read-only `information_schema.columns` inspection confirms Production `public.talent_services` currently has `id`, `talent_id`, `activity_category_id`, `custom_rate_override`, `created_at`, `approval_status`, `is_active`, `reviewed_by`, `reviewed_at`, `review_note`, and `updated_at`; it does not have `custom_title` or `custom_description`.
+- The feature branch migration that adds these columns is `20261127005500_talent_custom_social_experience_services.sql`. Its former `03000` version collided with Merchant directory migration `20261127003000_merchant_admin_review_and_directory.sql`; it has now been moved to `05500`, after Merchant offers `05000` and before Social Experience booking foundation `06000`. The old migration path was removed from the branch and the canonical manifest updated.
+- This is a release-order/source fix only. It does not apply the schema change to Production. Do not deploy frontend code that selects these fields until the corresponding migration has passed clean Staging replay and is released in the coordinated order.
+- Other log errors include `permission denied for function can_admin_access_ktp` and `permission denied for table customer_profiles`; these require actor/JWT-path tracing before changing grants or RLS. No permission change is authorized by this log observation.
+- The log sample is from the Production project and does not reveal the exact migration failure recorded by Supabase's branch provisioning status. Do not conflate runtime query errors with a failed migration record.
+- All checks here were read-only. No Production DDL/DML, migration, or deployment was performed.
