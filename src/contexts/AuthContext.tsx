@@ -199,7 +199,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       authEventVersionRef.current += 1;
       window.setTimeout(() => {
         if (!isMounted) return;
-        void applySession(session?.user ?? null, event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED');
+        void applySession(session?.user ?? null, event === 'USER_UPDATED');
       }, 0);
     });
 
@@ -207,8 +207,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Ini membuat perubahan izin/nonaktif Admin segera tercermin tanpa harus logout.
     const handleWindowFocus = () => {
       if (!isMounted) return;
+      const authEventVersion = authEventVersionRef.current;
       void supabase.auth.getSession().then(({ data: { session } }) => {
-        if (isMounted) void applySession(session?.user ?? null, true);
+        // Abaikan snapshot sesi yang selesai setelah login/logout atau event auth baru.
+        if (isMounted && authEventVersionRef.current === authEventVersion) {
+          void applySession(session?.user ?? null, true);
+        }
       }).catch((error) => {
         console.error('YUKU: gagal memperbarui izin Admin saat aplikasi aktif', error);
       });
@@ -228,7 +232,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [applySession]);
 
   const refreshRole = useCallback(async () => {
+    const authEventVersion = authEventVersionRef.current;
     const { data: { session } } = await supabase.auth.getSession();
+    // Jangan biarkan getSession yang terlambat menghidupkan kembali sesi usang.
+    if (authEventVersionRef.current !== authEventVersion) return;
     await applySession(session?.user ?? null, true);
   }, [applySession]);
 
