@@ -55,7 +55,7 @@ BEGIN
     AND policyname = 'ktp_documents_owner_delete_unreferenced';
 
   IF v_delete_policy IS NULL
-     OR position('not exists' IN lower(v_delete_policy)) = 0
+     OR position('exists' IN lower(v_delete_policy)) = 0
      OR position('user_identities' IN lower(v_delete_policy)) = 0 THEN
     RAISE EXCEPTION 'STAGE E failed: orphan-only Storage delete policy is missing or incomplete.';
   END IF;
