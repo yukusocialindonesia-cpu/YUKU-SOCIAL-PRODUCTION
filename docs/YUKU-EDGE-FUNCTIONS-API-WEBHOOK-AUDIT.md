@@ -82,3 +82,7 @@ Remediation: use a constant-time comparison helper with equal-length byte arrays
 ## Change boundary
 
 No Production Edge Function was deployed or changed. No secrets were read or changed. No webhook, push notification, Xendit API request, account operation, payment, refund, payout or database mutation was performed. Findings are based on function inventory, source inspection and Supabase Advisor output only.
+
+
+## Xendit retirement update — 27 Nov 2026
+Xendit is retired from new YUKU checkout. New payment-route claims and server settlement are limited to manual QRIS and bank transfer. Historical provider enum values and booking/payment records remain readable for compatibility. Legacy pending bookings must be handled through YUKU Support; old payment links must not be reused. The guarded migration `20261127190000_retire_xendit_booking_checkout.sql` is prepared in the canonical branch but has not been applied. Staging replay, payment regression tests, operational secret/callback retirement, and explicit release approval remain required. No Production state was changed.

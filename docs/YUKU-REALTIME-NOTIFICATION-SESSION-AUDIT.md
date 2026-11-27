@@ -355,3 +355,7 @@ All Production checks for this addendum were catalog/function/policy/grant reads
 - `yuku-push` now replaces the body of booking-chat push notifications with generic text using the booking/message metadata, providing a second privacy boundary even if legacy notification rows contain previews.
 - `getYukuPushStatus()` now asks the authenticated Edge Function whether the local browser endpoint is owned by the current account. `PushNotificationToggle` refreshes when the authenticated user ID changes, fixing stale status on shared-device account switches.
 - These are branch-only source changes. Production function deployment and Android lock-screen tests have not occurred.
+
+
+## Xendit retirement update — 27 Nov 2026
+New checkout and server-side settlement allow only manual QRIS and bank transfer. Historical provider values/rows remain for read compatibility. Legacy pending Xendit bookings must be handled by YUKU Support; old payment links must not be reused. Migration `20261127190000_retire_xendit_booking_checkout.sql` is staged in source only, not applied. Full migration replay, Staging payment tests, secret/callback retirement, and release approval are still required. No Production change has been made.

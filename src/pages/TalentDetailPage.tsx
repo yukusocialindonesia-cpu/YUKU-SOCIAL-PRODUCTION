@@ -101,6 +101,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const [availabilitySlots, setAvailabilitySlots] = useState<TalentAvailabilityRow[]>([]);
   const [mediaItems, setMediaItems] = useState<TalentMediaRow[]>([]);
   const [serviceRateOverrides, setServiceRateOverrides] = useState<Record<string, number | null>>({});
+  const [serviceIdsByCategory, setServiceIdsByCategory] = useState<Record<string, string>>({});
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const lightboxTouchStartX = useRef<number | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
@@ -123,7 +124,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Auth state for booking
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, role, accountStatus, accessSnapshot } = useAuth();
+  const canBookAsCustomer = accessSnapshot
+    ? accessSnapshot.capabilities.customer.available && accessSnapshot.accountStatus === 'active'
+    : role === 'customer' && accountStatus === 'active';
 
   // Real Booking Form States
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -177,6 +181,19 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const loadTalentDetail = async () => {
     setLoading(true);
     setErrorMsg(null);
+    // A route change must never carry the previous provider's booking state
+    // into the next profile while its data is loading.
+    setTalent(null);
+    setSelectedActivity('');
+    setBookingError(null);
+    setCreatedBooking(null);
+    setIsBookingModalOpen(false);
+    setAvatarFailed(false);
+    setReviews([]);
+    setAvailabilitySlots([]);
+    setMediaItems([]);
+    setServiceRateOverrides({});
+    setServiceIdsByCategory({});
     try {
       const [talentData, categoriesData, reviewsRes, availabilityRes, mediaRes, serviceRatesRes] = await Promise.all([
         fetchTalentByIdFromSupabase(talentId),
@@ -203,7 +220,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           .order('created_at', { ascending: false }),
         supabase
           .from('talent_services')
-          .select('activity_category_id, custom_rate_override')
+          .select('id, activity_category_id, custom_rate_override, approval_status, is_active')
           .eq('talent_id', talentId),
       ]);
 
@@ -228,7 +245,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       setBookingMode(talentData?.serviceMode === 'Online Only' ? 'online' : 'offline');
       setCategories(categoriesData);
       setAvailabilitySlots((availabilityRes.data as TalentAvailabilityRow[]) || []);
-      setServiceRateOverrides(Object.fromEntries((serviceRatesRes.data || []).map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
+      const approvedServiceRows = (serviceRatesRes.data || []).filter((row) => row.approval_status === 'approved' && row.is_active);
+      setServiceRateOverrides(Object.fromEntries(approvedServiceRows.map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
+      setServiceIdsByCategory(Object.fromEntries(approvedServiceRows.map((row) => [row.activity_category_id, row.id])));
       const approvedMedia = mediaRows as TalentMediaRow[];
       const mediaWithSignedUrls = await Promise.all(approvedMedia.map(async (item) => {
         if (!item.storage_path) return { ...item, media_url: '' };
@@ -332,6 +351,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       setBookingError('Anda harus masuk (login) terlebih dahulu untuk mengajukan reservasi.');
       return;
     }
+    if (!canBookAsCustomer) {
+      setBookingError('Akun ini belum memiliki akses Customer untuk membuat booking. Periksa status akun atau hubungi bantuan YUKU.');
+      return;
+    }
 
     // 2. Self-Booking Guard
     if (currentUser.id === talent.id) {
@@ -343,6 +366,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     const finalActivity = selectedActivity || (talent.activities.length > 0 ? talent.activities[0] : '');
     if (!finalActivity) {
       setBookingError('Pilih jenis aktivitas terlebih dahulu.');
+      return;
+    }
+    const finalServiceId = serviceIdsByCategory[finalActivity];
+    if (!finalServiceId) {
+      setBookingError('Layanan ini belum memiliki identitas layanan yang valid. Silakan pilih layanan lain atau hubungi Admin.');
       return;
     }
 
@@ -363,8 +391,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       return;
     }
 
-    if (startDateTime.getTime() <= Date.now()) {
-      setBookingError('Jadwal pertemuan harus di masa mendatang (minimal beberapa jam dari sekarang).');
+    const minimumStartTime = Date.now() + 2 * 60 * 60 * 1000;
+    if (startDateTime.getTime() < minimumStartTime) {
+      setBookingError('Pilih jadwal minimal 2 jam dari sekarang.');
       return;
     }
 
@@ -385,10 +414,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     setIsSubmittingBooking(true);
 
     try {
-      // 6. Create booking via server-side RPC create_booking
-      const { data: rpcData, error: rpcError } = await supabase.rpc('create_booking', {
-        p_talent_id: talent.id,
-        p_activity_category_id: finalActivity,
+      // 6. Create booking from the exact approved Social Experience service ID
+      const { data: rpcData, error: rpcError } = await supabase.rpc('create_booking_for_service', {
+        p_service_id: finalServiceId,
         p_booking_mode: bookingMode,
         p_start_time: startDateTime.toISOString(),
         p_duration_hours: durationHours,
@@ -997,6 +1025,24 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 </div>
               )}
 
+              {talent.serviceOffers && talent.serviceOffers.length > 0 && (
+                <div className="mt-5">
+                  <h3 className="mb-2 text-sm font-semibold text-slate-800">Layanan yang Ditawarkan</h3>
+                  <div className="space-y-2">
+                    {talent.serviceOffers.map((offer) => {
+                      const category = categories.find((item) => item.id === offer.categoryId);
+                      return (
+                        <div key={offer.categoryId} className="rounded-xl border border-purple-100 bg-white p-3">
+                          <div className="text-xs font-bold text-slate-900">{offer.title}</div>
+                          <div className="mt-0.5 text-[10px] font-semibold text-purple-700">{category?.title || 'Social Experience'}</div>
+                          {offer.description && <p className="mt-2 text-xs leading-relaxed text-slate-600">{offer.description}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
             </div>
 
             {/* Talent Availability Schedule Card */}
@@ -1247,7 +1293,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       </div>
 
       {/* Mobile Sticky Bottom Booking CTA Bar */}
-      <div className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] md:bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
+      <div className="lg:hidden fixed bottom-[env(safe-area-inset-bottom,0px)] inset-x-0 z-30 bg-white border-t border-slate-200 px-3 min-[360px]:px-4 pt-2.5 pb-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)]">
         <div className="max-w-7xl mx-auto flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between gap-2 min-[360px]:gap-3">
           <div className="min-w-0 w-full min-[360px]:w-auto">
             <div className="text-lg min-[360px]:text-xl font-black text-[#1E0938] tabular-nums truncate">

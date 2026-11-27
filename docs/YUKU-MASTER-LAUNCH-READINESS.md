@@ -230,3 +230,7 @@ Launch decision: **do not treat notification/chat/report moderation as productio
 - Push toggle status now verifies endpoint ownership for the current authenticated account and refreshes on account ID changes.
 - **Still P1:** Production has not received these changes; direct report moderation column UPDATE grants need a generated forward migration; all Staging negative tests and Android lock-screen checks remain outstanding.
 - No Production migration, deployment, data write or push delivery was performed.
+
+
+## Xendit retirement update — 27 Nov 2026
+Xendit is retired from new YUKU checkout. New payment-route claims and server settlement are limited to manual QRIS and bank transfer. Historical provider enum values and booking/payment records remain readable for compatibility. Legacy pending bookings must be handled through YUKU Support; old payment links must not be reused. The guarded migration `20261127190000_retire_xendit_booking_checkout.sql` is prepared in the canonical branch but has not been applied. Staging replay, payment regression tests, operational secret/callback retirement, and explicit release approval remain required. No Production state was changed.

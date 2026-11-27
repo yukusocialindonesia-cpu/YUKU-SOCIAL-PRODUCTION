@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Loader2, Save, TrendingUp } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../utils/formatters';
@@ -10,6 +10,7 @@ interface AffiliateSettings {
 }
 
 export const AffiliateAdminPanel: React.FC = () => {
+  const loadRequestIdRef = useRef(0);
   const [settings, setSettings] = useState<AffiliateSettings>({
     commission_percent: 10,
     is_enabled: true,
@@ -22,6 +23,7 @@ export const AffiliateAdminPanel: React.FC = () => {
   const [message, setMessage] = useState('');
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true);
     setError('');
     try {
@@ -31,6 +33,7 @@ export const AffiliateAdminPanel: React.FC = () => {
         .eq('id', true)
         .single();
       if (loadError) throw loadError;
+      if (requestId !== loadRequestIdRef.current) return;
       const next = {
         commission_percent: Number(data.commission_percent),
         is_enabled: Boolean(data.is_enabled),
@@ -39,9 +42,10 @@ export const AffiliateAdminPanel: React.FC = () => {
       setSettings(next);
       setPercentInput(String(next.commission_percent));
     } catch (e: any) {
+      if (requestId !== loadRequestIdRef.current) return;
       setError(e?.message || 'Pengaturan Affiliate gagal dimuat.');
     } finally {
-      setLoading(false);
+      if (requestId === loadRequestIdRef.current) setLoading(false);
     }
   }, []);
 

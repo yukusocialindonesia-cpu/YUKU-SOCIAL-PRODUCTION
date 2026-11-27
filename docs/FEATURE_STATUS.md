@@ -45,3 +45,7 @@ PR komunitas dan pemeriksaan build terkait telah digabung/berhasil pada checkpoi
 - Status deployment Production hanya dari hasil GitHub Actions.
 
 Perbarui dokumen ini setiap kali ada perubahan fitur besar atau verifikasi Production baru. Cantumkan bukti dan tanggalnya.
+
+
+## Xendit retirement update — 27 Nov 2026
+Xendit is retired from new YUKU checkout. New payment-route claims and server settlement are limited to manual QRIS and bank transfer. Historical provider enum values and booking/payment records remain readable for compatibility. Legacy pending bookings must be handled through YUKU Support; old payment links must not be reused. The guarded migration `20261127190000_retire_xendit_booking_checkout.sql` is prepared in the canonical branch but has not been applied. Staging replay, payment regression tests, operational secret/callback retirement, and explicit release approval remain required. No Production state was changed.

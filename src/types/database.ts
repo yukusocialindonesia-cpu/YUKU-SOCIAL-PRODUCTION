@@ -174,6 +174,8 @@ export interface TalentServiceRow {
   id: string; // UUID
   talent_id: string; // UUID
   activity_category_id: string;
+  custom_title?: string | null;
+  custom_description?: string | null;
   custom_rate_override: number | null; // BIGINT
   created_at: string;
 }
@@ -193,6 +195,9 @@ export interface TalentAvailabilityRow {
 /** 8. public.bookings */
 export interface BookingRow {
   id: string; // UUID
+  service_id: string | null; // UUID; nullable for historical legacy bookings
+  service_title_snapshot: string | null;
+  service_description_snapshot: string | null;
   booking_code: string;
   customer_id: string; // UUID
   talent_id: string; // UUID
@@ -208,6 +213,7 @@ export interface BookingRow {
   platform_fee_amount: number; // BIGINT (20%)
   talent_gross_share: number; // BIGINT (80%)
   status: BookingStatus;
+  // Legacy Xendit value is retained only for historical record compatibility.
   payment_route: 'xendit' | 'manual_qris' | 'manual_bank_transfer' | null;
   payment_expires_at: string;
   completion_confirmed_at: string | null;

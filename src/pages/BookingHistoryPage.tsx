@@ -26,7 +26,6 @@ import { Modal } from '../components/common/Modal';
 import { BookingChatModal } from '../components/chat/BookingChatModal';
 import { QrisCustomerPaymentPanel } from '../components/booking/QrisCustomerPaymentPanel';
 import { BankTransferCustomerPaymentPanel } from '../components/booking/BankTransferCustomerPaymentPanel';
-import { XenditCustomerPaymentPanel } from '../components/booking/XenditCustomerPaymentPanel';
 import { ReportCategory } from '../types/database';
 import {
   REPORT_CATEGORY_OPTIONS,
@@ -44,6 +43,9 @@ interface BookingItem {
   customer_id: string;
   talent_id: string;
   activity_category_id: string;
+  service_id?: string | null;
+  service_title_snapshot?: string | null;
+  service_description_snapshot?: string | null;
   booking_mode: 'offline' | 'online';
   start_time: string;
   end_time: string;
@@ -55,6 +57,7 @@ interface BookingItem {
   talent_gross_share: number;
   status: string;
   payment_expires_at: string;
+  // Legacy Xendit value remains readable for historical bookings only.
   payment_route: 'xendit' | 'manual_qris' | 'manual_bank_transfer' | null;
   cancellation_reason: string | null;
   customer_completed_at: string | null;
@@ -256,7 +259,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
           talentCity: talent?.city,
           customerName: customer?.display_name || 'Customer YUKU',
           customerAvatar: customer?.avatar_url,
-          activityTitle: categoryMap.get(b.activity_category_id) || b.activity_category_id,
+          activityTitle: b.service_title_snapshot || categoryMap.get(b.activity_category_id) || b.activity_category_id,
           refund: refundMap.has(b.id)
             ? {
                 amount: Number(refundMap.get(b.id).refund_amount),
@@ -910,7 +913,14 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                         </div>
                       </div>
                     )}
-                    {item.payment_route === 'xendit' && <XenditCustomerPaymentPanel bookingId={item.id} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} />}
+                    {item.payment_route === 'xendit' && item.status === 'pending_payment' && (
+                      <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                        <p className="text-xs leading-relaxed text-amber-900">
+                          Metode pembayaran lama ini sudah tidak tersedia. Jangan gunakan tautan pembayaran sebelumnya.
+                          Hubungi Bantuan YUKU agar tim kami membantu menyelesaikan booking ini.
+                        </p>
+                      </div>
+                    )}
                     {item.payment_route === 'manual_qris' && <QrisCustomerPaymentPanel bookingId={item.id} expiresAt={item.payment_expires_at} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} />}
                     {item.payment_route === 'manual_bank_transfer' && <BankTransferCustomerPaymentPanel bookingId={item.id} expiresAt={item.payment_expires_at} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} onRouteClaimed={(route) => setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: route } : b))} />}
                   </div>

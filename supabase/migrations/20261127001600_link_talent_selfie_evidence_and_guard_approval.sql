@@ -1,0 +1,93 @@
+-- Link Customer selfie-with-KTP evidence to the private identity record.
+-- A Talent-only profile is not required to provide Customer selfie evidence.
+-- A multi-profile account with an actual Customer profile must provide it.
+ALTER TABLE public.user_identities
+  ADD COLUMN IF NOT EXISTS selfie_storage_path TEXT;
+
+CREATE OR REPLACE FUNCTION public.require_complete_ktp_evidence_before_verification()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+DECLARE
+  v_has_customer_profile boolean;
+BEGIN
+  IF NEW.ktp_verification_status = 'verified'::public.ktp_status_type
+     AND OLD.ktp_verification_status IS DISTINCT FROM NEW.ktp_verification_status THEN
+    SELECT EXISTS (
+      SELECT 1
+      FROM public.customer_profiles cp
+      WHERE cp.id = NEW.id
+    ) INTO v_has_customer_profile;
+
+    IF NEW.ktp_number IS NULL
+       OR NEW.ktp_number !~ '^[0-9]{16}$'
+       OR NULLIF(trim(COALESCE(NEW.ktp_storage_path, '')), '') IS NULL
+       OR (
+         v_has_customer_profile
+         AND (
+           NULLIF(trim(COALESCE(NEW.selfie_storage_path, '')), '') IS NULL
+           OR NEW.selfie_storage_path = NEW.ktp_storage_path
+         )
+       ) THEN
+      RAISE EXCEPTION 'Verifikasi ditolak: NIK 16 digit dan foto e-KTP wajib tersedia; akun dengan profil Customer juga wajib memiliki selfie terpisah.';
+    END IF;
+
+    IF left(NEW.ktp_storage_path, char_length(NEW.id::text || '/')) <> NEW.id::text || '/' THEN
+      RAISE EXCEPTION 'Verifikasi ditolak: lokasi dokumen KTP tidak sesuai dengan pemilik akun.';
+    END IF;
+
+    IF v_has_customer_profile
+       AND left(NEW.selfie_storage_path, char_length(NEW.id::text || '/')) <> NEW.id::text || '/' THEN
+      RAISE EXCEPTION 'Verifikasi ditolak: lokasi selfie tidak sesuai dengan pemilik akun.';
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$function$;
+
+DROP TRIGGER IF EXISTS trg_require_complete_ktp_evidence
+  ON public.user_identities;
+CREATE TRIGGER trg_require_complete_ktp_evidence
+BEFORE UPDATE OF ktp_verification_status ON public.user_identities
+FOR EACH ROW
+EXECUTE FUNCTION public.require_complete_ktp_evidence_before_verification();
+
+REVOKE ALL ON FUNCTION public.require_complete_ktp_evidence_before_verification()
+  FROM PUBLIC, anon, authenticated;
+
+-- Prevent non-Super-Admin flows from lifting an existing suspension or ban.
+-- The dedicated Super Admin account-management path remains able to do so.
+CREATE OR REPLACE FUNCTION public.prevent_scoped_admin_sanction_override()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+BEGIN
+  IF OLD.account_status IN (
+       'suspended'::public.account_status_type,
+       'banned'::public.account_status_type
+     )
+     AND NEW.account_status IS DISTINCT FROM OLD.account_status
+     AND NOT public.is_super_admin()
+     AND COALESCE(auth.jwt() ->> 'role', '') <> 'service_role'
+     AND session_user NOT IN ('postgres', 'supabase_admin') THEN
+    RAISE EXCEPTION 'Status akun suspended/banned hanya dapat diubah melalui tindakan Super Admin.';
+  END IF;
+
+  RETURN NEW;
+END;
+$function$;
+
+DROP TRIGGER IF EXISTS trg_prevent_scoped_admin_sanction_override
+  ON public.users;
+CREATE TRIGGER trg_prevent_scoped_admin_sanction_override
+BEFORE UPDATE OF account_status ON public.users
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_scoped_admin_sanction_override();
+
+REVOKE ALL ON FUNCTION public.prevent_scoped_admin_sanction_override()
+  FROM PUBLIC, anon, authenticated;

@@ -13,6 +13,25 @@ import { supabase } from '../lib/supabase';
 export type UserRole = 'admin' | 'talent' | 'customer';
 export type AccountStatus = 'pending_verification' | 'active' | 'suspended' | 'banned';
 export type AdminPermission = 'talent' | 'booking' | 'finance' | 'support';
+export type ProviderProfileStatus = 'pending_review' | 'approved' | 'suspended';
+
+export interface MerchantMembership {
+  businessId: string;
+  businessName: string;
+  role: 'owner' | 'manager' | 'staff';
+  status: 'active' | 'invited' | 'suspended';
+}
+
+/** Server-derived capabilities. Legacy users.role remains for older flows during migration. */
+export interface AccountAccessSnapshot {
+  accountStatus: AccountStatus;
+  capabilities: {
+    customer: { available: boolean };
+    talent: { status: 'pending_review' | 'approved' } | null;
+    professionalProvider: { status: ProviderProfileStatus } | null;
+    merchantMemberships: MerchantMembership[];
+  };
+}
 
 export interface AdminAccess {
   adminLevel: 'super_admin' | 'admin';
@@ -29,6 +48,8 @@ interface AuthContextValue {
   adminAccess: AdminAccess | null;
   /** Status akun dari public.users. */
   accountStatus: AccountStatus | null;
+  /** Kapabilitas multi-profile yang dikonfirmasi server; null jika RPC belum tersedia/gagal. */
+  accessSnapshot: AccountAccessSnapshot | null;
   /** true selama sesi DAN role belum selesai dipulihkan. Selama true, jangan render menu apa pun. */
   isAuthLoading: boolean;
   isAuthenticated: boolean;
@@ -44,6 +65,66 @@ const normalizeRole = (value: unknown): UserRole | null =>
 
 const normalizeAccountStatus = (value: unknown): AccountStatus | null =>
   value === 'pending_verification' || value === 'active' || value === 'suspended' || value === 'banned' ? value : null;
+
+const normalizeAccessSnapshot = (value: unknown): AccountAccessSnapshot | null => {
+  if (!value || typeof value !== 'object') return null;
+  const snapshot = value as { accountStatus?: unknown; capabilities?: unknown };
+  const accountStatus = normalizeAccountStatus(snapshot.accountStatus);
+  if (!accountStatus || !snapshot.capabilities || typeof snapshot.capabilities !== 'object') return null;
+  const capabilities = snapshot.capabilities as {
+    customer?: { available?: unknown };
+    talent?: { status?: unknown } | null;
+    professionalProvider?: { status?: unknown } | null;
+    merchantMemberships?: unknown;
+  };
+  const talentStatus = capabilities.talent?.status;
+  const professionalStatus = capabilities.professionalProvider?.status;
+  const merchantMemberships = Array.isArray(capabilities.merchantMemberships)
+    ? capabilities.merchantMemberships.flatMap((item): MerchantMembership[] => {
+        if (!item || typeof item !== 'object') return [];
+        const membership = item as Record<string, unknown>;
+        if (
+          typeof membership.businessId !== 'string' ||
+          typeof membership.businessName !== 'string' ||
+          !['owner', 'manager', 'staff'].includes(String(membership.role)) ||
+          !['active', 'invited', 'pending_invitation', 'suspended'].includes(String(membership.status))
+        ) return [];
+        return [{
+          businessId: membership.businessId,
+          businessName: membership.businessName,
+          role: membership.role as MerchantMembership['role'],
+          status: membership.status === 'pending_invitation'
+            ? 'invited'
+            : membership.status as MerchantMembership['status'],
+        }];
+      })
+    : [];
+  return {
+    accountStatus,
+    capabilities: {
+      customer: { available: capabilities.customer?.available === true },
+      talent: talentStatus === 'approved' || talentStatus === 'pending_review'
+        ? { status: talentStatus }
+        : null,
+      professionalProvider: professionalStatus === 'approved' || professionalStatus === 'pending_review' || professionalStatus === 'suspended'
+        ? { status: professionalStatus }
+        : null,
+      merchantMemberships,
+    },
+  };
+};
+
+async function fetchAccessSnapshot(): Promise<AccountAccessSnapshot | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_my_account_access_snapshot');
+    if (error) throw error;
+    return normalizeAccessSnapshot(data);
+  } catch (error) {
+    // Compatibility window: legacy role-based navigation remains until the RPC migration is deployed.
+    console.warn('YUKU: snapshot multi-profile belum tersedia', error);
+    return null;
+  }
+}
 
 const normalizeAdminAccess = (value: unknown): AdminAccess | null => {
   if (!value || typeof value !== 'object') return null;
@@ -71,7 +152,7 @@ async function fetchAdminAccess(): Promise<AdminAccess | null> {
   }
 }
 
-async function fetchUserAccess(userId: string): Promise<{ role: UserRole | null; accountStatus: AccountStatus | null; verified: boolean }> {
+async function fetchUserAccess(userId: string): Promise<{ role: UserRole | null; accountStatus: AccountStatus | null; accessSnapshot: AccountAccessSnapshot | null; verified: boolean }> {
   try {
     const { data, error } = await supabase
       .from('users')
@@ -79,16 +160,18 @@ async function fetchUserAccess(userId: string): Promise<{ role: UserRole | null;
       .eq('id', userId)
       .maybeSingle();
     if (error) throw error;
+    const accessSnapshot = await fetchAccessSnapshot();
     return {
       role: normalizeRole(data?.role),
       accountStatus: normalizeAccountStatus(data?.account_status),
+      accessSnapshot,
       verified: true,
     };
   } catch (error) {
     console.error('YUKU: gagal memverifikasi status dan role pengguna', error);
     // Gangguan jaringan/database bukan bukti bahwa akun dinonaktifkan.
     // Pertahankan sesi autentikasi, tetapi cabut akses berbasis role sampai verifikasi berhasil.
-    return { role: null, accountStatus: null, verified: false };
+    return { role: null, accountStatus: null, accessSnapshot: null, verified: false };
   }
 }
 
@@ -101,14 +184,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [role, setRole] = useState<UserRole | null>(null);
   const [adminAccess, setAdminAccess] = useState<AdminAccess | null>(null);
   const [accountStatus, setAccountStatus] = useState<AccountStatus | null>(null);
+  const [accessSnapshot, setAccessSnapshot] = useState<AccountAccessSnapshot | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Menghindari state usang saat dua pemuatan role bertumpuk.
   const requestIdRef = useRef(0);
   const currentUserIdRef = useRef<string | null>(null);
+  // Mencegah hasil getSession() awal yang terlambat menimpa event auth yang lebih baru.
+  const authEventVersionRef = useRef(0);
 
   const applySession = useCallback(async (nextUser: User | null, forceRoleReload = false) => {
     const requestId = ++requestIdRef.current;
+    const authEventVersion = authEventVersionRef.current;
 
     if (!nextUser) {
       currentUserIdRef.current = null;
@@ -116,6 +203,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setRole(null);
       setAdminAccess(null);
       setAccountStatus(null);
+      setAccessSnapshot(null);
       setIsAuthLoading(false);
       return;
     }
@@ -133,29 +221,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!sameUser) setIsAuthLoading(true);
 
     const nextAccess = await fetchUserAccess(nextUser.id);
-    if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+    if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return;
 
     if (!nextAccess.verified) {
       setUser(nextUser);
       setRole(null);
       setAdminAccess(null);
       setAccountStatus(null);
+      setAccessSnapshot(null);
       setIsAuthLoading(false);
       return;
     }
 
     const nextRole = nextAccess.role;
     const nextAdminAccess = nextRole === 'admin' ? await fetchAdminAccess() : null;
-    if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+    if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return;
 
     if (nextAccess.accountStatus !== 'active' && nextAccess.accountStatus !== 'pending_verification') {
       // Tolak sesi jika akun dibatasi, record tidak ada, atau status gagal diverifikasi.
       await supabase.auth.signOut({ scope: 'global' });
+      if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return;
       currentUserIdRef.current = null;
       setUser(null);
       setRole(null);
       setAdminAccess(null);
       setAccountStatus(nextAccess.accountStatus);
+      setAccessSnapshot(null);
       setIsAuthLoading(false);
       return;
     }
@@ -164,21 +255,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setRole(nextRole);
     setAdminAccess(nextAdminAccess);
     setAccountStatus(nextAccess.accountStatus);
+    setAccessSnapshot(nextAccess.accessSnapshot);
     setIsAuthLoading(false);
   }, []);
 
   useEffect(() => {
     let isMounted = true;
 
-    // Pemulihan awal dari localStorage.
+    // Pemulihan awal dari localStorage. Event auth yang lebih baru membatalkan snapshot ini.
+    const initialAuthEventVersion = authEventVersionRef.current;
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
-        if (isMounted) void applySession(session?.user ?? null);
+        if (isMounted && authEventVersionRef.current === initialAuthEventVersion) {
+          void applySession(session?.user ?? null);
+        }
       })
       .catch((error) => {
         console.error('YUKU: gagal memulihkan sesi', error);
-        if (isMounted) void applySession(null);
+        if (isMounted && authEventVersionRef.current === initialAuthEventVersion) {
+          void applySession(null);
+        }
       });
 
     // Perubahan berikutnya (login, logout, refresh token).
@@ -187,10 +284,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') return; // sudah ditangani getSession()
+      if (event === 'INITIAL_SESSION') return; // pemulihan awal ditangani getSession()
+      authEventVersionRef.current += 1;
       window.setTimeout(() => {
         if (!isMounted) return;
-        void applySession(session?.user ?? null, event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED');
+        void applySession(session?.user ?? null, event === 'USER_UPDATED');
       }, 0);
     });
 
@@ -198,8 +296,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Ini membuat perubahan izin/nonaktif Admin segera tercermin tanpa harus logout.
     const handleWindowFocus = () => {
       if (!isMounted) return;
+      const authEventVersion = authEventVersionRef.current;
       void supabase.auth.getSession().then(({ data: { session } }) => {
-        if (isMounted) void applySession(session?.user ?? null, true);
+        if (isMounted && authEventVersionRef.current === authEventVersion) {
+          void applySession(session?.user ?? null, true);
+        }
       }).catch((error) => {
         console.error('YUKU: gagal memperbarui izin Admin saat aplikasi aktif', error);
       });
@@ -219,7 +320,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [applySession]);
 
   const refreshRole = useCallback(async () => {
+    const authEventVersion = authEventVersionRef.current;
     const { data: { session } } = await supabase.auth.getSession();
+    if (authEventVersionRef.current !== authEventVersion) return;
     await applySession(session?.user ?? null, true);
   }, [applySession]);
 
@@ -229,12 +332,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role,
       adminAccess,
       accountStatus,
+      accessSnapshot,
       isAuthLoading,
       isAuthenticated: Boolean(user),
       signOut,
       refreshRole,
     }),
-    [user, role, adminAccess, accountStatus, isAuthLoading, signOut, refreshRole],
+    [user, role, adminAccess, accountStatus, accessSnapshot, isAuthLoading, signOut, refreshRole],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

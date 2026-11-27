@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Clock, Loader2, RefreshCw, Upload, XCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../utils/formatters';
 
 export const QrisAdminPanel: React.FC = () => {
+  const loadRequestIdRef = useRef(0);
   const [config, setConfig] = useState<any>(null); const [rows, setRows] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null); const [merchant, setMerchant] = useState(''); const [identifier, setIdentifier] = useState('');
   const [instructions, setInstructions] = useState('Scan QRIS, bayar sesuai nominal, lalu unggah bukti pembayaran.');
@@ -11,6 +12,7 @@ export const QrisAdminPanel: React.FC = () => {
   const [dialog, setDialog] = useState<{ row: any; approve: boolean } | null>(null); const [dialogNotes, setDialogNotes] = useState(''); const [dialogRef, setDialogRef] = useState(''); const [dialogError, setDialogError] = useState('');
   const [active, setActive] = useState(false); const [busy, setBusy] = useState(false); const [loading, setLoading] = useState(false); const [loadError, setLoadError] = useState(''); const [message, setMessage] = useState(''); const [error, setError] = useState('');
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     const db = supabase as any;
     setLoading(true);
     try {
@@ -20,6 +22,7 @@ export const QrisAdminPanel: React.FC = () => {
       ]);
       if (cfgResult.error) throw cfgResult.error;
       if (submissionsResult.error) throw submissionsResult.error;
+      if (requestId !== loadRequestIdRef.current) return;
       const cfg = cfgResult.data;
       const submissions = submissionsResult.data || [];
       const ids = Array.from(new Set(submissions.map((r: any) => r.booking_id)));
@@ -27,15 +30,17 @@ export const QrisAdminPanel: React.FC = () => {
       if (ids.length > 0) {
         const { data: bks, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
         if (statusError) throw statusError;
+        if (requestId !== loadRequestIdRef.current) return;
         (bks || []).forEach((b: any) => { map[b.id] = b.status; });
       }
       setConfig(cfg); setRows(submissions); setBookingStatus(map);
       if (cfg) { setMerchant(cfg.merchant_name || ''); setIdentifier(cfg.merchant_identifier || ''); setInstructions(cfg.instructions || ''); setActive(!!cfg.is_active); }
       setLoadError('');
     } catch (e: any) {
+      if (requestId !== loadRequestIdRef.current) return;
       setLoadError(e?.message || 'Gagal memuat data QRIS. Periksa koneksi dan coba muat ulang.');
     } finally {
-      setLoading(false);
+      if (requestId === loadRequestIdRef.current) setLoading(false);
     }
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -82,11 +87,11 @@ export const QrisAdminPanel: React.FC = () => {
       <div><h3 className="font-extrabold text-slate-900">Pengaturan QRIS</h3><p className="text-xs text-slate-500">Admin dapat mengganti gambar kapan saja. Setiap gambar memakai path versi baru agar catatan lama tidak berubah.</p></div>
       {imageUrl && <img src={imageUrl} alt="QRIS aktif" className="max-h-64 max-w-full rounded-xl border border-slate-200 bg-white object-contain p-2" />}
       <label className="block text-xs font-bold">Ganti gambar QRIS (opsional)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => setFile(e.target.files?.[0] || null)} className="mt-1 block w-full text-xs" /></label>
-      <label className="block text-xs font-bold">Nama merchant<input value={merchant} onChange={e => setMerchant(e.target.value)} maxLength={120} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
-      <label className="block text-xs font-bold">ID merchant / NMID<input value={identifier} onChange={e => setIdentifier(e.target.value)} maxLength={120} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
-      <label className="block text-xs font-bold">Instruksi pembayaran<textarea value={instructions} onChange={e => setInstructions(e.target.value)} maxLength={500} rows={2} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
+      <label className="block text-xs font-bold">Nama merchant<input value={merchant} onChange={e => setMerchant(e.target.value)} maxLength={120} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
+      <label className="block text-xs font-bold">ID merchant / NMID<input value={identifier} onChange={e => setIdentifier(e.target.value)} maxLength={120} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
+      <label className="block text-xs font-bold">Instruksi pembayaran<textarea value={instructions} onChange={e => setInstructions(e.target.value)} maxLength={500} rows={2} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
       <label className="flex items-center gap-2 text-xs font-bold"><input type="checkbox" checked={active} onChange={e => setActive(e.target.checked)} /> Aktifkan QRIS untuk Customer</label>
-      <button onClick={save} disabled={busy || (active && !file && !config?.image_path)} className="inline-flex items-center gap-2 min-h-11 rounded-xl bg-purple-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Simpan Pengaturan QRIS</button>
+      <button onClick={save} disabled={busy || (active && !file && !config?.image_path)} className="inline-flex items-center gap-2 rounded-xl bg-purple-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Simpan Pengaturan QRIS</button>
     </section>
     {message && <p className="rounded-lg bg-emerald-50 p-3 text-xs text-emerald-800">{message}</p>}{error && <p className="rounded-lg bg-rose-50 p-3 text-xs text-rose-800">{error}</p>}{loadError && <div role="alert" className="rounded-lg bg-rose-50 p-3 text-xs text-rose-800">Gagal memuat data QRIS: {loadError} <button type="button" onClick={load} disabled={loading} className="ml-2 font-bold underline">Coba lagi</button></div>}
     <section className="space-y-3"><div className="flex items-center justify-between"><h3 className="font-extrabold text-slate-900">Bukti Menunggu Verifikasi ({actionableRows.length})</h3><button onClick={load} disabled={loading} className="inline-flex items-center gap-1 text-xs font-bold text-purple-700 disabled:opacity-50"><RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> {loading ? 'Memuat...' : 'Muat ulang'}</button></div>
@@ -102,12 +107,12 @@ export const QrisAdminPanel: React.FC = () => {
       <div className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl" onClick={e => e.stopPropagation()}>
         <h4 className="text-base font-extrabold text-slate-900">{dialog.approve ? 'Verifikasi & Setujui Pembayaran' : 'Tolak Bukti Pembayaran'}</h4>
         <p className="text-xs text-slate-500">Nominal: <strong>{formatRupiah(Number(dialog.row.claimed_amount))}</strong>{dialog.approve ? ' — pastikan dana benar-benar sudah masuk di akun merchant/bank.' : ''}</p>
-        <label className="block text-xs font-bold text-slate-700">{dialog.approve ? 'Catatan verifikasi (wajib)' : 'Alasan penolakan (wajib)'}<textarea value={dialogNotes} onChange={e => setDialogNotes(e.target.value)} rows={3} maxLength={500} className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal" /></label>
-        {dialog.approve && <label className="block text-xs font-bold text-slate-700">Referensi transaksi di akun merchant/bank (wajib)<input value={dialogRef} onChange={e => setDialogRef(e.target.value)} maxLength={100} className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal" /></label>}
+        <label className="block text-xs font-bold text-slate-700">{dialog.approve ? 'Catatan verifikasi (wajib)' : 'Alasan penolakan (wajib)'}<textarea value={dialogNotes} onChange={e => setDialogNotes(e.target.value)} rows={3} maxLength={500} className="mt-1 w-full rounded-lg border border-slate-300 p-2 font-normal" /></label>
+        {dialog.approve && <label className="block text-xs font-bold text-slate-700">Referensi transaksi di akun merchant/bank (wajib)<input value={dialogRef} onChange={e => setDialogRef(e.target.value)} maxLength={100} className="mt-1 w-full rounded-lg border border-slate-300 p-2 font-normal" /></label>}
         {dialogError && <p className="rounded-lg bg-rose-50 p-2 text-xs text-rose-800">{dialogError}</p>}
         <div className="flex justify-end gap-2 pt-1">
-          <button type="button" onClick={closeDialog} disabled={busy} className="min-h-11 rounded-lg border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">Batal</button>
-          <button type="button" onClick={confirmDialog} disabled={busy} className={`inline-flex items-center gap-1 min-h-11 rounded-lg px-4 py-2 text-xs font-bold text-white disabled:opacity-50 ${dialog.approve ? 'bg-emerald-600' : 'bg-rose-600'}`}>{busy && <Loader2 className="h-4 w-4 animate-spin" />}{dialog.approve ? 'Setujui' : 'Tolak'}</button>
+          <button type="button" onClick={closeDialog} disabled={busy} className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">Batal</button>
+          <button type="button" onClick={confirmDialog} disabled={busy} className={`inline-flex items-center gap-1 rounded-lg px-4 py-2 text-xs font-bold text-white disabled:opacity-50 ${dialog.approve ? 'bg-emerald-600' : 'bg-rose-600'}`}>{busy && <Loader2 className="h-4 w-4 animate-spin" />}{dialog.approve ? 'Setujui' : 'Tolak'}</button>
         </div>
       </div>
     </div>}
@@ -135,5 +140,5 @@ const QrisReviewCard: React.FC<{ row: any; busy: boolean; onReview: (row: any, a
       });
     return () => { alive = false; };
   }, [row.proof_storage_path]);
-  return <article className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2 text-xs"><div className="flex flex-wrap items-center justify-between gap-2"><strong>Booking: {row.booking_id}</strong><span className="inline-flex items-center gap-1 text-amber-700"><Clock className="h-3.5 w-3.5" /> Menunggu</span></div><p>Nominal: <strong>{formatRupiah(Number(row.claimed_amount))}</strong></p>{row.transfer_reference && <p>Referensi Customer: {row.transfer_reference}</p>}{url && <a href={url} target="_blank" rel="noreferrer" className="inline-block text-purple-700 underline">Lihat bukti pembayaran</a>}{proofError && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-rose-700">Bukti tidak dapat dimuat: {proofError}</p>}{!url && !proofError && <p className="text-slate-500">Memuat tautan bukti pembayaran...</p>}{inactiveStatus ? <p className="rounded-lg bg-slate-100 p-2 text-slate-600">Status booking: <strong>{inactiveStatus}</strong> — tidak bisa diverifikasi.</p> : <div className="flex flex-wrap gap-2 pt-2"><button disabled={busy} onClick={() => onReview(row, true)} className="inline-flex items-center gap-1 min-h-11 rounded-lg bg-emerald-600 px-3 py-2 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Verifikasi & Setujui</button><button disabled={busy} onClick={() => onReview(row, false)} className="inline-flex items-center gap-1 min-h-11 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tolak Bukti</button></div>}</article>;
+  return <article className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2 text-xs"><div className="flex flex-wrap items-center justify-between gap-2"><strong>Booking: {row.booking_id}</strong><span className="inline-flex items-center gap-1 text-amber-700"><Clock className="h-3.5 w-3.5" /> Menunggu</span></div><p>Nominal: <strong>{formatRupiah(Number(row.claimed_amount))}</strong></p>{row.transfer_reference && <p>Referensi Customer: {row.transfer_reference}</p>}{url && <a href={url} target="_blank" rel="noreferrer" className="inline-block text-purple-700 underline">Lihat bukti pembayaran</a>}{proofError && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-rose-700">Bukti tidak dapat dimuat: {proofError}</p>}{!url && !proofError && <p className="text-slate-500">Memuat tautan bukti pembayaran...</p>}{inactiveStatus ? <p className="rounded-lg bg-slate-100 p-2 text-slate-600">Status booking: <strong>{inactiveStatus}</strong> — tidak bisa diverifikasi.</p> : <div className="flex flex-wrap gap-2 pt-2"><button disabled={busy} onClick={() => onReview(row, true)} className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Verifikasi & Setujui</button><button disabled={busy} onClick={() => onReview(row, false)} className="inline-flex items-center gap-1 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tolak Bukti</button></div>}</article>;
 };

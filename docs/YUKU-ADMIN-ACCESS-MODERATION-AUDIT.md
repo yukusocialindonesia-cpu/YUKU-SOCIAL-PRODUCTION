@@ -70,3 +70,7 @@ The intended path is the `admin_resolve_report(uuid, report_status_type, text, b
 ## Change boundary
 
 No Production DDL/DML, migration, RLS policy, grant, account, Admin permission, Edge Function, setting, deployment or PR merge was performed. This document records a read-only audit and the confirmed remediation requirement.
+
+
+## Canonical branch update — 28 Nov 2026
+The forward migration `20261127191000_revoke_direct_report_moderation_updates.sql` removes direct app-role UPDATE and the Support UPDATE policy. The audited SECURITY DEFINER RPC remains the intended moderation write path. Stage C C17–C18 check the privilege boundary and RPC contract. Source-only; Staging replay and direct REST negative tests remain outstanding.

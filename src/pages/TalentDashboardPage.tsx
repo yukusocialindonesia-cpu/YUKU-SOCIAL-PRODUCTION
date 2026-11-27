@@ -119,6 +119,9 @@ interface TalentBookingItem {
   customer_id: string;
   talent_id: string;
   activity_category_id: string;
+  service_id?: string | null;
+  service_title_snapshot?: string | null;
+  service_description_snapshot?: string | null;
   booking_mode: 'offline' | 'online';
   start_time: string;
   end_time: string;
@@ -223,6 +226,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   const [talentServices, setTalentServices] = useState<any[]>([]);
   const [serviceCategories, setServiceCategories] = useState<any[]>([]);
   const [newServiceCategoryId, setNewServiceCategoryId] = useState('');
+  const [newServiceTitle, setNewServiceTitle] = useState('');
+  const [newServiceDescription, setNewServiceDescription] = useState('');
   const [newServiceRate, setNewServiceRate] = useState('');
   const [requestedDisplayName, setRequestedDisplayName] = useState('');
   const [identityChangeRequests, setIdentityChangeRequests] = useState<any[]>([]);
@@ -384,32 +389,54 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
       }
 
       // 3. Fetch Bookings for this Talent
-      const { data: bookingRows, error: bookingErr } = await supabase
+      const legacyBookingSelect = `
+        id,
+        booking_code,
+        customer_id,
+        talent_id,
+        activity_category_id,
+        booking_mode,
+        start_time,
+        end_time,
+        duration_hours,
+        meeting_location_name,
+        meeting_location_address,
+        gross_amount,
+        platform_fee_amount,
+        talent_gross_share,
+        status,
+        payment_expires_at,
+        cancellation_reason,
+        customer_completed_at,
+        talent_completed_at,
+        created_at
+      `;
+      let bookingRows: any[] | null = null;
+      let bookingErr: any = null;
+      const bookingResult = await supabase
         .from('bookings')
         .select(`
-          id,
-          booking_code,
-          customer_id,
-          talent_id,
-          activity_category_id,
-          booking_mode,
-          start_time,
-          end_time,
-          duration_hours,
-          meeting_location_name,
-          meeting_location_address,
-          gross_amount,
-          platform_fee_amount,
-          talent_gross_share,
-          status,
-          payment_expires_at,
-          cancellation_reason,
-          customer_completed_at,
-          talent_completed_at,
-          created_at
+          ${legacyBookingSelect},
+          service_id,
+          service_title_snapshot,
+          service_description_snapshot
         `)
         .eq('talent_id', userId)
         .order('created_at', { ascending: false });
+      bookingRows = bookingResult.data;
+      bookingErr = bookingResult.error;
+
+      // Keep the provider dashboard compatible with environments where migration 40
+      // has not yet been applied (for example, the current production preview DB).
+      if (bookingErr && ['42703', 'PGRST204'].includes(bookingErr.code)) {
+        const legacyResult = await supabase
+          .from('bookings')
+          .select(legacyBookingSelect)
+          .eq('talent_id', userId)
+          .order('created_at', { ascending: false });
+        bookingRows = legacyResult.data;
+        bookingErr = legacyResult.error;
+      }
 
       if (bookingErr) {
         console.warn('Gagal membaca pesanan talent:', bookingErr.message);
@@ -446,7 +473,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           return {
             ...b,
             customer_name: customerMap.get(b.customer_id) || 'Customer YUKU',
-            activity_title: categoryMap.get(b.activity_category_id) || 'Pendamping Aktivitas',
+            activity_title: b.service_title_snapshot || categoryMap.get(b.activity_category_id) || 'Pendamping Aktivitas',
             report: rep
               ? {
                   id: rep.id,
@@ -527,7 +554,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
       setAvailabilitySlots((availabilityRows as TalentAvailabilityRow[]) || []);
 
       const [{ data: serviceRows, error: serviceError }, { data: categoryRows }, { data: nameRequests }] = await Promise.all([
-        supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,is_active,review_note,created_at').eq('talent_id', userId).order('created_at', { ascending: false }),
+        supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_title,custom_description,custom_rate_override,approval_status,is_active,review_note,created_at').eq('talent_id', userId).order('created_at', { ascending: false }),
         supabase.from('activity_categories').select('id,title,is_active').eq('is_active', true).order('title'),
         supabase.from('talent_identity_change_requests').select('id,field_name,old_value,requested_value,status,review_note,created_at').eq('talent_id', userId).order('created_at', { ascending: false }).limit(10),
       ]);
@@ -941,18 +968,23 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
   const handleRequestNewService = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser || !newServiceCategoryId) return;
+    if (newServiceTitle.trim().length < 3 || newServiceTitle.trim().length > 80) { setErrorMessage('Nama layanan harus 3–80 karakter.'); return; }
+    if (newServiceDescription.trim().length < 10 || newServiceDescription.trim().length > 500) { setErrorMessage('Deskripsi layanan harus 10–500 karakter.'); return; }
     const rate = newServiceRate.trim() ? Number(newServiceRate) : null;
     if (rate !== null && (!Number.isFinite(rate) || rate < 50000)) {
       setErrorMessage('Tarif khusus minimal Rp50.000.'); return;
     }
     setIsSubmittingAction(true); setErrorMessage(null);
     try {
-      const { error } = await supabase.rpc('request_talent_service', {
-        p_activity_category_id: newServiceCategoryId, p_custom_rate_override: rate,
+      const { error } = await supabase.rpc('request_talent_service_custom', {
+        p_activity_category_id: newServiceCategoryId,
+        p_custom_title: newServiceTitle.trim(),
+        p_custom_description: newServiceDescription.trim(),
+        p_custom_rate_override: rate,
       });
       if (error) throw error;
       setSuccessMessage('Pengajuan layanan terkirim dan menunggu persetujuan Admin.');
-      setNewServiceCategoryId(''); setNewServiceRate('');
+      setNewServiceCategoryId(''); setNewServiceTitle(''); setNewServiceDescription(''); setNewServiceRate('');
       await loadDashboardData(currentUser.id);
     } catch (err: any) { setErrorMessage(err?.message || 'Gagal mengajukan layanan.'); }
     finally { setIsSubmittingAction(false); }
@@ -2591,8 +2623,8 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   <Plus className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Tambah layanan</h3>
-                  <p className="text-[11px] text-slate-500">Ajukan kategori layanan yang ingin kamu tawarkan.</p>
+                  <h3 className="text-sm font-bold text-slate-900">Tambah layanan versi kamu</h3>
+                  <p className="text-[11px] text-slate-500">Pilih kategori YUKU, lalu tulis nama dan detail layanan yang kamu tawarkan.</p>
                 </div>
               </div>
 
@@ -2611,6 +2643,18 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   ))}
                 </select>
                 <p className="text-[11px] text-slate-500">Kategori yang sedang diajukan atau sudah disetujui tidak akan muncul lagi.</p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="talent-service-title" className="block text-xs font-semibold text-slate-700">Nama layanan</label>
+                <input id="talent-service-title" required minLength={3} maxLength={80} value={newServiceTitle} onChange={(e) => setNewServiceTitle(e.target.value)} placeholder="Contoh: Teman city walk dan eksplorasi kuliner" className="min-h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100" />
+                <p className="text-[11px] text-slate-500">3–80 karakter. Tulis secara spesifik apa yang kamu tawarkan.</p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="talent-service-description" className="block text-xs font-semibold text-slate-700">Deskripsi layanan</label>
+                <textarea id="talent-service-description" required minLength={10} maxLength={500} rows={3} value={newServiceDescription} onChange={(e) => setNewServiceDescription(e.target.value)} placeholder="Jelaskan aktivitas, cakupan pendampingan, dan hal yang termasuk dalam layanan." className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100" />
+                <p className="text-[11px] text-slate-500">10–500 karakter. Hindari klaim keahlian profesional jika layananmu berupa Paid Companion.</p>
               </div>
 
               <div className="space-y-1.5">
@@ -2633,7 +2677,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
               <button
                 type="submit"
-                disabled={isSubmittingAction || !newServiceCategoryId}
+                disabled={isSubmittingAction || !newServiceCategoryId || newServiceTitle.trim().length < 3 || newServiceDescription.trim().length < 10}
                 className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-purple-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmittingAction ? <><Loader2 className="h-4 w-4 animate-spin" /> Mengirim pengajuan...</> : <><Plus className="h-4 w-4" /> Kirim untuk persetujuan Admin</>}
@@ -2670,7 +2714,9 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   <div key={service.id} className="rounded-[24px] border border-white bg-white/95 p-4 shadow-[0_10px_26px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/70">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h4 className="break-words text-sm font-bold leading-snug text-slate-900">{category?.title || service.activity_category_id}</h4>
+                        <h4 className="break-words text-sm font-bold leading-snug text-slate-900">{service.custom_title || category?.title || service.activity_category_id}</h4>
+                        {service.custom_title && <p className="mt-1 text-[11px] font-medium text-purple-700">{category?.title || service.activity_category_id}</p>}
+                        {service.custom_description && <p className="mt-2 text-xs leading-relaxed text-slate-600">{service.custom_description}</p>}
                         <p className="mt-1.5 text-xs text-slate-500">Tarif: <span className="font-semibold text-slate-700">{service.custom_rate_override ? formatRupiah(service.custom_rate_override) : 'Mengikuti tarif profil'}</span></p>
                       </div>
                       <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold leading-tight ${statusClass}`}>{statusLabel}</span>

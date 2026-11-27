@@ -69,6 +69,7 @@ interface TalentCurationItem {
   date_of_birth?: string;
   ktp_number?: string | null;
   ktp_storage_path?: string | null;
+  selfie_storage_path?: string | null;
   ktp_verification_status?: string;
   ktp_rejection_reason?: string | null;
   emergency_contact_phone?: string | null;
@@ -175,6 +176,7 @@ interface CustomerKtpItem {
   date_of_birth: string;
   ktp_number: string | null;
   ktp_storage_path: string | null;
+  selfie_storage_path: string | null;
   ktp_verification_status: 'unsubmitted' | 'pending_review' | 'verified' | 'rejected';
   ktp_rejection_reason: string | null;
   emergency_contact_phone: string | null;
@@ -303,7 +305,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         const [{ data: identityRows }, { data: userRows }] = talentIds.length
           ? await Promise.all([
               supabase.from('user_identities')
-                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,selfie_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
                 .in('id', talentIds),
               supabase.rpc('get_admin_user_summaries', { p_user_ids: talentIds }),
             ])
@@ -324,6 +326,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             date_of_birth: idRecord?.date_of_birth,
             ktp_number: idRecord?.ktp_number,
             ktp_storage_path: idRecord?.ktp_storage_path,
+            selfie_storage_path: idRecord?.selfie_storage_path,
             ktp_verification_status: ktpStatus,
             ktp_rejection_reason: idRecord?.ktp_rejection_reason,
             emergency_contact_phone: idRecord?.emergency_contact_phone,
@@ -340,9 +343,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           { data: approvedServices },
           { data: serviceHistory },
         ] = await Promise.all([
-          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,created_at').eq('approval_status', 'pending').order('created_at', { ascending: true }),
+          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_title,custom_description,custom_rate_override,approval_status,created_at').eq('approval_status', 'pending').order('created_at', { ascending: true }),
           supabase.from('talent_identity_change_requests').select('id,talent_id,field_name,old_value,requested_value,created_at').eq('status', 'pending').order('created_at', { ascending: true }),
-          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_rate_override,approval_status,is_active,updated_at').eq('approval_status', 'approved').order('updated_at', { ascending: false }).limit(100),
+          supabase.from('talent_services').select('id,talent_id,activity_category_id,custom_title,custom_description,custom_rate_override,approval_status,is_active,updated_at').eq('approval_status', 'approved').order('updated_at', { ascending: false }).limit(100),
           supabase.from('talent_service_change_log').select('id,talent_id,change_type,old_value,new_value,created_at').order('created_at', { ascending: false }).limit(30),
         ]);
         if (serviceRequestError) console.warn('Gagal membaca antrean layanan Talent:', serviceRequestError.message);
@@ -807,11 +810,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const handleViewCustomerKtp = async (item: {
     id: string;
     ktp_storage_path: string | null;
+    evidencePath?: string | null;
+    evidenceLabel?: string;
     full_legal_name?: string | null;
     display_name?: string | null;
   }) => {
-    if (!item.ktp_storage_path) {
-      setErrorMessage('Foto KTP belum diunggah oleh pengguna ini.');
+    const evidencePath = item.evidencePath ?? item.ktp_storage_path;
+    if (!evidencePath) {
+      setErrorMessage('Berkas identitas belum diunggah oleh pengguna ini.');
       return;
     }
 
@@ -820,15 +826,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     try {
       const { data, error } = await supabase.storage
         .from('ktp-documents')
-        .createSignedUrl(item.ktp_storage_path, 300);
+        .createSignedUrl(evidencePath, 300);
 
       if (error || !data?.signedUrl) {
-        throw new Error(error?.message || 'Tautan foto KTP tidak berhasil dibuat.');
+        throw new Error(error?.message || 'Tautan berkas identitas tidak berhasil dibuat.');
       }
 
       setSelectedCustomerKtpImage({
         url: data.signedUrl,
-        name: item.full_legal_name || item.display_name || 'Pengguna YUKU',
+        name: `${item.full_legal_name || item.display_name || 'Pengguna YUKU'} — ${item.evidenceLabel || 'Foto KTP'}`,
       });
     } catch (err: any) {
       setErrorMessage(`Foto KTP tidak dapat dibuka: ${err?.message || 'Terjadi kesalahan'}`);
@@ -1432,6 +1438,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           )}
           {isSuperAdmin && (
           <button
+            type="button"
+            onClick={() => onNavigate('/admin/merchant-partners')}
+            className="h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 sm:h-24 sm:w-24"
+          >
+            <Building className="h-7 w-7 text-amber-600" />
+            <span className="text-[10px] font-semibold sm:text-[11px]">Review Merchant</span>
+          </button>
+          )}
+          {isSuperAdmin && (
+          <button
             onClick={() => setActiveTab('branding')}
             className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${
               activeTab === 'branding' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
@@ -1496,11 +1512,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           <div className="space-y-6">
             <section className="space-y-3">
               <div><h3 className="text-sm font-black text-slate-900">Pengajuan layanan baru</h3><p className="text-xs text-slate-500">Layanan baru belum tampil di katalog dan belum bisa dibooking sampai disetujui.</p></div>
-              {pendingTalentServices.length === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">Tidak ada pengajuan layanan yang menunggu.</div> : pendingTalentServices.map((r) => <div key={r.id} className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><div className="font-bold text-sm text-slate-900">{r.category_title}</div><div className="text-xs text-slate-600">{r.talent_name} · {r.talent_city}</div><div className="text-xs text-slate-500 mt-1">Tarif khusus: {r.custom_rate_override ? formatRupiah(r.custom_rate_override) : 'Mengikuti tarif profil'}</div><div className="text-[10px] text-slate-400">Diajukan: {new Date(r.created_at).toLocaleString('id-ID')}</div></div><div className="grid grid-cols-2 sm:flex gap-2"><button onClick={() => handleTalentServiceReview(r.id,'approved')} className="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">Setujui</button><button onClick={() => handleTalentServiceReview(r.id,'rejected')} className="rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-800">Tolak</button></div></div>)}
+              {pendingTalentServices.length === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">Tidak ada pengajuan layanan yang menunggu.</div> : pendingTalentServices.map((r) => <div key={r.id} className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><div className="font-bold text-sm text-slate-900">{r.custom_title || r.category_title}</div><div className="text-[11px] font-semibold text-purple-700">Kategori: {r.category_title}</div><div className="text-xs text-slate-600">{r.talent_name} · {r.talent_city}</div>{r.custom_description && <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-600">{r.custom_description}</p>}<div className="text-xs text-slate-500 mt-1">Tarif khusus: {r.custom_rate_override ? formatRupiah(r.custom_rate_override) : 'Mengikuti tarif profil'}</div><div className="text-[10px] text-slate-400">Diajukan: {new Date(r.created_at).toLocaleString('id-ID')}</div></div><div className="grid grid-cols-2 sm:flex gap-2"><button onClick={() => handleTalentServiceReview(r.id,'approved')} className="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">Setujui</button><button onClick={() => handleTalentServiceReview(r.id,'rejected')} className="rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-800">Tolak</button></div></div>)}
             </section>
             <section className="space-y-3">
               <div><h3 className="text-sm font-black text-slate-900">Layanan aktif yang dapat dinonaktifkan</h3><p className="text-xs text-slate-500">Admin dapat menonaktifkan layanan yang melanggar kebijakan. Talent tidak dapat mengaktifkannya kembali sendiri.</p></div>
-              {approvedTalentServices.map((r) => <div key={r.id} className="rounded-xl border border-slate-200 bg-white p-3 flex items-start sm:items-center justify-between gap-3"><div><div className="text-xs font-bold text-slate-800 break-words">{r.category_title} · {r.talent_name}</div><div className="text-[10px] text-slate-500">{r.is_active ? 'Aktif' : 'Nonaktif'} · {r.custom_rate_override ? formatRupiah(r.custom_rate_override) : 'Tarif profil'}</div></div>{r.is_active && <button onClick={() => handleTalentServiceReview(r.id,'disabled_by_admin')} className="rounded-lg bg-rose-50 px-3 py-2 text-[11px] font-bold text-rose-800">Nonaktifkan</button>}</div>)}
+              {approvedTalentServices.map((r) => <div key={r.id} className="rounded-xl border border-slate-200 bg-white p-3 flex items-start sm:items-center justify-between gap-3"><div><div className="text-xs font-bold text-slate-800 break-words">{r.custom_title || r.category_title} · {r.talent_name}</div>{r.custom_title && <div className="text-[10px] text-purple-700">Kategori: {r.category_title}</div>}<div className="text-[10px] text-slate-500">{r.is_active ? 'Aktif' : 'Nonaktif'} · {r.custom_rate_override ? formatRupiah(r.custom_rate_override) : 'Tarif profil'}</div></div>{r.is_active && <button onClick={() => handleTalentServiceReview(r.id,'disabled_by_admin')} className="rounded-lg bg-rose-50 px-3 py-2 text-[11px] font-bold text-rose-800">Nonaktifkan</button>}</div>)}
             </section>
             <section className="space-y-2"><h3 className="text-sm font-black text-slate-900">Riwayat perubahan layanan terbaru</h3>{talentServiceHistory.length === 0 ? <p className="text-xs text-slate-500">Belum ada riwayat perubahan.</p> : talentServiceHistory.slice(0,12).map((h) => <div key={h.id} className="text-[11px] border-b border-slate-100 py-2 text-slate-600">{h.talent_name} · <b>{h.change_type}</b> · {new Date(h.created_at).toLocaleString('id-ID')}</div>)}</section>
             <section className="space-y-3">
@@ -2201,7 +2217,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         >
                           {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
                         </button>
+                        {c.selfie_storage_path && (
+                          <button
+                            type="button"
+                            onClick={() => handleViewCustomerKtp({
+                              id: c.id,
+                              ktp_storage_path: null,
+                              evidencePath: c.selfie_storage_path,
+                              evidenceLabel: 'Selfie dengan KTP',
+                              full_legal_name: c.full_legal_name,
+                            })}
+                            disabled={loadingCustomerKtpId === c.id}
+                            className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-800 text-white font-bold text-xs hover:bg-slate-900 disabled:opacity-50"
+                          >
+                            Lihat Selfie
+                          </button>
+                        )}
                       </div>
+                      {!c.selfie_storage_path && (
+                        <div className="text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                          Selfie dengan KTP belum tertaut. Verifikasi belum dapat disetujui.
+                        </div>
+                      )}
                       {c.ktp_rejection_reason && (
                         <div className="text-rose-700">
                           <strong>Alasan Penolakan:</strong> {c.ktp_rejection_reason}
@@ -2220,7 +2257,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </button>
                         <button
                           onClick={() => handleReviewCustomerKtp(c, 'verified')}
-                          disabled={isSubmittingAction}
+                          disabled={
+                            isSubmittingAction ||
+                            !c.ktp_storage_path ||
+                            !c.selfie_storage_path ||
+                            !c.ktp_number ||
+                            !/^\d{16}$/.test(c.ktp_number)
+                          }
                           className="w-full sm:w-auto justify-center px-4 py-2.5 sm:py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
@@ -2670,10 +2713,32 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 >
                   {loadingCustomerKtpId === selectedKtpItem.id ? 'Membuka foto...' : 'Lihat Foto KTP Talent'}
                 </button>
+                {!selectedKtpItem.selfie_storage_path && (
+                  <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    Selfie dengan KTP belum tertaut. Persetujuan tidak tersedia sampai pengguna mengirim bukti lengkap.
+                  </p>
+                )}
+                {selectedKtpItem.selfie_storage_path && (
+                  <button
+                    type="button"
+                    onClick={() => handleViewCustomerKtp({
+                      id: selectedKtpItem.id,
+                      ktp_storage_path: null,
+                      evidencePath: selectedKtpItem.selfie_storage_path,
+                      evidenceLabel: 'Selfie dengan KTP',
+                      full_legal_name: selectedKtpItem.full_legal_name,
+                      display_name: selectedKtpItem.display_name,
+                    })}
+                    disabled={loadingCustomerKtpId === selectedKtpItem.id}
+                    className="min-h-11 w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-800 text-white font-bold text-xs hover:bg-slate-900 disabled:opacity-50"
+                  >
+                    Lihat Selfie dengan KTP
+                  </button>
+                )}
               </div>
             ) : (
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-[11px]">
-                Talent belum mengunggah berkas foto fisik e-KTP saat pendaftaran awal. Anda tetap dapat menyetujui profil jika verifikasi identitas dilakukan via wawancara / kontak darurat resmi.
+                Bukti foto e-KTP belum tersedia. Persetujuan Talent tidak dapat dilakukan tanpa bukti identitas yang lengkap.
               </div>
             )}
 
@@ -2696,7 +2761,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => handleApproveTalent(selectedKtpItem)}
-                disabled={isSubmittingAction || selectedKtpItem.is_approved}
+                disabled={
+                  isSubmittingAction ||
+                  selectedKtpItem.is_approved ||
+                  !selectedKtpItem.ktp_storage_path ||
+                  !selectedKtpItem.selfie_storage_path ||
+                  !selectedKtpItem.ktp_number ||
+                  !/^\d{16}$/.test(selectedKtpItem.ktp_number)
+                }
                 className="min-h-11 px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
