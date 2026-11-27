@@ -17,6 +17,7 @@ on:
       - "package-lock.json"
       - "tsconfig.json"
       - "vite.config.*"
+      - "wrangler.toml"
       - ".github/workflows/main-build-validation.yml"
       - "supabase/migrations/**"
   pull_request:
