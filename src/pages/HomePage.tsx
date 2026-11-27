@@ -80,34 +80,36 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
-      {/* Alur lama dipertahankan: pengunjung memahami layanan sebelum memilih Talent. */}
-      <HeroSection
-        onExploreClick={() => onNavigate('/talent')}
-        onSearch={handleSearch}
-        onRegisterCustomerClick={() => onNavigate('/register')}
-        onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
-      />
+    <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F7F5FA]">
+      <div className="yuku-home-hero">
+        <HeroSection
+          onExploreClick={() => onNavigate('/talent')}
+          onSearch={handleSearch}
+          onRegisterCustomerClick={() => onNavigate('/register')}
+          onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
+        />
+      </div>
 
-      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+      <div className="yuku-home-section yuku-home-categories">
+        <ActivityCategories onSelectCategory={handleSelectCategory} />
+      </div>
 
-      <ActivityCategories onSelectCategory={handleSelectCategory} />
+      <div className="yuku-home-section yuku-home-featured">
+        <FeaturedTalentSection
+          onSelectTalent={handleSelectTalent}
+          onViewAllClick={() => onNavigate('/talent')}
+        />
+      </div>
 
-      {/* Katalog jasa profesional ditambahkan tanpa menggantikan kategori aktivitas lama. */}
-      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
+      <div className="yuku-home-section">
+        <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+      </div>
 
-      {/* Cara kerja tetap muncul sebelum daftar Talent, sesuai alur Beranda lama. */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+      <div className="yuku-home-section">
+        <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
+      </div>
 
-      <FeaturedTalentSection
-        onSelectTalent={handleSelectTalent}
-        onViewAllClick={() => onNavigate('/talent')}
-      />
-
-      {/* Keamanan tetap diperlihatkan sebelum ruang promosi. */}
-      <SafetySection />
-
-      <div ref={promoSectionRef}>
+      <div ref={promoSectionRef} className="yuku-home-section">
         <PromoCarousel
           promotions={promotions}
           isLoading={isLoadingPromotions}
@@ -115,13 +117,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </div>
 
-      <TalentCtaSection
-        onExploreClick={() => onNavigate('/talent')}
-        onRegisterCustomerClick={() => onNavigate('/register')}
-        onRegisterClick={() => onNavigate('/daftar-talent')}
-      />
-
-      <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
+      <div className="yuku-home-section">
+        <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+      </div>
+      <div className="yuku-home-section">
+        <SafetySection />
+      </div>
+      <div className="yuku-home-section">
+        <TalentCtaSection
+          onExploreClick={() => onNavigate('/talent')}
+          onRegisterCustomerClick={() => onNavigate('/register')}
+          onRegisterClick={() => onNavigate('/daftar-talent')}
+        />
+      </div>
+      <div className="yuku-home-section">
+        <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
+      </div>
     </div>
   );
 };
