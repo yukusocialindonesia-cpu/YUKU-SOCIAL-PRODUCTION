@@ -4,7 +4,7 @@ android {
     namespace = "id.yuku.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "id.yuku.app"
+        applicationId "yuku.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
