@@ -419,3 +419,12 @@ The same function updates an expired booking and then raises an exception. In Po
 ### Safety and confidence
 
 This is a definition/ACL review of selected functions, not a penetration test or complete inventory of every RPC. The findings are based on current catalog definitions and grants. No function was called, no DDL/DML was executed, no migration was applied, and Production remains unchanged. No item in this report is approved for direct Production modification.
+
+
+## Supabase migration executor failure confirmation — 27 Nov 2026
+- Read-only unified-log inspection of the Supabase project confirms repeated executor failures on 26 Nov 2026: `ERROR Remote migration versions not found in local migrations directory.`
+- The matching workflow logs identify the affected branch as the project's default `main` branch (branch UUID `4f3cf733-ee3a-4d11-8960-1efe0a806e3c`). This aligns with the current branch status `MIGRATIONS_FAILED`.
+- Live Production history contains 129 migration records; the feature branch currently contains 143 SQL migration files. Corrected descriptive-name normalization still leaves 35 Production records without a local filename candidate; 34 are historical records dated 17–21 Nov 2026. Several older names are not represented as timestamp-prefixed files in the repository, so version-only matching overstates the mismatch count; filename normalization is the more useful comparison but does not establish SQL equivalence.
+- Do not fabricate placeholder files or mark remote versions applied merely to clear the executor error. Recover the exact historical SQL from original commits, deployment artifacts, or verified backups, then compare resulting database objects and establish a canonical replay manifest. Do not replay historical migrations against Production as a repair exercise.
+- The exact failed executor message is now confirmed. The full source-level cause is a historical migration-source/version reconciliation gap; individual SQL bodies for the 35 unmatched records have not yet been recovered.
+- All evidence gathered in this pass was read-only. No migration, database mutation, branch creation, or deployment was performed.
