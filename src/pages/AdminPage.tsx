@@ -521,9 +521,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         }));
 
         const { data: reportRows, error: reportErr } = await supabase
-          .from('reports_complaints')
-          .select('id,reporter_id,reported_user_id,booking_id,category,description,status,admin_notes,created_at')
-          .order('created_at', { ascending: false });
+          .rpc('get_support_admin_reports' as any);
         if (reportErr) throw reportErr;
         const partyIds = Array.from(new Set((reportRows || []).flatMap((r) => [r.reporter_id, r.reported_user_id])));
         const { data: partyUsers } = partyIds.length

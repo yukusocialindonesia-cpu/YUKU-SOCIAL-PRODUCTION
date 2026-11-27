@@ -146,7 +146,6 @@ interface TalentBookingItem {
     category: string;
     description: string;
     status: string;
-    admin_notes: string | null;
     created_at: string;
   } | null;
 }
@@ -453,7 +452,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           supabase.from('activity_categories').select('id, title'),
           supabase
             .from('reports_complaints')
-            .select('id, booking_id, category, description, status, admin_notes, created_at')
+            .select('id, booking_id, category, description, status, created_at')
             .eq('reporter_id', userId)
             .in('booking_id', bookingIds)
             .order('created_at', { ascending: false }),
@@ -480,7 +479,6 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                   category: rep.category,
                   description: rep.description,
                   status: rep.status,
-                  admin_notes: rep.admin_notes ?? null,
                   created_at: rep.created_at,
                 }
               : null,
@@ -2348,11 +2346,6 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                               </span>
                             </div>
                             <p className="text-slate-700">{b.report.description}</p>
-                            {b.report.admin_notes && (
-                              <p className="text-[11px] text-purple-900 bg-white p-2 rounded-lg border border-rose-100">
-                                <strong>Catatan Admin:</strong> {b.report.admin_notes}
-                              </p>
-                            )}
                           </div>
                         );
                       })()}
