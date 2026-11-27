@@ -321,3 +321,55 @@ The second catalog query retrieved selected live definitions and confirms:
 - The direct INSERT policy on `payout_requests` is still present and its check is only `auth.uid() = talent_id`; it does not encode the RPC's full eligibility checks. This is a concrete hardening gap to review, not an instruction to change Production.
 
 These results strengthen the classification that several unmatched historical topics are represented in the current Production schema, while also surfacing a direct-payout-insert policy that remains broader than the RPC's business validation. No changes were made to Production.
+
+
+## ACL, Storage, and SECURITY DEFINER audit (read-only, 27 Nov 2026)
+
+### RLS coverage
+
+The catalog snapshot showed Row Level Security enabled on every inspected table in `public`, `private`, and `storage`. The two private admin tables (`private.admin_accounts`, `private.admin_permissions`) also have FORCE ROW LEVEL SECURITY enabled. The inspected public tables do not have FORCE RLS enabled; table-owner/service-role bypass behavior therefore remains relevant and must not be confused with ordinary authenticated-client access.
+
+### Storage buckets and policies
+
+Observed bucket configuration:
+
+| Bucket | Public | Max size | Main finding |
+|---|---:|---:|---|
+| `avatars` | yes | 10 MiB | Owner writes; public reads |
+| `portfolios` | yes | 5 MiB | Owner writes; public reads |
+| `talent-media` | no | 50 MiB | Read policy delegates to `can_read_talent_media_object(name)`; owner writes |
+| `ktp-documents` | no | 5 MiB | Owner upload; owner or authorized admin read |
+| `professional-service-documents` | no | 10 MiB | Owner/admin read; see blocker below |
+| `bank-transfer-payment-proofs` | no | 5 MiB | Customer/finance read; upload tied to own pending manual-transfer booking |
+| `qris-payment-proofs` | no | 5 MiB | Customer/finance read; upload tied to own pending-payment booking |
+| `branding`, `hero`, `hero-slides`, `promotions`, `qris-payment-display` | yes | 5 MiB each | Public display assets; admin/finance writes |
+
+All listed buckets restrict MIME types to image formats and/or PDF, except `talent-media`, which also permits video and audio formats.
+
+### Confirmed Professional Provider dependency blocker
+
+The Production policy `professional_service_documents_owner_upload` on Storage requires both:
+- the uploader's account to be active; and
+- a matching row in `public.talent_profiles`.
+
+The INSERT policy on `professional_service_applications` also requires a matching `talent_profiles` row. Therefore Production still does **not** support a fully independent Professional Provider application/upload path for an account without a Talent profile. This confirms the previously identified launch blocker from live policy definitions.
+
+### SECURITY DEFINER review
+
+The inspected SECURITY DEFINER functions generally pin `search_path` to an empty path, with schema-qualified object references. Two trigger functions are exceptions:
+- `public.sync_talent_rating_stats()`
+- `public.validate_review_insert()`
+
+Both set `search_path=public`. Their current ACL snapshot lists EXECUTE only for `postgres`, so they are not directly callable by ordinary API roles based on the inspected grants, and they are trigger-oriented. Still, pinning their search path to an empty path and qualifying references would be a worthwhile hardening cleanup.
+
+The inspected user-facing SECURITY DEFINER RPCs with authenticated EXECUTE grants include payout request, payment-proof submission, booking cancellation, Talent onboarding/profile/service operations, and admin review functions. Their function bodies and authorization branches need targeted manual review; a blanket count of SECURITY DEFINER functions is not a vulnerability finding.
+
+### Findings and priority
+
+1. **High — payout direct INSERT policy:** `payout_requests_insert_talent` still permits direct INSERT when `auth.uid() = talent_id`, which bypasses the stronger business checks in `request_talent_payout(...)`. Review before production launch.
+2. **High — independent Professional Provider not enabled in Production:** application INSERT and document upload still depend on `talent_profiles`. The decoupling migrations in the feature branch are not reflected in these live policies.
+3. **Medium — public-facing object policies:** avatar/portfolio buckets are public and `talent-media` is non-public but uses a custom object-read function. Validate the full function logic and public URL/signed URL usage against product privacy expectations.
+4. **Low/cleanup — SECURITY DEFINER search path:** two trigger functions still use `search_path=public`; pin to empty path and qualify references in a future reviewed migration.
+5. **Coverage note:** RLS is enabled on inspected tables, but most public tables are not FORCE RLS. Review table ownership, grants, and service-role exposure separately.
+
+This is a catalog/configuration audit, not an application penetration test. It did not test requests under anon/authenticated JWTs, inspect actual object contents, or mutate policies, buckets, grants, or functions. No Production SQL changes were made.
