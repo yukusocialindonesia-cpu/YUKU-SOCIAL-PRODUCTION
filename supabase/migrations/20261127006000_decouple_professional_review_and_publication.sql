@@ -102,6 +102,16 @@ begin
       raise exception 'Bukti pengalaman atau referensi wajib tersedia untuk jenis jasa ini.' using errcode = '55000';
     end if;
 
+    -- Keep the independent provider profile's review state in sync with the
+    -- transactional application decision; the profile update trigger preserves
+    -- admin attestations because this RPC runs as the reviewing Admin.
+    update public.professional_provider_profiles
+       set review_status = 'approved',
+           reviewed_by = auth.uid(),
+           reviewed_at = now(),
+           updated_at = now()
+     where user_id = v_application.applicant_id;
+
     insert into public.professional_talent_services (
       provider_id, subcategory_id, service_description, experience_years,
       service_city, delivery_modes, rate_amount, pricing_unit,
