@@ -466,3 +466,12 @@ The records above are now classified as exact known match, distinct later change
 - The original PR file and current feature-branch file were fetched and compared; their SQL content is byte-for-byte identical. It defines `provision_scoped_admin_account_with_permissions(uuid, uuid, text[])`, requires `service_role`, checks the inviter is an active Super Admin, validates permission keys, atomically updates the user/Admin records and permission rows, writes an audit log, and grants EXECUTE only to `service_role`.
 - **Classification:** recovered high-confidence source candidate for the Production record by distinctive migration purpose and exact SQL file provenance. However, the file's local timestamp `20261121120000` differs from Production's recorded version `20261121152302`; Git evidence does not prove that this exact body was what the Production migration runner executed. Keep the Production record formally **not byte-verified** until deployment artifact/history checksum or equivalent evidence is found.
 - This source recovery does not authorize replay or a migration-history repair. No database was changed.
+
+
+## Activity category anonymous-read migration source verification — 27 Nov 2026
+
+- Production history records `20261121110017` as `fix_activity_categories_anon_read`.
+- Merged PR [#40](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/40) contains `supabase/migrations/20261121110017_fix_activity_categories_anon_read.sql`.
+- The SQL file fetched from merged `main` and the current feature branch is byte-for-byte identical (same Git blob SHA `a1562ced86c6e52b8aec294a02374a6ab76b0013`). It replaces the broad public category read policy with active-category-only `anon` access and active-category plus authorized-admin access for `authenticated`.
+- **Classification:** exact Git source recovery and current-branch content identity confirmed. Production's recorded version/name matches the migration filename; however, absent a stored deployed-SQL checksum, the history row alone does not independently prove the runner executed these exact bytes.
+- No SQL was executed and no database was changed.
