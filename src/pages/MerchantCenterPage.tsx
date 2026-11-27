@@ -459,6 +459,27 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
   const createOffer = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!activeBusiness) return;
+
+    const parsedStart = offerStart ? new Date(offerStart) : new Date();
+    const parsedEnd = offerEnd ? new Date(offerEnd) : null;
+    const parsedQuota = offerQuota.trim() ? Number(offerQuota) : null;
+    if (!offerTitle.trim() || !offerDescription.trim()) {
+      setError('Judul dan deskripsi promo wajib diisi.');
+      return;
+    }
+    if (Number.isNaN(parsedStart.getTime())) {
+      setError('Tanggal mulai promo tidak valid.');
+      return;
+    }
+    if (parsedEnd && (Number.isNaN(parsedEnd.getTime()) || parsedEnd <= parsedStart)) {
+      setError('Tanggal akhir harus setelah tanggal mulai.');
+      return;
+    }
+    if (parsedQuota !== null && (!Number.isSafeInteger(parsedQuota) || parsedQuota <= 0)) {
+      setError('Kuota harus berupa bilangan bulat lebih dari 0.');
+      return;
+    }
+
     const workspace = captureWorkspace();
     const businessId = activeBusiness.id;
     setSaving(true); setError(''); setSuccess('');
@@ -468,10 +489,10 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       p_title: offerTitle.trim(),
       p_description: offerDescription.trim(),
       p_offer_type: offerType,
-      p_starts_at: offerStart ? new Date(offerStart).toISOString() : new Date().toISOString(),
-      p_ends_at: offerEnd ? new Date(offerEnd).toISOString() : null,
+      p_starts_at: parsedStart.toISOString(),
+      p_ends_at: parsedEnd ? parsedEnd.toISOString() : null,
       p_eligibility: offerEligibility.trim() || null,
-      p_quota: offerQuota.trim() ? Number(offerQuota) : null,
+      p_quota: parsedQuota,
       p_terms: offerTerms.trim() || null,
       p_redemption_instructions: offerInstructions.trim() || null,
     });
