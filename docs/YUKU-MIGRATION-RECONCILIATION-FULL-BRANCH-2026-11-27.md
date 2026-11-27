@@ -510,3 +510,13 @@ This section supersedes the earlier follow-up correction notes in this document.
 The superseded Provider Phase A (`04000_create_independent_professional_provider_profiles`) and Phase B (`05000_allow_professional_only_applications`) files have been removed from the active replay chain. The full Provider implementation is now part of the PR #281 branch stack at `01400`, followed by the Provider hardening migrations. Existing `main` migrations at `00700`–`01300` remain at their original paths and contents.
 
 A fresh recursive tree audit of PR #279, #280, #281, #282, #284 and #287 now finds only two duplicate version groups already present on `main`: `20261126190000` (Data API grants / payout insert hardening) and `20261127001000` (revision attestation / report notification privacy). These are historical and require Production migration-history/source reconciliation; they were not changed. No new feature-branch duplicate version groups remain in the audited stack. This filename audit does not prove SQL replay safety or Production equivalence. Supabase Preview remains skipped; do not run migrations or merge until the two historical groups and the full Production history are reconciled and a healthy disposable Staging environment is available.
+
+
+## Merchant migration version correction — 27 Nov 2026
+
+The latest source branch corrects three Merchant migration version collisions without changing SQL bodies:
+- `20261127003000_merchant_admin_review_and_directory.sql` is now `20261127003100_merchant_admin_review_and_directory.sql`.
+- `20261127004000_merchant_membership_management.sql` is now `20261127004100_merchant_membership_management.sql`.
+- `20261127005000_merchant_offers_directory.sql` is now `20261127005100_merchant_offers_directory.sql`.
+
+Merchant migration sequence in this branch is therefore `02000` foundation, `03000` Social Experience custom services, `03100` Merchant review/directory, `04000` Professional Provider profile, `04100` Merchant membership, `05000` Professional-only applications, `05100` Merchant offers, followed by later Professional Provider migrations. This is a source filename correction only; it does not make the migrations production-ready or resolve the Production ledger gaps.
