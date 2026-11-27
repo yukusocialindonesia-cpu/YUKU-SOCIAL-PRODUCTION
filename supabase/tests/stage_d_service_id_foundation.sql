@@ -359,6 +359,21 @@ END;
 $$;
 
 
+
+-- The UI capability snapshot must agree with the database Customer profile requirement.
+DO $
+DECLARE
+  v_access_snapshot_function TEXT;
+BEGIN
+  v_access_snapshot_function := pg_get_functiondef(
+    'public.get_my_account_access_snapshot()'::regprocedure
+  );
+  IF position('public.customer_profiles' IN v_access_snapshot_function) = 0 THEN
+    RAISE EXCEPTION 'Customer capability must require an existing Customer profile';
+  END IF;
+END;
+$;
+
 -- Stage D.5: multi-profile booking authorization must not depend on primary users.role.
 DO $$
 DECLARE
