@@ -189,8 +189,8 @@ These results confirm that green GitHub builds do not mean the Production databa
 ## Canonical branch remediation — 28 Nov 2026
 
 The canonical integration branch now includes:
-- `20261127191000_revoke_direct_report_moderation_updates.sql`: revokes table/column UPDATE from PUBLIC, anon and authenticated; drops the direct Support UPDATE policy; keeps the SECURITY DEFINER `admin_resolve_report()` RPC as the intended write path.
+- `20261127191000_revoke_direct_report_moderation_updates.sql`: revokes table/column UPDATE from PUBLIC, anon and authenticated; drops the direct Support UPDATE policy; keeps SECURITY DEFINER `admin_resolve_report()` as the intended write path.
 - `20261127001050_stop_leaking_internal_report_notes.sql`: unique migration version correcting a prior duplicate timestamp and removing internal notes from reporter notifications.
 - Stage C contract checks C17–C19: direct grants/policy absence, Support RPC guard/row lock/audit, and notification text exclusion.
 
-These are source-only. They have not been applied to Production or tested on an isolated Staging database. The public Talent rate-column exposure, migration-history mismatch, identity evidence, media policy, sanctioned-account state, and Realtime/chat findings remain release blockers pending full Staging replay and negative tests.
+These are source-only. They have not been applied to Production or tested on isolated Staging. Public Talent rate-column exposure, migration-history mismatch, identity evidence, media policy, sanctioned-account state, and Realtime/chat findings remain release blockers pending full Staging replay and negative tests.
