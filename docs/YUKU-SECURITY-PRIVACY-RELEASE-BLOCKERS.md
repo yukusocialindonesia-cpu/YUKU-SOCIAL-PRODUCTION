@@ -171,3 +171,16 @@ Production was rechecked against the current schema:
 - The Admin UI currently calls `admin_resolve_report`; no direct frontend update call was found in the inspected AdminPage source.
 
 **Required remediation before release:** revoke the three column-level UPDATE grants from `authenticated`; drop `reports_update_admin`; retain the audited RPC as the only moderation write path; remove internal notes from reporter notification text; add regression checks proving a Support Admin cannot directly update columns but can resolve via the RPC, and that reporter notifications never include `admin_notes`. This remains a release blocker; no Production change was made.
+
+
+## Production revalidation snapshot — 27 Nov 2026 (read-only)
+
+The following P1 findings were rechecked directly against the linked Production database after the initial audit:
+
+1. **Talent media overwrite is still possible by policy.** Storage policy `talent_media_bucket_owner_update` remains permissive for authenticated owners in bucket `talent-media`. The branch-only migration `20261127001300_make_talent_media_objects_immutable.sql` has not been applied.
+2. **Public Talent column exposure remains.** `anon` still has table-level SELECT on `public.talent_profiles`; the current column grants include `referral_code`, `hourly_rate`, and `online_chat_rate`. The column-allowlist migration is not yet deployed. Public rates are also queryable outside the intended detail-page UI path; this must be treated as a product/API exposure decision, not just a card-rendering issue.
+3. **Selfie evidence is not persisted in Production schema.** `public.user_identities` has `ktp_storage_path`, `ktp_number`, and `ktp_verification_status`, but no `selfie_storage_path` column. The #295 migration exists in the canonical source branch only.
+4. **Talent approval can still reactivate sanctioned accounts.** The live `admin_review_talent(uuid,boolean,ktp_status_type,text)` implementation sets `account_status` to `active` or `pending_verification` without preserving `suspended` or `banned`. The #294 fix is source-only until the ordered migration chain is safely deployed.
+5. **Report moderation write path and notification privacy remain P1.** Authenticated retains column-level UPDATE on report `status`, `admin_notes`, and `resolved_by_admin_id`; the Support UPDATE policy remains. The audited RPC exists, but the status-change notification still concatenates internal `admin_notes` into the reporter message.
+
+These results confirm that green GitHub builds do not mean the Production database is remediated. All fixes remain gated on complete migration-history reconciliation, clean isolated Staging replay, role-matrix/negative tests, and explicit release approval. No Production writes were performed.
