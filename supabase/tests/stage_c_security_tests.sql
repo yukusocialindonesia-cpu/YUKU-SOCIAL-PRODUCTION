@@ -340,6 +340,19 @@ BEGIN
         AND position('xendit' in lower(pg_get_constraintdef(c.oid))) = 0
     );
   INSERT INTO _c_results VALUES (16, 'Provider pensiun ditolak untuk settlement dan route baru', v_ok, 'retirement migration');
+
+  -- ----------------------------- C17 -----------------------------------------
+  v_ok := NOT has_column_privilege('authenticated', 'public.reports_complaints', 'status', 'UPDATE')
+    AND NOT has_column_privilege('authenticated', 'public.reports_complaints', 'admin_notes', 'UPDATE')
+    AND NOT has_column_privilege('authenticated', 'public.reports_complaints', 'resolved_by_admin_id', 'UPDATE')
+    AND NOT EXISTS (
+      SELECT 1 FROM pg_policies
+      WHERE schemaname = 'public'
+        AND tablename = 'reports_complaints'
+        AND policyname IN ('reports_update_admin', 'reports_update_admin')
+        AND cmd = 'UPDATE'
+    );
+  INSERT INTO _c_results VALUES (17, 'Direct report moderation UPDATE revoked', v_ok, 'audited admin_resolve_report RPC retained');
 END $;
 
 -- Ringkasan
