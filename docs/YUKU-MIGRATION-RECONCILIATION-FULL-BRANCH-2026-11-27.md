@@ -71,7 +71,7 @@ Normalization strips `.sql`, a leading `yuku_`, and up to three leading numeric/
 | `20261126235800_allow_super_admin_professional_document_review.sql` | `20261126124323` | `20261126235800_allow_super_admin_professional_document_review` |
 | `20261127000000_fix_professional_listing_public_account_gate.sql` | `20261126124016` | `fix_professional_listing_public_account_gate` |
 | `20261127000200_restrict_professional_document_uploads.sql` | `20261126124325` | `20261127000200_restrict_professional_document_uploads` |
-| `20261127001200_harden_professional_application_revision_attestation_fields.sql` | `20261126124423` | `harden_professional_application_revision_attestation_fields` |
+| `20261127001500_harden_professional_application_revision_attestation_fields.sql` | `20261126124423` | `harden_professional_application_revision_attestation_fields` |
 | `20_immediate_escrow_release_policy.sql` | `20261117181958` | `yuku_20_immediate_escrow_release_policy` |
 | `21_booking_completion_and_actor_guards.sql` | `20261117182035` | `yuku_21_booking_completion_and_actor_guards` |
 | `22_talent_cancellation_and_refund_workflow.sql` | `20261117182053` | `yuku_22_talent_cancellation_and_refund_workflow` |
@@ -141,11 +141,11 @@ These must be resolved using original SQL provenance, Git history, and resulting
 - `20261127000400_create_private_professional_service_document_bucket.sql`
 - `20261127000500_narrow_scoped_admin_booking_trigger_bypass.sql`
 - `20261127000600_scope_admin_summary_rpcs.sql`
-- `20261127000700_professional_provider_identity_decoupling.sql`
-- `20261127000800_remove_legacy_public_talent_services_policy.sql`
+- `20261127001400_professional_provider_identity_decoupling.sql`
+- `20261127000700_remove_legacy_public_talent_services_policy.sql`
 - `20261127000800_restore_scoped_public_talent_availability_read.sql`
 - `20261127000900_allow_self_service_customer_to_talent_transition.sql`
-- `20261127001100_link_talent_selfie_evidence_and_guard_approval.sql`
+- `20261127001600_link_talent_selfie_evidence_and_guard_approval.sql`
 - `20261127001000_stop_leaking_internal_report_notes.sql`
 - `20261127001100_scope_admin_notifications_and_private_booking_chat.sql`
 - `20261127001200_revoke_talent_media_trigger_helper_execute.sql`
@@ -262,7 +262,7 @@ The following merged PRs establish provenance for some Production migrations and
 | [#263](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/263) | Professional Services taxonomy and application lifecycle | Merged to `main`; PR changed-file list includes the foundational Professional Services SQL migrations |
 | [#272](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/272) | Professional Services Data API grants | Merged to `main`; migration `20261126190000_grant_professional_service_data_api_roles.sql` |
 | [#273](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/273) | Public Professional listing account gate | Merged to `main`; migration `20261127000000_fix_professional_listing_public_account_gate.sql` |
-| [#274](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/274) | Professional application revision attestation hardening | Merged to `main`; migration `20261127001200_harden_professional_application_revision_attestation_fields.sql` |
+| [#274](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/274) | Professional application revision attestation hardening | Merged to `main`; migration `20261127001500_harden_professional_application_revision_attestation_fields.sql` |
 
 PR #265 remains open and is a separate historical filename-alignment change. It renames 22 older local files without changing SQL. It is not a record that the 35 unmatched Production SQL sources have been recovered.
 
@@ -493,7 +493,7 @@ A targeted GitHub commit search for the distinctive migration/function names ret
 ## Professional-only private document upload gate — found and corrected in branch source — 27 Nov 2026
 
 - Inspection of the inherited `20261127000200_restrict_professional_document_uploads.sql` found that `professional_service_documents_owner_upload` required both an active account and a matching `public.talent_profiles` row. That blocks the intended Professional-only onboarding path even after `professional_provider_profiles` is introduced.
-- The `20261127000700_professional_provider_identity_decoupling.sql` migration previously did not replace that Storage policy.
+- The `20261127001400_professional_provider_identity_decoupling.sql` migration previously did not replace that Storage policy.
 - **Branch-source fix:** commit `a2e7c876e655a9f81c9171064a63a579b6241890` now drops and recreates the upload policy in migration `00700`. It preserves the private bucket restriction, authenticated user's own folder, and active-account check, while removing only the Talent-profile prerequisite. Existing owner/admin read and owner delete policies are unchanged.
 - This is a source-level correction only. It has not been executed in Staging or Production. Validate with actual Professional-only JWT upload/read/delete tests and negative cross-user folder tests before merge.
 
@@ -501,3 +501,12 @@ A targeted GitHub commit search for the distinctive migration/function names ret
 ## Source-branch correction log — 27 Nov 2026
 
 Historical applied migration sources are preserved unchanged. The independent-Provider revision policy now has a separate forward-only version `20261127001200`; KTP evidence is `20261127001100`; legacy public Talent policy removal is `20261127000800`; and PR #284 exact-service booking migration is `20261127011000`. The `04000` Provider Phase A / Merchant membership collision remains unresolved, and the superseded Provider Phase A/B files must be removed from the active replay chain only after the canonical Provider implementation has been moved into the correct parent PR. No database migration was executed.
+
+
+## Final canonical status — source branches, 27 Nov 2026
+
+This section supersedes the earlier follow-up correction notes in this document. Historical files already present on `main` have been restored unchanged; no applied migration was renamed or rewritten. New feature migrations now use unique forward-only versions: Provider identity `20261127001400`, Provider revision-policy hardening `20261127001500`, and KTP evidence guard `20261127001600`. The Social Experience exact-service booking migration in PR #284 is `20261127011000`. Taxonomy is `20261127001900`; Merchant migrations remain `02000`–`05000`; Talent custom Social Experience services are `05500`.
+
+The superseded Provider Phase A (`04000_create_independent_professional_provider_profiles`) and Phase B (`05000_allow_professional_only_applications`) files have been removed from the active replay chain. The full Provider implementation is now part of the PR #281 branch stack at `01400`, followed by the Provider hardening migrations. Existing `main` migrations at `00700`–`01300` remain at their original paths and contents.
+
+A fresh recursive tree audit of PR #279, #280, #281, #282, #284 and #287 now finds only two duplicate version groups already present on `main`: `20261126190000` (Data API grants / payout insert hardening) and `20261127001000` (revision attestation / report notification privacy). These are historical and require Production migration-history/source reconciliation; they were not changed. No new feature-branch duplicate version groups remain in the audited stack. This filename audit does not prove SQL replay safety or Production equivalence. Supabase Preview remains skipped; do not run migrations or merge until the two historical groups and the full Production history are reconciled and a healthy disposable Staging environment is available.
