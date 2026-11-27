@@ -157,7 +157,7 @@ The current branch includes Merchant Center, public directory, and Super Admin r
 
 ## Read-only staging preflight
 
-Run `supabase/ops/merchant_partner_staging_preflight.sql` only after applying draft migrations `20261127002000` through `20261127005000` to a disposable or Staging project. The script checks required tables/functions, RLS flags, selected column grants, direct table mutation denial, and anonymous RPC execution denial. It does not modify data and does not replace the role/JWT, cross-tenant, concurrency, notification, or UI acceptance tests above.
+Run `supabase/ops/merchant_partner_staging_preflight.sql` only after applying draft migrations `20261127002000` through `20261127005100` to a disposable or Staging project. The script checks required tables/functions, RLS flags, selected column grants, direct table mutation denial, and anonymous RPC execution denial. It does not modify data and does not replace the role/JWT, cross-tenant, concurrency, notification, or UI acceptance tests above.
 
 This preflight has not been executed. No migration has been applied to Staging or Production.
 - [ ] Legacy `invite_merchant_member(uuid,uuid,text)` RPC is not executable by authenticated/anon; all invitations use the email-scoped audited flow with notification.
