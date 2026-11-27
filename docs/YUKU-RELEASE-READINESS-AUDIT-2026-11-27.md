@@ -338,3 +338,26 @@ No Production records, functions, grants, policies, triggers, account states, or
 - private.has_admin_permission allow-lists only talent, booking, finance, and support, then requires an active Admin and either Super Admin level or the matching permission row.
 - private.is_super_admin delegates to the active-Admin check before testing the Super Admin level. Thus deactivated Admin rows and suspended Admin accounts fail these permission helpers even if an access token remains valid.
 - public.is_admin additionally returns true for a service_role JWT for trusted backend execution; the service-role key must remain server-side and must never be exposed to browsers/mobile clients.
+
+
+### Cross-PR release-stack check — 27 November 2026
+
+A follow-up inspection compared PR #284 (exact Social Experience service-ID foundation) with PR #287 (homepage, Provider, and Merchant Partner).
+
+**New P0 — migration version collision across sibling PRs**
+- PR #284 adds `20261127004000_social_experience_service_id_foundation.sql`.
+- PR #287 adds `20261127004000_merchant_membership_management.sql`.
+- Both PRs target `design/beranda-premium-compact` and are sibling branches; neither includes the other's migration.
+- If both feature sets are integrated without renumbering and dependency review, Supabase receives duplicate migration version `20261127004000`. This is an additional cross-PR collision beyond the duplicate groups already inventoried inside PR #287.
+- Do not resolve by blindly changing timestamps. Establish the intended order against the full canonical migration manifest and target Staging history, then assign unique versions and update dependent references/tests.
+
+**PR #284 contract review**
+- The draft adds nullable `bookings.service_id`, immutable service title/description snapshots, an exact-service booking RPC, and a compatibility path through the legacy `create_booking` RPC.
+- It intentionally retains the one-service-per-Talent/category constraint; multi-offer per category is not enabled.
+- Stage D SQL contains catalog/source-contract assertions for trigger ordering, financial snapshots, escrow, dispute, cancellation, refund, and payout safeguards. These are not runtime JWT, concurrency, or provider-webhook tests.
+- The migration explicitly requires the full prior migration chain to be replayed in Staging first. PR #284 reports that the available Supabase main branch is `MIGRATIONS_FAILED` and no healthy Staging branch is available. Therefore its migration and Stage D checks remain unexecuted.
+
+**Release decision**
+- Keep PR #284 and #287 draft/unmerged until the migration chain is reconciled and a healthy disposable Staging environment is available.
+- Treat the exact-service booking path as a required integration dependency before enabling the corresponding booking UI in a release.
+- No migration, database change, merge, or deployment was performed by this follow-up review.
