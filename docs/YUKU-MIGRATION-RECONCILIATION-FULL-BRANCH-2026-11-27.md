@@ -457,3 +457,12 @@ Read-only inspection of related PRs and original SQL files clarifies several nea
 
 ### Current disposition
 The records above are now classified as exact known match, distinct later change, or unrelated draft rather than being inferred from similar names. The remaining historical security and operational migrations still require original SQL recovery or verified deployment artifacts. No migration was executed, no database was modified, and Production remains read-only.
+
+
+## Scoped Admin invitation migration source recovery — 27 Nov 2026
+
+- Production history contains version `20261121152302` with recorded name `atomic_scoped_admin_invitation_20261121`.
+- Merged PR [#46](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/46) contains `supabase/migrations/20261121120000_atomic_scoped_admin_invitation.sql` in commit `707658f32b5c286acf363cc4890ad1a57c208b09`.
+- The original PR file and current feature-branch file were fetched and compared; their SQL content is byte-for-byte identical. It defines `provision_scoped_admin_account_with_permissions(uuid, uuid, text[])`, requires `service_role`, checks the inviter is an active Super Admin, validates permission keys, atomically updates the user/Admin records and permission rows, writes an audit log, and grants EXECUTE only to `service_role`.
+- **Classification:** recovered high-confidence source candidate for the Production record by distinctive migration purpose and exact SQL file provenance. However, the file's local timestamp `20261121120000` differs from Production's recorded version `20261121152302`; Git evidence does not prove that this exact body was what the Production migration runner executed. Keep the Production record formally **not byte-verified** until deployment artifact/history checksum or equivalent evidence is found.
+- This source recovery does not authorize replay or a migration-history repair. No database was changed.
