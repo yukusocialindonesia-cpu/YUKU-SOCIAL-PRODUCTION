@@ -13,7 +13,8 @@
     "mobile:android": "npm run build && cap sync android",
     "mobile:ios": "npm run build && cap sync ios",
     "mobile:open-android": "cap open android",
-    "mobile:open-ios": "cap open ios"
+    "mobile:open-ios": "cap open ios",
+    "mobile:doctor": "cap doctor"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
