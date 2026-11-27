@@ -237,3 +237,14 @@ This section supersedes the earlier follow-up correction notes in this document.
 The superseded Provider Phase A (`04000_create_independent_professional_provider_profiles`) and Phase B (`05000_allow_professional_only_applications`) files have been removed from the active replay chain. The full Provider implementation is now part of the PR #281 branch stack at `01400`, followed by the Provider hardening migrations. Existing `main` migrations at `00700`–`01300` remain at their original paths and contents.
 
 A fresh recursive tree audit of PR #279, #280, #281, #282, #284 and #287 now finds only two duplicate version groups already present on `main`: `20261126190000` (Data API grants / payout insert hardening) and `20261127001000` (revision attestation / report notification privacy). These are historical and require Production migration-history/source reconciliation; they were not changed. No new feature-branch duplicate version groups remain in the audited stack. This filename audit does not prove SQL replay safety or Production equivalence. Supabase Preview remains skipped; do not run migrations or merge until the two historical groups and the full Production history are reconciled and a healthy disposable Staging environment is available.
+
+
+## Canonical PR #287 provider hardening port — 27 Nov 2026
+
+The canonical homepage branch `design/beranda-brand-promise-v2` now includes the four follow-up Professional Provider hardening migrations from the PR #281 stack, preserving their original SQL contents and sequence after `20261127006000` and before `20261127011000`:
+- `20261127007000_derive_professional_profile_completeness.sql`
+- `20261127008000_prevent_professional_public_rls_recursion.sql`
+- `20261127009000_allow_independent_professional_document_uploads.sql`
+- `20261127010000_allow_super_admin_professional_profile_review.sql`
+
+This closes the source-branch omission found during the direct-to-main consolidation audit. These migrations remain unexecuted and are not validated by filename presence; replay and RLS/JWT/storage tests in isolated Staging remain mandatory.
