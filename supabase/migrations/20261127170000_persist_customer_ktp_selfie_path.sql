@@ -190,3 +190,8 @@ begin
   return new;
 end;
 $function$;
+
+-- Match the existing least-privilege column grants for identity evidence.
+grant select (selfie_storage_path) on public.user_identities to authenticated;
+grant insert (selfie_storage_path) on public.user_identities to authenticated;
+grant update (selfie_storage_path) on public.user_identities to authenticated;
