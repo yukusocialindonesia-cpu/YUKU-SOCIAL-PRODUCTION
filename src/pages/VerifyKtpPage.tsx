@@ -30,6 +30,7 @@ interface IdentityRecord {
   date_of_birth: string;
   ktp_number: string | null;
   ktp_storage_path: string | null;
+  selfie_storage_path: string | null;
   ktp_verification_status: 'unsubmitted' | 'pending_review' | 'verified' | 'rejected';
   ktp_rejection_reason: string | null;
   emergency_contact_phone: string | null;
@@ -77,7 +78,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         supabase
           .from('user_identities')
           .select(
-            'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
+            'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, selfie_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
           )
           .eq('id', user.id)
           .maybeSingle(),
@@ -246,6 +247,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
     }
 
     setIsSubmitting(true);
+    let uploadedEvidencePaths: string[] = [];
 
     try {
       const timestamp = Date.now();
@@ -266,6 +268,9 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         }),
       ]);
 
+      if (!ktpUploadRes.error && ktpUploadRes.data) uploadedEvidencePaths.push(ktpStoragePath);
+      if (!selfieUploadRes.error && selfieUploadRes.data) uploadedEvidencePaths.push(selfieStoragePath);
+
       if (ktpUploadRes.error || !ktpUploadRes.data) {
         throw new Error(
           `Gagal mengunggah foto e-KTP: ${ktpUploadRes.error?.message || 'Upload gagal'}`
@@ -278,10 +283,10 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         );
       }
 
-      // 2. Check if user_identities row already exists (never send ktp_verification_status or id on update)
+      // 2. Check existing evidence paths so replaced, now-unreferenced files can be cleaned safely.
       const { data: existingRow, error: lookupError } = await supabase
         .from('user_identities')
-        .select('id')
+        .select('id, ktp_storage_path, selfie_storage_path')
         .eq('id', currentUser.id)
         .maybeSingle();
 
@@ -294,6 +299,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         date_of_birth: dateOfBirth,
         ktp_number: ktpNumber.trim(),
         ktp_storage_path: ktpStoragePath,
+        selfie_storage_path: selfieStoragePath,
         emergency_contact_phone: emergencyPhone.trim(),
       };
 
@@ -310,6 +316,23 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         throw new Error(`Gagal menyimpan pengajuan verifikasi KTP: ${saveError.message}`);
       }
 
+      // The database now references both files; don't remove them in the failure cleanup.
+      uploadedEvidencePaths = [];
+      const previousEvidencePaths = [
+        existingRow?.ktp_storage_path,
+        existingRow?.selfie_storage_path,
+      ].filter((path): path is string =>
+        Boolean(path) && path !== ktpStoragePath && path !== selfieStoragePath
+      );
+      if (previousEvidencePaths.length) {
+        const { error: cleanupError } = await supabase.storage
+          .from('ktp-documents')
+          .remove(previousEvidencePaths);
+        if (cleanupError) {
+          console.warn('Berkas identitas lama tidak dapat dibersihkan:', cleanupError.message);
+        }
+      }
+
       setKtpFile(null);
       setKtpPreviewUrl(null);
       setSelfieFile(null);
@@ -319,6 +342,14 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
       );
       await loadIdentityData(currentUser);
     } catch (err: any) {
+      if (uploadedEvidencePaths.length) {
+        const { error: cleanupError } = await supabase.storage
+          .from('ktp-documents')
+          .remove(uploadedEvidencePaths);
+        if (cleanupError) {
+          console.warn('Berkas identitas yang gagal disimpan perlu dibersihkan:', cleanupError.message);
+        }
+      }
       setErrorMessage(err?.message || 'Terjadi kesalahan saat mengirim verifikasi KTP.');
     } finally {
       setIsSubmitting(false);
