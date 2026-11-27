@@ -349,7 +349,7 @@ BEGIN
       SELECT 1 FROM pg_policies
       WHERE schemaname = 'public'
         AND tablename = 'reports_complaints'
-        AND policyname IN ('reports_update_admin', 'reports_update_admin')
+        AND policyname = 'reports_update_admin'
         AND cmd = 'UPDATE'
     );
   INSERT INTO _c_results VALUES (17, 'Direct report moderation UPDATE revoked', v_ok, 'audited admin_resolve_report RPC retained');
