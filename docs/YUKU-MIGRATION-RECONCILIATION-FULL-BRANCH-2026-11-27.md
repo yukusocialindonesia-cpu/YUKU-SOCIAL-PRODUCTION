@@ -444,3 +444,16 @@ Read-only inspection of original Git commits and migration diffs recovered addit
 - The original Git source for Community, Affiliate, scoped Admin, and Web Push subscription/webhook work is now located.
 - The unresolved Production migration list still requires a record-by-record comparison. A source commit, similar purpose, or matching object name is not sufficient to prove equivalence to the SQL that ran remotely.
 - No migration repair, SQL execution, DDL/DML, Production change, branch creation, merge, or deployment was performed during this recovery pass.
+
+
+## Follow-up historical security migration provenance — 27 Nov 2026
+Read-only inspection of related PRs and original SQL files clarifies several nearby records and prevents false matches:
+
+- **Confirmed exact Production record:** PR [#41](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/41) contains `20261121110823_allow_public_rls_permission_checks.sql`, whose two GRANT statements allow `anon` to execute `public.is_super_admin()` and `public.has_admin_permission(text)`. PR #41 records that this migration was applied directly to Production and verified. This is a known applied migration and is not one of the 55 unmatched records in the reconciliation snapshot.
+- **Not the same as missing `grant_anon_execute_is_admin` / `grant_anon_execute_is_talent_publicly_visible`:** the PR #41 migration grants only the two named admin-check wrappers. Do not use it as a substitute for either missing 18 Nov grant migration.
+- **Separate unapplied payout hardening:** PR [#44](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/44) contains `20261121120000_secure_talent_payout_insert_rpc_only.sql`, which drops the direct Talent INSERT policy and revokes table/column INSERT grants on `payout_requests`. Its timestamp is not the missing Production record `20261117232240_add_secure_talent_payout_request_rpc_20261118`; it is a later, separate hardening change and PR #44 was closed without merge. Do not map these as equivalent.
+- **Separate draft booking hardening:** PR [#45](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/45) contains `63_h2_talent_booking_status_rpc_hardening.sql`, moving Talent booking confirmation/session start into guarded RPCs and revoking direct booking workflow-column UPDATE. It remains an unmerged draft and is not evidence for the missing Production record `20261118163142_create_booking_enforce_category_mode_and_approved_services`.
+- **Web Push distinction retained:** PR #12's push subscription and webhook migrations do not establish the SQL body for Production `20261120185544_enable_pg_net_for_push_webhook`.
+
+### Current disposition
+The records above are now classified as exact known match, distinct later change, or unrelated draft rather than being inferred from similar names. The remaining historical security and operational migrations still require original SQL recovery or verified deployment artifacts. No migration was executed, no database was modified, and Production remains read-only.
