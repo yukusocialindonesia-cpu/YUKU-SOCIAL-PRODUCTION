@@ -224,10 +224,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                         ? 'bg-fuchsia-700 text-white border-fuchsia-700 shadow-xs'
                         : 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-200 hover:bg-fuchsia-100'
                     }`}
-                    title="Buka profil dan pengajuan Jasa Profesional"
+                    title="Lihat status dan riwayat pengajuan jasa profesional"
                   >
                     <ShoppingBag className="w-3.5 h-3.5 text-fuchsia-700" />
-                    <span>Profesional</span>
+                    <span>Pengajuan Profesional</span>
                   </button>
                 )}
 
@@ -491,7 +491,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     }`}
                   >
                     <ShoppingBag className="w-4 h-4 text-fuchsia-700" />
-                    <span>Jasa Profesional</span>
+                    <span>Pengajuan Profesional</span>
                   </button>
                 )}
 
