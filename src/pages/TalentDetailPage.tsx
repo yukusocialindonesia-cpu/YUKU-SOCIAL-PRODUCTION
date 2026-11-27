@@ -101,6 +101,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const [availabilitySlots, setAvailabilitySlots] = useState<TalentAvailabilityRow[]>([]);
   const [mediaItems, setMediaItems] = useState<TalentMediaRow[]>([]);
   const [serviceRateOverrides, setServiceRateOverrides] = useState<Record<string, number | null>>({});
+  const [serviceIdsByCategory, setServiceIdsByCategory] = useState<Record<string, string>>({});
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const lightboxTouchStartX = useRef<number | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
@@ -192,6 +193,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     setAvailabilitySlots([]);
     setMediaItems([]);
     setServiceRateOverrides({});
+    setServiceIdsByCategory({});
     try {
       const [talentData, categoriesData, reviewsRes, availabilityRes, mediaRes, serviceRatesRes] = await Promise.all([
         fetchTalentByIdFromSupabase(talentId),
@@ -218,7 +220,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
           .order('created_at', { ascending: false }),
         supabase
           .from('talent_services')
-          .select('activity_category_id, custom_rate_override')
+          .select('id, activity_category_id, custom_rate_override, approval_status, is_active')
           .eq('talent_id', talentId),
       ]);
 
@@ -243,7 +245,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       setBookingMode(talentData?.serviceMode === 'Online Only' ? 'online' : 'offline');
       setCategories(categoriesData);
       setAvailabilitySlots((availabilityRes.data as TalentAvailabilityRow[]) || []);
-      setServiceRateOverrides(Object.fromEntries((serviceRatesRes.data || []).map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
+      const approvedServiceRows = (serviceRatesRes.data || []).filter((row) => row.approval_status === 'approved' && row.is_active);
+      setServiceRateOverrides(Object.fromEntries(approvedServiceRows.map((row) => [row.activity_category_id, row.custom_rate_override == null ? null : Number(row.custom_rate_override)])));
+      setServiceIdsByCategory(Object.fromEntries(approvedServiceRows.map((row) => [row.activity_category_id, row.id])));
       const approvedMedia = mediaRows as TalentMediaRow[];
       const mediaWithSignedUrls = await Promise.all(approvedMedia.map(async (item) => {
         if (!item.storage_path) return { ...item, media_url: '' };
@@ -364,6 +368,11 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
       setBookingError('Pilih jenis aktivitas terlebih dahulu.');
       return;
     }
+    const finalServiceId = serviceIdsByCategory[finalActivity];
+    if (!finalServiceId) {
+      setBookingError('Layanan ini belum memiliki identitas layanan yang valid. Silakan pilih layanan lain atau hubungi Admin.');
+      return;
+    }
 
     // 4. Meeting Location / Online Platform Guard
     if (!meetingLocation.trim()) {
@@ -405,10 +414,9 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
     setIsSubmittingBooking(true);
 
     try {
-      // 6. Create booking via server-side RPC create_booking
-      const { data: rpcData, error: rpcError } = await supabase.rpc('create_booking', {
-        p_talent_id: talent.id,
-        p_activity_category_id: finalActivity,
+      // 6. Create booking from the exact approved Social Experience service ID
+      const { data: rpcData, error: rpcError } = await supabase.rpc('create_booking_for_service', {
+        p_service_id: finalServiceId,
         p_booking_mode: bookingMode,
         p_start_time: startDateTime.toISOString(),
         p_duration_hours: durationHours,
