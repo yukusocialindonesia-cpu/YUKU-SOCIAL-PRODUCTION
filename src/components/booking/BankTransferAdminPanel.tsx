@@ -23,6 +23,7 @@ export const BankTransferAdminPanel: React.FC = () => {
   const load = useCallback(async () => {
     const requestId = ++loadRequestIdRef.current;
     const db = supabase as any;
+    setError('');
     try {
       const [{ data: cfg, error: cfgError }, { data: submissions, error: submissionsError }] = await Promise.all([
         db.from('bank_transfer_settings').select('*').eq('id', true).maybeSingle(),
@@ -47,12 +48,15 @@ export const BankTransferAdminPanel: React.FC = () => {
         setActive(!!cfg.is_active);
       }
       setBookingStatus(map);
-    } catch (error) {
-      if (requestId === loadRequestIdRef.current) throw error;
+    } catch (error: any) {
+      // Error dari permintaan lama tidak boleh menimpa status permintaan terbaru.
+      if (requestId === loadRequestIdRef.current) {
+        setError(error?.message || 'Gagal memuat data transfer bank.');
+      }
     }
   }, []);
 
-  useEffect(() => { load().catch((e: any) => setError(e?.message || 'Gagal memuat data transfer bank.')); }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
   const save = async () => {
     setBusy(true); setError(''); setMessage('');
