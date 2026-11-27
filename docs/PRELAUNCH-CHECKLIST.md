@@ -15,11 +15,11 @@ Status: **belum production-ready**. Centang hanya setelah diverifikasi sendiri.
 - [ ] Buat akun admin HANYA lewat `SELECT public.provision_admin_user('<uuid>')` di SQL Editor.
 - [ ] Ulangi urutan yang sama di produksi hanya setelah staging bersih.
 
-## C. Pembayaran (Xendit)
-- [ ] Deploy `create-checkout` dan `xendit-webhook --no-verify-jwt`; set secrets `XENDIT_SECRET_KEY`, `XENDIT_CALLBACK_TOKEN`, `APP_BASE_URL`.
-- [ ] Daftarkan URL callback invoice di dashboard Xendit.
-- [ ] Uji sandbox: bayar sukses, nominal tidak cocok (ditolak), callback token salah (401), callback ganda (idempotent), invoice kedaluwarsa.
-- [ ] Baru setelah lulus: set `system_feature_flags.payment_checkout = TRUE` dan `VITE_PAYMENT_CHECKOUT_ENABLED=true` pada hosting.
+## C. Pembayaran manual (QRIS & transfer bank)
+- [ ] Pastikan hanya metode pembayaran yang aktif dan telah diverifikasi Finance yang ditampilkan kepada Customer.
+- [ ] Uji penguncian satu metode pembayaran per booking, kepemilikan booking, nominal persis, masa berlaku, dan bukti pembayaran privat.
+- [ ] Uji persetujuan Finance, penolakan bukti, pengiriman ulang, callback/status ganda, dan settlement idempotent.
+- [ ] Xendit telah dipensiunkan dari checkout baru; jangan menambahkan secrets, callback, atau Edge Function Xendit.
 
 ## D. Data pribadi & hukum (perlu peninjauan profesional)
 - [ ] Kebijakan Privasi/Syarat mencerminkan praktik nyata: NIK dan rekening disimpan sebagai teks di database; foto KTP di bucket privat. Klaim "terenkripsi" sudah dihapus dari UI. Jika ingin enkripsi kolom, rancang dengan Supabase Vault/pgsodium dan uji alur review admin.
