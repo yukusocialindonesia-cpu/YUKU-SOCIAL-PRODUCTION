@@ -246,3 +246,35 @@ Several local migrations share version prefixes; see the collision audit and can
 - No migration in this report is approved for execution.
 
 Related: [PR #265 historical filename alignment](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/265), [PR #287 feature branch](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/287), [collision and canonical manifest](https://github.com/yukusocialindonesia-cpu/YUKU-id/blob/design/beranda-brand-promise-v2/docs/YUKU-CANONICAL-MIGRATION-MANIFEST-COLLISIONS-2026-11-27.md).
+
+
+## Historical source trail verified in GitHub
+
+The following merged PRs establish provenance for some Production migrations and are **not part of the 35 unmatched Production records** because their normalized names are already represented by files in the current feature branch:
+
+| PR | Verified change | Evidence |
+|---|---|---|
+| [#39](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/39) | Three Community migrations: MVP, private moderation helper, FK indexes | Merged to `main`; changed-file list contains the three timestamped SQL files |
+| [#40](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/40) | Active `activity_categories` public read policy | Merged to `main`; migration `20261121110017_fix_activity_categories_anon_read.sql` |
+| [#41](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/41) | Public RLS helper EXECUTE permissions | Merged to `main`; migration `20261121110823_allow_public_rls_permission_checks.sql` |
+| [#246](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/246) | Account-guard migration filename aligned to Production version `20261124081950` | Merged to `main`; PR body says SQL contents unchanged |
+| [#247](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/247) | Public read policy for eligible Talent schedules | Merged to `main`; changed-file list contains `20261124150000_public_talent_availability_read.sql` |
+| [#263](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/263) | Professional Services taxonomy and application lifecycle | Merged to `main`; PR changed-file list includes the foundational Professional Services SQL migrations |
+| [#272](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/272) | Professional Services Data API grants | Merged to `main`; migration `20261126190000_grant_professional_service_data_api_roles.sql` |
+| [#273](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/273) | Public Professional listing account gate | Merged to `main`; migration `20261127000000_fix_professional_listing_public_account_gate.sql` |
+| [#274](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/274) | Professional application revision attestation hardening | Merged to `main`; migration `20261127001000_harden_professional_application_revision_attestation_fields.sql` |
+
+PR #265 remains open and is a separate historical filename-alignment change. It renames 22 older local files without changing SQL. It is not a record that the 35 unmatched Production SQL sources have been recovered.
+
+## What the 35 unmatched Production records mean
+
+- **34 records dated 17–21 November** have no normalized-name candidate in the current feature branch. The repository PR evidence above recovers provenance for several adjacent features, but does not provide the missing SQL source for these 34 records.
+- **1 record** — `20261126124333 restore_private_active_provider_gate_after_policy_hardening` — has no matching local file. It appears in the Professional Services eligibility hardening sequence; the current branch contains later public/provider guard migrations, but equivalence or supersession is not established by names alone.
+- These 35 records should be labelled **historical SQL source not located**, not automatically “manual SQL” or “missing from live schema.” Migration history proves that a version/name was recorded; it does not expose the SQL body or prove the current object state.
+
+## Next recovery route
+
+1. Search the original deployment runner logs, archived SQL bundles, developer workstation history, and Supabase migration artifacts for the exact 35 version/name pairs.
+2. For each recovered source, preserve its original bytes and compute a checksum before comparing it with current Production definitions.
+3. Where no source is recoverable, document the affected database objects and reconstruct only through a separately reviewed, forward-only migration. Do not pretend a reconstruction is the original migration.
+4. Resolve the 3 duplicate Production names independently; they remain ambiguous even if other historical sources are found.
