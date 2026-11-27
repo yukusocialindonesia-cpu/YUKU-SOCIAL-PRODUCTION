@@ -105,9 +105,10 @@ export function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
   })();
 
   categoriesRequest = request;
-  void request.catch(() => {
+  const clearRequest = () => {
     if (categoriesRequest === request) categoriesRequest = null;
-  });
+  };
+  void request.then(clearRequest, clearRequest);
 
   return request;
 }
@@ -361,6 +362,6 @@ export async function fetchHeroSlidesFromSupabase(): Promise<HeroSlideRow[]> {
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 
-  if (error) return [];
+  if (error) throw error;
   return (data as HeroSlideRow[]) || [];
 }
