@@ -194,3 +194,24 @@ The canonical integration branch now includes:
 - Stage C contract checks C17–C19: direct grants/policy absence, Support RPC guard/row lock/audit, and notification text exclusion.
 
 These are source-only. They have not been applied to Production or tested on isolated Staging. Public Talent rate-column exposure, migration-history mismatch, identity evidence, media policy, sanctioned-account state, and Realtime/chat findings remain release blockers pending full Staging replay and negative tests.
+
+
+## Production advisor snapshot — 28 Nov 2026 (read-only)
+
+Supabase Security Advisor returned these findings on the linked Production project:
+- 5 `SECURITY DEFINER` functions executable by `anon`, including `guard_talent_media_moderation_fields()`, `can_read_talent_media_object(text)`, `has_admin_permission(text)`, `is_super_admin()`, and `is_talent_publicly_visible(uuid)`.
+- 61 `SECURITY DEFINER` functions executable by `authenticated`. This is not automatically a vulnerability: each function needs a permission/body review; Admin RPCs commonly use an internal permission gate. Do not blanket-revoke grants without mapping client and policy dependencies.
+- Auth leaked-password protection is disabled (one warning); enable after checking the Auth setting and communicating the sign-in behavior change.
+- Three private-schema tables have RLS but no policies (`private.admin_accounts`, `private.admin_permissions`, `private.talent_service_locations`); verify they are intentionally inaccessible through exposed API roles.
+
+Performance Advisor snapshot:
+- 34 RLS policies re-evaluate auth/current_setting expressions per row (wrap stable auth calls in scalar SELECT where correct).
+- 11 foreign keys have no covering index.
+- 2 tables have multiple permissive SELECT policies.
+- 45 indexes are currently unused; do not remove without workload and retention analysis.
+
+Health Advisor returned no findings. These advisor snapshots are advisory and were read-only. They are not evidence that all application paths are secure; the five anon-executable functions, the 61 authenticated-executable definer functions, and password protection remain explicit review items. No Production setting, grant, policy, function, or migration was changed.
+
+## Staging dependency
+
+The Supabase project exposes only the `main` development branch, currently marked `MIGRATIONS_FAILED` (preview project status `ACTIVE_HEALTHY`). There is no separate healthy Staging branch to validate the 129-entry Production migration history and the current canonical PR migrations. Creating a dedicated development branch can incur hourly compute charges; do not create it until the organization and quoted cost are confirmed.
