@@ -266,7 +266,7 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
 
   const { data: servicesData, error: servicesError } = await supabase
     .from('talent_services')
-    .select('talent_id, activity_category_id, custom_title, custom_description, approval_status, is_active')
+    .select('id, talent_id, activity_category_id, custom_title, custom_description, approval_status, is_active')
     .in('talent_id', talentsData.map((talent) => talent.id));
 
   if (servicesError) {
@@ -274,7 +274,7 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
   }
 
   const servicesMap = new Map<string, string[]>();
-  const offersMap = new Map<string, { categoryId: string; title: string; description: string }[]>();
+  const offersMap = new Map<string, { id: string; categoryId: string; title: string; description: string }[]>();
   (servicesData || []).filter((service) => service.approval_status === 'approved' && service.is_active).forEach((service) => {
     const existing = servicesMap.get(service.talent_id) || [];
     existing.push(service.activity_category_id);
