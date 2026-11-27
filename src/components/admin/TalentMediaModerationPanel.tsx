@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CheckCircle2, Image as ImageIcon, Loader2, Mic, RefreshCw, Video, XCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -15,6 +15,7 @@ const statusLabel: Record<ModerationStatus, string> = {
 
 export const TalentMediaModerationPanel: React.FC = () => {
   const [items, setItems] = useState<MediaRow[]>([]);
+  const loadRequestIdRef = useRef(0);
   const [filter, setFilter] = useState<ModerationStatus | 'all'>('pending');
   const [loading, setLoading] = useState(true);
   const [workingId, setWorkingId] = useState<string | null>(null);
@@ -36,18 +37,21 @@ export const TalentMediaModerationPanel: React.FC = () => {
   };
 
   const loadItems = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true); setError(null);
     try {
       const { data, error: queryError } = await supabase.from('talent_media')
         .select('id,talent_id,media_type,media_url,storage_path,caption,created_at,moderation_status,moderation_reason')
         .order('created_at', { ascending: false }).limit(100);
       if (queryError) throw queryError;
+      if (requestId !== loadRequestIdRef.current) return;
       const rows = (data || []) as MediaRow[];
       const talentIds = Array.from(new Set(rows.map((row) => row.talent_id)));
       const { data: profiles, error: profileError } = talentIds.length
         ? await supabase.from('talent_profiles').select('id,display_name,city').in('id', talentIds)
         : { data: [], error: null };
       if (profileError) throw profileError;
+      if (requestId !== loadRequestIdRef.current) return;
       const profileMap = new Map((profiles || []).map((profile) => [profile.id, profile]));
       const enriched = await Promise.all(rows.map(async (row) => {
         let signedUrl: string | null = null;
@@ -57,10 +61,11 @@ export const TalentMediaModerationPanel: React.FC = () => {
         }
         return { ...row, signed_url: signedUrl, talent_name: profileMap.get(row.talent_id)?.display_name || 'Talent' };
       }));
-      setItems(enriched);
+      if (requestId === loadRequestIdRef.current) setItems(enriched);
     } catch (err) {
+      if (requestId !== loadRequestIdRef.current) return;
       setError(err instanceof Error ? err.message : 'Gagal memuat antrean moderasi media.');
-    } finally { setLoading(false); }
+    } finally { if (requestId === loadRequestIdRef.current) setLoading(false); }
   }, []);
 
   useEffect(() => { void loadItems(); }, [loadItems]);
@@ -93,13 +98,13 @@ export const TalentMediaModerationPanel: React.FC = () => {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div><h3 className="text-base font-black text-slate-900">Moderasi Galeri Talent</h3>
             <p className="mt-1 text-xs text-slate-500">Foto, video, dan audio baru hanya tampil di profil publik setelah disetujui Admin Talent.</p></div>
-          <button type="button" onClick={() => void loadItems()} disabled={loading} className="inline-flex items-center justify-center gap-2 min-h-11 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
+          <button type="button" onClick={() => void loadItems()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">
             <RefreshCw className={loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} /> Muat ulang
           </button>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {(['pending', 'approved', 'rejected', 'all'] as const).map((value) => (
-            <button key={value} type="button" onClick={() => setFilter(value)} className={'min-h-11 rounded-xl border px-3 py-2 text-xs font-bold ' + (filter === value ? 'border-purple-600 bg-purple-50 text-purple-800' : 'border-slate-200 text-slate-600')}>
+            <button key={value} type="button" onClick={() => setFilter(value)} className={'rounded-xl border px-3 py-2 text-xs font-bold ' + (filter === value ? 'border-purple-600 bg-purple-50 text-purple-800' : 'border-slate-200 text-slate-600')}>
               {(value === 'all' ? 'Semua' : statusLabel[value]) + ' (' + (value === 'all' ? items.length : counts[value]) + ')'}
             </button>
           ))}
@@ -135,12 +140,12 @@ export const TalentMediaModerationPanel: React.FC = () => {
                 {item.moderation_status === 'approved' ? (
                   <div className="space-y-2 pt-1">
                     <div className="flex items-center gap-1 text-[11px] text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" /> Disetujui; tampil jika profil Talent juga aktif dan disetujui</div>
-                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex w-full items-center justify-center gap-1 min-h-11 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Cabut persetujuan</button>
+                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Cabut persetujuan</button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2 pt-1">
-                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'approved')} className="inline-flex items-center justify-center gap-1 min-h-11 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-3.5 w-3.5" /> Setujui</button>
-                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex items-center justify-center gap-1 min-h-11 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Tolak</button>
+                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'approved')} className="inline-flex items-center justify-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-3.5 w-3.5" /> Setujui</button>
+                    <button type="button" disabled={workingId === item.id} onClick={() => void review(item, 'rejected')} className="inline-flex items-center justify-center gap-1 rounded-lg bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50"><XCircle className="h-3.5 w-3.5" /> Tolak</button>
                   </div>
                 )}
               </div>
