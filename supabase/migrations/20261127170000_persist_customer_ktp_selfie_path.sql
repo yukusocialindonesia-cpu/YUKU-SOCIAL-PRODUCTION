@@ -27,11 +27,8 @@ begin
         and not exists (
           select 1
           from public.user_identities ui
-          where ui.id = auth.uid()
-            and (
-              ui.ktp_storage_path = objects.name
-              or ui.selfie_storage_path = objects.name
-            )
+          where ui.ktp_storage_path = objects.name
+             or ui.selfie_storage_path = objects.name
         )
       );
   end if;
@@ -161,7 +158,7 @@ begin
       select 1 from storage.objects o
       where o.bucket_id = 'ktp-documents'
         and o.name = new.ktp_storage_path
-        and (o.owner = new.id or o.owner_id = new.id::text)
+        and (o.owner = new.id::text or o.owner_id = new.id::text)
     ) then
       raise exception 'KTP tidak dapat diverifikasi: file tidak ditemukan atau bukan milik akun tersebut.';
     end if;
@@ -180,7 +177,7 @@ begin
         select 1 from storage.objects o
         where o.bucket_id = 'ktp-documents'
           and o.name = new.selfie_storage_path
-          and (o.owner = new.id or o.owner_id = new.id::text)
+          and (o.owner = new.id::text or o.owner_id = new.id::text)
       ) then
         raise exception 'KTP Customer tidak dapat diverifikasi: selfie tidak ditemukan atau bukan milik akun tersebut.';
       end if;
