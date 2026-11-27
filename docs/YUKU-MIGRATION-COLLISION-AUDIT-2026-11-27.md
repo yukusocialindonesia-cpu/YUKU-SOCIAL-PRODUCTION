@@ -29,7 +29,7 @@ Policy pada file Phase B tidak memuat seluruh pemeriksaan usia dan KTP tersebut.
 
 **Keputusan:** jangan jalankan Phase B setelah `00700`. Tandai sebagai superseded setelah regression test membuktikan bahwa seluruh perilaku Phase B sudah tercakup oleh `00700` dan migrasi revision-attestation berikutnya.
 
-### 3. `20261127001000_harden_professional_application_revision_attestation_fields.sql`
+### 3. `20261127001200_harden_professional_application_revision_attestation_fields.sql`
 
 Komentarnya secara eksplisit bergantung pada provider profile dari `00700`. File ini harus berada setelah jalur identitas Profesional lengkap, bukan setelah Phase A lama.
 
@@ -81,3 +81,8 @@ Ini adalah urutan dependency dari source SQL, **bukan** instruksi untuk menjalan
 - `supabase/ops/merchant_partner_staging_preflight.sql`
 - PR #265: https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/265
 - PR #287: https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/287
+
+
+## Follow-up correction record — 27 Nov 2026
+
+The source branches were corrected without touching Supabase: preserve the historical `20261127001000_harden_professional_application_revision_attestation_fields.sql` from `main`; use `01100` for KTP evidence; use `01200` for the new Provider-specific revision policy; and use `00800` for legacy public Talent policy removal. PR #284's exact-service booking migration is `11000`. The remaining `04000` Provider Phase A / Merchant membership collision is unresolved. The old Provider Phase A and Phase B migrations are marked superseded in the canonical manifest, but remain in the PR ancestry; do not replay this stack or merge it as-is.
