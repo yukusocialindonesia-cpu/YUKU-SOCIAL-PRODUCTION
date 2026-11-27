@@ -6,9 +6,9 @@ Move Social Experience booking identity from the ambiguous provider/category pai
 
 ## What this branch changes
 
-### Database migration 40
+### Database migration 60 (must follow Merchant migration 50 when both release branches are integrated)
 
-`20261127004000_social_experience_service_id_foundation.sql`:
+`20261127006000_social_experience_service_id_foundation.sql`:
 - Adds nullable `bookings.service_id` with a foreign key to `talent_services.id`.
 - Adds immutable service title and description snapshots for new bookings.
 - Backfills service IDs for legacy bookings only where the existing talent/category pair resolves to a service row.
@@ -25,7 +25,7 @@ Move Social Experience booking identity from the ambiguous provider/category pai
 - Talent detail loads approved/active service IDs and maps the selected category to its exact offer.
 - Booking submission now calls `create_booking_for_service` with `p_service_id`, rather than sending only the category.
 - Customer/Talent booking history prefers the immutable service title snapshot and falls back to the legacy category label.
-- Talent dashboard reads the snapshot fields when migration 40 exists and falls back to the legacy select on environments where those columns are not yet present.
+- Talent dashboard reads the snapshot fields when migration 60 exists and falls back to the legacy select on environments where those columns are not yet present.
 - Booking TypeScript shapes include nullable service identity snapshots for legacy compatibility.
 
 ### Tests
@@ -56,11 +56,11 @@ The production booking table also has a separate `trg_enforce_approved_talent_se
 
 ## Current environment blocker
 
-The connected Supabase project currently lists only its default `main` branch, and that branch reports `MIGRATIONS_FAILED`. No separate healthy staging branch is available in the connected project. Therefore migration 40 and the Stage D SQL checks have not been executed. Do not use the production project as a substitute staging target.
+The connected Supabase project currently lists only its default `main` branch, and that branch reports `MIGRATIONS_FAILED`. No separate healthy staging branch is available in the connected project. Therefore migration 60 and the Stage D SQL checks have not been executed. Do not use the production project as a substitute staging target.
 
 ## Required staging acceptance before merge/release
 
-1. Replay all migrations from a clean staging database in order, including taxonomy/custom-service migrations before migration 40.
+1. Replay all migrations from a clean staging database in order, including taxonomy/custom-service migrations before migration 60.
 2. Run the Stage D contract checks.
 3. Verify all historical bookings remain unchanged in status, price, payment, refund, earning, payout and review associations.
 4. Test an approved active offer and confirm new booking row has the expected `service_id`, title snapshot and description snapshot.
@@ -181,3 +181,8 @@ The payout allocator locks earning rows, reserves only the unallocated/unpaid ba
 Stage D.5 adds catalog/source-contract checks for the cancellation reversal guard, cumulative refund processor, retained-cancellation resolver, payout row-lock allocation, dispute payout guard and release/settlement of payout allocations. It does not replace staging tests for concurrent cancellation-vs-payout, duplicate refund callbacks, refund provider failure, payout failure/retry, or ledger reconciliation.
 
 No production ledger, booking, refund, payout, migration, or deployment was modified by this audit.
+
+
+## Cross-branch migration ordering
+
+This migration uses version `20261127006000` to avoid the `20261127004000` collision with PR #287's Merchant membership-management migration. When both PRs are released together, merge/integrate the PR #287 migration chain first (including Merchant offers version `05000`), then apply this Social Experience migration version `06000`. Do not merge/apply this branch's migration ahead of the lower-version Merchant migrations. Reconcile the complete canonical migration history in a clean Staging database before release.
