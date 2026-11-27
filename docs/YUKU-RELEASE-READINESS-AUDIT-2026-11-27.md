@@ -368,3 +368,11 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 - This removes the direct duplicate version with PR #287's Merchant membership-management migration (`20261127004000`).
 - Required release order remains explicit: integrate/reconcile PR #287's canonical migration chain (Merchant membership foundation/review/management/offers through `05000`) before applying PR #284's Social Experience migration `06000`.
 - This is a source-branch correction only. It does not validate the complete migration chain or substitute for a clean Staging replay; all PRs remain draft and no database was changed.
+
+
+**Staging provisioning constraint — 27 Nov 2026**
+- A fresh Supabase development branch is created by applying the migrations from the parent project; it is not an empty database that bypasses the parent migration chain.
+- The connected project currently exposes only its default `main` branch, whose status is `MIGRATIONS_FAILED`. Creating a child branch from this state is not a safe shortcut: the branch provisioning flow would attempt to apply the same parent migration history and may reproduce the failure before feature migrations can be tested.
+- No branch was created. Branch creation can incur hourly compute charges and requires cost disclosure/approval; it must also wait until the parent migration chain is repaired or a separate clean disposable Supabase project is provisioned.
+- Safe next step: identify the exact failed migration/error in the parent branch's deployment history, reconcile its migration source/history without touching Production, then provision a clean disposable Staging target and replay the canonical chain. If the parent is Production, do not repair it as a staging exercise; use a separate project instead.
+- This is a provisioning/dependency finding, not a claim that any feature migration has passed SQL execution. No database, migration history, or deployment was changed.
