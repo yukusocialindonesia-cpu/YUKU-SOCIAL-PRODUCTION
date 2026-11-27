@@ -331,3 +331,10 @@ Reviewed the 130 public SECURITY DEFINER functions, EXECUTE grants, active-accou
 - No confirmed cross-account exposure of KTP, legal identity, payment proof, payout/bank data, or internal Admin notes was found in the inspected RLS/column grants. This is not a certification of every table/function.
 
 No Production records, functions, grants, policies, triggers, account states, or deployments were changed.
+
+
+**Admin permission helper verification**
+- private.is_active_admin requires a non-null target user, an active admin_accounts row, users.role='admin', and users.account_status='active'.
+- private.has_admin_permission allow-lists only talent, booking, finance, and support, then requires an active Admin and either Super Admin level or the matching permission row.
+- private.is_super_admin delegates to the active-Admin check before testing the Super Admin level. Thus deactivated Admin rows and suspended Admin accounts fail these permission helpers even if an access token remains valid.
+- public.is_admin additionally returns true for a service_role JWT for trusted backend execution; the service-role key must remain server-side and must never be exposed to browsers/mobile clients.
