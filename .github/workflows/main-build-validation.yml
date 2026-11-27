@@ -75,3 +75,11 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 1
+
+      - name: Deploy safe homepage UI to Cloudflare Production
+        if: ${{ github.event_name == 'pull_request' && secrets.CLOUDFLARE_API_TOKEN != '' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 8e92427ca4a3a2eb73bf9a910812659e
+          command: deploy --config wrangler.toml
