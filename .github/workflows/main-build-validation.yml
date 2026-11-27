@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - release/homepage-ui-safe
       - fix/talent-media-moderation
       - feat/professional-services-categories
       - feat/independent-professional-provider-identity
@@ -66,3 +67,11 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Upload production assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: yuku-production-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
