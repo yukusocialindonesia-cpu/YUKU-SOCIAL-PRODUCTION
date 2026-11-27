@@ -28,7 +28,7 @@ BEGIN
 
   IF NOT has_function_privilege('authenticated', 'public.get_support_admin_reports()', 'EXECUTE')
      OR has_function_privilege('anon', 'public.get_support_admin_reports()', 'EXECUTE')
-     OR has_function_privilege('public', 'public.get_support_admin_reports()', 'EXECUTE') THEN
+ THEN
     v_failed := array_append(v_failed, 'support reports RPC grants are incorrect');
   END IF;
 
