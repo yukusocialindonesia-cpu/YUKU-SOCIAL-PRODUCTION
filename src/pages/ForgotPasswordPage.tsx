@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, ArrowRight, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Mail, ArrowRight, CheckCircle2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { AppRoute } from '../types/navigation';
 import { supabase } from '../lib/supabase';
@@ -12,21 +12,28 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMessage('');
+    setErrorMessage('');
     setLoading(true);
 
     try {
-      await supabase.auth.resetPasswordForEmail(email.trim(), {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: window.location.origin + '/reset-sandi',
       });
+      if (error) {
+        // Pesan generik tetap menjaga privasi: tidak mengungkap apakah email terdaftar.
+        setErrorMessage('Permintaan belum dapat diproses. Periksa koneksi lalu coba lagi.');
+        return;
+      }
+      setStatusMessage('Jika email terdaftar, tautan reset sudah dikirim.');
     } catch {
-      // Intentionally ignored so we always display a neutral response
+      setErrorMessage('Permintaan belum dapat diproses. Periksa koneksi lalu coba lagi.');
     } finally {
       setLoading(false);
-      setStatusMessage('Jika email terdaftar, tautan reset sudah dikirim.');
     }
   };
 
@@ -47,6 +54,13 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
           <div className="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 text-emerald-900 text-xs flex items-start gap-2.5 shadow-sm">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">{statusMessage}</p>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div role="alert" className="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200/80 text-rose-900 text-xs flex items-start gap-2.5 shadow-sm">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <p className="leading-relaxed">{errorMessage}</p>
           </div>
         )}
 
