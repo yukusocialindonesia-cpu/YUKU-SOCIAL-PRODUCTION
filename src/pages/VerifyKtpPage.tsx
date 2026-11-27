@@ -247,10 +247,10 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
     }
 
     setIsSubmitting(true);
+    const uploadedStoragePaths: string[] = [];
 
     try {
       const timestamp = Date.now();
-      const uploadedStoragePaths: string[] = [];
 
       // 1. Upload Foto KTP & Swafoto KTP to private bucket ktp-documents with upsert: false
       const ktpExt = ktpFile.name.split('.').pop() || 'jpg';
@@ -259,28 +259,20 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
       const selfieExt = selfieFile.name.split('.').pop() || 'jpg';
       const selfieStoragePath = `${currentUser.id}/selfie_${timestamp}.${selfieExt}`;
 
-      const [ktpUploadRes, selfieUploadRes] = await Promise.all([
-        supabase.storage.from('ktp-documents').upload(ktpStoragePath, ktpFile, {
-          upsert: false,
-        }),
-        supabase.storage.from('ktp-documents').upload(selfieStoragePath, selfieFile, {
-          upsert: false,
-        }),
-      ]);
-
+      const ktpUploadRes = await supabase.storage.from('ktp-documents').upload(ktpStoragePath, ktpFile, {
+        upsert: false,
+      });
       if (ktpUploadRes.data?.path) uploadedStoragePaths.push(ktpUploadRes.data.path);
-      if (selfieUploadRes.data?.path) uploadedStoragePaths.push(selfieUploadRes.data.path);
-
       if (ktpUploadRes.error || !ktpUploadRes.data) {
-        throw new Error(
-          `Gagal mengunggah foto e-KTP: ${ktpUploadRes.error?.message || 'Upload gagal'}`
-        );
+        throw new Error(`Gagal mengunggah foto e-KTP: ${ktpUploadRes.error?.message || 'Upload gagal'}`);
       }
 
+      const selfieUploadRes = await supabase.storage.from('ktp-documents').upload(selfieStoragePath, selfieFile, {
+        upsert: false,
+      });
+      if (selfieUploadRes.data?.path) uploadedStoragePaths.push(selfieUploadRes.data.path);
       if (selfieUploadRes.error || !selfieUploadRes.data) {
-        throw new Error(
-          `Gagal mengunggah swafoto dengan KTP: ${selfieUploadRes.error?.message || 'Upload gagal'}`
-        );
+        throw new Error(`Gagal mengunggah swafoto dengan KTP: ${selfieUploadRes.error?.message || 'Upload gagal'}`);
       }
 
       // 2. Check if user_identities row already exists (never send ktp_verification_status or id on update)
