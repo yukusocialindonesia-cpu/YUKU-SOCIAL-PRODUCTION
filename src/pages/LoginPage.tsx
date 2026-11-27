@@ -3,6 +3,7 @@ import { BrandLogo } from '../components/common/BrandLogo';
 import { Lock, Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { isEmailNotConfirmed, translateAuthError } from '../lib/authErrors';
 import { ResendConfirmation } from '../components/auth/ResendConfirmation';
 
@@ -11,6 +12,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
+  const { refreshRole } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -84,6 +86,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             : userRow.role === 'talent'
             ? '/dashboard-talent'
             : '/talent';
+
+        await refreshRole();
 
         setSuccessMsg(`Selamat datang kembali, ${data.user.email}!`);
         // Navigasi langsung setelah autentikasi berhasil agar tidak kembali
