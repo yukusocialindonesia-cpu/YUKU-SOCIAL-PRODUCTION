@@ -1,7 +1,9 @@
 -- STAGE D: payment route lock tests.
 -- Run only in STAGING with suitable fixture users/bookings.
--- Expected invariant:
---   NULL -> xendit OR NULL -> manual_qris is allowed once;
---   xendit -> manual_qris and manual_qris -> xendit are rejected;
+-- Expected invariant after Xendit retirement:
+--   NULL -> manual_qris OR NULL -> manual_bank_transfer is allowed once;
+--   Xendit/unknown routes are rejected;
+--   manual_qris -> manual_bank_transfer and the reverse are rejected;
 --   same-route re-claim is idempotent.
--- See docs/AUDIT-AND-PAYMENT-ROUTE-LOCK-2026-11-13.md for execution notes.
+-- The retirement migration must fail closed if legacy Xendit-routed bookings exist.
+-- See docs/AUDIT-AND-PAYMENT-ROUTE-LOCK-2026-11-13.md for historical context.
