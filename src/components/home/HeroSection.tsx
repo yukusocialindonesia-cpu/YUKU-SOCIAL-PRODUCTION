@@ -108,7 +108,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       aria-roledescription="carousel"
       aria-label="Sorotan YUKU"
-      className="relative overflow-hidden bg-gradient-to-br from-[#F8F4FF] via-white to-[#FFF8F1] md:from-purple-100 md:via-fuchsia-50 md:to-amber-50"
+      className="relative overflow-hidden bg-[#F7F5FA]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {
@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-4 mt-1 h-[clamp(140px,42vw,190px)] sm:h-[clamp(220px,34vw,300px)] rounded-[26px] overflow-hidden border border-white shadow-[0_16px_36px_rgba(76,29,149,0.16),0_3px_10px_rgba(76,29,149,0.06)] ring-1 ring-purple-100/80 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-3 mt-2 h-[clamp(92px,25vw,142px)] sm:mx-6 sm:h-[clamp(150px,24vw,210px)] rounded-[20px] sm:rounded-[26px] overflow-hidden border border-white/80 shadow-[0_14px_34px_rgba(49,16,91,0.16)] ring-1 ring-[#E9DDF5] md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
@@ -255,7 +255,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Konten tetap di depan slide */}
       <div
-        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1.5 pb-1 md:pt-16 md:pb-16"
+        className="relative z-10 pointer-events-none max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-4 md:pt-14 md:pb-14"
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
@@ -268,10 +268,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[clamp(1.75rem,5.2vw,3.75rem)] leading-[1.06] font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
+          <h1 className="text-[clamp(1.55rem,4.8vw,3.4rem)] leading-[1.06] font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
-            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
+            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#32105B] to-[#D7A83E] bg-clip-text text-transparent">
               Real Moments.
             </span>
           </h1>
@@ -281,7 +281,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </p>
         </div>
 
-        <div className="mt-1 md:mt-8 md:max-w-3xl pointer-events-auto">
+        <div className="mt-2 md:mt-6 md:max-w-3xl pointer-events-auto">
           <SearchActivityWidget onSearch={onSearch} />
           {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
