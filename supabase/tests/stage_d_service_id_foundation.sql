@@ -357,3 +357,31 @@ BEGIN
   END IF;
 END;
 $$;
+
+
+-- Stage D.5: multi-profile booking authorization must not depend on primary users.role.
+DO $$
+DECLARE
+  v_booking_function TEXT;
+BEGIN
+  v_booking_function := pg_get_functiondef(
+    'public.create_booking(uuid,text,public.booking_mode_type,timestamp with time zone,numeric,text,text)'::regprocedure
+  );
+
+  IF position('v_customer.role' IN v_booking_function) > 0
+     OR position('v_talent.role' IN v_booking_function) > 0 THEN
+    RAISE EXCEPTION 'Booking authorization must use profiles/capabilities, not the legacy primary users.role';
+  END IF;
+
+  IF position('public.customer_profiles' IN v_booking_function) = 0
+     OR position('is_talent_publicly_visible' IN v_booking_function) = 0 THEN
+    RAISE EXCEPTION 'Booking must require a real Customer profile and a publicly eligible Talent profile';
+  END IF;
+
+  IF position('is_verified_18' IN v_booking_function) = 0
+     OR position('ktp_verification_status' IN v_booking_function) = 0
+     OR position('account_status' IN v_booking_function) = 0 THEN
+    RAISE EXCEPTION 'Multi-profile booking must retain account, age and KTP eligibility checks';
+  END IF;
+END;
+$$;
