@@ -186,3 +186,8 @@ No production ledger, booking, refund, payout, migration, or deployment was modi
 ## Cross-branch migration ordering
 
 This migration uses version `20261127006000` to avoid the `20261127004000` collision with PR #287's Merchant membership-management migration. When both PRs are released together, merge/integrate the PR #287 migration chain first (including Merchant offers version `05000`), then apply this Social Experience migration version `06000`. Do not merge/apply this branch's migration ahead of the lower-version Merchant migrations. Reconcile the complete canonical migration history in a clean Staging database before release.
+
+
+## Multi-profile booking authorization
+
+The legacy primary `users.role` must not decide whether an account can act as a Customer or be booked as a Talent. The booking RPC now requires an existing `customer_profiles` row for the booking actor and an approved, publicly visible `talent_profiles` row for the provider, while retaining active-account, 18+, KTP, payment, schedule, availability, and pricing checks. This is required because active Talent accounts may also have Customer profiles. The old `create_booking` signature remains available for legacy clients; the exact-ID RPC delegates to the same hardened implementation.
