@@ -42,7 +42,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           .maybeSingle();
 
         if (userRowError || !userRow) {
-          await supabase.auth.signOut({ scope: 'global' });
+          await supabase.auth.signOut({ scope: 'local' });
           setErrorMsg('Data akun belum dapat diverifikasi. Silakan coba lagi.');
           return;
         }
@@ -56,9 +56,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         // lanjutkan langsung ke formulir agar pengguna tidak tersesat di dashboard kosong.
         let hasTalentDraft = false;
         try {
-          hasTalentDraft = Boolean(localStorage.getItem('yuku_talent_registration_draft'));
+          const rawDraft = localStorage.getItem('yuku_talent_registration_draft');
+          if (rawDraft) {
+            const draft = JSON.parse(rawDraft) as { email?: unknown };
+            hasTalentDraft =
+              typeof draft.email === 'string' &&
+              draft.email.trim().toLowerCase() === (data.user.email || email).trim().toLowerCase();
+          }
         } catch {
-          // Abaikan jika penyimpanan browser tidak tersedia
+          // Draf rusak atau penyimpanan browser tidak tersedia: jangan gunakan draf.
         }
 
         const targetRoute: AppRoute =
@@ -157,12 +163,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-slate-600">
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="accent-purple-700 rounded" />
-              <span>Ingat saya</span>
-            </label>
-            <span className="text-slate-400">Verifikasi 18+</span>
+          <div className="text-[11px] text-slate-500">
+            Sesi login tersimpan di perangkat ini sampai Anda keluar dari akun.
           </div>
 
           <button
