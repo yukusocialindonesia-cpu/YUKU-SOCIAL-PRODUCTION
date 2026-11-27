@@ -422,7 +422,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'talent' && (
+                {talentWorkspaceAvailable && (
                   <button
                     onClick={() => handleLinkClick('/dashboard-talent')}
                     className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
@@ -436,7 +436,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'customer' && (
+                {customerAvailable && (
                   <>
                     <button
                       onClick={() => handleLinkClick('/profil-saya')}
@@ -482,6 +482,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   <Store className="w-4 h-4 text-fuchsia-700" />
                   <span>{accessSnapshot?.capabilities.merchantMemberships.length ? 'Merchant Center' : 'Daftarkan Bisnis'}</span>
                 </button>
+
+                {professionalWorkspaceAvailable && (
+                  <button
+                    onClick={() => handleLinkClick('/daftar-jasa-profesional')}
+                    className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                      currentPath === '/daftar-jasa-profesional' ? 'bg-fuchsia-100 text-fuchsia-900' : 'hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <ShoppingBag className="w-4 h-4 text-fuchsia-700" />
+                    <span>Jasa Profesional</span>
+                  </button>
+                )}
 
                 <button
                   onClick={() => handleLinkClick('/ganti-sandi')}
