@@ -124,10 +124,10 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Auth state for booking
-  const { user: currentUser, role, accessSnapshot } = useAuth();
+  const { user: currentUser, role, accountStatus, accessSnapshot } = useAuth();
   const canBookAsCustomer = accessSnapshot
-    ? accessSnapshot.capabilities.customer.available
-    : role === 'customer';
+    ? accessSnapshot.capabilities.customer.available && accessSnapshot.accountStatus === 'active'
+    : role === 'customer' && accountStatus === 'active';
 
   // Real Booking Form States
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
