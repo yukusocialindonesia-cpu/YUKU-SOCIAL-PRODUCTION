@@ -10,7 +10,7 @@ Production currently lists three ACTIVE Edge Functions:
 - `admin-management` — version 3, JWT verification enabled.
 - `yuku-push` — version 4, platform JWT verification disabled; function performs its own user-token or webhook-secret authentication.
 
-The repository also contains `create-checkout` and `xendit-webhook`, but neither appears in the active Production function inventory. The Xendit code comments explicitly say sandbox testing has not been completed. Therefore Xendit checkout/webhook must remain disabled until deployment, sandbox reconciliation and end-to-end testing are completed.
+Retirement update (27 Nov 2026): Xendit checkout and webhook source files have been removed on the retirement branch. Neither function was active in Production. New checkout is retained only for manual QRIS and bank transfer; historical provider values remain for record compatibility. No Production deployment or secret change has occurred.
 
 ## Findings
 
@@ -77,7 +77,7 @@ Remediation: use a constant-time comparison helper with equal-length byte arrays
 - [ ] Harden webhook secret comparison and replay handling.
 - [ ] Add provider-side Xendit invoice verification and durable event receipts.
 - [ ] Complete Xendit sandbox/Staging tests before deploying checkout/webhook.
-- [ ] Run frontend build, Deno checks, automated tests and GitHub Actions.
+- [ ] Confirm Xendit secrets/callback are retired operationally after release approval.\n- [ ] Run frontend build, Deno checks, automated tests and GitHub Actions.
 
 ## Change boundary
 
