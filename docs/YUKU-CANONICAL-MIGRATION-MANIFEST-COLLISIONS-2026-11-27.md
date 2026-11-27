@@ -178,15 +178,17 @@ Reference: [PR #265 reconciliation](https://github.com/yukusocialindonesia-cpu/Y
 
 ## Filename-level normalization audit on the 143-file feature branch — 27 November 2026
 
-A second, deliberately conservative comparison was run directly against the current `design/beranda-brand-promise-v2` migration directory and the live 129-entry Production history. The comparison strips the local version prefix, an optional `yuku_` prefix, and an embedded timestamp prefix from the recorded migration name. It compares **names only**; it does not inspect or prove SQL equivalence.
+A second, deliberately conservative comparison was run directly against the current `design/beranda-brand-promise-v2` migration directory and the live 129-entry Production history. The comparison strips a local version prefix, an optional `yuku_` prefix, and legacy numeric/timestamp prefixes from either side. It compares **names only**; it does not inspect or prove SQL equivalence. This normalization supersedes the earlier draft calculation in this section.
 
 | Result | Count | Meaning |
 |---|---:|---|
-| Unique normalized-name candidates | 64 | One Production record has the same normalized descriptive name |
+| Unique normalized-name candidates | 88 | One Production record has the same normalized descriptive name |
 | Ambiguous candidates | 3 | The same normalized name exists more than once in Production |
-| No normalized-name candidate | 76 | No direct normalized-name pair found |
+| No normalized-name candidate | 52 | No direct normalized-name pair found |
 | Current feature-branch SQL files | 143 | Full folder count |
 | Production migration history records | 129 | Live read-only count |
+
+On the Production side, **35 of 129 records** have no normalized-name candidate in the current 143-file branch. These are not necessarily missing applied SQL: some may be out-of-band changes, deleted historical sources, or changes subsumed by later migrations. The 35 records are enumerated in the PR #265 reconciliation report; source recovery and object-level comparison remain required.
 
 The three ambiguous names are:
 - `require_professional_verification_attestation`: Production versions `20261126123853` and `20261126124316`.
@@ -211,3 +213,8 @@ These duplicate Production names are not automatically duplicate SQL: they may b
 4. Review the 76 no-candidate files for historical rename, new feature, superseded change, or manual SQL provenance.
 5. Build a canonical staging replay plan only after these classifications and a healthy non-Production target are available.
 6. Keep Production read-only; no migration SQL, history repair, or deployment action is authorized by this audit.
+
+
+### Audit correction — legacy numeric prefixes
+
+The first pass of this feature-branch normalization did not strip the legacy two-digit sequence prefix on the Production side (for example, `yuku_08_...`). That undercounted candidate matches. The corrected normalization strips these numeric prefixes from both sides and yields **88 unique candidates, 3 ambiguous local files, and 52 local files with no candidate**. The Production-side unmatched count is **35**. The counts above are the corrected snapshot; all are filename-only candidates, not SQL equivalence claims.
