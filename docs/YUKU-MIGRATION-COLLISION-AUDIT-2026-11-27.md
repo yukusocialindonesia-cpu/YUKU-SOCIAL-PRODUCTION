@@ -11,7 +11,7 @@ Tidak ada perubahan database, migration history, Staging, atau Production dalam 
 
 ## Temuan kritis — Professional Provider
 
-### 1. `20261127000700_professional_provider_identity_decoupling.sql` vs `20261127004000_create_independent_professional_provider_profiles.sql`
+### 1. `20261127001400_professional_provider_identity_decoupling.sql` vs `20261127004000_create_independent_professional_provider_profiles.sql`
 
 Kedua file membuat `public.professional_provider_profiles`.
 
@@ -29,7 +29,7 @@ Policy pada file Phase B tidak memuat seluruh pemeriksaan usia dan KTP tersebut.
 
 **Keputusan:** jangan jalankan Phase B setelah `00700`. Tandai sebagai superseded setelah regression test membuktikan bahwa seluruh perilaku Phase B sudah tercakup oleh `00700` dan migrasi revision-attestation berikutnya.
 
-### 3. `20261127001200_harden_professional_application_revision_attestation_fields.sql`
+### 3. `20261127001500_harden_professional_application_revision_attestation_fields.sql`
 
 Komentarnya secara eksplisit bergantung pada provider profile dari `00700`. File ini harus berada setelah jalur identitas Profesional lengkap, bukan setelah Phase A lama.
 
@@ -86,3 +86,12 @@ Ini adalah urutan dependency dari source SQL, **bukan** instruksi untuk menjalan
 ## Follow-up correction record — 27 Nov 2026
 
 The source branches were corrected without touching Supabase: preserve the historical `20261127001000_harden_professional_application_revision_attestation_fields.sql` from `main`; use `01100` for KTP evidence; use `01200` for the new Provider-specific revision policy; and use `00800` for legacy public Talent policy removal. PR #284's exact-service booking migration is `11000`. The remaining `04000` Provider Phase A / Merchant membership collision is unresolved. The old Provider Phase A and Phase B migrations are marked superseded in the canonical manifest, but remain in the PR ancestry; do not replay this stack or merge it as-is.
+
+
+## Final canonical status — source branches, 27 Nov 2026
+
+This section supersedes the earlier follow-up correction notes in this document. Historical files already present on `main` have been restored unchanged; no applied migration was renamed or rewritten. New feature migrations now use unique forward-only versions: Provider identity `20261127001400`, Provider revision-policy hardening `20261127001500`, and KTP evidence guard `20261127001600`. The Social Experience exact-service booking migration in PR #284 is `20261127011000`. Taxonomy is `20261127001900`; Merchant migrations remain `02000`–`05000`; Talent custom Social Experience services are `05500`.
+
+The superseded Provider Phase A (`04000_create_independent_professional_provider_profiles`) and Phase B (`05000_allow_professional_only_applications`) files have been removed from the active replay chain. The full Provider implementation is now part of the PR #281 branch stack at `01400`, followed by the Provider hardening migrations. Existing `main` migrations at `00700`–`01300` remain at their original paths and contents.
+
+A fresh recursive tree audit of PR #279, #280, #281, #282, #284 and #287 now finds only two duplicate version groups already present on `main`: `20261126190000` (Data API grants / payout insert hardening) and `20261127001000` (revision attestation / report notification privacy). These are historical and require Production migration-history/source reconciliation; they were not changed. No new feature-branch duplicate version groups remain in the audited stack. This filename audit does not prove SQL replay safety or Production equivalence. Supabase Preview remains skipped; do not run migrations or merge until the two historical groups and the full Production history are reconciled and a healthy disposable Staging environment is available.
