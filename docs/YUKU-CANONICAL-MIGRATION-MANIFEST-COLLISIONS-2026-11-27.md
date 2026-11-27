@@ -42,7 +42,7 @@ This corrects older repository notes that reported 107 Production records; the c
 | `20261127002000_finalize_social_experience_taxonomy.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Data updates to category taxonomy; validate IDs and existing catalog values before staging. |
 | `20261127002000_merchant_partner_membership_foundation.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Merchant businesses, memberships, locations, helper functions and policies; foundation migration. |
 | `20261127003000_merchant_admin_review_and_directory.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Depends on Merchant foundation tables and review lifecycle. |
-| `20261127003000_talent_custom_social_experience_services.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Alters Talent service fields and request RPC; separate from Merchant and Provider domains. |
+| `20261127005500_talent_custom_social_experience_services.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Alters Talent service fields and request RPC; separate from Merchant and Provider domains. |
 | `20261127004000_create_independent_professional_provider_profiles.sql` | none | `SUPERSEDED_DO_NOT_REPLAY` | Phase A version of the Provider table; conflicts with the fuller `00700` path. Its `IF NOT EXISTS` table creation does not add missing review columns. |
 | `20261127004000_merchant_membership_management.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Depends on Merchant foundation and membership tables; includes invitation, roster and history RPCs. |
 | `20261127005000_allow_professional_only_applications.sql` | none | `SUPERSEDED_DO_NOT_REPLAY` | Phase B policy replacement appears weaker than the checks introduced by the full `00700` implementation; do not run after it. |
