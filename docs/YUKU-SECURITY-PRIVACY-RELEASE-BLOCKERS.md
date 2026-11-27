@@ -215,3 +215,14 @@ Health Advisor returned no findings. These advisor snapshots are advisory and we
 ## Staging dependency
 
 The Supabase project exposes only the `main` development branch, currently marked `MIGRATIONS_FAILED` (preview project status `ACTIVE_HEALTHY`). There is no separate healthy Staging branch to validate the 129-entry Production migration history and the current canonical PR migrations. Creating a dedicated development branch can incur hourly compute charges; do not create it until the organization and quoted cost are confirmed.
+
+
+### Function-level review of anon-executable SECURITY DEFINER findings — 28 Nov 2026
+
+Read-only inspection of Production function bodies and ACLs clarified the five warnings:
+- `guard_talent_media_moderation_fields()` is a trigger-only helper. Its revoke migration already exists in this branch at `20261127001200_revoke_talent_media_trigger_helper_execute.sql`, but Production still shows default PUBLIC execution; Staging must verify the revoke, then the migration can be included in a controlled release.
+- `can_read_talent_media_object(text)` is used by public Storage access logic and deliberately checks approved media/public visibility or the owner/Admin; do not revoke blindly because it can break media reads. Review path-guessing exposure and test exact Storage policies.
+- `is_talent_publicly_visible(uuid)` supports public discovery and returns only eligibility visibility; it appears intentionally public but requires abuse/rate-limit review.
+- `has_admin_permission(text)` and `is_super_admin()` return boolean checks based on `auth.uid()`; anon calls resolve without a signed-in identity. They are not privileged write RPCs, but can reveal permission-state booleans for authenticated callers. Consider moving client checks behind a minimal scoped RPC or tightening grants only after call-site/policy dependency mapping.
+
+Do not treat the advisor's 5 anon warnings as five confirmed exploitable vulnerabilities. One is a known trigger-helper grant that has a source migration but is not yet applied; the other four require behavior-aware review. The 61 authenticated SECURITY DEFINER warnings also need allowlist/permission review; no blanket revoke is safe.
