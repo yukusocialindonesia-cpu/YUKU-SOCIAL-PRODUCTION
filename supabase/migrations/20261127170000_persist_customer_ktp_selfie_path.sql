@@ -44,22 +44,22 @@ security definer
 set search_path to ''
 as $function$
 declare
-  v_user_role public.user_role_type;
+  v_has_customer_profile boolean;
   v_can_review boolean :=
     session_user in ('postgres', 'supabase_admin')
     or coalesce(auth.jwt() ->> 'role', '') = 'service_role'
     or public.can_admin_access_ktp(new.id);
   v_has_required_evidence boolean;
 begin
-  select u.role into v_user_role
-  from public.users u
-  where u.id = new.id;
+  select exists (
+    select 1 from public.customer_profiles cp where cp.id = new.id
+  ) into v_has_customer_profile;
 
   v_has_required_evidence :=
     new.ktp_number is not null
     and nullif(trim(coalesce(new.ktp_storage_path, '')), '') is not null
     and (
-      v_user_role <> 'customer'::public.user_role_type
+      not v_has_customer_profile
       or nullif(trim(coalesce(new.selfie_storage_path, '')), '') is not null
     );
 
@@ -133,12 +133,12 @@ security definer
 set search_path to ''
 as $function$
 declare
-  v_user_role public.user_role_type;
+  v_has_customer_profile boolean;
 begin
   if new.ktp_verification_status = 'verified'::public.ktp_status_type then
-    select u.role into v_user_role
-    from public.users u
-    where u.id = new.id;
+    select exists (
+    select 1 from public.customer_profiles cp where cp.id = new.id
+  ) into v_has_customer_profile;
 
     if new.date_of_birth is null
        or new.date_of_birth > (current_date - interval '18 years')::date then
@@ -163,7 +163,7 @@ begin
       raise exception 'KTP tidak dapat diverifikasi: file tidak ditemukan atau bukan milik akun tersebut.';
     end if;
 
-    if v_user_role = 'customer'::public.user_role_type then
+    if v_has_customer_profile then
       if nullif(trim(coalesce(new.selfie_storage_path, '')), '') is null
          or new.selfie_storage_path = new.ktp_storage_path then
         raise exception 'KTP Customer tidak dapat diverifikasi: selfie wajib tersedia sebagai dokumen terpisah.';
