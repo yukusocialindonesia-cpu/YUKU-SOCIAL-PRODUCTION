@@ -428,3 +428,19 @@ This is a definition/ACL review of selected functions, not a penetration test or
 - Do not fabricate placeholder files or mark remote versions applied merely to clear the executor error. Recover the exact historical SQL from original commits, deployment artifacts, or verified backups, then compare resulting database objects and establish a canonical replay manifest. Do not replay historical migrations against Production as a repair exercise.
 - The exact failed executor message is now confirmed. The full source-level cause is a historical migration-source/version reconciliation gap; individual SQL bodies for the 35 unmatched records have not yet been recovered.
 - All evidence gathered in this pass was read-only. No migration, database mutation, branch creation, or deployment was performed.
+
+
+## Historical SQL source recovery checkpoint — 27 Nov 2026 (Git history)
+Read-only inspection of original Git commits and migration diffs recovered additional provenance for several historical groups. This is source recovery evidence, not proof that every recovered body is byte-identical to the SQL applied on Production.
+
+### Source commits and migration groups
+- **Community:** commit [519c2708](https://github.com/yukusocialindonesia-cpu/YUKU-id/commit/519c2708a2ab54874a06d5a1a036149e33765f84) contains the original Community MVP and related schema work. Follow-up commit [3b39e822](https://github.com/yukusocialindonesia-cpu/YUKU-id/commit/3b39e8221ce260cb1b6a4b6c29e8d0cc1c80817b) explicitly aligns the three applied filenames to Production versions 20261121105125, 20261121105216, and 20261121105232. The exact renamed files are present in that commit's file list.
+- **Affiliate:** commit [a8e769f8](https://github.com/yukusocialindonesia-cpu/YUKU-id/commit/a8e769f868f5e5d1ec0c1ce0c78dac839f5c0aae) contains SQL source for the Affiliate earnings/payout integration and ledger indexes (46_affiliate_earnings_payout_integration.sql, 47_affiliate_ledger_indexes.sql), alongside the application/type changes. This provides the historical SQL source for those two migration bodies; verify their normalized/timestamped current copies before declaring the remote records reconciled.
+- **Scoped Admin:** commit [6dd4987f](https://github.com/yukusocialindonesia-cpu/YUKU-id/commit/6dd4987f8eeff38db4e6d2253534f8471c86345a) contains original SQL migration files 48_admin_access_foundation.sql through the scoped permission/RLS/RPC migration group, plus associated Admin test scripts. This is a source-of-truth location for recovering those SQL bodies and checking the timestamped rename set in PR #265.
+- **Web Push:** commit [7d06acc4](https://github.com/yukusocialindonesia-cpu/YUKU-id/commit/7d06acc4181f70574e492d11facdec3406e9bb1d) contains SQL for 20261121020000_create_push_subscriptions.sql and 20261121021500_add_yuku_push_notification_webhook.sql. These filenames/timestamps do **not** directly match the Production history item 20261120185544 (enable_pg_net_for_push_webhook). Do not equate the two. The exact SQL for the Production enable_pg_net_for_push_webhook record is still unverified and must be recovered separately.
+
+### What this changes
+- The previous statement that none of the historical SQL bodies had been recovered is no longer accurate for the groups above.
+- The original Git source for Community, Affiliate, scoped Admin, and Web Push subscription/webhook work is now located.
+- The unresolved Production migration list still requires a record-by-record comparison. A source commit, similar purpose, or matching object name is not sufficient to prove equivalence to the SQL that ran remotely.
+- No migration repair, SQL execution, DDL/DML, Production change, branch creation, merge, or deployment was performed during this recovery pass.
