@@ -35,9 +35,9 @@ This corrects older repository notes that reported 107 Production records; the c
 | `20261126190000_grant_professional_service_data_api_roles.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Grants target Professional Services objects; review object existence and least-privilege grants in staging. |
 | `20261126190000_harden_payout_request_insert_access.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Payout security hardening; must be tested against existing payout RPC and grants before rollout. |
 | `20261127000700_professional_provider_identity_decoupling.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Full independent Provider path; table, listing FK, policies, review RPC and publication gate changes. |
-| `20261127000700_remove_legacy_public_talent_services_policy.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Removes permissive legacy Talent services policy; independently review public read behavior. |
-| `20261127001000_harden_professional_application_revision_attestation_fields.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Depends on independent Provider profile from `00700_professional_provider_identity_decoupling`. |
-| `20261127001000_link_talent_selfie_evidence_and_guard_approval.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Adds identity evidence field and verification/sanction guards; test against current verification flow. |
+| `20261127000800_remove_legacy_public_talent_services_policy.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Removes permissive legacy Talent services policy; independently review public read behavior. |
+| `20261127001200_harden_professional_application_revision_attestation_fields.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Depends on independent Provider profile from `00700_professional_provider_identity_decoupling`. |
+| `20261127001100_link_talent_selfie_evidence_and_guard_approval.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Adds identity evidence field and verification/sanction guards; test against current verification flow. |
 | `20261127001000_stop_leaking_internal_report_notes.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Notification privacy change; check trigger/function replacement against current production function definition. |
 | `20261127002000_finalize_social_experience_taxonomy.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Data updates to category taxonomy; validate IDs and existing catalog values before staging. |
 | `20261127002000_merchant_partner_membership_foundation.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Merchant businesses, memberships, locations, helper functions and policies; foundation migration. |
@@ -218,3 +218,13 @@ These duplicate Production names are not automatically duplicate SQL: they may b
 ### Audit correction — legacy numeric prefixes
 
 The first pass of this feature-branch normalization did not strip the legacy two-digit sequence prefix on the Production side (for example, `yuku_08_...`). That undercounted candidate matches. The corrected normalization strips these numeric prefixes from both sides and yields **88 unique candidates, 3 ambiguous local files, and 52 local files with no candidate**. The Production-side unmatched count is **35**. The counts above are the corrected snapshot; all are filename-only candidates, not SQL equivalence claims.
+
+
+## Follow-up source-branch corrections — 27 Nov 2026
+
+- The already-existing historical migration `20261127001000_harden_professional_application_revision_attestation_fields.sql` was restored byte-for-byte from `main`; do not rewrite or repurpose an applied migration source.
+- The new independent-Provider revision-attestation policy is now a separate forward-only migration `20261127001200_harden_professional_application_revision_attestation_fields.sql`.
+- The KTP selfie evidence/approval guard was moved from the colliding `01000` version to `20261127001100_link_talent_selfie_evidence_and_guard_approval.sql` across the affected stacked feature branches.
+- The legacy public Talent services policy removal was moved from `00700` to `20261127000800_remove_legacy_public_talent_services_policy.sql`, after the Provider foundation migration.
+- PR #284's exact Social Experience service-ID migration is now `20261127011000_social_experience_service_id_foundation.sql`.
+- The Provider Phase A migration at `04000` remains superseded but is still present in the stacked branch history, where it collides with Merchant membership management at `04000`. This is unresolved and blocks any migration replay/merge until the branch stack is consolidated around one canonical Provider implementation.
