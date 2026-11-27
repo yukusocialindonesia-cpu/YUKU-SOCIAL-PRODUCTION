@@ -6,7 +6,9 @@ const config: CapacitorConfig = {
   appName: 'YUKU',
   webDir: 'dist',
   backgroundColor: '#FAF8FC',
-  android: { allowMixedContent: false },
+  android: {
+    allowMixedContent: false,
+  },
   ios: { contentInset: 'automatic' },
   plugins: {
     SplashScreen: {
