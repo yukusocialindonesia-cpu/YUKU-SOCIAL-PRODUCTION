@@ -57,21 +57,59 @@ export function mapSupabaseCategory(row: any): ActivityCategory {
  * Fetch all active activity categories from Supabase activity_categories table via SELECT.
  * Throws errors explicitly on failure without disguising query failures as empty state.
  */
-export async function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
-  const { data, error } = await supabase
-    .from('activity_categories')
-    .select('id, title, description, icon_name, examples, is_online_available, is_active')
-    .eq('is_active', true);
+// Share one in-flight category request across homepage/search/page components.
+// This prevents parallel duplicate requests from showing conflicting UI states.
+let categoriesRequest: Promise<ActivityCategory[]> | null = null;
 
-  if (error) {
-    throw new Error(`Gagal membaca kategori dari Supabase: ${error.message} (${error.code || 'UNKNOWN'})`);
-  }
+export function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
+  if (categoriesRequest) return categoriesRequest;
 
-  if (!data || data.length === 0) {
-    return [];
-  }
+  const request = (async () => {
+    let lastError: unknown;
 
-  return data.map(mapSupabaseCategory);
+    // Retry once only for browser-level network failures (for example, "Failed to fetch").
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const { data, error } = await supabase
+          .from('activity_categories')
+          .select('id, title, description, icon_name, examples, is_online_available, is_active')
+          .eq('is_active', true);
+
+        if (error) {
+          const fetchError = new Error(
+            `Gagal membaca kategori dari Supabase: ${error.message} (${error.code || 'UNKNOWN'})`
+          );
+          if (attempt === 0 && /failed to fetch|networkerror|fetch failed/i.test(error.message)) {
+            lastError = fetchError;
+            await new Promise((resolve) => window.setTimeout(resolve, 500));
+            continue;
+          }
+          throw fetchError;
+        }
+
+        return (data || []).map(mapSupabaseCategory);
+      } catch (err: unknown) {
+        lastError = err;
+        const message = err instanceof Error ? err.message : String(err);
+        if (attempt === 0 && /failed to fetch|networkerror|fetch failed/i.test(message)) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('Gagal membaca kategori dari Supabase: kegagalan jaringan (UNKNOWN)');
+  })();
+
+  categoriesRequest = request;
+  void request.catch(() => {
+    if (categoriesRequest === request) categoriesRequest = null;
+  });
+
+  return request;
 }
 
 /**
