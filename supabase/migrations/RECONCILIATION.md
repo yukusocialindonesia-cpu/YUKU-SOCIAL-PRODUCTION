@@ -23,6 +23,7 @@ A separate listing of the complete `supabase/migrations/` directory on this PR b
 - 18 filenames use legacy two-digit prefixes (`01`–`07`, `28`–`30`, `32)–`33`, `35`–`39`, and `43`).
 - The seven `01`–`07` versions exist in the Production ledger. The other eleven short-prefix files do not have matching short versions in the current Production ledger and remain part of the 51 local-only files requiring classification.
 - No duplicate 14-digit filename prefixes were found in this branch's migration directory.
+- Dari 51 file local-only: 40 memakai prefix timestamp 14 digit dan 11 memakai prefix legacy dua digit. Tujuh dari 18 file dua digit (`01`–`07`) cocok dengan ledger; sebelas sisanya belum punya pasangan versi remote.
 
 This is a filename inventory only. It does not establish whether any of the eleven legacy SQL files were applied under a different remote version/name, or whether their SQL is safe to replay. Do not rename them to guessed timestamps. Recover deployment history or compare their SQL effects with the live schema first.
 
