@@ -101,6 +101,21 @@ Acceptance:
 - Trigger continues to enforce moderation metadata immutability on INSERT/UPDATE.
 - Do not blanket-revoke all SECURITY DEFINER functions; four narrow public boolean helpers are intentionally used by RLS/Storage and require role-matrix tests.
 
+
+### P2 — Production booking validator is behind the hardened repository migration
+
+Read-only Production inspection on 27 November 2026 found:
+- Live `public.validate_booking_update()` still returns early when the caller has Booking, Finance, or Support permission. That skips the trigger's financial snapshot, participant, schedule, and status-transition checks.
+- The current `bookings_update_parties_or_admin` RLS policy limits direct UPDATE to booking participants or Super Admin. Scoped Admins who are not booking participants therefore remain blocked by RLS; this inspection did **not** establish a direct scoped-Admin exploit.
+- Repository `main` already contains `20261127000500_narrow_scoped_admin_booking_trigger_bypass.sql`, which removes the broad scoped-permission bypass from both booking trigger guards and limits Support's dispute handling to the report-resolution transitions.
+- The live `supabase_migrations.schema_migrations` inventory did not contain that migration name/version at inspection time, and the live validator definition still matches the older implementation. Repository presence is not Production application.
+
+Required action:
+- Treat this as Production schema drift and a defense-in-depth gap, not as proof that an ordinary scoped Admin can currently update arbitrary bookings.
+- Reconcile the exact migration ledger and duplicate-version history before applying anything; do not manually run the SQL or assume a filename version equals the ledger version.
+- Replay the ordered migration chain on clean Staging, then test Customer, Talent, Booking Admin, Finance Admin, Support Admin, Super Admin, and service_role against financial columns, participant IDs, paid schedule fields, dispute snapshot, and every allowed status transition.
+- Recheck effective RLS and trigger definitions after the controlled migration rollout.
+
 ## P2 privacy minimization
 
 ### Public reviews expose raw identifiers
