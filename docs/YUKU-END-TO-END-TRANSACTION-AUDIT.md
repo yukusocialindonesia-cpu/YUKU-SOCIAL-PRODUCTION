@@ -271,3 +271,7 @@ Read-only Production catalog inspection only: function definitions/ACLs, RLS pol
 ### Validation boundary
 
 Read-only Production function/ACL inspection. No cancellation, refund, payout, booking or user rows were queried or modified. No RPC was invoked against a real booking. Runtime concurrency and policy-boundary tests remain for Staging.
+
+
+## Xendit retirement update — 27 Nov 2026
+New checkout and server-side settlement allow only manual QRIS and bank transfer. Historical provider values/rows remain for read compatibility. Legacy pending Xendit bookings must be handled by YUKU Support; old payment links must not be reused. Migration `20261127190000_retire_xendit_booking_checkout.sql` is staged in source only, not applied. Full migration replay, Staging payment tests, secret/callback retirement, and release approval are still required. No Production change has been made.
