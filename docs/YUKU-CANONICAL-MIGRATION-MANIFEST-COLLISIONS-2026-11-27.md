@@ -174,3 +174,40 @@ PR #265's `supabase/migrations/RECONCILIATION.md` lists these records without a 
 5. Do not run `db push`, `migration repair`, or Production SQL while any source/version mapping remains unknown.
 
 Reference: [PR #265 reconciliation](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/265), [PR #287 feature branch](https://github.com/yukusocialindonesia-cpu/YUKU-id/pull/287), [PR #265 reconciliation manifest](https://github.com/yukusocialindonesia-cpu/YUKU-id/blob/chore/reconcile-supabase-migration-history/supabase/migrations/RECONCILIATION.md).
+
+
+## Filename-level normalization audit on the 143-file feature branch — 27 November 2026
+
+A second, deliberately conservative comparison was run directly against the current `design/beranda-brand-promise-v2` migration directory and the live 129-entry Production history. The comparison strips the local version prefix, an optional `yuku_` prefix, and an embedded timestamp prefix from the recorded migration name. It compares **names only**; it does not inspect or prove SQL equivalence.
+
+| Result | Count | Meaning |
+|---|---:|---|
+| Unique normalized-name candidates | 64 | One Production record has the same normalized descriptive name |
+| Ambiguous candidates | 3 | The same normalized name exists more than once in Production |
+| No normalized-name candidate | 76 | No direct normalized-name pair found |
+| Current feature-branch SQL files | 143 | Full folder count |
+| Production migration history records | 129 | Live read-only count |
+
+The three ambiguous names are:
+- `require_professional_verification_attestation`: Production versions `20261126123853` and `20261126124316`.
+- `guard_professional_service_provider_eligibility`: Production versions `20261126123859` and `20261126124319`.
+- `require_active_account_for_professional_listings`: Production versions `20261126123903` and `20261126124320`.
+
+These duplicate Production names are not automatically duplicate SQL: they may be repeated revisions/records. Their exact SQL and resulting schema effects need provenance review before a one-to-one file mapping can be chosen.
+
+### Important correction to interpretation
+
+- The earlier 74 matched / 55 missing / 51 local-only figures belong to the **125-file PR #265 reconciliation branch** and its documented matching method.
+- The 64 / 3 ambiguous / 76 no-candidate figures above are a separate **143-file PR #287 feature-branch filename comparison**.
+- Neither count is a SQL checksum or byte-for-byte verification. A name match is only a candidate mapping.
+- Several local-only files are recent feature migrations (Professional Provider, Merchant Partner, and Social Experience) and should be treated as unapproved/unapplied until separately tested. A prefix not found in Production is not permission to push it.
+- Some historical migration sources may exist only in older commits, deployment records, or out-of-band SQL execution; no source file should be fabricated to fill a gap.
+
+### Next verification priorities
+
+1. Recover source SQL for Production records that have no local candidate from original commits, deployment artifacts, or verified backups.
+2. For the 64 candidate matches, compare exact SQL source where available and inspect live object definitions for function, trigger, policy, grant, index, and constraint changes.
+3. Resolve the three ambiguous duplicate-name records by source provenance and chronology.
+4. Review the 76 no-candidate files for historical rename, new feature, superseded change, or manual SQL provenance.
+5. Build a canonical staging replay plan only after these classifications and a healthy non-Production target are available.
+6. Keep Production read-only; no migration SQL, history repair, or deployment action is authorized by this audit.
