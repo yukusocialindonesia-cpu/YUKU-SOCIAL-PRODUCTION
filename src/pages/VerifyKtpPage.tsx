@@ -320,11 +320,15 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
       // Remove any successfully uploaded file if the second upload or database save fails.
       // Storage RLS still enforces that only this account can remove its own files.
       if (uploadedStoragePaths.length > 0) {
-        const { error: cleanupError } = await supabase.storage
-          .from('ktp-documents')
-          .remove(uploadedStoragePaths);
-        if (cleanupError) {
-          console.error('Gagal membersihkan file identitas yang tidak tersimpan:', cleanupError.message);
+        try {
+          const { error: cleanupError } = await supabase.storage
+            .from('ktp-documents')
+            .remove(uploadedStoragePaths);
+          if (cleanupError) {
+            console.error('Gagal membersihkan file identitas yang tidak tersimpan:', cleanupError.message);
+          }
+        } catch (cleanupError: any) {
+          console.error('Gagal membersihkan file identitas yang tidak tersimpan:', cleanupError?.message || cleanupError);
         }
       }
       setErrorMessage(err?.message || 'Terjadi kesalahan saat mengirim verifikasi KTP.');
