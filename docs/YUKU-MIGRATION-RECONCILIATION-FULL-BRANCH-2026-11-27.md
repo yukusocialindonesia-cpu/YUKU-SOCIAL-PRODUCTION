@@ -307,3 +307,17 @@ The Production catalog still contains policy `payout_requests_insert_talent` on 
 - Object presence is not migration provenance. A table or function may have been created by a differently named migration or changed later.
 - Continue with exact definition and ACL checks for the 35 unmatched Production records, and locate original SQL through historical PR patches/commit trees before proposing any migration-history repair.
 - No Production SQL migration, DDL, DML, or deployment was run during this inspection.
+
+
+### Definition-level follow-up (read-only)
+
+The second catalog query retrieved selected live definitions and confirms:
+
+- `public.is_talent_publicly_visible(uuid)` checks Talent role, active account, 18+ verification, verified KTP, approved Talent profile, and at least one active approved Talent service.
+- `public.request_talent_payout(...)` checks authenticated actor, active Talent account, age/KTP/profile approval, minimum payout amount, bank-field shape, and idempotency consistency before inserting.
+- `public.guard_payout_completion_during_dispute()` blocks completion when reserved allocations point to earnings in `disputed_hold`.
+- `public.log_booking_status_change()` writes status changes to `booking_status_history`, classifying system/admin/user actors.
+- `public.notifications` is present in the `supabase_realtime` publication for INSERT/UPDATE/DELETE.
+- The direct INSERT policy on `payout_requests` is still present and its check is only `auth.uid() = talent_id`; it does not encode the RPC's full eligibility checks. This is a concrete hardening gap to review, not an instruction to change Production.
+
+These results strengthen the classification that several unmatched historical topics are represented in the current Production schema, while also surfacing a direct-payout-insert policy that remains broader than the RPC's business validation. No changes were made to Production.
