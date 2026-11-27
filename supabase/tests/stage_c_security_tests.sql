@@ -353,6 +353,25 @@ BEGIN
         AND cmd = 'UPDATE'
     );
   INSERT INTO _c_results VALUES (17, 'Direct report moderation UPDATE revoked', v_ok, 'audited admin_resolve_report RPC retained');
+
+  -- ----------------------------- C18 -----------------------------------------
+  v_msg := pg_get_functiondef('public.admin_resolve_report(uuid,public.report_status_type,text,boolean)'::regprocedure);
+  SELECT p.prosecdef AND coalesce(array_to_string(p.proconfig, ','), '') LIKE '%search_path=%'
+    INTO v_ok
+  FROM pg_proc p
+  WHERE p.oid = 'public.admin_resolve_report(uuid,public.report_status_type,text,boolean)'::regprocedure;
+  v_ok := coalesce(v_ok, false)
+    AND position('has_admin_permission' in v_msg) > 0
+    AND position('support' in lower(v_msg)) > 0
+    AND position('for update' in lower(v_msg)) > 0
+    AND position('admin_audit_logs' in lower(v_msg)) > 0;
+  INSERT INTO _c_results VALUES (18, 'Report resolution RPC remains scoped, locked, and audited', v_ok, 'SECURITY DEFINER / Support permission / row lock / audit log');
+
+  -- ----------------------------- C19 -----------------------------------------
+  v_msg := pg_get_functiondef('public.notify_on_report_status_change()'::regprocedure);
+  v_ok := position('admin_notes' in lower(v_msg)) = 0
+    AND position('status laporan anda' in lower(v_msg)) > 0;
+  INSERT INTO _c_results VALUES (19, 'Reporter notification excludes internal moderation notes', v_ok, 'report status notification only');
 END $;
 
 -- Ringkasan
