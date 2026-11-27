@@ -394,3 +394,10 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 - The additive branch migration `20261127005500_talent_custom_social_experience_services.sql` introduces both columns and the custom-service submission RPC. It is not applied to Production or Staging.
 - Release implication: do not expose/deploy the UI path that depends on these fields against Production until the migration chain is reconciled and validated on a clean Staging database. Do not hot-apply this migration directly to Production as a shortcut.
 - No database mutation or deployment was performed during this inspection.
+
+
+## Production permission-error triage — customer profile / KTP helper (27 Nov 2026)
+- Read-only catalog inspection shows `authenticated` has table-level SELECT on `public.customer_profiles`; RLS still limits rows to self, Super Admin, or a Talent with a booking relationship. INSERT/UPDATE policies are separately actor-scoped.
+- `public.can_admin_access_ktp(uuid)` exists as SECURITY DEFINER and its current ACL grants EXECUTE to `authenticated` and owner `postgres`, not `anon`/PUBLIC.
+- Therefore the observed permission-denied log entries do not justify broadening grants. Likely causes include an anonymous request path or a policy/function invocation under a role that lacks EXECUTE; exact caller/JWT context must be correlated before any change.
+- No grants, policies, or function definitions were changed.
