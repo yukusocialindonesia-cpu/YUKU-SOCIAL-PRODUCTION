@@ -30,6 +30,15 @@ Nilai enum provider historis dan kolom pembacaan route lama tetap dipertahankan.
 
 Migration memiliki precondition yang menghentikan eksekusi bila masih ada booking dengan route Xendit. Walaupun agregat Production saat audit bernilai nol, migration belum dijalankan. Urutan dan ledger migration Production/Staging harus direkonsiliasi lebih dahulu.
 
+## Migration readiness blocker
+
+Read-only Supabase inspection (27 Nov 2026):
+- The linked Supabase main branch reports status `MIGRATIONS_FAILED`.
+- The recorded migration ledger currently ends at version `20261126124423`.
+- The repository contains later migration work that has not been reconciled against this ledger.
+
+Therefore the retirement migration in this PR is intentionally **not ready to apply**. First reconcile the full ordered migration history and restore a healthy Staging/Preview migration run. Do not apply this migration directly to Production.
+
 ## Tindakan operasional yang belum dilakukan
 
 - Hapus secrets `XENDIT_SECRET_KEY` dan `XENDIT_CALLBACK_TOKEN` dari konfigurasi hosting/Supabase bila memang ada.
