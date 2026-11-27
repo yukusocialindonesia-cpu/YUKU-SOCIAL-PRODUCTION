@@ -57,28 +57,67 @@ export function mapSupabaseCategory(row: any): ActivityCategory {
  * Fetch all active activity categories from Supabase activity_categories table via SELECT.
  * Throws errors explicitly on failure without disguising query failures as empty state.
  */
-export async function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
-  const { data, error } = await supabase
-    .from('activity_categories')
-    .select('id, title, description, icon_name, examples, is_online_available, is_active')
-    .eq('is_active', true);
+// Share one in-flight category request across homepage/search/page components.
+// This prevents parallel duplicate requests from showing conflicting UI states.
+let categoriesRequest: Promise<ActivityCategory[]> | null = null;
 
-  if (error) {
-    throw new Error(`Gagal membaca kategori dari Supabase: ${error.message} (${error.code || 'UNKNOWN'})`);
-  }
+export function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
+  if (categoriesRequest) return categoriesRequest;
 
-  if (!data || data.length === 0) {
-    return [];
-  }
+  const request = (async () => {
+    let lastError: unknown;
 
-  return data.map(mapSupabaseCategory);
+    // Retry once only for browser-level network failures (for example, "Failed to fetch").
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const { data, error } = await supabase
+          .from('activity_categories')
+          .select('id, title, description, icon_name, examples, is_online_available, is_active')
+          .eq('is_active', true);
+
+        if (error) {
+          const fetchError = new Error(
+            `Gagal membaca kategori dari Supabase: ${error.message} (${error.code || 'UNKNOWN'})`
+          );
+          if (attempt === 0 && /failed to fetch|networkerror|fetch failed/i.test(error.message)) {
+            lastError = fetchError;
+            await new Promise((resolve) => window.setTimeout(resolve, 500));
+            continue;
+          }
+          throw fetchError;
+        }
+
+        return (data || []).map(mapSupabaseCategory);
+      } catch (err: unknown) {
+        lastError = err;
+        const message = err instanceof Error ? err.message : String(err);
+        if (attempt === 0 && /failed to fetch|networkerror|fetch failed/i.test(message)) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('Gagal membaca kategori dari Supabase: kegagalan jaringan (UNKNOWN)');
+  })();
+
+  categoriesRequest = request;
+  const clearRequest = () => {
+    if (categoriesRequest === request) categoriesRequest = null;
+  };
+  void request.then(clearRequest, clearRequest);
+
+  return request;
 }
 
 /**
  * Fetch public talent profiles from Supabase talent_profiles table via SELECT.
  * Explicitly checks errors on both talent_profiles and talent_services queries to prevent masking failures.
  */
-export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
+async function fetchTalentsOnce(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
   let query = supabase
     .from('talent_profiles')
     .select(
@@ -149,6 +188,50 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searc
   return talentsData.map((row) =>
     mapSupabaseTalent(row, servicesMap.get(row.id) || [], offersMap.get(row.id) || [])
   );
+}
+
+
+/**
+ * Share identical in-flight Talent list requests and retry once on transient
+ * browser/network failures. This avoids competing requests from homepage,
+ * search, and browse components while preserving real query errors.
+ */
+const talentListRequests = new Map<string, Promise<TalentProfile[]>>();
+
+export function fetchTalentsFromSupabase(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
+  const requestKey = JSON.stringify([limit ?? null, offset, searchTerm.trim()]);
+  const existingRequest = talentListRequests.get(requestKey);
+  if (existingRequest) return existingRequest;
+
+  const request = (async () => {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        return await fetchTalentsOnce(limit, offset, searchTerm);
+      } catch (err: unknown) {
+        lastError = err;
+        const message = err instanceof Error ? err.message : String(err);
+        const isNetworkFailure = /failed to fetch|networkerror|fetch failed|load failed/i.test(message);
+        if (attempt === 0 && isNetworkFailure) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('Gagal membaca daftar Talent dari Supabase: kegagalan jaringan (UNKNOWN)');
+  })();
+
+  talentListRequests.set(requestKey, request);
+  const clearRequest = () => {
+    if (talentListRequests.get(requestKey) === request) {
+      talentListRequests.delete(requestKey);
+    }
+  };
+  void request.then(clearRequest, clearRequest);
+  return request;
 }
 
 /**
@@ -268,9 +351,8 @@ export async function fetchPromotionsFromSupabase(): Promise<PromotionRow[]> {
 
 /**
  * Ambil slide hero Beranda yang aktif (diurutkan sort_order).
- * Jika query berhasil tetapi tabel kosong, mengembalikan array kosong
- * sehingga Beranda memakai hero bawaan. Jika query gagal, error diteruskan
- * agar Hero dapat mempertahankan cache lokal terakhir.
+ * Jika tabel belum dimigrasi atau kosong, mengembalikan array kosong
+ * sehingga Beranda memakai hero bawaan.
  */
 export async function fetchHeroSlidesFromSupabase(): Promise<HeroSlideRow[]> {
   const { data, error } = await supabase
