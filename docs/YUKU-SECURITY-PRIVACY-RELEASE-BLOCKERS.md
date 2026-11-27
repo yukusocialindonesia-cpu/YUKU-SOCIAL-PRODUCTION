@@ -158,3 +158,16 @@ Required concurrency/failure tests:
 ## Explicit safety boundary
 
 This document does not apply migrations, modify policies/functions, inspect object contents, read KTP/customer data, change Auth settings, deploy functions, or touch Production. All findings must be revalidated against the current Production schema immediately before a controlled release; historical snapshots are not live proof.
+
+
+### Fresh read-only verification — report moderation write path (27 Nov 2026)
+
+Production was rechecked against the current schema:
+- Table: `public.reports_complaints` (not `public.reports`).
+- `authenticated` has column-level UPDATE on `status`, `admin_notes`, and `resolved_by_admin_id`, even though table-level UPDATE is false.
+- The permissive `reports_update_admin` policy still exists for `has_admin_permission('support')`.
+- `public.admin_resolve_report(uuid, report_status_type, text, boolean)` exists, row-locks the report, updates status/notes/reviewer, and writes `admin_audit_logs`.
+- The current `notify_on_report_status_change()` trigger includes `NEW.admin_notes` in the reporter's notification text. This can disclose internal moderation notes.
+- The Admin UI currently calls `admin_resolve_report`; no direct frontend update call was found in the inspected AdminPage source.
+
+**Required remediation before release:** revoke the three column-level UPDATE grants from `authenticated`; drop `reports_update_admin`; retain the audited RPC as the only moderation write path; remove internal notes from reporter notification text; add regression checks proving a Support Admin cannot directly update columns but can resolve via the RPC, and that reporter notifications never include `admin_notes`. This remains a release blocker; no Production change was made.
