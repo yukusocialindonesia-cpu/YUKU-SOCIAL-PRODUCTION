@@ -136,5 +136,5 @@ jobs:
       - name: Clean up signing material
         if: always()
         run: |
-          security delete-keychain "$YUKU_KEYCHAIN_PATH" || true
+          if [[ -n "${YUKU_KEYCHAIN_PATH:-}" ]]; then security delete-keychain "$YUKU_KEYCHAIN_PATH" || true; fi
           rm -f "$RUNNER_TEMP/yuku-distribution.p12" "$RUNNER_TEMP/yuku-appstore.mobileprovision"
