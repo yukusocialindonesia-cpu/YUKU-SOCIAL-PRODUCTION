@@ -113,3 +113,40 @@ body {
     transform: none;
   }
 }
+
+
+/* YUKU app-first homepage: deep plum + warm gold, compact mobile feed. */
+.yuku-home-feed {
+  color: #241039;
+  background: #f7f5fa;
+}
+.yuku-home-section {
+  min-width: 0;
+}
+.yuku-home-categories section,
+.yuku-home-featured section {
+  background: #f7f5fa !important;
+}
+.yuku-home-categories section {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.yuku-home-featured section {
+  padding-top: 10px;
+  padding-bottom: 8px;
+}
+.yuku-home-feed h2 {
+  letter-spacing: -0.035em;
+}
+.yuku-home-feed button:focus-visible,
+.yuku-home-feed a:focus-visible {
+  outline-offset: 3px;
+}
+@media (max-width: 640px) {
+  .yuku-home-feed {
+    padding-bottom: 2px;
+  }
+  .yuku-home-hero > section {
+    padding-bottom: 4px;
+  }
+}
