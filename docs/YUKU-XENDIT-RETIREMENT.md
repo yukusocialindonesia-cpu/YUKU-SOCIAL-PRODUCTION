@@ -52,3 +52,7 @@ Therefore the retirement migration in this PR is intentionally **not ready to ap
 ## Batas perubahan
 
 Perubahan ini disiapkan pada branch terpisah. Tidak ada secrets, konfigurasi hosting, dashboard Xendit, database Production, data pembayaran, atau Edge Function Production yang diubah. PR tidak otomatis berarti integrasi sudah hilang dari Production.
+
+
+## Xendit retirement update — 27 Nov 2026
+New checkout and server-side settlement allow only manual QRIS and bank transfer. Historical provider values/rows remain for read compatibility. Legacy pending Xendit bookings must be handled by YUKU Support; old payment links must not be reused. Migration `20261127190000_retire_xendit_booking_checkout.sql` is staged in source only, not applied. Full migration replay, Staging payment tests, secret/callback retirement, and release approval are still required. No Production change has been made.
