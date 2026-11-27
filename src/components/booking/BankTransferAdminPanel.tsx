@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Clock, Loader2, RefreshCw, Save, XCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../utils/formatters';
 
 export const BankTransferAdminPanel: React.FC = () => {
+  const loadRequestIdRef = useRef(0);
   const [rows, setRows] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [bookingStatus, setBookingStatus] = useState<Record<string, string>>({});
@@ -20,31 +21,42 @@ export const BankTransferAdminPanel: React.FC = () => {
   const [message, setMessage] = useState('');
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     const db = supabase as any;
-    const [{ data: cfg, error: cfgError }, { data: submissions, error: submissionsError }] = await Promise.all([
-      db.from('bank_transfer_settings').select('*').eq('id', true).maybeSingle(),
-      db.from('bank_transfer_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,admin_notes,created_at,reviewed_at').order('created_at', { ascending: false }).limit(50),
-    ]);
-    if (cfgError) throw cfgError;
-    if (submissionsError) throw submissionsError;
-    setRows((submissions || []).filter((r: any) => r.status === 'pending_review').reverse());
-    setHistory((submissions || []).filter((r: any) => r.status !== 'pending_review'));
-    if (cfg) {
-      setBankName(cfg.bank_name || ''); setAccountNumber(cfg.account_number || '');
-      setAccountHolder(cfg.account_holder || ''); setInstructions(cfg.instructions || '');
-      setActive(!!cfg.is_active);
-    }
-    const ids = Array.from(new Set((submissions || []).map((r: any) => r.booking_id)));
-    if (ids.length) {
-      const { data, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
-      if (statusError) throw statusError;
+    setError('');
+    try {
+      const [{ data: cfg, error: cfgError }, { data: submissions, error: submissionsError }] = await Promise.all([
+        db.from('bank_transfer_settings').select('*').eq('id', true).maybeSingle(),
+        db.from('bank_transfer_submissions').select('id,booking_id,customer_id,proof_storage_path,claimed_amount,transfer_reference,status,admin_notes,created_at,reviewed_at').order('created_at', { ascending: false }).limit(50),
+      ]);
+      if (cfgError) throw cfgError;
+      if (submissionsError) throw submissionsError;
+      const currentSubmissions = submissions || [];
+      const ids = Array.from(new Set(currentSubmissions.map((r: any) => r.booking_id)));
       const map: Record<string, string> = {};
-      (data || []).forEach((b: any) => { map[b.id] = b.status; });
+      if (ids.length) {
+        const { data, error: statusError } = await db.rpc('get_bank_transfer_booking_statuses', { p_booking_ids: ids });
+        if (statusError) throw statusError;
+        (data || []).forEach((b: any) => { map[b.id] = b.status; });
+      }
+      if (requestId !== loadRequestIdRef.current) return;
+      setRows(currentSubmissions.filter((r: any) => r.status === 'pending_review').reverse());
+      setHistory(currentSubmissions.filter((r: any) => r.status !== 'pending_review'));
+      if (cfg) {
+        setBankName(cfg.bank_name || ''); setAccountNumber(cfg.account_number || '');
+        setAccountHolder(cfg.account_holder || ''); setInstructions(cfg.instructions || '');
+        setActive(!!cfg.is_active);
+      }
       setBookingStatus(map);
-    } else setBookingStatus({});
+    } catch (error: any) {
+      // Error dari permintaan lama tidak boleh menimpa status permintaan terbaru.
+      if (requestId === loadRequestIdRef.current) {
+        setError(error?.message || 'Gagal memuat data transfer bank.');
+      }
+    }
   }, []);
 
-  useEffect(() => { load().catch((e: any) => setError(e?.message || 'Gagal memuat data transfer bank.')); }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
   const save = async () => {
     setBusy(true); setError(''); setMessage('');
@@ -95,20 +107,20 @@ export const BankTransferAdminPanel: React.FC = () => {
       <p>Nominal: <strong>{formatRupiah(Number(row.claimed_amount))}</strong></p>
       {row.transfer_reference && <p>Referensi Customer: {row.transfer_reference}</p>}
       {url && <a href={url} target="_blank" rel="noreferrer" className="inline-block text-purple-700 underline">Lihat bukti transfer</a>}
-      {inactive ? <div className="space-y-2"><p className="rounded-lg bg-slate-100 p-2 text-slate-600">Booking tidak aktif ({bookingStatus[row.booking_id] || 'tidak diketahui'}); pembayaran tidak boleh disahkan.</p><button disabled={busy} onClick={() => { setDialog({ row, approve: false }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 min-h-11 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tutup pengajuan / Tolak</button></div> :
-        <div className="flex flex-wrap gap-2"><button disabled={busy} onClick={() => { setDialog({ row, approve: true }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 min-h-11 rounded-lg bg-emerald-600 px-3 py-2 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Setujui</button><button disabled={busy} onClick={() => { setDialog({ row, approve: false }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 min-h-11 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tolak</button></div>}
+      {inactive ? <div className="space-y-2"><p className="rounded-lg bg-slate-100 p-2 text-slate-600">Booking tidak aktif ({bookingStatus[row.booking_id] || 'tidak diketahui'}); pembayaran tidak boleh disahkan.</p><button disabled={busy} onClick={() => { setDialog({ row, approve: false }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tutup pengajuan / Tolak</button></div> :
+        <div className="flex flex-wrap gap-2"><button disabled={busy} onClick={() => { setDialog({ row, approve: true }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Setujui</button><button disabled={busy} onClick={() => { setDialog({ row, approve: false }); setNotes(''); setReference(''); }} className="inline-flex items-center gap-1 rounded-lg bg-rose-600 px-3 py-2 font-bold text-white disabled:opacity-50"><XCircle className="h-4 w-4" /> Tolak</button></div>}
     </article>;
   };
 
   return <div className="space-y-5">
     <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4">
       <div><h3 className="font-extrabold text-slate-900">Pengaturan Rekening Transfer Bank</h3><p className="text-xs text-slate-500">Hanya Super Admin atau Admin dengan izin Finance yang dapat mengubah rekening. Perubahan dicatat di audit log.</p></div>
-      <label className="block text-xs font-bold">Nama Bank<input value={bankName} onChange={e => setBankName(e.target.value)} maxLength={100} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
-      <label className="block text-xs font-bold">Nomor Rekening<input value={accountNumber} onChange={e => setAccountNumber(e.target.value)} maxLength={80} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
-      <label className="block text-xs font-bold">Nama Pemilik Rekening<input value={accountHolder} onChange={e => setAccountHolder(e.target.value)} maxLength={120} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
-      <label className="block text-xs font-bold">Instruksi Pembayaran<textarea value={instructions} onChange={e => setInstructions(e.target.value)} maxLength={500} rows={2} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
+      <label className="block text-xs font-bold">Nama Bank<input value={bankName} onChange={e => setBankName(e.target.value)} maxLength={100} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
+      <label className="block text-xs font-bold">Nomor Rekening<input value={accountNumber} onChange={e => setAccountNumber(e.target.value)} maxLength={80} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
+      <label className="block text-xs font-bold">Nama Pemilik Rekening<input value={accountHolder} onChange={e => setAccountHolder(e.target.value)} maxLength={120} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
+      <label className="block text-xs font-bold">Instruksi Pembayaran<textarea value={instructions} onChange={e => setInstructions(e.target.value)} maxLength={500} rows={2} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
       <label className="flex items-center gap-2 text-xs font-bold"><input type="checkbox" checked={active} onChange={e => setActive(e.target.checked)} /> Aktifkan transfer bank untuk Customer</label>
-      <button type="button" onClick={save} disabled={busy || (active && (!bankName.trim() || !accountNumber.trim() || !accountHolder.trim()))} className="inline-flex items-center gap-2 min-h-11 rounded-xl bg-purple-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Simpan Rekening</button>
+      <button type="button" onClick={save} disabled={busy || (active && (!bankName.trim() || !accountNumber.trim() || !accountHolder.trim()))} className="inline-flex items-center gap-2 rounded-xl bg-purple-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Simpan Rekening</button>
     </section>
     {message && <p className="rounded-lg bg-emerald-50 p-3 text-xs text-emerald-800">{message}</p>}
     {error && <p className="rounded-lg bg-rose-50 p-3 text-xs text-rose-800">{error}</p>}
@@ -129,9 +141,9 @@ export const BankTransferAdminPanel: React.FC = () => {
     {dialog && <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/50 p-4 sm:items-center" onClick={() => !busy && setDialog(null)}><div className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl" onClick={e => e.stopPropagation()}>
       <h4 className="font-extrabold text-slate-900">{dialog.approve ? 'Verifikasi Transfer Bank' : 'Tolak Bukti Transfer'}</h4>
       <p className="text-xs text-slate-500">Nominal: <strong>{formatRupiah(Number(dialog.row.claimed_amount))}</strong></p>
-      <label className="block text-xs font-bold">{dialog.approve ? 'Catatan verifikasi' : 'Alasan penolakan'}<textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} maxLength={500} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>
-      {dialog.approve && <label className="block text-xs font-bold">Referensi transaksi bank<input value={reference} onChange={e => setReference(e.target.value)} maxLength={100} className="mt-1 min-h-11 w-full rounded-lg border px-3 py-2 font-normal" /></label>}
-      <div className="flex justify-end gap-2"><button type="button" onClick={() => setDialog(null)} disabled={busy} className="min-h-11 rounded-lg border px-4 py-2 text-xs font-bold">Batal</button><button type="button" onClick={review} disabled={busy} className="rounded-lg bg-purple-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{busy ? 'Memproses...' : dialog.approve ? 'Setujui' : 'Tolak'}</button></div>
+      <label className="block text-xs font-bold">{dialog.approve ? 'Catatan verifikasi' : 'Alasan penolakan'}<textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} maxLength={500} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>
+      {dialog.approve && <label className="block text-xs font-bold">Referensi transaksi bank<input value={reference} onChange={e => setReference(e.target.value)} maxLength={100} className="mt-1 w-full rounded-lg border p-2 font-normal" /></label>}
+      <div className="flex justify-end gap-2"><button type="button" onClick={() => setDialog(null)} disabled={busy} className="rounded-lg border px-4 py-2 text-xs font-bold">Batal</button><button type="button" onClick={review} disabled={busy} className="rounded-lg bg-purple-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{busy ? 'Memproses...' : dialog.approve ? 'Setujui' : 'Tolak'}</button></div>
     </div></div>}
   </div>;
 };
