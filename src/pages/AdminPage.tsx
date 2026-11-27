@@ -520,9 +520,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           } as CustomerKtpItem;
         }));
 
-        const { data: reportRows, error: reportErr } = await supabase
+        const { data: reportRowsRaw, error: reportErr } = await supabase
           .rpc('get_support_admin_reports' as any);
         if (reportErr) throw reportErr;
+        const reportRows = (reportRowsRaw || []) as Array<Pick<
+          AdminReportItem,
+          'id' | 'reporter_id' | 'reported_user_id' | 'booking_id' |
+          'category' | 'description' | 'status' | 'admin_notes' | 'created_at'
+        >>;
         const partyIds = Array.from(new Set((reportRows || []).flatMap((r) => [r.reporter_id, r.reported_user_id])));
         const { data: partyUsers } = partyIds.length
           ? await supabase.rpc('get_admin_user_summaries', { p_user_ids: partyIds })
