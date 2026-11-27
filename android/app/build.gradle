@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "id.yuku.app"
+    namespace = "yuku.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "yuku.app"
