@@ -28,6 +28,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { INDONESIA_CITIES } from '../utils/cities';
 import { PhotoCropEditor } from '../components/common/PhotoCropEditor';
 import { compressProfileImage } from '../utils/compressProfileImage';
+import { ResendConfirmation } from '../components/auth/ResendConfirmation';
 
 interface BecomeTalentPageProps {
   onNavigate: (path: AppRoute) => void;
@@ -1015,6 +1016,7 @@ export const BecomeTalentPage: React.FC<BecomeTalentPageProps> = ({ onNavigate }
                       <p className="text-[11px] text-amber-800 leading-relaxed">
                         Tautan aktivasi telah dikirimkan ke <strong>{successInfo.email}</strong>. Setelah email Anda aktif, silakan <strong>login</strong> terlebih dahulu lalu <strong>buka kembali halaman ini</strong> untuk melanjutkan. Isian formulir Anda sudah tersimpan di perangkat ini; Anda hanya perlu memasukkan kembali kata sandi, nomor KTP, dan foto KTP.
                       </p>
+                      <ResendConfirmation email={successInfo.email} startCooldown />
                     </div>
                   ) : (
                     <div className="p-4 bg-purple-50 border border-purple-200 text-purple-900 rounded-xl text-xs text-left space-y-1.5 max-w-md mx-auto">
