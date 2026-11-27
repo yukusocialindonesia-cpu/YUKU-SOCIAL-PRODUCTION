@@ -4,6 +4,8 @@
  */
 
 import React, { Suspense, lazy, useState, useEffect, useCallback } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
 import { MainLayout } from './layouts/MainLayout';
 import { HomePage } from './pages/HomePage';
 
@@ -147,6 +149,32 @@ export default function App() {
     } else {
       setCurrentPath('/');
     }
+  }, []);
+
+  // Android system back should follow the in-app route history instead of
+  // unexpectedly closing the native shell while the user is inside YUKU.
+  useEffect(() => {
+    if (Capacitor.getPlatform() !== 'android') return;
+
+    let disposed = false;
+    let listener: { remove: () => Promise<void> } | undefined;
+    void CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack || window.location.pathname !== '/') {
+        window.history.back();
+      } else {
+        void CapacitorApp.exitApp();
+      }
+    }).then((handle) => {
+      if (disposed) void handle.remove();
+      else listener = handle;
+    }).catch((error) => {
+      console.warn('YUKU: tombol kembali Android tidak dapat diaktifkan.', error);
+    });
+
+    return () => {
+      disposed = true;
+      if (listener) void listener.remove();
+    };
   }, []);
 
   useEffect(() => {
