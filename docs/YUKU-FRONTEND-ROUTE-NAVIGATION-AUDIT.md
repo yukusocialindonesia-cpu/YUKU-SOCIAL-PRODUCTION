@@ -1,5 +1,7 @@
 # YUKU Frontend Route & Navigation Audit
 
+> Retirement update (27 Nov 2026): the historical Xendit warning panel described below has been removed from the application. New checkout supports manual QRIS and bank transfer only; legacy route records remain readable and receive a support instruction.
+
 Date: 2026-11-26
 Branch: `feat/professional-services-categories`
 
