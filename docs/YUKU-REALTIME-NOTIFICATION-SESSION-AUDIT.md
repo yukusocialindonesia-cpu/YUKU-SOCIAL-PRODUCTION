@@ -1,5 +1,7 @@
 # YUKU Realtime, Notification & Session Isolation Audit
 
+> Historical note: Xendit webhook findings below describe an earlier integration snapshot. Xendit checkout/webhook source and its Supabase config entry are removed on the retirement branch; no Production Edge Function or provider secret has been changed.
+
 Date: 26 November 2026
 Branch: `feat/professional-services-categories`
 
