@@ -195,6 +195,9 @@ export interface TalentAvailabilityRow {
 /** 8. public.bookings */
 export interface BookingRow {
   id: string; // UUID
+  service_id: string | null; // UUID; nullable for historical legacy bookings
+  service_title_snapshot: string | null;
+  service_description_snapshot: string | null;
   booking_code: string;
   customer_id: string; // UUID
   talent_id: string; // UUID
