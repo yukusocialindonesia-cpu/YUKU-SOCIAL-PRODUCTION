@@ -16,6 +16,8 @@ export interface ActivityCategory {
 export type GenderType = 'Pria' | 'Wanita' | 'Semua';
 
 export interface TalentServiceOffer {
+  /** Stable UUID of the approved talent_services offer. */
+  id: string;
   categoryId: ActivityCategoryId;
   title: string;
   description: string;

@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-      - fix/talent-media-moderation
-      - feat/professional-services-categories
-      - feat/independent-professional-provider-identity
     paths:
       - "src/**"
       - "public/**"
@@ -15,39 +12,40 @@ on:
       - "package-lock.json"
       - "tsconfig.json"
       - "vite.config.*"
+      - "wrangler.toml"
+      - ".gitignore"
       - ".github/workflows/main-build-validation.yml"
-      - "supabase/migrations/**"
   pull_request:
     branches:
       - main
-      - fix/jelajah-companion-professional-separation
-      - fix/yuku-final-service-taxonomy
-      - feat/independent-professional-provider-identity
       - design/beranda-premium-compact
     paths:
       - "src/**"
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
       - "public/**"
       - "index.html"
       - "package.json"
       - "package-lock.json"
       - "tsconfig.json"
       - "vite.config.*"
+      - "wrangler.toml"
+      - ".gitignore"
       - ".github/workflows/main-build-validation.yml"
-      - "supabase/migrations/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: yuku-main-validation
+  group: yuku-main-validation-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   validate:
-    name: TypeScript and production build
+    name: TypeScript, production build, and Cloudflare deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -61,8 +59,28 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Validate Supabase production configuration
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          test -n "$VITE_SUPABASE_URL" || { echo "::error::Missing GitHub Actions secret VITE_SUPABASE_URL"; exit 1; }
+          test -n "$VITE_SUPABASE_PUBLISHABLE_KEY" || { echo "::error::Missing GitHub Actions secret VITE_SUPABASE_PUBLISHABLE_KEY"; exit 1; }
+
       - name: TypeScript check
         run: npm run lint
 
       - name: Production build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
+
+      - name: Deploy built assets to Cloudflare Production
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 8e92427ca4a3a2eb73bf9a910812659e
+          wranglerVersion: "4.168.0"
+          command: deploy --config wrangler.toml

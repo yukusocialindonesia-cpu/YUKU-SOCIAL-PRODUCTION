@@ -9,6 +9,7 @@ import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { SafetySection } from '../components/home/SafetySection';
 import { TalentCtaSection } from '../components/home/TalentCtaSection';
 import { HomeFaqSection } from '../components/home/HomeFaqSection';
+import { EcosystemSection } from '../components/home/EcosystemSection';
 import { AppRoute } from '../types/navigation';
 import { ActivityCategoryId } from '../types/talent';
 import { PromotionRow } from '../types/database';
@@ -103,7 +104,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* 4. Lini kedua, dipisahkan jelas dari Paid Companion. */}
       <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
 
-      {/* 5. Informasi pendukung diletakkan setelah katalog utama. */}
+      {/* 5. Community dan Merchant Partner adalah bagian ekosistem, bukan kategori Talent. */}
+      <EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} />
+
+      {/* 6. Informasi pendukung diletakkan setelah katalog utama. */}
       <div className="bg-white">
         <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
         <SafetySection />
@@ -121,6 +125,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onExploreClick={() => onNavigate('/talent')}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onRegisterClick={() => onNavigate('/daftar-talent')}
+        onProfessionalRegisterClick={() => onNavigate('/daftar-jasa-profesional')}
       />
 
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />

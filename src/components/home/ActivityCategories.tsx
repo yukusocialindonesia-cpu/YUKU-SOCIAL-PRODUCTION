@@ -19,14 +19,14 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
       const data = await fetchCategoriesFromSupabase();
       setCategories(data);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal memuat data kategori dari Supabase.');
+      setErrorMsg(err.message || 'Gagal memuat kategori teman.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadCategories();
+    void loadCategories();
   }, []);
 
   const getIcon = (iconName: string) => {
@@ -49,21 +49,22 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
     }
   };
 
-  // Satu baris horizontal di semua ukuran layar; kartu ringkas agar aktivitas
-  // terlihat tanpa membuat Beranda memanjang seperti katalog penuh.
   const railClass = 'flex gap-2 overflow-x-auto overscroll-x-contain snap-x snap-mandatory pb-2 -mx-4 px-4 sm:mx-0 sm:px-0';
 
   return (
-    <section className="relative bg-gradient-to-b from-white via-[#FCFAFF] to-[#F8F5FF] py-3 sm:py-8">
+    <section className="relative bg-white py-3 sm:py-7">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div className="min-w-0">
             <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-purple-700">
-              Social Experience · Paid Companion
+              Temukan Companion
             </span>
             <h2 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-2xl">
-              Pilihan Aktivitas
+              Cari Berdasarkan Aktivitas
             </h2>
+            <p className="mt-0.5 text-[11px] text-slate-500 sm:text-sm">
+              Pilih kegiatan yang ingin kamu lakukan bersama teman.
+            </p>
           </div>
           <span className="shrink-0 pb-0.5 text-[10px] font-medium text-slate-500 sm:text-xs">
             Geser untuk lihat
@@ -71,7 +72,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         </div>
 
         {loading ? (
-          <div className={railClass} aria-label="Memuat kategori aktivitas">
+          <div className={railClass} aria-label="Memuat kategori teman">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-purple-100 bg-white sm:w-[104px]" />
             ))}
@@ -84,7 +85,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
             </div>
             <button
               type="button"
-              onClick={loadCategories}
+              onClick={() => void loadCategories()}
               className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg bg-rose-600 px-3 py-1.5 font-bold text-white hover:bg-rose-700"
             >
               <RefreshCw className="h-3.5 w-3.5" />
@@ -93,7 +94,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
           </div>
         ) : categories.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-white px-4 py-5 text-center text-xs text-slate-500">
-            Belum ada kategori aktivitas aktif.
+            Kategori teman belum tersedia.
           </div>
         ) : (
           <div className={railClass}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown, Bell } from 'lucide-react';
+import { Menu, X, User, Sparkles, LogOut, ShoppingBag, ShieldCheck, KeyRound, ChevronDown, Bell, Store } from 'lucide-react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { AppRoute } from '../types/navigation';
@@ -13,7 +13,12 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
-  const { user: currentUser, role: userRole, isAuthLoading, signOut } = useAuth();
+  const { user: currentUser, role: userRole, adminAccess, accessSnapshot, isAuthLoading, signOut } = useAuth();
+  const customerAvailable = accessSnapshot?.capabilities.customer.available ?? (userRole === 'customer' || userRole === 'talent');
+  const talentWorkspaceAvailable = accessSnapshot
+    ? accessSnapshot.capabilities.talent?.status === 'approved'
+    : userRole === 'talent';
+  const professionalWorkspaceAvailable = Boolean(accessSnapshot?.capabilities.professionalProvider);
 
   useEffect(() => {
     const openMenu = () => setIsMobileMenuOpen(true);
@@ -47,6 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const navLinks: { label: string; href: AppRoute }[] = [
     { label: 'Beranda', href: '/' },
     { label: 'Jelajah', href: '/talent' },
+    { label: 'Merchant', href: '/merchant-partner' },
     { label: 'Komunitas', href: '/komunitas' },
     { label: 'Cara Kerja', href: '/cara-kerja' },
     { label: 'Tentang Kami', href: '/tentang' },
@@ -167,7 +173,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'talent' && (
+                {adminAccess?.isSuperAdmin && (
+                  <button
+                    onClick={() => handleLinkClick('/admin/merchant-partners')}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                      currentPath === '/admin/merchant-partners'
+                        ? 'bg-amber-500 text-slate-950 border-amber-500'
+                        : 'bg-amber-50 text-amber-950 border-amber-200 hover:bg-amber-100'
+                    }`}
+                    title="Review pengajuan Merchant Partner"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Review Merchant</span>
+                  </button>
+                )}
+
+                {talentWorkspaceAvailable && (
                   <button
                     onClick={() => handleLinkClick('/dashboard-talent')}
                     className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
@@ -182,7 +203,35 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'customer' && (
+                <button
+                  onClick={() => handleLinkClick('/merchant-center')}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                    currentPath === '/merchant-center'
+                      ? 'bg-fuchsia-700 text-white border-fuchsia-700 shadow-xs'
+                      : 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-200 hover:bg-fuchsia-100'
+                  }`}
+                  title="Kelola atau daftarkan bisnis Merchant Partner"
+                >
+                  <Store className="w-3.5 h-3.5" />
+                  <span>{accessSnapshot?.capabilities.merchantMemberships.length ? 'Merchant Center' : 'Daftarkan Bisnis'}</span>
+                </button>
+
+                {professionalWorkspaceAvailable && (
+                  <button
+                    onClick={() => handleLinkClick('/daftar-jasa-profesional')}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                      currentPath === '/daftar-jasa-profesional'
+                        ? 'bg-fuchsia-700 text-white border-fuchsia-700 shadow-xs'
+                        : 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-200 hover:bg-fuchsia-100'
+                    }`}
+                    title="Lihat status dan riwayat pengajuan jasa profesional"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5 text-fuchsia-700" />
+                    <span>Pengajuan Profesional</span>
+                  </button>
+                )}
+
+                {customerAvailable && (
                   <>
                     <button
                       onClick={() => handleLinkClick('/riwayat-booking')}
@@ -244,7 +293,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       </div>
 
                       <div className="py-1">
-                        {userRole === 'customer' && (
+                        {customerAvailable && (
                           <button
                             type="button"
                             role="menuitem"
@@ -361,7 +410,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'talent' && (
+                {adminAccess?.isSuperAdmin && (
+                  <button
+                    onClick={() => handleLinkClick('/admin/merchant-partners')}
+                    className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                      currentPath === '/admin/merchant-partners' ? 'bg-amber-100 text-amber-950' : 'bg-amber-50 text-amber-900 hover:bg-amber-100'
+                    }`}
+                  >
+                    <ShieldCheck className="w-4 h-4 text-amber-700" />
+                    <span>Review Merchant</span>
+                  </button>
+                )}
+
+                {talentWorkspaceAvailable && (
                   <button
                     onClick={() => handleLinkClick('/dashboard-talent')}
                     className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
@@ -375,7 +436,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </button>
                 )}
 
-                {userRole === 'customer' && (
+                {customerAvailable && (
                   <>
                     <button
                       onClick={() => handleLinkClick('/profil-saya')}
@@ -410,6 +471,28 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span>Verifikasi e-KTP Customer</span>
                     </button>
                   </>
+                )}
+
+                <button
+                  onClick={() => handleLinkClick('/merchant-center')}
+                  className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                    currentPath === '/merchant-center' ? 'bg-fuchsia-100 text-fuchsia-900' : 'hover:bg-slate-50 text-slate-700'
+                  }`}
+                >
+                  <Store className="w-4 h-4 text-fuchsia-700" />
+                  <span>{accessSnapshot?.capabilities.merchantMemberships.length ? 'Merchant Center' : 'Daftarkan Bisnis'}</span>
+                </button>
+
+                {professionalWorkspaceAvailable && (
+                  <button
+                    onClick={() => handleLinkClick('/daftar-jasa-profesional')}
+                    className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
+                      currentPath === '/daftar-jasa-profesional' ? 'bg-fuchsia-100 text-fuchsia-900' : 'hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <ShoppingBag className="w-4 h-4 text-fuchsia-700" />
+                    <span>Pengajuan Profesional</span>
+                  </button>
                 )}
 
                 <button

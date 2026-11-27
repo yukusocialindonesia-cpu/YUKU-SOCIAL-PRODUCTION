@@ -414,11 +414,30 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             <p className="mt-1.5 max-w-xl text-[11px] leading-relaxed text-purple-100 sm:mt-2 sm:text-sm">
               Temukan Companion untuk menemani aktivitas online maupun offline.
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Paid Companion</span>
-              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Online & Offline</span>
-              <button type="button" onClick={() => onNavigate('/jasa-profesional')} className="rounded-lg border border-white/30 bg-white/15 px-2.5 py-1.5 text-[10px] font-bold text-white transition hover:bg-white/25">Cari Jasa Profesional</button>
-            </div>
+            <nav aria-label="Pilih katalog YUKU" className="mt-3 grid grid-cols-3 gap-1.5 rounded-xl border border-white/15 bg-black/10 p-1">
+              <button
+                type="button"
+                aria-current="page"
+                onClick={() => onNavigate('/talent')}
+                className="min-h-10 rounded-lg bg-white px-2 py-2 text-[10px] font-extrabold leading-tight text-violet-900 shadow-sm sm:text-xs"
+              >
+                Teman Aktivitas
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('/jasa-profesional')}
+                className="min-h-10 rounded-lg px-2 py-2 text-[10px] font-bold leading-tight text-white/90 transition hover:bg-white/15 sm:text-xs"
+              >
+                Jasa Profesional
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('/merchant-partner')}
+                className="min-h-10 rounded-lg px-2 py-2 text-[10px] font-bold leading-tight text-white/90 transition hover:bg-white/15 sm:text-xs"
+              >
+                Merchant
+              </button>
+            </nav>
           </div>
         </section>
 

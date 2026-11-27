@@ -562,7 +562,10 @@ begin
     raise exception 'Account record not found' using errcode = 'P0002';
   end if;
 
-  v_customer_available := v_account_status in ('active','pending_verification');
+  v_customer_available := v_account_status in ('active','pending_verification')
+    AND EXISTS (
+      SELECT 1 FROM public.customer_profiles cp WHERE cp.id = v_user_id
+    );
 
   select case when tp.is_approved is true then 'approved' else 'pending_review' end
     into v_talent_status
