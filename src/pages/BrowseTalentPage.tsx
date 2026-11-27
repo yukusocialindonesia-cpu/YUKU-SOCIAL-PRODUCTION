@@ -8,7 +8,6 @@ import { fetchTalentsFromSupabase, fetchTalentsByIdsFromSupabase, fetchCategorie
 import type { PromotionRow } from '../types/database';
 import { doesTalentCityMatchFilter } from '../utils/cities';
 import { useAuth } from '../contexts/AuthContext';
-import { PROFESSIONAL_SERVICES_CATALOG } from '../data/professionalServicesCatalog';
 
 const getCreatedAtTimestamp = (createdAt?: string) => {
   const timestamp = Date.parse(createdAt || '');
@@ -72,7 +71,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
   const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [activePromotionIndex, setActivePromotionIndex] = useState(0);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
-  const [expandedServiceCategory, setExpandedServiceCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -411,16 +409,35 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
               <span className="text-[10px] font-semibold text-purple-100/90">Online & Offline</span>
             </div>
             <h1 className="text-[22px] font-black leading-tight tracking-tight sm:text-4xl">
-              {selectedMode === 'offline' ? 'Temukan Teman Offline' : selectedMode === 'online' ? 'Temukan Teman Online' : 'Mau cari layanan apa?'}
+              {selectedMode === 'offline' ? 'Cari Teman Offline' : selectedMode === 'online' ? 'Cari Teman Online' : 'Cari Teman'}
             </h1>
             <p className="mt-1.5 max-w-xl text-[11px] leading-relaxed text-purple-100 sm:mt-2 sm:text-sm">
-              Temukan talent, teman aktivitas, dan jasa profesional dalam satu tempat.
+              Temukan Companion untuk menemani aktivitas online maupun offline.
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Talent & aktivitas</span>
-              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Jasa profesional</span>
-              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white">Pilihan terkurasi</span>
-            </div>
+            <nav aria-label="Pilih katalog YUKU" className="mt-3 grid grid-cols-3 gap-1.5 rounded-xl border border-white/15 bg-black/10 p-1">
+              <button
+                type="button"
+                aria-current="page"
+                onClick={() => onNavigate('/talent')}
+                className="min-h-10 rounded-lg bg-white px-2 py-2 text-[10px] font-extrabold leading-tight text-violet-900 shadow-sm sm:text-xs"
+              >
+                Teman Aktivitas
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('/jasa-profesional')}
+                className="min-h-10 rounded-lg px-2 py-2 text-[10px] font-bold leading-tight text-white/90 transition hover:bg-white/15 sm:text-xs"
+              >
+                Jasa Profesional
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('/merchant-partner')}
+                className="min-h-10 rounded-lg px-2 py-2 text-[10px] font-bold leading-tight text-white/90 transition hover:bg-white/15 sm:text-xs"
+              >
+                Merchant
+              </button>
+            </nav>
           </div>
         </section>
 
@@ -468,63 +485,6 @@ export const BrowseTalentPage: React.FC<BrowseTalentPageProps> = ({
             })()}
           </section>
         )}
-
-        {/* Katalog Jelajah: kategori selalu tersedia, termasuk saat belum ada penyedia */}
-        <section aria-labelledby="professional-service-catalog-title" className="mb-3 sm:mb-5 rounded-2xl border border-purple-100/80 bg-white p-3 shadow-[0_8px_24px_rgba(76,29,149,0.06)] sm:rounded-[24px] sm:p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-purple-600">Jelajahi berdasarkan kategori</p>
-              <h2 id="professional-service-catalog-title" className="mt-0.5 text-base font-black tracking-tight text-[#28103f] sm:text-xl">Jasa Profesional</h2>
-              <p className="mt-0.5 text-[10px] text-slate-500 sm:text-xs">Pilih kategori untuk melihat jenis layanan.</p>
-            </div>
-            <span className="shrink-0 rounded-xl bg-[#f4edfb] px-2.5 py-2 text-[10px] font-extrabold text-purple-800">12 kategori</span>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {PROFESSIONAL_SERVICES_CATALOG.map((category) => {
-              const expanded = expandedServiceCategory === category.id;
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  aria-expanded={expanded}
-                  onClick={() => setExpandedServiceCategory(expanded ? null : category.id)}
-                  className={`min-h-[62px] w-[132px] shrink-0 rounded-xl border px-3 py-2 text-left transition-all sm:w-[156px] ${expanded ? 'border-purple-500 bg-[#f5edfc] shadow-[0_4px_14px_rgba(76,29,149,0.12)]' : 'border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50/60'}`}
-                >
-                  <span className={`mb-1 flex h-6 w-6 items-center justify-center rounded-lg text-[11px] font-black ${expanded ? 'bg-purple-700 text-white' : 'bg-purple-50 text-purple-700'}`}>{category.title.charAt(0)}</span>
-                  <span className="block text-[10px] font-extrabold leading-snug text-slate-800 sm:text-[11px]">{category.title}</span>
-                  <span className="mt-0.5 block text-[9px] text-slate-500">{category.professional_service_subcategories.length} layanan</span>
-                </button>
-              );
-            })}
-          </div>
-          {expandedServiceCategory && (() => {
-            const selectedCategory = PROFESSIONAL_SERVICES_CATALOG.find((item) => item.id === expandedServiceCategory);
-            if (!selectedCategory) return null;
-            return (
-              <div className="mt-2 rounded-xl border border-purple-100 bg-[#faf7fd] p-3">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <h3 className="text-xs font-extrabold text-purple-950">{selectedCategory.title}</h3>
-                  <button type="button" onClick={() => setExpandedServiceCategory(null)} className="rounded-full px-2 py-1 text-[10px] font-bold text-purple-700 hover:bg-purple-100">Tutup</button>
-                </div>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {selectedCategory.professional_service_subcategories.map((service) => (
-                    <div key={service.id} className="rounded-lg border border-purple-100/80 bg-white px-3 py-2">
-                      <p className="text-[11px] font-bold text-slate-800">{service.title}</p>
-                      <p className="mt-0.5 text-[10px] leading-relaxed text-slate-500">{service.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-          <div className="mt-3 flex flex-col gap-2 border-t border-purple-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[9px] leading-relaxed text-slate-500">Kategori tetap terlihat meskipun penyedia belum tersedia. Profil hanya tampil setelah aktif dan disetujui.</p>
-            <div className="flex shrink-0 gap-2">
-              <button type="button" onClick={() => onNavigate('/jasa-profesional')} className="flex-1 rounded-xl border border-purple-200 bg-white px-3 py-2 text-[10px] font-extrabold text-purple-800 transition hover:bg-purple-50 sm:flex-none">Lihat semua jasa</button>
-              <button type="button" onClick={() => onNavigate('/daftar-jasa-profesional')} className="flex-1 rounded-xl bg-[#4b1674] px-3 py-2 text-[10px] font-extrabold text-white shadow-sm transition hover:bg-[#32104f] sm:flex-none">Daftarkan jasa</button>
-            </div>
-          </div>
-        </section>
 
         <div className="sticky top-[68px] min-[431px]:top-[72px] lg:top-[76px] xl:static z-30 -mx-4 bg-[#F8F3FF]/95 px-4 pb-1 pt-0 backdrop-blur-sm sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0 sm:backdrop-blur-none">
         {/* Filter Bar Controls */}

@@ -3,6 +3,7 @@ import { BrandLogo } from '../components/common/BrandLogo';
 import { Lock, Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { isEmailNotConfirmed, translateAuthError } from '../lib/authErrors';
 import { ResendConfirmation } from '../components/auth/ResendConfirmation';
 
@@ -11,6 +12,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
+  const { refreshRole } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           return;
         }
 
+        // Jangan menganggap role yang kosong/tidak dikenal sebagai Customer.
+        // Sesi lokal dihentikan sampai role akun dapat diverifikasi dengan benar.
+        if (userRow.role !== 'admin' && userRow.role !== 'talent' && userRow.role !== 'customer') {
+          await supabase.auth.signOut({ scope: 'local' });
+          setErrorMsg('Role akun belum dapat diverifikasi. Silakan hubungi Support YUKU.');
+          return;
+        }
+
         // Jika ada isian pendaftaran talent yang tersimpan (dibuat sebelum konfirmasi email),
         // lanjutkan langsung ke formulir agar pengguna tidak tersesat di dashboard kosong.
         let hasTalentDraft = false;
@@ -69,13 +79,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         }
 
         const targetRoute: AppRoute =
-          userRow?.role === 'admin'
+          userRow.role === 'admin'
             ? '/admin'
-            : hasTalentDraft
+            : hasTalentDraft && (userRow.role === 'customer' || userRow.role === 'talent')
             ? '/daftar-talent'
-            : userRow?.role === 'talent'
+            : userRow.role === 'talent'
             ? '/dashboard-talent'
             : '/talent';
+
+        await refreshRole();
 
         setSuccessMsg(`Selamat datang kembali, ${data.user.email}!`);
         // Navigasi langsung setelah autentikasi berhasil agar tidak kembali

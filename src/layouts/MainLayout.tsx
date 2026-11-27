@@ -46,7 +46,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
 
       {currentPath !== '/' && <SafetyPledgeBanner />}
 
-      <Footer onNavigate={onNavigate} />
+      {/* Beranda memakai pola aplikasi di HP: navigasi utama ada di bottom bar.
+          Footer informatif tetap tersedia di desktop, tidak memanjangkan layar mobile seperti website company profile. */}
+      <div className={currentPath === '/' ? 'hidden md:block' : undefined}>
+        <Footer onNavigate={onNavigate} />
+      </div>
 
       {showBottomNav && <MobileBottomNav currentPath={currentPath} onNavigate={onNavigate} />}
     </div>

@@ -17,14 +17,18 @@ type NavEntry = {
 
 /**
  * Navigasi floating khusus HP.
- * Tujuan menu dan hak akses tetap mengikuti role yang sudah ada.
+ * Tujuan menu mengikuti capability snapshot, dengan fallback ke role lama.
  */
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, onNavigate }) => {
-  const { user, role, isAuthLoading } = useAuth();
+  const { user, role, accessSnapshot, isAuthLoading } = useAuth();
   const loggedIn = Boolean(user);
   const icon = 'w-5 h-5 sm:w-[21px] sm:h-[21px]';
+  const customerAvailable = accessSnapshot?.capabilities.customer.available ?? (role === 'customer' || role === 'talent');
+  const talentWorkspaceAvailable = accessSnapshot
+    ? accessSnapshot.capabilities.talent?.status === 'approved'
+    : role === 'talent';
   const ordersRoute: AppRoute | null =
-    role === 'admin' ? '/admin' : role === 'talent' ? '/dashboard-talent' : role === 'customer' ? '/riwayat-booking' : null;
+    role === 'admin' ? '/admin' : customerAvailable ? '/riwayat-booking' : talentWorkspaceAvailable ? '/dashboard-talent' : null;
 
   const openProfile = () => {
     if (!loggedIn) {
@@ -33,12 +37,17 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     }
     if (role === 'admin') {
       onNavigate('/admin');
-    } else if (role === 'talent') {
-      onNavigate('/dashboard-talent');
-    } else if (role === 'customer') {
+    } else if (customerAvailable) {
+      // Akses Customer tetap tersedia pada akun multi-profil, termasuk Talent.
       onNavigate('/profil-saya');
+    } else if (talentWorkspaceAvailable) {
+      onNavigate('/dashboard-talent');
+    } else if (accessSnapshot?.capabilities.professionalProvider) {
+      onNavigate('/daftar-jasa-profesional');
+    } else if (accessSnapshot?.capabilities.merchantMemberships.some((membership) => membership.status === 'active')) {
+      onNavigate('/merchant-center');
     } else {
-      // Sesi aktif tetapi role belum diketahui: jangan menganggap akun sebagai Customer.
+      // Sesi aktif tetapi belum memiliki workspace yang dapat dibuka.
       window.dispatchEvent(new CustomEvent('yuku:open-menu'));
     }
   };
@@ -48,7 +57,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
     { label: 'Jelajah', route: '/talent', icon: <Search className={icon} strokeWidth={2.1} />, onPress: () => onNavigate('/talent') },
     { label: 'Komunitas', route: '/komunitas', icon: <Users className={icon} strokeWidth={2.1} />, onPress: () => onNavigate('/komunitas') },
     {
-      label: role === 'admin' ? 'Admin' : role === 'talent' ? 'Dashboard' : role === 'customer' ? 'Pesanan' : 'Menu',
+      label: role === 'admin' ? 'Admin' : customerAvailable ? 'Pesanan' : talentWorkspaceAvailable ? 'Dashboard' : 'Menu',
       route: ordersRoute,
       icon: <Bookmark className={icon} strokeWidth={2.1} />,
       onPress: () => {

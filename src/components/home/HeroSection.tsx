@@ -57,12 +57,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   useEffect(() => {
     let mounted = true;
-    fetchHeroSlidesFromSupabase().then((rows) => {
-      if (!mounted) return;
-      setSlides(rows);
-      setSlidesLoaded(true);
-      writeCachedSlides(rows);
-    });
+    fetchHeroSlidesFromSupabase()
+      .then((rows) => {
+        if (!mounted) return;
+        setSlides(rows);
+        writeCachedSlides(rows);
+      })
+      .catch(() => {
+        // Keep the locally cached slides (if any); otherwise render the branded fallback.
+        if (!mounted) return;
+      })
+      .finally(() => {
+        if (mounted) setSlidesLoaded(true);
+      });
     return () => {
       mounted = false;
     };
@@ -261,11 +268,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
           <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-purple-700">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-            <span>Social Experience & Paid Companionship</span>
+            <span>Social Experience & Professional Services</span>
           </p>
           <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-purple-200/80 rounded-full text-purple-900 text-xs font-semibold mb-5">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-purple-700" />
-            <span className="truncate">Social Experience & Paid Companionship</span>
+            <span className="truncate">Social Experience & Professional Services</span>
           </div>
 
           <h1 className="text-[clamp(1.75rem,5.2vw,3.75rem)] leading-[1.06] font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
@@ -277,7 +284,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </h1>
 
           <p className="max-w-2xl text-[14px] leading-relaxed sm:text-base md:text-lg md:leading-relaxed text-slate-700">
-            Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
+            Temukan teman untuk berbagi aktivitas, sekaligus tenaga profesional untuk kebutuhanmu.
           </p>
         </div>
 

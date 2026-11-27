@@ -6,7 +6,7 @@ import { PromotionRow, HeroSlideRow } from '../types/database';
  * Safely map database row from talent_profiles table to TalentProfile frontend interface.
  * Strictly uses nullish checking (== null) to preserve numeric 0 and NULL values without inventing fake defaults.
  */
-export function mapSupabaseTalent(row: any, servicesCategoryIds: string[] = []): TalentProfile {
+export function mapSupabaseTalent(row: any, servicesCategoryIds: string[] = [], serviceOffers: { id: string; categoryId: string; title: string; description: string }[] = []): TalentProfile {
   if (!row) {
     throw new Error('Data baris talent_profiles bernilai null atau tidak valid.');
   }
@@ -24,6 +24,7 @@ export function mapSupabaseTalent(row: any, servicesCategoryIds: string[] = []):
     completedHours: row.completed_hours == null ? undefined : Number(row.completed_hours),
     avatarUrl: row.avatar_url ?? '',
     activities: servicesCategoryIds as ActivityCategoryId[],
+    serviceOffers,
     hourlyRate: row.hourly_rate == null ? undefined : Number(row.hourly_rate),
     onlineChatRate: row.online_chat_rate == null ? undefined : Number(row.online_chat_rate),
     languages: Array.isArray(row.languages) ? row.languages : [],
@@ -56,28 +57,67 @@ export function mapSupabaseCategory(row: any): ActivityCategory {
  * Fetch all active activity categories from Supabase activity_categories table via SELECT.
  * Throws errors explicitly on failure without disguising query failures as empty state.
  */
-export async function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
-  const { data, error } = await supabase
-    .from('activity_categories')
-    .select('id, title, description, icon_name, examples, is_online_available, is_active')
-    .eq('is_active', true);
+// Share one in-flight category request across homepage/search/page components.
+// This prevents parallel duplicate requests from showing conflicting UI states.
+let categoriesRequest: Promise<ActivityCategory[]> | null = null;
 
-  if (error) {
-    throw new Error(`Gagal membaca kategori dari Supabase: ${error.message} (${error.code || 'UNKNOWN'})`);
-  }
+export function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
+  if (categoriesRequest) return categoriesRequest;
 
-  if (!data || data.length === 0) {
-    return [];
-  }
+  const request = (async () => {
+    let lastError: unknown;
 
-  return data.map(mapSupabaseCategory);
+    // Retry once only for browser-level network failures (for example, "Failed to fetch").
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const { data, error } = await supabase
+          .from('activity_categories')
+          .select('id, title, description, icon_name, examples, is_online_available, is_active')
+          .eq('is_active', true);
+
+        if (error) {
+          const fetchError = new Error(
+            `Gagal membaca kategori dari Supabase: ${error.message} (${error.code || 'UNKNOWN'})`
+          );
+          if (attempt === 0 && /failed to fetch|networkerror|fetch failed/i.test(error.message)) {
+            lastError = fetchError;
+            await new Promise((resolve) => window.setTimeout(resolve, 500));
+            continue;
+          }
+          throw fetchError;
+        }
+
+        return (data || []).map(mapSupabaseCategory);
+      } catch (err: unknown) {
+        lastError = err;
+        const message = err instanceof Error ? err.message : String(err);
+        if (attempt === 0 && /failed to fetch|networkerror|fetch failed/i.test(message)) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('Gagal membaca kategori dari Supabase: kegagalan jaringan (UNKNOWN)');
+  })();
+
+  categoriesRequest = request;
+  const clearRequest = () => {
+    if (categoriesRequest === request) categoriesRequest = null;
+  };
+  void request.then(clearRequest, clearRequest);
+
+  return request;
 }
 
 /**
  * Fetch public talent profiles from Supabase talent_profiles table via SELECT.
  * Explicitly checks errors on both talent_profiles and talent_services queries to prevent masking failures.
  */
-export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
+async function fetchTalentsOnce(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
   let query = supabase
     .from('talent_profiles')
     .select(
@@ -123,7 +163,7 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searc
   const talentIds = talentsData.map((t) => t.id);
   const { data: servicesData, error: servicesError } = await supabase
     .from('talent_services')
-    .select('talent_id, activity_category_id')
+    .select('id, talent_id, activity_category_id, custom_title, custom_description, approval_status, is_active')
     .in('talent_id', talentIds);
 
   if (servicesError) {
@@ -131,17 +171,67 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searc
   }
 
   const servicesMap = new Map<string, string[]>();
+  const offersMap = new Map<string, { id: string; categoryId: string; title: string; description: string }[]>();
   if (servicesData) {
-    servicesData.forEach((s) => {
+    servicesData.filter((s) => s.approval_status === 'approved' && s.is_active).forEach((s) => {
       const existing = servicesMap.get(s.talent_id) || [];
       existing.push(s.activity_category_id);
       servicesMap.set(s.talent_id, existing);
+      if (s.approval_status === 'approved' && s.is_active && s.custom_title) {
+        const offers = offersMap.get(s.talent_id) || [];
+        offers.push({ id: s.id, categoryId: s.activity_category_id, title: s.custom_title, description: s.custom_description || '' });
+        offersMap.set(s.talent_id, offers);
+      }
     });
   }
 
   return talentsData.map((row) =>
-    mapSupabaseTalent(row, servicesMap.get(row.id) || [])
+    mapSupabaseTalent(row, servicesMap.get(row.id) || [], offersMap.get(row.id) || [])
   );
+}
+
+
+/**
+ * Share identical in-flight Talent list requests and retry once on transient
+ * browser/network failures. This avoids competing requests from homepage,
+ * search, and browse components while preserving real query errors.
+ */
+const talentListRequests = new Map<string, Promise<TalentProfile[]>>();
+
+export function fetchTalentsFromSupabase(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
+  const requestKey = JSON.stringify([limit ?? null, offset, searchTerm.trim()]);
+  const existingRequest = talentListRequests.get(requestKey);
+  if (existingRequest) return existingRequest;
+
+  const request = (async () => {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        return await fetchTalentsOnce(limit, offset, searchTerm);
+      } catch (err: unknown) {
+        lastError = err;
+        const message = err instanceof Error ? err.message : String(err);
+        const isNetworkFailure = /failed to fetch|networkerror|fetch failed|load failed/i.test(message);
+        if (attempt === 0 && isNetworkFailure) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('Gagal membaca daftar Talent dari Supabase: kegagalan jaringan (UNKNOWN)');
+  })();
+
+  talentListRequests.set(requestKey, request);
+  const clearRequest = () => {
+    if (talentListRequests.get(requestKey) === request) {
+      talentListRequests.delete(requestKey);
+    }
+  };
+  void request.then(clearRequest, clearRequest);
+  return request;
 }
 
 /**
@@ -176,7 +266,7 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
 
   const { data: servicesData, error: servicesError } = await supabase
     .from('talent_services')
-    .select('talent_id, activity_category_id')
+    .select('id, talent_id, activity_category_id, custom_title, custom_description, approval_status, is_active')
     .in('talent_id', talentsData.map((talent) => talent.id));
 
   if (servicesError) {
@@ -184,13 +274,19 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
   }
 
   const servicesMap = new Map<string, string[]>();
-  (servicesData || []).forEach((service) => {
+  const offersMap = new Map<string, { id: string; categoryId: string; title: string; description: string }[]>();
+  (servicesData || []).filter((service) => service.approval_status === 'approved' && service.is_active).forEach((service) => {
     const existing = servicesMap.get(service.talent_id) || [];
     existing.push(service.activity_category_id);
     servicesMap.set(service.talent_id, existing);
+    if (service.custom_title) {
+      const offers = offersMap.get(service.talent_id) || [];
+      offers.push({ id: service.id, categoryId: service.activity_category_id, title: service.custom_title, description: service.custom_description || '' });
+      offersMap.set(service.talent_id, offers);
+    }
   });
 
-  return talentsData.map((row) => mapSupabaseTalent(row, servicesMap.get(row.id) || []));
+  return talentsData.map((row) => mapSupabaseTalent(row, servicesMap.get(row.id) || [], offersMap.get(row.id) || []));
 }
 
 /**
@@ -217,16 +313,23 @@ export async function fetchTalentByIdFromSupabase(talentId: string): Promise<Tal
   // Fetch services for this talent with explicit error checking
   const { data: servicesData, error: servicesError } = await supabase
     .from('talent_services')
-    .select('activity_category_id')
+    .select('id, activity_category_id, custom_title, custom_description, approval_status, is_active')
     .eq('talent_id', talentId);
 
   if (servicesError) {
     throw new Error(`Gagal membaca layanan Talent (${talentId}) dari Supabase: ${servicesError.message} (${servicesError.code || 'UNKNOWN'})`);
   }
 
-  const categoryIds = servicesData ? servicesData.map((s) => s.activity_category_id) : [];
+  const approvedServices = (servicesData || []).filter((s) => s.approval_status === 'approved' && s.is_active);
+  const categoryIds = approvedServices.map((s) => s.activity_category_id);
+  const offers = approvedServices.filter((s) => s.custom_title).map((s) => ({
+    id: s.id,
+    categoryId: s.activity_category_id,
+    title: s.custom_title,
+    description: s.custom_description || '',
+  }));
 
-  return mapSupabaseTalent(data, categoryIds);
+  return mapSupabaseTalent(data, categoryIds, offers);
 }
 
 /**
@@ -260,6 +363,6 @@ export async function fetchHeroSlidesFromSupabase(): Promise<HeroSlideRow[]> {
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 
-  if (error) return [];
+  if (error) throw error;
   return (data as HeroSlideRow[]) || [];
 }

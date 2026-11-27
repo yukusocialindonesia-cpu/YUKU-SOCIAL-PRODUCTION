@@ -40,7 +40,7 @@ const GENDER_OPTIONS: GenderType[] = [
 ];
 
 export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavigate }) => {
-  const { user, role, isAuthLoading } = useAuth();
+  const { user, role, accessSnapshot, isAuthLoading } = useAuth();
   const onNavigateRef = useRef(onNavigate);
   onNavigateRef.current = onNavigate;
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
@@ -60,18 +60,43 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
   useEffect(() => {
     if (isAuthLoading) return;
     if (!user) {
+      setProfile(null);
+      setDisplayName('');
+      setCity('');
+      setGender('');
+      setBio('');
+      setPhoneNumber('');
+      setIsLoading(false);
       onNavigateRef.current('/login');
       return;
     }
-    if (role && role !== 'customer') {
-      onNavigateRef.current(role === 'talent' ? '/dashboard-talent' : '/admin');
+    // Snapshot multi-profile is authoritative when available: Talent/Professional/Merchant
+    // accounts may also use their Customer profile. Keep legacy role fallback during rollout.
+    const customerAvailable = accessSnapshot
+      ? accessSnapshot.capabilities.customer.available
+      : role === 'customer';
+    if (role === 'admin' || !customerAvailable) {
+      setProfile(null);
+      onNavigateRef.current(
+        role === 'talent' ? '/dashboard-talent'
+          : accessSnapshot?.capabilities.professionalProvider ? '/daftar-jasa-profesional'
+            : accessSnapshot?.capabilities.merchantMemberships.some((membership) => membership.status === 'active')
+              ? '/merchant-center' : '/',
+      );
       return;
     }
 
     let active = true;
     const loadProfile = async () => {
       setIsLoading(true);
+      setProfile(null);
+      setDisplayName('');
+      setCity('');
+      setGender('');
+      setBio('');
+      setPhoneNumber('');
       setErrorMessage('');
+      setSuccessMessage('');
       const [{ data, error }, { data: accountData }] = await Promise.all([
         supabase
           .from('customer_profiles')
@@ -104,7 +129,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
 
     void loadProfile();
     return () => { active = false; };
-  }, [isAuthLoading, user?.id, role]);
+  }, [isAuthLoading, user?.id, role, accessSnapshot]);
 
   useEffect(() => {
     if (!avatarFile) {

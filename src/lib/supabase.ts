@@ -19,6 +19,13 @@ const normalizedEnvUrl = (() => {
   }
 })();
 
+export const supabaseConfigurationDiagnostics = {
+  urlPresent: Boolean(rawEnvUrl),
+  urlValid: Boolean(normalizedEnvUrl),
+  keyPresent: Boolean(rawEnvKey),
+  urlHost: normalizedEnvUrl ? new URL(normalizedEnvUrl).host : null,
+};
+
 export const isSupabaseConfigured = Boolean(normalizedEnvUrl && rawEnvKey);
 
 // Supabase JS requires a syntactically valid URL/key at construction time.
@@ -95,5 +102,5 @@ export async function checkSupabaseConnection(): Promise<{
 }
 
 if (!isSupabaseConfigured) {
-  console.error('YUKU: Supabase belum dikonfigurasi. Aplikasi tidak akan terhubung ke proyek bawaan.');
+  console.error('YUKU Supabase config diagnostics:', supabaseConfigurationDiagnostics);
 }

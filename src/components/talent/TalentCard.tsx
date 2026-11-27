@@ -132,7 +132,16 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
   return (
     <article
       onClick={() => onSelect(talent.id)}
-      className="group relative h-full min-w-0 bg-white/95 rounded-xl sm:rounded-[26px] overflow-hidden border border-white shadow-[0_8px_24px_rgba(76,29,149,0.09)] hover:shadow-[0_18px_38px_rgba(76,29,149,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70"
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect(talent.id);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Lihat profil ${talent.name}`}
+      className="group relative h-full min-w-0 bg-white/95 rounded-xl sm:rounded-[26px] overflow-hidden border border-white shadow-[0_8px_24px_rgba(76,29,149,0.09)] hover:shadow-[0_18px_38px_rgba(76,29,149,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
     >
       {/* Media */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100">
@@ -261,13 +270,13 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               </div>
             </div>}
 
-            <button
-              type="button"
+            <span
+              aria-hidden="true"
               className={`inline-flex min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 ${showPrice ? "text-[10px] sm:text-xs shrink-0" : "w-full justify-center text-xs"} font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+            </span>
           </div>
         </div>
       </div>

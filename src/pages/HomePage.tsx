@@ -9,6 +9,7 @@ import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { SafetySection } from '../components/home/SafetySection';
 import { TalentCtaSection } from '../components/home/TalentCtaSection';
 import { HomeFaqSection } from '../components/home/HomeFaqSection';
+import { EcosystemSection } from '../components/home/EcosystemSection';
 import { AppRoute } from '../types/navigation';
 import { ActivityCategoryId } from '../types/talent';
 import { PromotionRow } from '../types/database';
@@ -23,8 +24,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
   const promoSectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Pertahankan posisi poster setelah Talent dan Keamanan. Data dimuat
-  // ketika bagian promosi mendekati layar agar beban awal Beranda tetap ringan.
+  // Muat promosi saat mendekati viewport agar tampilan awal tetap ringan.
   useEffect(() => {
     const target = promoSectionRef.current;
     if (!target) return;
@@ -76,12 +76,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   const handleSelectTalent = (talentId: string) => {
-    onNavigate(`/talent/:id`, { id: talentId });
+    onNavigate('/talent/:id', { id: talentId });
   };
 
   return (
-    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#FBF8FF] via-white to-[#FFF9F3]">
-      {/* Alur lama dipertahankan: pengunjung memahami layanan sebelum memilih Talent. */}
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-[#FBFAFF]">
+      {/* 1. Pintu masuk: pencarian utama dan identitas Social Experience. */}
       <HeroSection
         onExploreClick={() => onNavigate('/talent')}
         onSearch={handleSearch}
@@ -89,25 +89,31 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
       />
 
-      <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+      {/* 2. Kebutuhan pelanggan: pilih cara berinteraksi, lalu jenis aktivitas. */}
+      <div className="bg-white">
+        <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+        <ActivityCategories onSelectCategory={handleSelectCategory} />
+      </div>
 
-      <ActivityCategories onSelectCategory={handleSelectCategory} />
-
-      {/* Katalog jasa profesional ditambahkan tanpa menggantikan kategori aktivitas lama. */}
-      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
-
-      {/* Cara kerja tetap muncul sebelum daftar Talent, sesuai alur Beranda lama. */}
-      <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
-
+      {/* 3. Social Experience adalah layanan utama YUKU. Harga tetap di halaman profil. */}
       <FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
       />
 
-      {/* Keamanan tetap diperlihatkan sebelum ruang promosi. */}
-      <SafetySection />
+      {/* 4. Lini kedua, dipisahkan jelas dari Paid Companion. */}
+      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
 
-      <div ref={promoSectionRef}>
+      {/* 5. Community dan Merchant Partner adalah bagian ekosistem, bukan kategori Talent. */}
+      <EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} />
+
+      {/* 6. Informasi pendukung diletakkan setelah katalog utama. */}
+      <div className="bg-white">
+        <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
+        <SafetySection />
+      </div>
+
+      <div ref={promoSectionRef} className="bg-[#FBFAFF]">
         <PromoCarousel
           promotions={promotions}
           isLoading={isLoadingPromotions}
@@ -119,9 +125,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onExploreClick={() => onNavigate('/talent')}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onRegisterClick={() => onNavigate('/daftar-talent')}
+        onProfessionalRegisterClick={() => onNavigate('/daftar-jasa-profesional')}
       />
 
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
-    </div>
+    </main>
   );
 };
