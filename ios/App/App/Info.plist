@@ -66,5 +66,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+  <key>NSCameraUsageDescription</key>
+  <string>YUKU menggunakan kamera untuk foto profil dan konten aktivitas yang Anda pilih.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>YUKU mengakses galeri agar Anda dapat memilih foto dan video untuk profil atau aktivitas.</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>YUKU dapat menyimpan media yang Anda pilih ke galeri perangkat.</string>
 </dict>
 </plist>
