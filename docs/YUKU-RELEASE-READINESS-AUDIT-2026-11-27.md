@@ -386,3 +386,11 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 - Other log errors include `permission denied for function can_admin_access_ktp` and `permission denied for table customer_profiles`; these require actor/JWT-path tracing before changing grants or RLS. No permission change is authorized by this log observation.
 - The log sample is from the Production project and does not reveal the exact migration failure recorded by Supabase's branch provisioning status. Do not conflate runtime query errors with a failed migration record.
 - All checks here were read-only. No Production DDL/DML, migration, or deployment was performed.
+
+
+## Production schema drift — Talent custom Social Experience fields (27 Nov 2026)
+- Read-only inspection of Production `public.talent_services` confirms columns `custom_title` and `custom_description` are absent; existing columns include `custom_rate_override`, approval state, and review metadata.
+- Current application source already selects these missing columns in `src/pages/TalentDashboardPage.tsx` (service management query) and `src/utils/supabaseMarketplace.ts` (Talent browse/detail mapping). This explains the PostgREST missing-column errors observed in Production logs.
+- The additive branch migration `20261127005500_talent_custom_social_experience_services.sql` introduces both columns and the custom-service submission RPC. It is not applied to Production or Staging.
+- Release implication: do not expose/deploy the UI path that depends on these fields against Production until the migration chain is reconciled and validated on a clean Staging database. Do not hot-apply this migration directly to Production as a shortcut.
+- No database mutation or deployment was performed during this inspection.
