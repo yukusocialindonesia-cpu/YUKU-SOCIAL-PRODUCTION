@@ -116,10 +116,10 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
           <div>
             <span className="text-[10.5px] sm:text-xs font-bold text-purple-700 tracking-wider uppercase mb-0.5 sm:mb-1 block">
-              Temukan teman untuk aktivitasmu
+              SOCIAL EXPERIENCE
             </span>
             <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Talent Pilihan YUKU
+              Teman Aktivitas Pilihan
             </h2>
           </div>
           <button
@@ -141,7 +141,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {loading ? (
           <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[420px] w-[76vw] max-w-[300px] shrink-0 rounded-2xl bg-slate-200 animate-pulse sm:h-80 sm:w-[260px]" />
+              <div key={i} className="h-[68vw] max-h-[250px] w-[66vw] max-w-[230px] shrink-0 rounded-2xl bg-slate-200 animate-pulse sm:h-[230px] sm:w-[220px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -199,7 +199,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[76vw] max-w-[300px] sm:w-[260px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[66vw] max-w-[230px] sm:w-[220px] lg:w-[calc((100%-3rem)/4)] rounded-[18px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
@@ -211,6 +211,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
                   availableToday={availableTodayIds.has(talent.id)}
                   mediaTypes={mediaTypesByTalent[talent.id] ?? []}
                   showPrice={false}
+                  compact
                 />
               </motion.div>
             ))}
