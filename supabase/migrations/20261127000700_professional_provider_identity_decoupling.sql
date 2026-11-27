@@ -598,3 +598,27 @@ comment on table public.professional_provider_profiles is
   'Independent Professional Services identity. Does not require a Talent profile or users.role=talent.';
 comment on function private.is_professional_talent_publicly_visible(uuid) is
   'Boolean-only public eligibility gate for independent Professional Provider profiles; requires active account, verified age/KTP, complete and approved Professional profile.';
+
+
+-- Independent Professional Providers must be able to upload their own private
+-- application evidence without first creating a Talent profile.
+-- Keep the active-account and per-user storage-folder boundary from the earlier policy.
+drop policy if exists professional_service_documents_owner_upload
+  on storage.objects;
+create policy professional_service_documents_owner_upload
+  on storage.objects
+  for insert to authenticated
+  with check (
+    bucket_id = 'professional-service-documents'
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and exists (
+      select 1
+      from public.users u
+      where u.id = (select auth.uid())
+        and u.account_status = 'active'::public.account_status_type
+    )
+  );
+
+comment on policy professional_service_documents_owner_upload
+  on storage.objects is
+  'Private Professional application evidence uploads are limited to the authenticated owner folder and an active account; a Talent profile is not required.';
