@@ -74,7 +74,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         {loading ? (
           <div className={railClass} aria-label="Memuat kategori teman">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-purple-100 bg-white sm:w-[104px]" />
+              <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-[#E7D8B2] bg-white sm:w-[104px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -100,24 +100,24 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
           <div className={railClass}>
             {categories.map((cat, idx) => {
               const tones = [
-                'bg-purple-100 text-purple-700',
-                'bg-fuchsia-100 text-fuchsia-700',
-                'bg-amber-100 text-amber-700',
-                'bg-sky-100 text-sky-700',
-                'bg-rose-100 text-rose-700',
-                'bg-emerald-100 text-emerald-700',
+                'bg-[#32105B] text-white',
+                'bg-[#F0D58B] text-[#32105B]',
+                'bg-[#32105B] text-white',
+                'bg-[#F0D58B] text-[#32105B]',
+                'bg-[#32105B] text-white',
+                'bg-[#F0D58B] text-[#32105B]',
               ];
               return (
                 <button
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group flex min-h-[76px] w-[88px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-xl border border-purple-100 bg-white px-2 py-2 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-purple-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 sm:min-h-[88px] sm:w-[104px] sm:gap-2 sm:rounded-2xl sm:py-3"
+                  className="group flex min-h-[76px] w-[88px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-xl border border-[#E7D8B2] bg-white px-2 py-2 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-[#D7A83E] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D7A83E] sm:min-h-[88px] sm:w-[104px] sm:gap-2 sm:rounded-2xl sm:py-3"
                 >
                   <span className={`flex h-8 w-8 items-center justify-center rounded-xl sm:h-9 sm:w-9 ${tones[idx % tones.length]}`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <span className="line-clamp-2 text-[10px] font-bold leading-tight text-slate-800 group-hover:text-purple-700 sm:text-[11px]">
+                  <span className="line-clamp-2 text-[10px] font-bold leading-tight text-slate-800 group-hover:text-[#32105B] sm:text-[11px]">
                     {cat.title}
                   </span>
                 </button>

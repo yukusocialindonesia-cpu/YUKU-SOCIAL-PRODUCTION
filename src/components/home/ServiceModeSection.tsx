@@ -24,9 +24,9 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-fuchsia-100 bg-white p-3 text-left shadow-sm transition hover:border-fuchsia-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-amber-100 bg-white p-3 text-left shadow-sm transition hover:border-amber-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-fuchsia-50 text-fuchsia-700">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-700">
                 <MapPin className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
@@ -35,7 +35,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
                   Bertemu langsung
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-fuchsia-600 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-amber-600 transition-transform group-hover:translate-x-0.5" />
             </button>
 
             <button
@@ -75,12 +75,12 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-fuchsia-100/90 bg-white p-2.5 sm:p-5 text-left shadow-[0_8px_24px_rgba(124,58,237,0.07)] hover:shadow-[0_16px_34px_rgba(124,58,237,0.14)] hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              className="group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-100/90 bg-white p-2.5 sm:p-5 text-left shadow-[0_8px_24px_rgba(124,58,237,0.07)] hover:shadow-[0_16px_34px_rgba(124,58,237,0.14)] hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
-              <span className="mb-2 flex h-8 w-8 sm:mb-2.5 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-700 text-white shadow-md shadow-fuchsia-200/70">
+              <span className="mb-2 flex h-8 w-8 sm:mb-2.5 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#D7A83E] to-[#32105B] text-white shadow-md shadow-amber-200/70">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
                   <UsersRound className="h-4 w-4 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
-                  <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-fuchsia-700">
+                  <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-amber-700">
                     <MapPin className="h-2.5 w-2.5" strokeWidth={2.7} />
                   </span>
                 </span>
@@ -89,7 +89,7 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               <span className="mt-1 block min-h-8 text-[10.5px] sm:mt-1.5 sm:min-h-9 sm:text-sm leading-relaxed text-slate-600">
                 Teman untuk bertemu dan beraktivitas langsung.
               </span>
-              <span className="mt-2 inline-flex items-center gap-1 text-[10.5px] sm:mt-3 sm:text-sm font-bold text-fuchsia-700">
+              <span className="mt-2 inline-flex items-center gap-1 text-[10.5px] sm:mt-3 sm:text-sm font-bold text-amber-700">
                 Cari teman offline <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </span>
             </button>

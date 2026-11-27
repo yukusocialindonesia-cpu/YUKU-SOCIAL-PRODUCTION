@@ -80,26 +80,26 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-[#FBFAFF]">
+    <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F7F5FA]">
       {/* 1. Pintu masuk: pencarian utama dan identitas Social Experience. */}
-      <HeroSection
+      <div className="yuku-home-hero"><HeroSection
         onExploreClick={() => onNavigate('/talent')}
         onSearch={handleSearch}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
-      />
+      /></div>
 
       {/* 2. Kebutuhan pelanggan: pilih cara berinteraksi, lalu jenis aktivitas. */}
-      <div className="bg-white">
+      <div className="yuku-home-section yuku-home-categories bg-white">
         <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
         <ActivityCategories onSelectCategory={handleSelectCategory} />
       </div>
 
       {/* 3. Social Experience adalah layanan utama YUKU. Harga tetap di halaman profil. */}
-      <FeaturedTalentSection
+      <div className="yuku-home-section yuku-home-featured"><FeaturedTalentSection
         onSelectTalent={handleSelectTalent}
         onViewAllClick={() => onNavigate('/talent')}
-      />
+      /></div>
 
       {/* 4. Lini kedua, dipisahkan jelas dari Paid Companion. */}
       <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
@@ -108,12 +108,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       <EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} />
 
       {/* 6. Informasi pendukung diletakkan setelah katalog utama. */}
-      <div className="bg-white">
+      <div className="yuku-home-section bg-white">
         <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
         <SafetySection />
       </div>
 
-      <div ref={promoSectionRef} className="bg-[#FBFAFF]">
+      <div ref={promoSectionRef} className="yuku-home-section bg-[#F7F5FA]">
         <PromoCarousel
           promotions={promotions}
           isLoading={isLoadingPromotions}
@@ -129,6 +129,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       />
 
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
-    </main>
+    </div>
   );
 };
