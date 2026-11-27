@@ -30,6 +30,7 @@ interface IdentityRecord {
   date_of_birth: string;
   ktp_number: string | null;
   ktp_storage_path: string | null;
+  selfie_storage_path: string | null;
   ktp_verification_status: 'unsubmitted' | 'pending_review' | 'verified' | 'rejected';
   ktp_rejection_reason: string | null;
   emergency_contact_phone: string | null;
@@ -77,7 +78,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         supabase
           .from('user_identities')
           .select(
-            'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
+            'id, full_legal_name, date_of_birth, ktp_number, ktp_storage_path, selfie_storage_path, ktp_verification_status, ktp_rejection_reason, emergency_contact_phone'
           )
           .eq('id', user.id)
           .maybeSingle(),
@@ -249,6 +250,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
 
     try {
       const timestamp = Date.now();
+      const uploadedStoragePaths: string[] = [];
 
       // 1. Upload Foto KTP & Swafoto KTP to private bucket ktp-documents with upsert: false
       const ktpExt = ktpFile.name.split('.').pop() || 'jpg';
@@ -265,6 +267,9 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
           upsert: false,
         }),
       ]);
+
+      if (ktpUploadRes.data?.path) uploadedStoragePaths.push(ktpUploadRes.data.path);
+      if (selfieUploadRes.data?.path) uploadedStoragePaths.push(selfieUploadRes.data.path);
 
       if (ktpUploadRes.error || !ktpUploadRes.data) {
         throw new Error(
@@ -294,6 +299,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
         date_of_birth: dateOfBirth,
         ktp_number: ktpNumber.trim(),
         ktp_storage_path: ktpStoragePath,
+        selfie_storage_path: selfieStoragePath,
         emergency_contact_phone: emergencyPhone.trim(),
       };
 
@@ -319,6 +325,16 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
       );
       await loadIdentityData(currentUser);
     } catch (err: any) {
+      // Remove any successfully uploaded file if the second upload or database save fails.
+      // Storage RLS still enforces that only this account can remove its own files.
+      if (uploadedStoragePaths.length > 0) {
+        const { error: cleanupError } = await supabase.storage
+          .from('ktp-documents')
+          .remove(uploadedStoragePaths);
+        if (cleanupError) {
+          console.error('Gagal membersihkan file identitas yang tidak tersimpan:', cleanupError.message);
+        }
+      }
       setErrorMessage(err?.message || 'Terjadi kesalahan saat mengirim verifikasi KTP.');
     } finally {
       setIsSubmitting(false);
