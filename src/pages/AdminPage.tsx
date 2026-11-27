@@ -175,6 +175,7 @@ interface CustomerKtpItem {
   date_of_birth: string;
   ktp_number: string | null;
   ktp_storage_path: string | null;
+  selfie_storage_path: string | null;
   ktp_verification_status: 'unsubmitted' | 'pending_review' | 'verified' | 'rejected';
   ktp_rejection_reason: string | null;
   emergency_contact_phone: string | null;
@@ -303,7 +304,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         const [{ data: identityRows }, { data: userRows }] = talentIds.length
           ? await Promise.all([
               supabase.from('user_identities')
-                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+                .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,selfie_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
                 .in('id', talentIds),
               supabase.rpc('get_admin_user_summaries', { p_user_ids: talentIds }),
             ])
@@ -497,7 +498,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       if (canSupport) {
         const { data: allIdentityRows, error: identityFetchError } = await supabase
           .from('user_identities')
-          .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
+          .select('id,full_legal_name,date_of_birth,ktp_number,ktp_storage_path,selfie_storage_path,ktp_verification_status,ktp_rejection_reason,emergency_contact_phone')
           .order('created_at', { ascending: false });
         if (identityFetchError) throw identityFetchError;
         const customerIdentityIds = (allIdentityRows || []).map((row) => row.id);
@@ -832,6 +833,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       });
     } catch (err: any) {
       setErrorMessage(`Foto KTP tidak dapat dibuka: ${err?.message || 'Terjadi kesalahan'}`);
+    } finally {
+      setLoadingCustomerKtpId(null);
+    }
+  };
+
+  // Open the Customer selfie from the same private bucket using a short-lived URL.
+  const handleViewCustomerSelfie = async (item: CustomerKtpItem) => {
+    if (!item.selfie_storage_path) {
+      setErrorMessage('Foto selfie belum tersimpan untuk pengajuan ini.');
+      return;
+    }
+    setLoadingCustomerKtpId(item.id);
+    setErrorMessage(null);
+    try {
+      const { data, error } = await supabase.storage.from('ktp-documents').createSignedUrl(item.selfie_storage_path, 300);
+      if (error || !data?.signedUrl) throw new Error(error?.message || 'Tautan foto selfie tidak berhasil dibuat.');
+      setSelectedCustomerKtpImage({ url: data.signedUrl, name: `Selfie - ${item.full_legal_name || 'Pengguna YUKU'}` });
+    } catch (err: any) {
+      setErrorMessage(`Foto selfie tidak dapat dibuka: ${err?.message || 'Terjadi kesalahan'}`);
     } finally {
       setLoadingCustomerKtpId(null);
     }
@@ -2200,6 +2220,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-xs hover:bg-indigo-100 disabled:opacity-50"
                         >
                           {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
+                        </button>
+                        <button type="button" onClick={() => handleViewCustomerSelfie(c)} disabled={loadingCustomerKtpId === c.id || !c.selfie_storage_path} className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-violet-50 text-violet-800 font-bold text-xs hover:bg-violet-100 disabled:opacity-50">
+                          Lihat Selfie
                         </button>
                       </div>
                       {c.ktp_rejection_reason && (
