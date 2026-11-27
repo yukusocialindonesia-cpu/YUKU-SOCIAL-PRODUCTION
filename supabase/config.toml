@@ -6,7 +6,3 @@ verify_jwt = false
 [functions.account-management]
 verify_jwt = true
 
-[functions.xendit-webhook]
-# Xendit does not send a Supabase user JWT. The handler validates
-# x-callback-token before parsing or processing any payment callback.
-verify_jwt = false
