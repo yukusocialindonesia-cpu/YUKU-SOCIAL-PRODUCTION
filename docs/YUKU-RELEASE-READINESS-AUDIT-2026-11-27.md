@@ -18,7 +18,7 @@ The active PR #287 branch contains 143 migration files. A live read-only query o
 |---|---|
 | `62` | `62_index_admin_audit_actor_foreign_keys.sql`; `62_scoped_admin_trigger_guard_hardening.sql` |
 | `20261126190000` | `20261126190000_grant_professional_service_data_api_roles.sql`; `20261126190000_harden_payout_request_insert_access.sql` |
-| `20261127000700` | `20261127000700_professional_provider_identity_decoupling.sql`; `20261127000700_remove_legacy_public_talent_services_policy.sql` |
+| `20261127000700` | `20261127001400_professional_provider_identity_decoupling.sql`; `20261127000700_remove_legacy_public_talent_services_policy.sql` |
 | `20261127001000` | `20261127001000_harden_professional_application_revision_attestation_fields.sql`; `20261127001000_link_talent_selfie_evidence_and_guard_approval.sql`; `20261127001000_stop_leaking_internal_report_notes.sql` |
 | `20261127002000` | `20261127002000_finalize_social_experience_taxonomy.sql`; `20261127002000_merchant_partner_membership_foundation.sql` |
 | `20261127003000` | `20261127003000_merchant_admin_review_and_directory.sql`; `20261127003000_talent_custom_social_experience_services.sql` |
@@ -364,7 +364,7 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 
 
 **Resolution update — cross-PR timestamp collision (27 Nov 2026)**
-- PR #284 has been updated: its Social Experience migration is now `20261127006000_social_experience_service_id_foundation.sql`; the colliding `20261127004000_social_experience_service_id_foundation.sql` path was removed from that branch.
+- PR #284 has been updated: its Social Experience migration is now `20261127011000_social_experience_service_id_foundation.sql`; the colliding `20261127004000_social_experience_service_id_foundation.sql` path was removed from that branch.
 - This removes the direct duplicate version with PR #287's Merchant membership-management migration (`20261127004000`).
 - Required release order remains explicit: integrate/reconcile PR #287's canonical migration chain (Merchant membership foundation/review/management/offers through `05000`) before applying PR #284's Social Experience migration `06000`.
 - This is a source-branch correction only. It does not validate the complete migration chain or substitute for a clean Staging replay; all PRs remain draft and no database was changed.
@@ -405,7 +405,7 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 
 ## Follow-up: Professional-only document upload blocker corrected in branch source — 27 Nov 2026
 
-A source review found a concrete integration blocker: inherited migration `20261127000200_restrict_professional_document_uploads.sql` restricted uploads to active users who also had a `talent_profiles` row. That contradicted the independent Professional Provider model introduced by `20261127000700_professional_provider_identity_decoupling.sql`.
+A source review found a concrete integration blocker: inherited migration `20261127000200_restrict_professional_document_uploads.sql` restricted uploads to active users who also had a `talent_profiles` row. That contradicted the independent Professional Provider model introduced by `20261127001400_professional_provider_identity_decoupling.sql`.
 
 The current feature branch now replaces `professional_service_documents_owner_upload` in migration `00700`, retaining the authenticated user's own Storage folder and active-account requirement while removing the Talent-profile dependency (commit `a2e7c876e655a9f81c9171064a63a579b6241890`). The owner/admin read policy and owner delete policy are unchanged.
 
@@ -420,3 +420,12 @@ The current feature branch now replaces `professional_service_documents_owner_up
 - These workflows validate TypeScript/production build, not PostgreSQL migration syntax, Storage policy behavior, or JWT/RLS semantics. The SQL change still requires isolated Staging replay and real JWT tests.
 - The latest branch-head commit `f8970b184aeb112e8fd5a17a37ceeba1ef85fca0` is documentation-only; no workflow run was returned for that commit.
 - Cloudflare's latest confirmed Preview comment still identifies deployment commit `1fe2784`; it does not yet prove a preview deployment containing the new Storage policy fix. Do not present that preview as verification of the fix.
+
+
+## Final canonical status — source branches, 27 Nov 2026
+
+This section supersedes the earlier follow-up correction notes in this document. Historical files already present on `main` have been restored unchanged; no applied migration was renamed or rewritten. New feature migrations now use unique forward-only versions: Provider identity `20261127001400`, Provider revision-policy hardening `20261127001500`, and KTP evidence guard `20261127001600`. The Social Experience exact-service booking migration in PR #284 is `20261127011000`. Taxonomy is `20261127001900`; Merchant migrations remain `02000`–`05000`; Talent custom Social Experience services are `05500`.
+
+The superseded Provider Phase A (`04000_create_independent_professional_provider_profiles`) and Phase B (`05000_allow_professional_only_applications`) files have been removed from the active replay chain. The full Provider implementation is now part of the PR #281 branch stack at `01400`, followed by the Provider hardening migrations. Existing `main` migrations at `00700`–`01300` remain at their original paths and contents.
+
+A fresh recursive tree audit of PR #279, #280, #281, #282, #284 and #287 now finds only two duplicate version groups already present on `main`: `20261126190000` (Data API grants / payout insert hardening) and `20261127001000` (revision attestation / report notification privacy). These are historical and require Production migration-history/source reconciliation; they were not changed. No new feature-branch duplicate version groups remain in the audited stack. This filename audit does not prove SQL replay safety or Production equivalence. Supabase Preview remains skipped; do not run migrations or merge until the two historical groups and the full Production history are reconciled and a healthy disposable Staging environment is available.
