@@ -46,7 +46,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentPath, onNavigate,
 
       {currentPath !== '/' && <SafetyPledgeBanner />}
 
-      <Footer onNavigate={onNavigate} />
+      <div className={currentPath === '/' ? 'hidden md:block' : ''}><Footer onNavigate={onNavigate} /></div>
 
       {showBottomNav && <MobileBottomNav currentPath={currentPath} onNavigate={onNavigate} />}
     </div>
