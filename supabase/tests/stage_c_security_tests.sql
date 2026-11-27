@@ -173,7 +173,7 @@ BEGIN
   BEGIN
     PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
     SET LOCAL ROLE service_role;
-    PERFORM public.settle_booking_payment(v_b, 'xendit', 'INV-C6', 'qris', '{"test":true}'::jsonb);
+    PERFORM public.settle_booking_payment(v_b, 'manual_qris', 'INV-C6', 'qris', '{"test":true}'::jsonb);
     RESET ROLE;
     v_ok := EXISTS (SELECT 1 FROM public.bookings WHERE id = v_b AND status = 'paid_held_in_escrow')
         AND EXISTS (SELECT 1 FROM public.payments WHERE booking_id = v_b AND payment_status = 'settled_held' AND amount = 400000)
@@ -191,7 +191,7 @@ BEGIN
   BEGIN
     PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
     SET LOCAL ROLE service_role;
-    v_ok := public.settle_booking_payment(v_b, 'xendit', 'INV-C6', 'qris', '{"retry":true}'::jsonb);
+    v_ok := public.settle_booking_payment(v_b, 'manual_qris', 'INV-C6', 'qris', '{"retry":true}'::jsonb);
     RESET ROLE;
     v_ok := v_ok AND (SELECT COUNT(*) FROM public.payments WHERE booking_id = v_b) = 1
                  AND (SELECT COUNT(*) FROM public.commission_records WHERE booking_id = v_b) = 1;
