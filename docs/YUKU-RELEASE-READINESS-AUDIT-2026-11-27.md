@@ -304,3 +304,30 @@ Inspected the KTP identity triggers and the private Admin authorization tables.
 - private.admin_accounts and private.admin_permissions both have RLS enabled and FORCE ROW LEVEL SECURITY. The catalog inspection showed no client-role table grants; access is mediated through narrowly scoped SECURITY DEFINER authorization functions.
 
 This remains a definition/privilege inspection. No KTP records or Admin permission rows were read or changed, and no real Admin/customer JWT test was performed.
+
+
+### Suspended-account RPC and cross-account RLS review — read-only Production inspection
+
+Reviewed the 130 public SECURITY DEFINER functions, EXECUTE grants, active-account write guard triggers, and row policies/column grants for core account, booking, payment, review, report, identity, and Professional application tables. This was catalog/source inspection only; no RPC was invoked with a real user token and no database state was changed.
+
+**Suspended-account defense in depth**
+- Of 130 public SECURITY DEFINER functions, 61 are executable by authenticated and 5 by anon. Counts are inventory metrics, not vulnerability counts.
+- The private active-account write guard is attached to 46 public/Storage tables, including users, user_identities, talent/customer profiles, talent services/media, bookings, booking messages, booking history, payments, refunds, payout requests/allocations, earnings, cancellation cases, reports, reviews, notifications, and community content. It rejects writes when auth.uid() resolves to a user whose account status is neither active nor pending_verification.
+- Core user-facing write RPCs that do not repeat an account-status predicate (for example booking route selection, completion confirmation, cancellation, bank-transfer proof submission, referral application, and Talent profile/service changes) write to guarded tables; the trigger aborts the transaction for a suspended caller. Their RPC definitions also constrain the affected row to the caller or booking participant.
+- Professional application INSERT and revision UPDATE do not have the generic trigger, but their RLS WITH CHECK/USING predicates explicitly require the caller's account_status='active', the caller's own applicant_id, allowed workflow state, and valid category/delivery-mode configuration. The Admin review RPC separately requires active Super Admin or Talent permission.
+- Admin RPCs that rely on has_admin_permission/is_super_admin inherit the active-Admin check from those helpers; examples include Finance payout/refund, Support report resolution, and Talent moderation. SECURITY DEFINER functions with no user identity are trigger/maintenance helpers, not evidence of anonymous RPC access.
+- The account-management Edge Function's Auth ban does not immediately invalidate already-issued access tokens. The database guard/RLS is therefore an important second line of defense; it was verified in definitions, not with a previously issued suspended-user JWT.
+
+**Cross-account read boundaries reviewed**
+- users is self/Super Admin read; user_identities is owner or role-scoped KTP Admin read. KTP/legal identity fields are not made public by their table policy.
+- customer_profiles is readable by the owner, Super Admin, or a Talent who has a booking relationship with that Customer. The table exposes only profile-style fields (display name, avatar, city, gender, bio, timestamps), not legal identity/KTP or bank data. Confirm product intent for Talent visibility after cancelled/expired bookings; the current policy is based on existence of a booking row, not active booking status.
+- bookings, messages, status history, payments, cancellation cases, and refunds use participant ownership or permission-scoped Admin predicates. Message insert requires sender_id=auth.uid() and the caller to be a booking participant; update is limited to the other participant marking a message read.
+- Reviews are public only when visible; insertion is tied to the caller as Customer and a trigger verifies the review's booking participants and completed status. Reports are visible to reporter or Support Admin.
+- Professional application rows are owner-readable or Admin Talent/Super Admin-readable; status history is owner-through-parent or Admin-readable. No cross-applicant read path was identified in the inspected policies.
+
+**Follow-up / limits**
+- Confirm whether a Talent should retain Customer profile access after any historical booking, or only after a booking reaches an agreed state; this is a privacy/product decision, not a confirmed leak of high-risk data.
+- Run a real JWT test matrix in Staging: active vs suspended previously issued tokens; Customer A vs Customer B; Talent A vs Talent B; booking participant vs unrelated user; Support vs Finance vs Talent Admin vs Super Admin; anon vs authenticated. Include direct table requests and RPC calls, not just UI flows.
+- No confirmed cross-account exposure of KTP, legal identity, payment proof, payout/bank data, or internal Admin notes was found in the inspected RLS/column grants. This is not a certification of every table/function.
+
+No Production records, functions, grants, policies, triggers, account states, or deployments were changed.
