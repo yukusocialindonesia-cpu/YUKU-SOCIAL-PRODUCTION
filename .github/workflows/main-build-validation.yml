@@ -5,10 +5,6 @@ on:
   push:
     branches:
       - main
-      - release/homepage-ui-safe
-      - fix/talent-media-moderation
-      - feat/professional-services-categories
-      - feat/independent-professional-provider-identity
     paths:
       - "src/**"
       - "public/**"
@@ -68,7 +64,7 @@ jobs:
         run: npm run lint
 
       - name: Validate Supabase production configuration
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
