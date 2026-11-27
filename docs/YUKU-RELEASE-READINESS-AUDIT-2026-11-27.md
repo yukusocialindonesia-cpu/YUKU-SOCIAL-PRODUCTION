@@ -410,3 +410,13 @@ A source review found a concrete integration blocker: inherited migration `20261
 The current feature branch now replaces `professional_service_documents_owner_upload` in migration `00700`, retaining the authenticated user's own Storage folder and active-account requirement while removing the Talent-profile dependency (commit `a2e7c876e655a9f81c9171064a63a579b6241890`). The owner/admin read policy and owner delete policy are unchanged.
 
 **Release gate remains open:** this has not been applied to Staging. Test Professional-only upload, owner read/delete, Admin review read, and cross-user upload/read denial using real JWTs. This SQL is not validated by the frontend TypeScript/build workflow. Production remains untouched.
+
+
+## Latest branch validation checkpoint — 27 Nov 2026
+
+- PR #287 is still open and Draft; the latest GitHub PR metadata reports `mergeable=true`.
+- The source fix for the Professional-only document upload policy is commit `a2e7c876e655a9f81c9171064a63a579b6241890`.
+- Both `YUKU main build validation` (run `45956298900`) and `Account management build and type checks` (run `45956298931`) completed with `success` for that code commit.
+- These workflows validate TypeScript/production build, not PostgreSQL migration syntax, Storage policy behavior, or JWT/RLS semantics. The SQL change still requires isolated Staging replay and real JWT tests.
+- The latest branch-head commit `f8970b184aeb112e8fd5a17a37ceeba1ef85fca0` is documentation-only; no workflow run was returned for that commit.
+- Cloudflare's latest confirmed Preview comment still identifies deployment commit `1fe2784`; it does not yet prove a preview deployment containing the new Storage policy fix. Do not present that preview as verification of the fix.
