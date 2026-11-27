@@ -106,3 +106,13 @@ A new tree audit of the current `design/beranda-brand-promise-v2` branch found t
 - Merchant offers directory: `20261127005000` → `20261127005100` (the `05000` slot remains with Professional-only application migration).
 
 This removes those three filename-version collisions in this feature branch only. It does not prove the SQL is safe, does not reconcile the Production ledger, and does not authorize Staging/Production execution. The earlier Professional Provider Phase A/B supersession and historical Production collision findings remain separate blockers.
+
+## Canonical PR #287 provider hardening port — 27 Nov 2026
+
+The canonical homepage branch `design/beranda-brand-promise-v2` now includes the four follow-up Professional Provider hardening migrations from the PR #281 stack, preserving their original SQL contents and sequence after `20261127006000` and before `20261127011000`:
+- `20261127007000_derive_professional_profile_completeness.sql`
+- `20261127008000_prevent_professional_public_rls_recursion.sql`
+- `20261127009000_allow_independent_professional_document_uploads.sql`
+- `20261127010000_allow_super_admin_professional_profile_review.sql`
+
+This closes the source-branch omission found during the direct-to-main consolidation audit. These migrations remain unexecuted and are not validated by filename presence; replay and RLS/JWT/storage tests in isolated Staging remain mandatory.
