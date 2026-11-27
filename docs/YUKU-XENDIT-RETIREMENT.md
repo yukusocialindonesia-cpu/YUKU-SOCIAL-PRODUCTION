@@ -32,12 +32,15 @@ Migration memiliki precondition yang menghentikan eksekusi bila masih ada bookin
 
 ## Migration readiness blocker
 
-Read-only Supabase inspection (27 Nov 2026):
-- The linked Supabase main branch reports status `MIGRATIONS_FAILED`.
-- The recorded migration ledger currently ends at version `20261126124423`.
-- The repository contains later migration work that has not been reconciled against this ledger.
+Read-only reconciliation (27 Nov 2026):
+- Supabase Production project itself reports `ACTIVE_HEALTHY`; the database is online.
+- Supabase's linked Git branch metadata reports `main = MIGRATIONS_FAILED`, while its preview project status reports `ACTIVE_HEALTHY`. This is a migration-sync problem, **not proof that the Production database is down**.
+- Production migration ledger contains 129 applied records and currently ends at `20261126124423`.
+- Open PR #265 (`chore/reconcile-supabase-migration-history`) renames 22 historical migration files, but explicitly leaves other history without a verified local SQL counterpart.
+- The PR #265 branch still has 55 ledger versions without a matching local migration filename, while many newer Professional Services/security migrations are not yet in the Production ledger. The full historical replay path is therefore not yet proven.
+- The `main` migration directory has duplicate prefixes `62`, `20261126190000`, and `20261127001000`; PR #265's branch removes these duplicate prefixes, but it does not complete the entire ledger-to-file reconciliation.
 
-Therefore the retirement migration in this PR is intentionally **not ready to apply**. First reconcile the full ordered migration history and restore a healthy Staging/Preview migration run. Do not apply this migration directly to Production.
+Therefore the retirement migration in this PR is intentionally **not ready to apply**. First complete PR #265's historical reconciliation, establish a clean Staging replay, and test the retirement migration after all prerequisites. Do not apply this migration directly to Production.
 
 ## Tindakan operasional yang belum dilakukan
 
