@@ -30,7 +30,7 @@ The first release must keep project bookings out of automatic escrow release unt
 | Function | Existing behavior | Required professional behavior |
 |---|---|---|
 | `create_booking()` | Legacy activity-only RPC; category, hourly duration, schedule, Talent service and customer eligibility checks. | Leave unchanged for activity. Add separate `create_professional_service_booking()` with listing row lock, quantity/unit validation, eligibility, schedule/capacity, idempotency, and server-calculated totals. |
-| `claim_booking_payment_route()` | Locks one payment route on the booking; current code rejects selecting Xendit for a new booking when route is null. | Reuse route lock only after booking-kind checks and payment feature flag are explicit. Keep route immutability. |
+| `claim_booking_payment_route()` | Locks one payment route per booking; new checkout is limited to manual QRIS and bank transfer. | Keep route immutable, verify active method settings, and retain server-side amount/proof validation. Xendit is retired. |
 | `settle_booking_payment()` | Server/service-role-only settlement; writes `payments` and moves booking to escrow-held. | Reuse only against frozen gross and fee snapshots; enforce payment amount/provider/charge idempotency for each kind. |
 | `auto_generate_booking_financial_ledgers()` | On payment settlement, creates commission, Talent earning and optional referral reward using booking gross/platform fee/provider share; referral reward is currently calculated from platform fee. | Reuse the same ledgers, with professional fee-policy version and immutable fee/provider-share snapshots. Never recompute from current listing rate. |
 | `submit_qris_payment_proof()`, `submit_bank_transfer_payment_proof()` | Customer-owned proof submission; exact amount equals booking gross; private storage object must exist. | Reuse after booking kind is represented; ensure proofs remain scoped to the booking and amount snapshot. |
@@ -51,9 +51,8 @@ The first release must keep project bookings out of automatic escrow release unt
 | `src/types/database.ts` | Generated/manual TypeScript booking row type requires `activity_category_id` and hourly fields. | Regenerate/update the booking type with discriminated nullable legacy/professional references and snapshot fields only after the migration contract is approved. |
 | `src/utils/supabaseMarketplace.ts` | Queries legacy `talent_services` and activity category IDs for marketplace availability. | Keep it limited to activity discovery; professional discovery must use separate taxonomy/listing queries. |
 | `src/pages/AdminPage.tsx` | Admin booking rows and gross marketplace volume use generic bookings; service approval lists query legacy `talent_services`. | Show booking kind and snapshot details in support/finance views; include professional applications/listings in separate queue, not legacy service tables. |
-| `supabase/functions/create-checkout/index.ts` | Reads booking owner/status/gross, claims route, creates Xendit invoice. | Validate supported booking kind and exact snapshot amount; keep customer ownership, pending status and expiry checks. Current route-claim implementation rejects a new Xendit route when none is locked; preserve this deliberate current behavior unless payment configuration is separately approved. |
-| `supabase/functions/xendit-webhook/index.ts` | Reads booking gross and checks paid amount before calling server-only settlement RPC. | Confirm payment intent/booking kind, currency, provider charge uniqueness and idempotent replay behavior against the immutable snapshot. |
 | `account-management` Edge Function | Counts bookings/payments/refunds via `bookings` joins. | Keep aggregates booking-kind neutral; add kind-specific support detail only where needed. |
+| Customer payment panels | Manual QRIS and bank transfer only. | Keep ownership, exact amount, expiry, private proof and Finance review checks. |
 | Payment panels, chat, reviews, reports, exports and finance pages | Not fully enumerated in this pass. | Search all booking consumers before schema changes; do not treat this matrix as exhaustive. |
 
 ## New findings from this pass
@@ -92,8 +91,6 @@ The following additional consumers were verified by searching the repository and
 - `src/components/booking/BankTransferCustomerPaymentPanel.tsx`: obtains booking-scoped bank instructions and submits a proof with the amount. Must display the professional booking's frozen total and must not derive it from the current listing.
 - `src/components/booking/XenditCustomerPaymentPanel.tsx`: invokes `create-checkout` with booking ID. Edge Function remains authoritative for ownership, pending state, expiry and amount.
 - `src/components/booking/QrisAdminPanel.tsx` and `BankTransferAdminPanel.tsx`: review proof queues keyed by booking ID and query booking status. Add booking-kind and snapshot context to the review details, while retaining the existing server-side exact-amount checks.
-- `supabase/functions/create-checkout/index.ts`: reads the booking gross and calls route-claim logic before invoice creation.
-- `supabase/functions/xendit-webhook/index.ts`: compares provider paid amount with booking gross before server-side settlement. The webhook must also retain provider event/charge idempotency and reject unsupported currencies/amount mismatches.
 - The current migration `20261124172000_block_new_xendit_route_claims.sql` deliberately blocks new Xendit route claims. Do not bypass this for professional services; payment-route activation is a separate release decision.
 
 ### Chat, admin and generated types
