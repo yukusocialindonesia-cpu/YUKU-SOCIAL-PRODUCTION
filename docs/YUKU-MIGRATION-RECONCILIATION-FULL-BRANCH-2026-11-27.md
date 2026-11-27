@@ -475,3 +475,16 @@ The records above are now classified as exact known match, distinct later change
 - The SQL file fetched from merged `main` and the current feature branch is byte-for-byte identical (same Git blob SHA `a1562ced86c6e52b8aec294a02374a6ab76b0013`). It replaces the broad public category read policy with active-category-only `anon` access and active-category plus authorized-admin access for `authenticated`.
 - **Classification:** exact Git source recovery and current-branch content identity confirmed. Production's recorded version/name matches the migration filename; however, absent a stored deployed-SQL checksum, the history row alone does not independently prove the runner executed these exact bytes.
 - No SQL was executed and no database was changed.
+
+
+## Additional historical-source search — unresolved records — 27 Nov 2026
+
+The reconciliation branch `chore/reconcile-supabase-migration-history` confirms these Production history identifiers and names:
+
+- `20261120185544` — `enable_pg_net_for_push_webhook`
+- `20261117232240` — `add_secure_talent_payout_request_rpc_20261118`
+- `20261118163142` — `create_booking_enforce_category_mode_and_approved_services`
+
+A targeted GitHub commit search for the distinctive migration/function names returned no matching source commits. This is **not** proof that the SQL never existed: it may be in an unindexed commit, deployment artifact, backup, or out-of-band execution. The previously recovered Web Push PR #12 files do not establish the body of `enable_pg_net_for_push_webhook`; PR #44's later payout hardening and PR #45's booking RPC hardening are different changes and must not be substituted for the Production records above.
+
+**Disposition:** all three remain source-unrecovered / not byte-verified. Do not fabricate timestamped SQL, infer equivalence from names, or replay them. Continue seeking the original deployment artifact, database backup, archived branch, or exact migration contents from the operator who applied them. Production remains read-only.
