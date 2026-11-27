@@ -367,16 +367,22 @@ export const MerchantCenterPage: React.FC<Props> = ({ onNavigate }) => {
       p_public_phone: phone || null,
       p_website_url: website || null,
     });
-    if (!isWorkspaceCurrent(workspace) || workspace.userId !== creatingUserId) return;
-    if (rpcError) setError(rpcError.message);
-    else {
-      setActiveBusinessId(String(data));
+    if (workspace.userId !== creatingUserId || creatingUserId !== (user?.id ?? null)) return;
+    if (rpcError) {
+      setError(rpcError.message);
+    } else {
+      const createdBusinessId = String(data);
+      setActiveBusinessId(createdBusinessId);
       setShowCreateBusinessForm(false);
       setSuccess('Profil bisnis berhasil dibuat sebagai draft. Tambahkan lokasi usaha sebelum mengajukan verifikasi.');
       await refreshRole();
-      await load(String(data));
+      if (creatingUserId === (user?.id ?? null)) {
+        await load(createdBusinessId);
+      }
     }
-    if (isWorkspaceCurrent(workspace)) setSaving(false);
+    // The active business ID changes after creation, so workspace equality is
+    // intentionally not used here; only the signed-in account must still match.
+    if (creatingUserId === (user?.id ?? null)) setSaving(false);
   };
 
   const saveBusiness = async (event: React.FormEvent) => {
