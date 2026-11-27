@@ -6,7 +6,7 @@ import { PromotionRow, HeroSlideRow } from '../types/database';
  * Safely map database row from talent_profiles table to TalentProfile frontend interface.
  * Strictly uses nullish checking (== null) to preserve numeric 0 and NULL values without inventing fake defaults.
  */
-export function mapSupabaseTalent(row: any, servicesCategoryIds: string[] = [], serviceOffers: { categoryId: string; title: string; description: string }[] = []): TalentProfile {
+export function mapSupabaseTalent(row: any, servicesCategoryIds: string[] = [], serviceOffers: { id: string; categoryId: string; title: string; description: string }[] = []): TalentProfile {
   if (!row) {
     throw new Error('Data baris talent_profiles bernilai null atau tidak valid.');
   }
@@ -163,7 +163,7 @@ async function fetchTalentsOnce(limit?: number, offset = 0, searchTerm = ''): Pr
   const talentIds = talentsData.map((t) => t.id);
   const { data: servicesData, error: servicesError } = await supabase
     .from('talent_services')
-    .select('talent_id, activity_category_id, custom_title, custom_description, approval_status, is_active')
+    .select('id, talent_id, activity_category_id, custom_title, custom_description, approval_status, is_active')
     .in('talent_id', talentIds);
 
   if (servicesError) {
@@ -171,15 +171,15 @@ async function fetchTalentsOnce(limit?: number, offset = 0, searchTerm = ''): Pr
   }
 
   const servicesMap = new Map<string, string[]>();
-  const offersMap = new Map<string, { categoryId: string; title: string; description: string }[]>();
+  const offersMap = new Map<string, { id: string; categoryId: string; title: string; description: string }[]>();
   if (servicesData) {
-    servicesData.forEach((s) => {
+    servicesData.filter((s) => s.approval_status === 'approved' && s.is_active).forEach((s) => {
       const existing = servicesMap.get(s.talent_id) || [];
       existing.push(s.activity_category_id);
       servicesMap.set(s.talent_id, existing);
       if (s.approval_status === 'approved' && s.is_active && s.custom_title) {
         const offers = offersMap.get(s.talent_id) || [];
-        offers.push({ categoryId: s.activity_category_id, title: s.custom_title, description: s.custom_description || '' });
+        offers.push({ id: s.id, categoryId: s.activity_category_id, title: s.custom_title, description: s.custom_description || '' });
         offersMap.set(s.talent_id, offers);
       }
     });
@@ -281,7 +281,7 @@ export async function fetchTalentsByIdsFromSupabase(talentIds: string[], searchT
     servicesMap.set(service.talent_id, existing);
     if (service.custom_title) {
       const offers = offersMap.get(service.talent_id) || [];
-      offers.push({ categoryId: service.activity_category_id, title: service.custom_title, description: service.custom_description || '' });
+      offers.push({ id: service.id, categoryId: service.activity_category_id, title: service.custom_title, description: service.custom_description || '' });
       offersMap.set(service.talent_id, offers);
     }
   });
@@ -313,7 +313,7 @@ export async function fetchTalentByIdFromSupabase(talentId: string): Promise<Tal
   // Fetch services for this talent with explicit error checking
   const { data: servicesData, error: servicesError } = await supabase
     .from('talent_services')
-    .select('activity_category_id, custom_title, custom_description, approval_status, is_active')
+    .select('id, activity_category_id, custom_title, custom_description, approval_status, is_active')
     .eq('talent_id', talentId);
 
   if (servicesError) {
@@ -323,6 +323,7 @@ export async function fetchTalentByIdFromSupabase(talentId: string): Promise<Tal
   const approvedServices = (servicesData || []).filter((s) => s.approval_status === 'approved' && s.is_active);
   const categoryIds = approvedServices.map((s) => s.activity_category_id);
   const offers = approvedServices.filter((s) => s.custom_title).map((s) => ({
+    id: s.id,
     categoryId: s.activity_category_id,
     title: s.custom_title,
     description: s.custom_description || '',
