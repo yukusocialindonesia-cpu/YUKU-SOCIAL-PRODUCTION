@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Mail, ArrowRight, CheckCircle2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { AppRoute } from '../types/navigation';
@@ -21,8 +22,14 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
     setLoading(true);
 
     try {
+      // Native WebViews cannot reliably receive the browser-origin callback.
+      // Send native password recovery to the deployed web route; browser builds
+      // continue to use their current origin.
+      const resetBaseUrl = Capacitor.isNativePlatform()
+        ? (import.meta.env.VITE_PUBLIC_APP_URL || 'https://yuku-friends.yukusocial-indonesia.workers.dev')
+        : window.location.origin;
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: window.location.origin + '/reset-sandi',
+        redirectTo: new URL('/reset-sandi', resetBaseUrl).toString(),
       });
       if (error) {
         // Pesan generik tetap menjaga privasi: tidak mengungkap apakah email terdaftar.
