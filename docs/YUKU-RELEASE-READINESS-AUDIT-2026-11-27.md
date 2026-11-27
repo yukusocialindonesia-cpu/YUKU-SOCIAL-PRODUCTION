@@ -361,3 +361,10 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 - Keep PR #284 and #287 draft/unmerged until the migration chain is reconciled and a healthy disposable Staging environment is available.
 - Treat the exact-service booking path as a required integration dependency before enabling the corresponding booking UI in a release.
 - No migration, database change, merge, or deployment was performed by this follow-up review.
+
+
+**Resolution update — cross-PR timestamp collision (27 Nov 2026)**
+- PR #284 has been updated: its Social Experience migration is now `20261127006000_social_experience_service_id_foundation.sql`; the colliding `20261127004000_social_experience_service_id_foundation.sql` path was removed from that branch.
+- This removes the direct duplicate version with PR #287's Merchant membership-management migration (`20261127004000`).
+- Required release order remains explicit: integrate/reconcile PR #287's canonical migration chain (Merchant membership foundation/review/management/offers through `05000`) before applying PR #284's Social Experience migration `06000`.
+- This is a source-branch correction only. It does not validate the complete migration chain or substitute for a clean Staging replay; all PRs remain draft and no database was changed.
