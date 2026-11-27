@@ -11,7 +11,7 @@ Manual QRIS is the only payment provider represented in the current Production p
 
 The current database reconciliation checks returned zero for payment/booking amount mismatch, duplicate provider charge references, duplicate provider refund references, refund/booking/payment mismatch, processed refunds missing audit fields, over-refunded payment groups, proof-owner mismatch, and missing/unreferenced QRIS or bank-transfer proof objects.
 
-**Do not treat Xendit as ready for new checkout.** Production has `payment_checkout = true`, but the active Edge Function inventory contains no `create-checkout` or `xendit-webhook` function, and the Production route-claim RPC rejects a new Xendit route. The frontend environment flag `VITE_PAYMENT_CHECKOUT_ENABLED` was not accessible in this audit. Keep Xendit disabled at the hosting/UI level until the two functions, secrets, callback URL, and sandbox-to-Staging test suite are deployed and verified. Do not change the Production flag as part of this audit.
+**Retirement update (27 Nov 2026):** Xendit has been selected for removal from new checkout. Production inventory has no `create-checkout` or `xendit-webhook`; aggregate checks found zero Xendit-routed bookings, payment rows, and payout rows. A branch-only migration now removes Xendit from the booking route constraint/RPC. Historical enum values are retained. No Production flag, secret, callback, or database object has been changed.
 
 ## Production checks (read-only)
 
