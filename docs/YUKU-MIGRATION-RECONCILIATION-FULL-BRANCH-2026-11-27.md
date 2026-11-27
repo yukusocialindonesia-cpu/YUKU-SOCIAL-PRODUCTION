@@ -278,3 +278,32 @@ PR #265 remains open and is a separate historical filename-alignment change. It 
 2. For each recovered source, preserve its original bytes and compute a checksum before comparing it with current Production definitions.
 3. Where no source is recoverable, document the affected database objects and reconstruct only through a separately reviewed, forward-only migration. Do not pretend a reconstruction is the original migration.
 4. Resolve the 3 duplicate Production names independently; they remain ambiguous even if other historical sources are found.
+
+
+## Production catalog spot-check (read-only, 27 Nov 2026)
+
+A read-only PostgreSQL catalog inspection was performed against Production after the filename reconciliation. This is evidence that selected database objects currently exist; it is **not** proof that any unmatched historical migration file is byte-equivalent to a current local file, nor that the original migration ran under the same filename.
+
+### Objects observed
+
+| Historical topic / migration family | Production evidence observed | Assessment |
+|---|---|---|
+| Booking status history | `public.booking_status_history`, SELECT policy `status_history_select_parties_or_admin`, trigger `trg_log_booking_status_change` on `public.bookings`, function `log_booking_status_change` | Feature objects exist |
+| Hero slides | `public.hero_slides`, public SELECT policy, admin write policies, updated-at trigger | Feature objects exist |
+| Site branding | `public.site_branding`, public read policy, admin insert/update policies | Feature objects exist |
+| Notifications / realtime / push | `public.notifications`, user SELECT/UPDATE policies, push-after-insert trigger and `notify_yuku_push_on_notification_insert` function | Core notification objects exist; realtime publication/webhook configuration needs separate verification |
+| Payout guardrails | `public.payout_requests`, `request_talent_payout(...)`, `trg_guard_payout_completion_during_dispute`, validation and notification triggers | Multiple payout objects exist |
+| Refund workflow | `public.refunds`, customer/admin SELECT policy, refund notification triggers and `admin_process_refund(...)` | Multiple refund objects exist |
+| Public Talent visibility | `is_talent_publicly_visible(uuid)` and its use is referenced by the related Production migration history | Function exists; definition and grants need separate review |
+| Activity category access | `public.activity_categories` with separate anon and authenticated SELECT policies | Access split exists |
+
+### Important unresolved Production finding
+
+The Production catalog still contains policy `payout_requests_insert_talent` on `public.payout_requests` (command `INSERT`, role `public`). Therefore, although the secure `request_talent_payout(...)` RPC exists, the catalog snapshot does **not** show the RPC-only INSERT lockdown described by the separate PR #44 proposal. Do not treat the secure RPC's presence as proof that direct table INSERT has been revoked.
+
+### Limits and next checks
+
+- This catalog query checked object names, trigger attachment, and policy names/commands/roles only. It did not compare complete function bodies, policy predicates, ACLs, storage policies, bucket settings, publication membership, extension schemas, or data.
+- Object presence is not migration provenance. A table or function may have been created by a differently named migration or changed later.
+- Continue with exact definition and ACL checks for the 35 unmatched Production records, and locate original SQL through historical PR patches/commit trees before proposing any migration-history repair.
+- No Production SQL migration, DDL, DML, or deployment was run during this inspection.
