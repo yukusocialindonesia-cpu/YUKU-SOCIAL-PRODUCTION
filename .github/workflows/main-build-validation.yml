@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "src/**"
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
       - "public/**"
       - "index.html"
       - "package.json"
