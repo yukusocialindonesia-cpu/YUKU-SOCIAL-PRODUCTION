@@ -34,10 +34,10 @@ This corrects older repository notes that reported 107 Production records; the c
 | `62_index_admin_audit_actor_foreign_keys.sql` | `20261121081552` | `APPLIED_MATCHED_PRODUCTION` | Exact recorded name in live history; do not replay under version 62. |
 | `20261126190000_grant_professional_service_data_api_roles.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Grants target Professional Services objects; review object existence and least-privilege grants in staging. |
 | `20261126190000_harden_payout_request_insert_access.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Payout security hardening; must be tested against existing payout RPC and grants before rollout. |
-| `20261127000700_professional_provider_identity_decoupling.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Full independent Provider path; table, listing FK, policies, review RPC and publication gate changes. |
-| `20261127000800_remove_legacy_public_talent_services_policy.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Removes permissive legacy Talent services policy; independently review public read behavior. |
-| `20261127001200_harden_professional_application_revision_attestation_fields.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Depends on independent Provider profile from `00700_professional_provider_identity_decoupling`. |
-| `20261127001100_link_talent_selfie_evidence_and_guard_approval.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Adds identity evidence field and verification/sanction guards; test against current verification flow. |
+| `20261127001400_professional_provider_identity_decoupling.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Full independent Provider path; table, listing FK, policies, review RPC and publication gate changes. |
+| `20261127000700_remove_legacy_public_talent_services_policy.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Removes permissive legacy Talent services policy; independently review public read behavior. |
+| `20261127001500_harden_professional_application_revision_attestation_fields.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Depends on independent Provider profile from `00700_professional_provider_identity_decoupling`. |
+| `20261127001600_link_talent_selfie_evidence_and_guard_approval.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Adds identity evidence field and verification/sanction guards; test against current verification flow. |
 | `20261127001000_stop_leaking_internal_report_notes.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Notification privacy change; check trigger/function replacement against current production function definition. |
 | `20261127002000_finalize_social_experience_taxonomy.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Data updates to category taxonomy; validate IDs and existing catalog values before staging. |
 | `20261127002000_merchant_partner_membership_foundation.sql` | none | `BRANCH_ONLY_NOT_IN_PRODUCTION` | Merchant businesses, memberships, locations, helper functions and policies; foundation migration. |
@@ -223,8 +223,17 @@ The first pass of this feature-branch normalization did not strip the legacy two
 ## Follow-up source-branch corrections — 27 Nov 2026
 
 - The already-existing historical migration `20261127001000_harden_professional_application_revision_attestation_fields.sql` was restored byte-for-byte from `main`; do not rewrite or repurpose an applied migration source.
-- The new independent-Provider revision-attestation policy is now a separate forward-only migration `20261127001200_harden_professional_application_revision_attestation_fields.sql`.
-- The KTP selfie evidence/approval guard was moved from the colliding `01000` version to `20261127001100_link_talent_selfie_evidence_and_guard_approval.sql` across the affected stacked feature branches.
-- The legacy public Talent services policy removal was moved from `00700` to `20261127000800_remove_legacy_public_talent_services_policy.sql`, after the Provider foundation migration.
+- The new independent-Provider revision-attestation policy is now a separate forward-only migration `20261127001500_harden_professional_application_revision_attestation_fields.sql`.
+- The KTP selfie evidence/approval guard was moved from the colliding `01000` version to `20261127001600_link_talent_selfie_evidence_and_guard_approval.sql` across the affected stacked feature branches.
+- The legacy public Talent services policy removal was moved from `00700` to `20261127000700_remove_legacy_public_talent_services_policy.sql`, after the Provider foundation migration.
 - PR #284's exact Social Experience service-ID migration is now `20261127011000_social_experience_service_id_foundation.sql`.
 - The Provider Phase A migration at `04000` remains superseded but is still present in the stacked branch history, where it collides with Merchant membership management at `04000`. This is unresolved and blocks any migration replay/merge until the branch stack is consolidated around one canonical Provider implementation.
+
+
+## Final canonical status — source branches, 27 Nov 2026
+
+This section supersedes the earlier follow-up correction notes in this document. Historical files already present on `main` have been restored unchanged; no applied migration was renamed or rewritten. New feature migrations now use unique forward-only versions: Provider identity `20261127001400`, Provider revision-policy hardening `20261127001500`, and KTP evidence guard `20261127001600`. The Social Experience exact-service booking migration in PR #284 is `20261127011000`. Taxonomy is `20261127001900`; Merchant migrations remain `02000`–`05000`; Talent custom Social Experience services are `05500`.
+
+The superseded Provider Phase A (`04000_create_independent_professional_provider_profiles`) and Phase B (`05000_allow_professional_only_applications`) files have been removed from the active replay chain. The full Provider implementation is now part of the PR #281 branch stack at `01400`, followed by the Provider hardening migrations. Existing `main` migrations at `00700`–`01300` remain at their original paths and contents.
+
+A fresh recursive tree audit of PR #279, #280, #281, #282, #284 and #287 now finds only two duplicate version groups already present on `main`: `20261126190000` (Data API grants / payout insert hardening) and `20261127001000` (revision attestation / report notification privacy). These are historical and require Production migration-history/source reconciliation; they were not changed. No new feature-branch duplicate version groups remain in the audited stack. This filename audit does not prove SQL replay safety or Production equivalence. Supabase Preview remains skipped; do not run migrations or merge until the two historical groups and the full Production history are reconciled and a healthy disposable Staging environment is available.
