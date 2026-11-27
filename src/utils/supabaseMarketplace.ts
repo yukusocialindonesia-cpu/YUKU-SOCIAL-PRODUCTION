@@ -116,7 +116,7 @@ export function fetchCategoriesFromSupabase(): Promise<ActivityCategory[]> {
  * Fetch public talent profiles from Supabase talent_profiles table via SELECT.
  * Explicitly checks errors on both talent_profiles and talent_services queries to prevent masking failures.
  */
-export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
+async function fetchTalentsOnce(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
   let query = supabase
     .from('talent_profiles')
     .select(
@@ -187,6 +187,50 @@ export async function fetchTalentsFromSupabase(limit?: number, offset = 0, searc
   return talentsData.map((row) =>
     mapSupabaseTalent(row, servicesMap.get(row.id) || [], offersMap.get(row.id) || [])
   );
+}
+
+
+/**
+ * Share identical in-flight Talent list requests and retry once on transient
+ * browser/network failures. This avoids competing requests from homepage,
+ * search, and browse components while preserving real query errors.
+ */
+const talentListRequests = new Map<string, Promise<TalentProfile[]>>();
+
+export function fetchTalentsFromSupabase(limit?: number, offset = 0, searchTerm = ''): Promise<TalentProfile[]> {
+  const requestKey = JSON.stringify([limit ?? null, offset, searchTerm.trim()]);
+  const existingRequest = talentListRequests.get(requestKey);
+  if (existingRequest) return existingRequest;
+
+  const request = (async () => {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        return await fetchTalentsOnce(limit, offset, searchTerm);
+      } catch (err: unknown) {
+        lastError = err;
+        const message = err instanceof Error ? err.message : String(err);
+        const isNetworkFailure = /failed to fetch|networkerror|fetch failed|load failed/i.test(message);
+        if (attempt === 0 && isNetworkFailure) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('Gagal membaca daftar Talent dari Supabase: kegagalan jaringan (UNKNOWN)');
+  })();
+
+  talentListRequests.set(requestKey, request);
+  const clearRequest = () => {
+    if (talentListRequests.get(requestKey) === request) {
+      talentListRequests.delete(requestKey);
+    }
+  };
+  void request.then(clearRequest, clearRequest);
+  return request;
 }
 
 /**
