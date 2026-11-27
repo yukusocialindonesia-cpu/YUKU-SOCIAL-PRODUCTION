@@ -95,3 +95,14 @@ This section supersedes the earlier follow-up correction notes in this document.
 The superseded Provider Phase A (`04000_create_independent_professional_provider_profiles`) and Phase B (`05000_allow_professional_only_applications`) files have been removed from the active replay chain. The full Provider implementation is now part of the PR #281 branch stack at `01400`, followed by the Provider hardening migrations. Existing `main` migrations at `00700`–`01300` remain at their original paths and contents.
 
 A fresh recursive tree audit of PR #279, #280, #281, #282, #284 and #287 now finds only two duplicate version groups already present on `main`: `20261126190000` (Data API grants / payout insert hardening) and `20261127001000` (revision attestation / report notification privacy). These are historical and require Production migration-history/source reconciliation; they were not changed. No new feature-branch duplicate version groups remain in the audited stack. This filename audit does not prove SQL replay safety or Production equivalence. Supabase Preview remains skipped; do not run migrations or merge until the two historical groups and the full Production history are reconciled and a healthy disposable Staging environment is available.
+
+
+## Follow-up: Merchant version collisions resolved in source branch — 27 Nov 2026
+
+A new tree audit of the current `design/beranda-brand-promise-v2` branch found the Merchant migration version collisions documented above still present in the branch head. They have now been corrected by forward-only filename changes, with SQL contents preserved byte-for-byte:
+
+- Merchant admin review/directory: `20261127003000` → `20261127003100` (after Social Experience custom-service migration `03000`).
+- Merchant membership management: `20261127004000` → `20261127004100` (the `04000` slot remains with the Professional Provider migration).
+- Merchant offers directory: `20261127005000` → `20261127005100` (the `05000` slot remains with Professional-only application migration).
+
+This removes those three filename-version collisions in this feature branch only. It does not prove the SQL is safe, does not reconcile the Production ledger, and does not authorize Staging/Production execution. The earlier Professional Provider Phase A/B supersession and historical Production collision findings remain separate blockers.
