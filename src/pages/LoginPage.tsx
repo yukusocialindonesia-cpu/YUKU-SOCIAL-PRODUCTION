@@ -30,7 +30,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     try {
       // Periksa konfigurasi dan jalur jaringan sebelum mencoba autentikasi.
       if (!isSupabaseConfigured) {
-        const d = supabaseConfigurationDiagnostics;\n        const missing = [!d.urlPresent ? 'URL tidak terbaca' : !d.urlValid ? 'URL tidak valid' : '', !d.keyPresent ? 'Publishable key tidak terbaca' : ''].filter(Boolean).join(' dan ');\n        setErrorMsg(`Konfigurasi Supabase Production bermasalah: ${missing || 'konfigurasi tidak valid'}.`);
+        const d = supabaseConfigurationDiagnostics;
+        const missing = [!d.urlPresent ? 'URL tidak terbaca' : !d.urlValid ? 'URL tidak valid' : '', !d.keyPresent ? 'Publishable key tidak terbaca' : ''].filter(Boolean).join(' dan ');
+        setErrorMsg(`Konfigurasi Supabase Production bermasalah: ${missing || 'konfigurasi tidak valid'}.`);
         return;
       }
 
