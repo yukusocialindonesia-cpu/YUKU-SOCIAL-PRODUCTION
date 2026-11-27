@@ -1,5 +1,5 @@
 -- Stage D: Social Experience exact service ID foundation contract checks.
--- Run after migration 40 in a disposable/staging database.
+-- Run after migration 60 in a disposable/staging database.
 DO $$
 DECLARE
   v_service_id_attnum SMALLINT;
