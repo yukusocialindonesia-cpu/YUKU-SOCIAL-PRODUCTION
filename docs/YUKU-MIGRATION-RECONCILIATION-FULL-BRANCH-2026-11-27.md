@@ -373,3 +373,49 @@ The inspected user-facing SECURITY DEFINER RPCs with authenticated EXECUTE grant
 5. **Coverage note:** RLS is enabled on inspected tables, but most public tables are not FORCE RLS. Review table ownership, grants, and service-role exposure separately.
 
 This is a catalog/configuration audit, not an application penetration test. It did not test requests under anon/authenticated JWTs, inspect actual object contents, or mutate policies, buckets, grants, or functions. No Production SQL changes were made.
+
+
+## Sensitive RPC definition and EXECUTE-ACL audit (read-only, 27 Nov 2026)
+
+The following live Production function definitions and grants were inspected directly from `pg_proc` and `pg_get_functiondef`. This was a static review only; no RPC was invoked and no transaction or row was changed.
+
+### Authorization and grant observations
+
+- The inspected business/admin SECURITY DEFINER RPCs pin `search_path` to an empty path and use schema-qualified object references.
+- `admin_process_payout`, `admin_process_refund`, `admin_resolve_customer_cancellation_case`, `admin_resolve_report`, and the inspected admin review RPCs check scoped permissions through `public.has_admin_permission(...)` before sensitive actions.
+- `set_admin_active` and `set_admin_permissions` require an authenticated Super Admin; they prevent the acting Super Admin from modifying their own account/permissions.
+- `provision_scoped_admin_account(...)` and `provision_scoped_admin_account_with_permissions(...)` require the JWT role to be `service_role` and validate the supplied creator as an active Super Admin. Their EXECUTE ACL is service-role only (plus owner).
+- `settle_booking_payment(...)` is service-role/server-only by an explicit JWT-role/session-user check; its ACL is limited to service_role (plus owner).
+- Two permission-check helper RPCs, `public.has_admin_permission(text)` and `public.is_super_admin()`, currently grant EXECUTE to `anon` as well as `authenticated`. Their bodies only evaluate the current `auth.uid()` through private helpers, so an anonymous caller should receive a false result; this is not by itself an authorization bypass. Nevertheless, anon EXECUTE is unnecessary and should be removed in a reviewed hardening migration, while retaining the grants required by public RLS policy evaluation if that is the intended design.
+- The legacy `admin_review_qris_payment(...)` function has owner-only EXECUTE in the inspected ACL, while `admin_review_qris_payment_finance(...)` grants authenticated EXECUTE and performs the finance permission check. The owner-only legacy function is not client-callable through the normal API role; avoid granting it broadly without checking which frontend path is intended.
+
+### Sensitive workflow review
+
+| Area | Live function behavior observed | Assessment |
+|---|---|---|
+| Payout request | `request_talent_payout` validates actor, active Talent, 18+ and KTP/profile approval, minimum Rp100,000, bank-field shape, and idempotency-key payload consistency | Strong RPC validation, but the separate direct INSERT policy remains a high-priority bypass of these checks |
+| Payout processing | `admin_process_payout` requires finance permission, locks the payout row, validates allowed status transitions, requires a rejection reason/provider reference, and writes an admin audit log | No obvious authorization gap in the inspected body; direct table-write paths still need separate grant/trigger review |
+| Refund processing | `admin_process_refund` requires finance permission, locks refund/payment/booking rows, caps aggregate refunds at payment amount, checks cancellation-policy limits, enforces unique provider reference, and performs full-refund ledger/booking updates | Guardrails are present in the inspected RPC; no runtime concurrency or end-to-end refund test was performed |
+| Cancellation-case resolution | `admin_resolve_customer_cancellation_case` requires finance permission, pending case state, positive held amount, completed automatic refund, and guards against reversing already allocated/paid Talent earnings | Strong static checks observed; requires staging workflow tests for each decision branch |
+| Customer cancellation | `request_customer_cancellation` verifies caller owns booking, allowed booking state, future session, one case per booking, and computes the cancellation policy/refund split | Ownership and state checks observed |
+| Talent cancellation | `request_talent_cancellation` verifies caller is the booking Talent, allowed state, and payment remains held before requesting a full refund | Ownership/state checks observed |
+| Booking creation | `create_booking` requires authenticated eligible Customer, active/approved/publicly visible Talent, approved active service/category, matching online/offline mode, rate, schedule, and enabled checkout | Strong eligibility checks observed; concurrency/availability race tests remain outstanding |
+| Admin moderation | `admin_resolve_report` checks support permission and audits the decision; payout/refund/admin-review RPCs checked use finance or other scoped permissions | No obvious missing permission gate in inspected paths; must verify all sibling RPCs and role/JWT matrix |
+
+### Confirmed P1 settlement idempotency issue
+
+The live `settle_booking_payment(...)` function returns `TRUE` when a booking is already in a paid/confirmed/in-progress/completed state, without comparing the retry's provider, provider charge ID, payment method, or amount to the existing `payments` row. A duplicate or mismatched webhook retry can therefore be acknowledged as successful without proving that it matches the original settlement. This is consistent with the previously recorded P1 risk and should be fixed before enabling the payment webhook/provider path. The function is currently server/service-role only; the finding is about retry correctness, not public client access.
+
+The same function updates an expired booking and then raises an exception. In PostgreSQL, the exception rolls back the transaction, so that inline expiry status update does not persist. The separate expiry job/cron must remain the durable expiry mechanism; the RPC should return/raise without implying that its attempted status update was committed.
+
+### Priority updates
+
+1. **P1 — settlement retry does not verify original payment identity:** compare provider, charge ID, amount, and relevant payment fields against the existing payment before returning idempotent success; reject mismatches and test duplicate webhook delivery in Staging.
+2. **P1 — direct payout INSERT remains broader than payout RPC validation:** revoke direct client INSERT and route requests through the validated RPC, after confirming app compatibility and a tested rollback plan.
+3. **P2 — anonymous EXECUTE on admin permission helper wrappers:** remove unnecessary anon grants only after checking dependencies from RLS policies and public read flows.
+4. **P2 — full JWT/RPC matrix not run:** test anon, ordinary authenticated Customer, Talent, Professional Provider, scoped admin (each permission), Super Admin, and service_role in isolated Staging.
+5. **P2 — refund/cancellation and booking concurrency tests outstanding:** exercise duplicate requests, parallel refund attempts, already-allocated earnings, booking slot races, and provider retry/mismatch cases.
+
+### Safety and confidence
+
+This is a definition/ACL review of selected functions, not a penetration test or complete inventory of every RPC. The findings are based on current catalog definitions and grants. No function was called, no DDL/DML was executed, no migration was applied, and Production remains unchanged. No item in this report is approved for direct Production modification.
