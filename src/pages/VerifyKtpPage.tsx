@@ -278,7 +278,7 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
       // 2. Check if user_identities row already exists (never send ktp_verification_status or id on update)
       const { data: existingRow, error: lookupError } = await supabase
         .from('user_identities')
-        .select('id')
+        .select('id, ktp_storage_path, selfie_storage_path')
         .eq('id', currentUser.id)
         .maybeSingle();
 
@@ -306,6 +306,28 @@ export const VerifyKtpPage: React.FC<VerifyKtpPageProps> = ({ onNavigate }) => {
 
       if (saveError) {
         throw new Error(`Gagal menyimpan pengajuan verifikasi KTP: ${saveError.message}`);
+      }
+
+      // The new paths are now referenced by the identity row. Remove replaced
+      // evidence only after the database write succeeds, so failed submissions
+      // never destroy the previous valid/rejected evidence.
+      const replacedPaths = [
+        existingRow?.ktp_storage_path,
+        existingRow?.selfie_storage_path,
+      ].filter((path): path is string =>
+        Boolean(path) && path !== ktpStoragePath && path !== selfieStoragePath
+      );
+      if (replacedPaths.length > 0) {
+        try {
+          const { error: oldFilesError } = await supabase.storage
+            .from('ktp-documents')
+            .remove(replacedPaths);
+          if (oldFilesError) {
+            console.error('Pengajuan tersimpan, tetapi dokumen lama belum dapat dibersihkan:', oldFilesError.message);
+          }
+        } catch (oldFilesError: any) {
+          console.error('Pengajuan tersimpan, tetapi dokumen lama belum dapat dibersihkan:', oldFilesError?.message || oldFilesError);
+        }
       }
 
       setKtpFile(null);
