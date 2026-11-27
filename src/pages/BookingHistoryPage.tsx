@@ -26,7 +26,6 @@ import { Modal } from '../components/common/Modal';
 import { BookingChatModal } from '../components/chat/BookingChatModal';
 import { QrisCustomerPaymentPanel } from '../components/booking/QrisCustomerPaymentPanel';
 import { BankTransferCustomerPaymentPanel } from '../components/booking/BankTransferCustomerPaymentPanel';
-import { XenditCustomerPaymentPanel } from '../components/booking/XenditCustomerPaymentPanel';
 import { ReportCategory } from '../types/database';
 import {
   REPORT_CATEGORY_OPTIONS,
@@ -913,7 +912,14 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
                         </div>
                       </div>
                     )}
-                    {item.payment_route === 'xendit' && <XenditCustomerPaymentPanel bookingId={item.id} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} />}
+                    {item.payment_route === 'xendit' && item.status === 'pending_payment' && (
+                      <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                        <p className="text-xs leading-relaxed text-amber-900">
+                          Metode pembayaran lama ini sudah tidak tersedia. Jangan gunakan tautan pembayaran sebelumnya.
+                          Hubungi Bantuan YUKU agar tim kami membantu menyelesaikan booking ini.
+                        </p>
+                      </div>
+                    )}
                     {item.payment_route === 'manual_qris' && <QrisCustomerPaymentPanel bookingId={item.id} expiresAt={item.payment_expires_at} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} />}
                     {item.payment_route === 'manual_bank_transfer' && <BankTransferCustomerPaymentPanel bookingId={item.id} expiresAt={item.payment_expires_at} amount={Number(item.gross_amount)} bookingStatus={item.status} paymentRoute={item.payment_route} onRouteClaimed={(route) => setBookings(prev => prev.map(b => b.id === item.id ? { ...b, payment_route: route } : b))} />}
                   </div>
