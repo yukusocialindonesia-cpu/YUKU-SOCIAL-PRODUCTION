@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  // Provisional application ID; confirm before the first public store release.
-  appId: 'id.yuku.app',
+  // Confirmed application ID for Android and iOS.
+  appId: 'yuku.app',
   appName: 'YUKU',
   webDir: 'dist',
   backgroundColor: '#FAF8FC',
