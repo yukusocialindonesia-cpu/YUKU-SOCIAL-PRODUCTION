@@ -488,3 +488,11 @@ The reconciliation branch `chore/reconcile-supabase-migration-history` confirms 
 A targeted GitHub commit search for the distinctive migration/function names returned no matching source commits. This is **not** proof that the SQL never existed: it may be in an unindexed commit, deployment artifact, backup, or out-of-band execution. The previously recovered Web Push PR #12 files do not establish the body of `enable_pg_net_for_push_webhook`; PR #44's later payout hardening and PR #45's booking RPC hardening are different changes and must not be substituted for the Production records above.
 
 **Disposition:** all three remain source-unrecovered / not byte-verified. Do not fabricate timestamped SQL, infer equivalence from names, or replay them. Continue seeking the original deployment artifact, database backup, archived branch, or exact migration contents from the operator who applied them. Production remains read-only.
+
+
+## Professional-only private document upload gate — found and corrected in branch source — 27 Nov 2026
+
+- Inspection of the inherited `20261127000200_restrict_professional_document_uploads.sql` found that `professional_service_documents_owner_upload` required both an active account and a matching `public.talent_profiles` row. That blocks the intended Professional-only onboarding path even after `professional_provider_profiles` is introduced.
+- The `20261127000700_professional_provider_identity_decoupling.sql` migration previously did not replace that Storage policy.
+- **Branch-source fix:** commit `a2e7c876e655a9f81c9171064a63a579b6241890` now drops and recreates the upload policy in migration `00700`. It preserves the private bucket restriction, authenticated user's own folder, and active-account check, while removing only the Talent-profile prerequisite. Existing owner/admin read and owner delete policies are unchanged.
+- This is a source-level correction only. It has not been executed in Staging or Production. Validate with actual Professional-only JWT upload/read/delete tests and negative cross-user folder tests before merge.
