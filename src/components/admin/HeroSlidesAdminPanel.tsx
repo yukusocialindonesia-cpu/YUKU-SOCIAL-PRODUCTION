@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, Eye, EyeOff, ImagePlus, Loader2, Trash2, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { HeroSlideRow } from '../../types/database';
@@ -29,6 +29,7 @@ async function uploadTo(folder: string, file: File) {
 
 export const HeroSlidesAdminPanel: React.FC = () => {
   const [slides, setSlides] = useState<HeroSlideRow[]>([]);
+  const loadRequestIdRef = useRef(0);
   const [loading, setLoading] = useState(true);
   const [migrationMissing, setMigrationMissing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -44,12 +45,14 @@ export const HeroSlidesAdminPanel: React.FC = () => {
   const [mobilePreview, setMobilePreview] = useState('');
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true);
     const { data, error: err } = await supabase
       .from('hero_slides')
       .select('*')
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false });
+    if (requestId !== loadRequestIdRef.current) return;
     if (err) {
       setMigrationMissing(err.code === '42P01' || err.message.includes('hero_slides'));
       setSlides([]);
@@ -57,7 +60,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
       setMigrationMissing(false);
       setSlides((data as HeroSlideRow[]) || []);
     }
-    setLoading(false);
+    if (requestId === loadRequestIdRef.current) setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -278,7 +281,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                     disabled={busy || i === 0}
                     onClick={() => move(i, -1)}
                     aria-label="Geser ke atas"
-                    className="h-11 w-11 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
+                    className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
                   >
                     <ArrowUp className="w-4 h-4" />
                   </button>
@@ -287,7 +290,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                     disabled={busy || i === slides.length - 1}
                     onClick={() => move(i, 1)}
                     aria-label="Geser ke bawah"
-                    className="h-11 w-11 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
+                    className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 inline-flex items-center justify-center cursor-pointer"
                   >
                     <ArrowDown className="w-4 h-4" />
                   </button>
@@ -295,7 +298,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                     type="button"
                     disabled={busy}
                     onClick={() => toggleActive(s)}
-                    className="min-h-11 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     {s.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     {s.is_active ? 'Sembunyikan' : 'Tampilkan'}
@@ -306,14 +309,14 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                         type="button"
                         disabled={busy}
                         onClick={() => handleDelete(s)}
-                        className="min-h-11 px-3 rounded-lg bg-rose-600 text-white text-xs font-bold cursor-pointer"
+                        className="px-3 h-9 rounded-lg bg-rose-600 text-white text-xs font-bold cursor-pointer"
                       >
                         Ya, hapus
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmDeleteId(null)}
-                        className="min-h-11 px-3 rounded-lg bg-slate-100 text-xs font-bold cursor-pointer"
+                        className="px-3 h-9 rounded-lg bg-slate-100 text-xs font-bold cursor-pointer"
                       >
                         Batal
                       </button>
@@ -324,7 +327,7 @@ export const HeroSlidesAdminPanel: React.FC = () => {
                       disabled={busy}
                       onClick={() => setConfirmDeleteId(s.id)}
                       aria-label="Hapus slide"
-                      className="h-11 w-11 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 inline-flex items-center justify-center cursor-pointer"
+                      className="w-9 h-9 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 inline-flex items-center justify-center cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
