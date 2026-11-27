@@ -541,7 +541,7 @@ language plpgsql
 stable
 security definer
 set search_path = ''
-as $
+as $$
 declare
   v_user_id uuid := auth.uid();
   v_account_status text;
@@ -587,7 +587,7 @@ begin
     )
   );
 end;
-$;
+$$;
 
 revoke all on function public.get_my_account_access_snapshot()
   from public, anon;
