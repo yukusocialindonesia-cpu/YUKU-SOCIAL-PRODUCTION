@@ -72,7 +72,7 @@ Status: SOURCE AUDITED; END-TO-END NOT TESTED
 - [ ] Selesaikan hak akses kolom internal cancellation case dan laporan sebelum Production rollout.
 - [ ] Uji QRIS proof upload failure cleanup tanpa membuka DELETE Storage secara luas.
 - [ ] Pastikan pesan push tidak mengandung isi chat sensitif dan teks escrow sesuai kebijakan release yang benar.
-- [ ] Xendit tetap nonaktif untuk checkout baru sampai Edge Functions, secrets, callback URL, route claim, provider sandbox dan Staging tests lengkap.
+- [ ] Setelah PR retirement disetujui dan migration diuji di Staging, hapus secrets Xendit dan nonaktifkan callback provider secara manual.
 - [ ] Manual QRIS harus melewati alur Finance yang teruji; jangan menyamakan upload bukti dengan pembayaran yang sudah diverifikasi.
 
 Exit criteria: satu siklus transaksi berhasil dari awal sampai payout di Staging, termasuk skenario gagal dan rekonsiliasi; Finance menyetujui kebijakan escrow/refund.
@@ -120,7 +120,7 @@ Exit criteria: pilot stabil, transaksi direkonsiliasi, support siap, tidak ada b
 1. Baseline build + lint + daftar route/feature untuk mengetahui kondisi aplikasi yang benar.
 2. Tutup P0/P1 database privilege dan transaksi yang sudah teridentifikasi.
 3. Siapkan migration replay serta permission regression suite di Staging.
-4. Jalankan transaksi end-to-end manual QRIS dahulu; Xendit menyusul setelah kesiapan provider terbukti.
+4. Jalankan transaksi end-to-end manual QRIS dan transfer bank; Xendit tidak lagi menjadi provider checkout YUKU.
 5. Lanjutkan UX mobile dan integrasi katalog/merchant setelah fondasi transaksi aman.
 
 ## Aturan kerja
@@ -192,7 +192,7 @@ Launch gate: no launch/enablement of Talent onboarding or paid booking until evi
 
 - Production catalog confirms the Talent payout RPC exists and enforces active/verified/approved Talent status, idempotency, minimum Rp100,000 and server-side balance reservation across booking + affiliate ledgers.
 - Authenticated users cannot directly INSERT/UPDATE payment, refund or payout tables; payout/refund state changes require scoped Finance RPCs. Unique provider references are enforced by database indexes.
-- **P1 unresolved:** Xendit callback still lacks independent provider invoice verification and a durable receipt/event ledger. New Xendit route selection is currently blocked in Production; do not re-enable until sandbox and reconciliation gates pass.
+- **Retirement:** Xendit checkout/webhook source is removed on the retirement branch. Historical provider values remain for audit compatibility. Hosting secrets and the external callback must still be retired manually after release approval.
 - **P2 operational control:** payout bank destination is length-validated but not matched to verified identity. Finance must manually verify account ownership before transfer.
 - Staging tests still required for payout/refund concurrency, idempotency, disputes, direct-table denial, late/duplicate callbacks and ledger reconciliation.
 - No Production data, schema, functions, payment routes or feature flags were changed.
