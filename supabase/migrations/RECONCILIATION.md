@@ -16,6 +16,16 @@ Purpose: compare repository migration filenames with the actual Supabase migrati
 
 This live result supersedes the 26 November snapshot counts previously recorded below in this document and README. A name match is not a checksum match. File renames do not prove that SQL contents are identical to what was applied.
 
+## Filename-shape audit (27 November 2026)
+
+A separate listing of the complete `supabase/migrations/` directory on this PR branch confirms 125 SQL files:
+- 107 filenames use a 14-digit timestamp prefix.
+- 18 filenames use legacy two-digit prefixes (`01`–`07`, `28`–`30`, `32)–`33`, `35`–`39`, and `43`).
+- The seven `01`–`07` versions exist in the Production ledger. The other eleven short-prefix files do not have matching short versions in the current Production ledger and remain part of the 51 local-only files requiring classification.
+- No duplicate 14-digit filename prefixes were found in this branch's migration directory.
+
+This is a filename inventory only. It does not establish whether any of the eleven legacy SQL files were applied under a different remote version/name, or whether their SQL is safe to replay. Do not rename them to guessed timestamps. Recover deployment history or compare their SQL effects with the live schema first.
+
 ## Production entries without a confidently matched local SQL file
 
 | Version | Recorded migration name |
