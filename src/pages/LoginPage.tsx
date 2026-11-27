@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { Lock, Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
-import { supabase, isSupabaseConfigured, checkSupabaseConnection } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, checkSupabaseConnection, supabaseConfigurationDiagnostics } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { isEmailNotConfirmed, translateAuthError } from '../lib/authErrors';
 import { ResendConfirmation } from '../components/auth/ResendConfirmation';
@@ -30,7 +30,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     try {
       // Periksa konfigurasi dan jalur jaringan sebelum mencoba autentikasi.
       if (!isSupabaseConfigured) {
-        setErrorMsg('Koneksi YUKU belum dikonfigurasi dengan benar. Tim teknis perlu memeriksa environment Production Supabase.');
+        const d = supabaseConfigurationDiagnostics;\n        const missing = [!d.urlPresent ? 'URL tidak terbaca' : !d.urlValid ? 'URL tidak valid' : '', !d.keyPresent ? 'Publishable key tidak terbaca' : ''].filter(Boolean).join(' dan ');\n        setErrorMsg(`Konfigurasi Supabase Production bermasalah: ${missing || 'konfigurasi tidak valid'}.`);
         return;
       }
 
