@@ -76,7 +76,7 @@ Lihat [panduan migration](./supabase/migrations/README.md) sebelum menyentuh dat
 - **Komunitas:** tabel komunitas dan migration MVP telah diterapkan ke Production pada 21 November 2026. Lihat [status fitur](./docs/FEATURE_STATUS.md).
 - **Affiliate:** panel Admin tersedia. Nilai Production terakhir diverifikasi pada 20 November 2026 adalah komisi 10% dan program aktif.
 - **Booking dan keuangan:** fondasi booking, ledger, pembatalan, dan payout tersedia pada kode/database. Checkout frontend default nonaktif. Jangan menganggap pembayaran otomatis, refund provider, atau payout otomatis sudah terhubung dan diuji.
-- **Payment provider:** keberadaan komponen Xendit/QRIS di kode bukan bukti konfigurasi live, webhook, dan proses transfer telah terverifikasi. Jangan mengubah provider tanpa persetujuan eksplisit.
+- **Payment provider:** checkout Customer menggunakan QRIS manual dan transfer bank sesuai metode yang diaktifkan Finance. Xendit dipensiunkan dari checkout baru; enum dan catatan historis tidak dihapus.
 - **Production:** build CI sukses bukan bukti deployment, tampilan, atau semua alur bisnis sudah benar.
 
 ## Prinsip pengembangan
