@@ -401,3 +401,12 @@ A follow-up inspection compared PR #284 (exact Social Experience service-ID foun
 - `public.can_admin_access_ktp(uuid)` exists as SECURITY DEFINER and its current ACL grants EXECUTE to `authenticated` and owner `postgres`, not `anon`/PUBLIC.
 - Therefore the observed permission-denied log entries do not justify broadening grants. Likely causes include an anonymous request path or a policy/function invocation under a role that lacks EXECUTE; exact caller/JWT context must be correlated before any change.
 - No grants, policies, or function definitions were changed.
+
+
+## Follow-up: Professional-only document upload blocker corrected in branch source — 27 Nov 2026
+
+A source review found a concrete integration blocker: inherited migration `20261127000200_restrict_professional_document_uploads.sql` restricted uploads to active users who also had a `talent_profiles` row. That contradicted the independent Professional Provider model introduced by `20261127000700_professional_provider_identity_decoupling.sql`.
+
+The current feature branch now replaces `professional_service_documents_owner_upload` in migration `00700`, retaining the authenticated user's own Storage folder and active-account requirement while removing the Talent-profile dependency (commit `a2e7c876e655a9f81c9171064a63a579b6241890`). The owner/admin read policy and owner delete policy are unchanged.
+
+**Release gate remains open:** this has not been applied to Staging. Test Professional-only upload, owner read/delete, Admin review read, and cross-user upload/read denial using real JWTs. This SQL is not validated by the frontend TypeScript/build workflow. Production remains untouched.
