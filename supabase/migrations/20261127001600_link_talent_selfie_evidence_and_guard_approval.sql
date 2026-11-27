@@ -11,15 +11,21 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
-AS $$
+AS $
+DECLARE
+  v_has_customer_profile boolean;
 BEGIN
   IF NEW.ktp_verification_status = 'verified'::public.ktp_status_type
      AND OLD.ktp_verification_status IS DISTINCT FROM NEW.ktp_verification_status THEN
+    SELECT EXISTS (
+      SELECT 1 FROM public.customer_profiles cp WHERE cp.id = NEW.id
+    ) INTO v_has_customer_profile;
+
     IF NULLIF(trim(COALESCE(NEW.ktp_number, '')), '') IS NULL
        OR NEW.ktp_number !~ '^[0-9]{16}$'
        OR NULLIF(trim(COALESCE(NEW.ktp_storage_path, '')), '') IS NULL
-       OR NULLIF(trim(COALESCE(NEW.selfie_storage_path, '')), '') IS NULL THEN
-      RAISE EXCEPTION 'Verifikasi ditolak: NIK 16 digit, foto e-KTP, dan selfie dengan KTP wajib tersedia.';
+       OR (v_has_customer_profile AND NULLIF(trim(COALESCE(NEW.selfie_storage_path, '')), '') IS NULL) THEN
+      RAISE EXCEPTION 'Verifikasi ditolak: NIK 16 digit dan foto e-KTP wajib tersedia; akun dengan profil Customer juga wajib memiliki selfie dengan KTP.';
     END IF;
   END IF;
   RETURN NEW;
