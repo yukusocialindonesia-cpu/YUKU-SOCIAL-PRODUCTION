@@ -1,5 +1,7 @@
 # YUKU End-to-End Transaction Audit
 
+> Historical audit snapshot. Xendit references below describe the earlier implementation; the provider has since been retired from new checkout on branch `chore/remove-xendit-payment-provider`. Historical enum/payment records are intentionally preserved.
+
 Tanggal: 26 November 2026  
 Branch: `feat/professional-services-categories`  
 Scope: booking creation, Xendit checkout/callback, manual QRIS, settlement, financial ledger, escrow release, dispute/refund and payout hand-off.
