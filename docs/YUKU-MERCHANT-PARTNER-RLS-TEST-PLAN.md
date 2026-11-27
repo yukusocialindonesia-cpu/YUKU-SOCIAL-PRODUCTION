@@ -207,3 +207,15 @@ This preflight has not been executed. No migration has been applied to Staging o
 - [ ] Professional provider identity and application history remain scoped to the authenticated applicant; a Talent profile is not required to submit or manage a Professional Services application.
 - [ ] Approved Professional Services listings are visible only when the provider profile is complete, the individual service is approved and active, and the public RLS policy permits visibility.
 - [ ] Editing/revising a service application does not expose its credential or supporting-document storage paths through public directory/profile queries.
+
+
+## Independent Professional Provider hardening acceptance
+- [ ] Insert/update attempts cannot forge `is_profile_complete`; the database trigger derives completeness from display name, city, headline, and bio, including historical rows after backfill.
+- [ ] An incomplete or edited provider profile cannot remain publicly eligible; changing identity fields returns it to pending review and removes public visibility.
+- [ ] Anonymous and authenticated public reads of provider profiles/listings do not recurse through RLS and reveal only approved, active, category-compatible listings.
+- [ ] A provider with an approved listing is visible only when the provider account is active and the profile is complete; a listing in an inactive category or unsupported delivery mode remains hidden.
+- [ ] An active Professional-only provider with a complete provider profile can upload evidence to their own private folder without a Talent profile; another user's folder and inactive/incomplete profiles are rejected.
+- [ ] Super Admin can read provider profiles for review without a separate Talent permission; ordinary users can read only their own private provider profile.
+- [ ] Run all cases with real anon/authenticated/Admin JWTs and verify storage object ownership, bucket privacy, MIME and size restrictions in isolated Staging.
+
+These cases are acceptance criteria only; no Staging execution is claimed.
