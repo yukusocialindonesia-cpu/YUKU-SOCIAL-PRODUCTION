@@ -1,5 +1,5 @@
 name: YUKU main build validation
-# Rebuild and deploy after synchronizing login role state before Admin navigation.
+# Rebuild and deploy after adding safe Supabase configuration diagnostics.
 
 on:
   push:
