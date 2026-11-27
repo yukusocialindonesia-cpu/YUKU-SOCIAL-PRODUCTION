@@ -1,4 +1,5 @@
 name: YUKU main build validation
+# Rebuild and deploy after synchronizing login role state before Admin navigation.
 
 on:
   push:
