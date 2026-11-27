@@ -1,4 +1,4 @@
-package com.getcapacitor.myapp;
+package yuku.app;
 
 import static org.junit.Assert.*;
 
@@ -18,6 +18,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("id.yuku.app", appContext.getPackageName());
+        assertEquals("yuku.app", appContext.getPackageName());
     }
 }
