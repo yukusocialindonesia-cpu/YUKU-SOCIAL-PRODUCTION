@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrandLogo } from '../components/common/BrandLogo';
 import { Lock, Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { AppRoute } from '../types/navigation';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, checkSupabaseConnection } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { isEmailNotConfirmed, translateAuthError } from '../lib/authErrors';
 import { ResendConfirmation } from '../components/auth/ResendConfirmation';
@@ -28,6 +28,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     setLoading(true);
 
     try {
+      // Periksa konfigurasi dan jalur jaringan sebelum mencoba autentikasi.
+      if (!isSupabaseConfigured) {
+        setErrorMsg('Koneksi YUKU belum dikonfigurasi dengan benar. Tim teknis perlu memeriksa environment Production Supabase.');
+        return;
+      }
+
+      const connection = await checkSupabaseConnection();
+      if (!connection.connected) {
+        const detail = connection.code ? ` Kode: ${connection.code}.` : '';
+        setErrorMsg(`YUKU tidak dapat menjangkau Supabase (${connection.status}). Periksa koneksi internet atau konfigurasi Production.${detail}`);
+        console.error('YUKU login preflight gagal:', connection);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
