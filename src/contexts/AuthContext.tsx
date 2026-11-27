@@ -190,9 +190,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Menghindari state usang saat dua pemuatan role bertumpuk.
   const requestIdRef = useRef(0);
   const currentUserIdRef = useRef<string | null>(null);
+  // Mencegah hasil getSession() awal yang terlambat menimpa event auth yang lebih baru.
+  const authEventVersionRef = useRef(0);
 
   const applySession = useCallback(async (nextUser: User | null, forceRoleReload = false) => {
     const requestId = ++requestIdRef.current;
+    const authEventVersion = authEventVersionRef.current;
 
     if (!nextUser) {
       currentUserIdRef.current = null;
@@ -218,7 +221,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!sameUser) setIsAuthLoading(true);
 
     const nextAccess = await fetchUserAccess(nextUser.id);
-    if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+    if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return;
 
     if (!nextAccess.verified) {
       setUser(nextUser);
@@ -232,11 +235,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const nextRole = nextAccess.role;
     const nextAdminAccess = nextRole === 'admin' ? await fetchAdminAccess() : null;
-    if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+    if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return;
 
     if (nextAccess.accountStatus !== 'active' && nextAccess.accountStatus !== 'pending_verification') {
       // Tolak sesi jika akun dibatasi, record tidak ada, atau status gagal diverifikasi.
       await supabase.auth.signOut({ scope: 'global' });
+      if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return;
       currentUserIdRef.current = null;
       setUser(null);
       setRole(null);
@@ -258,15 +262,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let isMounted = true;
 
-    // Pemulihan awal dari localStorage.
+    // Pemulihan awal dari localStorage. Event auth yang lebih baru membatalkan snapshot ini.
+    const initialAuthEventVersion = authEventVersionRef.current;
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
-        if (isMounted) void applySession(session?.user ?? null);
+        if (isMounted && authEventVersionRef.current === initialAuthEventVersion) {
+          void applySession(session?.user ?? null);
+        }
       })
       .catch((error) => {
         console.error('YUKU: gagal memulihkan sesi', error);
-        if (isMounted) void applySession(null);
+        if (isMounted && authEventVersionRef.current === initialAuthEventVersion) {
+          void applySession(null);
+        }
       });
 
     // Perubahan berikutnya (login, logout, refresh token).
@@ -275,10 +284,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') return; // sudah ditangani getSession()
+      if (event === 'INITIAL_SESSION') return; // pemulihan awal ditangani getSession()
+      authEventVersionRef.current += 1;
       window.setTimeout(() => {
         if (!isMounted) return;
-        void applySession(session?.user ?? null, event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED');
+        void applySession(session?.user ?? null, event === 'USER_UPDATED');
       }, 0);
     });
 
@@ -286,8 +296,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Ini membuat perubahan izin/nonaktif Admin segera tercermin tanpa harus logout.
     const handleWindowFocus = () => {
       if (!isMounted) return;
+      const authEventVersion = authEventVersionRef.current;
       void supabase.auth.getSession().then(({ data: { session } }) => {
-        if (isMounted) void applySession(session?.user ?? null, true);
+        if (isMounted && authEventVersionRef.current === authEventVersion) {
+          void applySession(session?.user ?? null, true);
+        }
       }).catch((error) => {
         console.error('YUKU: gagal memperbarui izin Admin saat aplikasi aktif', error);
       });
@@ -307,7 +320,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [applySession]);
 
   const refreshRole = useCallback(async () => {
+    const authEventVersion = authEventVersionRef.current;
     const { data: { session } } = await supabase.auth.getSession();
+    if (authEventVersionRef.current !== authEventVersion) return;
     await applySession(session?.user ?? null, true);
   }, [applySession]);
 
