@@ -18,7 +18,6 @@ on:
   pull_request:
     branches:
       - main
-      - design/beranda-premium-compact
     paths:
       - "src/**"
       - "supabase/migrations/**"
