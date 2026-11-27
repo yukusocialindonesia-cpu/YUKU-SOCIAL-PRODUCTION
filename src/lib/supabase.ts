@@ -19,7 +19,7 @@ const normalizedEnvUrl = (() => {
   }
 })();
 
-export const isSupabaseConfigured = Boolean(normalizedEnvUrl && rawEnvKey);
+export const supabaseConfigurationDiagnostics = {\n  urlPresent: Boolean(rawEnvUrl),\n  urlValid: Boolean(normalizedEnvUrl),\n  keyPresent: Boolean(rawEnvKey),\n  urlHost: normalizedEnvUrl ? new URL(normalizedEnvUrl).host : null,\n};\n\nexport const isSupabaseConfigured = Boolean(normalizedEnvUrl && rawEnvKey);
 
 // Supabase JS requires a syntactically valid URL/key at construction time.
 // These inert placeholders deliberately point to the reserved .invalid domain;
@@ -95,5 +95,5 @@ export async function checkSupabaseConnection(): Promise<{
 }
 
 if (!isSupabaseConfigured) {
-  console.error('YUKU: Supabase belum dikonfigurasi. Aplikasi tidak akan terhubung ke proyek bawaan.');
+  console.error('YUKU Supabase config diagnostics:', supabaseConfigurationDiagnostics);
 }
