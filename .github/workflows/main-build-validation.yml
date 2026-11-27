@@ -6,8 +6,6 @@ on:
       - main
     paths:
       - "src/**"
-      - "supabase/migrations/**"
-      - "supabase/tests/**"
       - "public/**"
       - "index.html"
       - "package.json"
@@ -23,6 +21,8 @@ on:
       - design/beranda-premium-compact
     paths:
       - "src/**"
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
       - "public/**"
       - "index.html"
       - "package.json"
