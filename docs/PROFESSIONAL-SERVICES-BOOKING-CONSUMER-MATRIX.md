@@ -278,9 +278,8 @@ No financial schema, RPC, production data, or payout behavior was changed by thi
 
 ### Confirmed protections already present
 
-- **Single payment route lock:** `claim_booking_payment_route()` locks the booking row and only permits one of Xendit, manual QRIS, or manual bank transfer while the booking is pending and unexpired. Route switching is rejected.
-- **Xendit checkout amount:** `create-checkout` obtains the caller identity from JWT, verifies booking ownership/status, checks the server-side `payment_checkout` flag, and derives amount from `bookings.gross_amount`, not the browser. It uses a stable `external_id = yuku-<booking UUID>` and retrieves a pending invoice on duplicate invoice creation.
-- **Xendit callback authentication:** `xendit-webhook` compares the callback token using constant-time byte comparison and only settles PAID/SETTLED callbacks. It checks the external ID shape and compares the callback amount with the database gross amount.
+- **Single payment route lock:** `claim_booking_payment_route()` locks the booking row and permits only manual QRIS or manual bank transfer while the booking is pending and unexpired. Route switching is rejected; Xendit is retired.
+- **Retired provider:** Xendit checkout and webhook functions are removed from the release branch. Historical provider enum values remain only for compatibility; the new booking route constraint and settlement RPC reject Xendit.
 - **Settlement serialization/idempotency:** `settle_booking_payment()` locks the booking row; only pending bookings can be settled; already-paid/in-progress/completed bookings return success; payment row is upserted on unique booking ID; ledger generation is triggered from payment writes.
 - **Manual QRIS:** one pending proof per booking is enforced by a partial unique index; upload is private and tied to an owned booking locked to manual QRIS; Finance review locks submission and booking; approval checks booking status and payment route before creating/updating the payment and moving booking to escrow.
 - **Manual bank transfer:** one pending submission per booking is enforced; proof path is constrained to the booking folder; Finance approval verifies owner, exact claimed amount, booking expiry/status, locked route, saved account snapshot, non-empty unique transfer reference, and proof object existence. It writes an audit record.
