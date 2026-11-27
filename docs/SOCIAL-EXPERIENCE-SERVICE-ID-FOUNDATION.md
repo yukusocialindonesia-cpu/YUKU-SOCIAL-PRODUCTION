@@ -6,9 +6,9 @@ Move Social Experience booking identity from the ambiguous provider/category pai
 
 ## What this branch changes
 
-### Database migration 60 (must follow Merchant migration 50 when both release branches are integrated)
+### Database migration 110 (after the current provider foundation chain)
 
-`20261127006000_social_experience_service_id_foundation.sql`:
+`20261127011000_social_experience_service_id_foundation.sql`:
 - Adds nullable `bookings.service_id` with a foreign key to `talent_services.id`.
 - Adds immutable service title and description snapshots for new bookings.
 - Backfills service IDs for legacy bookings only where the existing talent/category pair resolves to a service row.
@@ -25,7 +25,7 @@ Move Social Experience booking identity from the ambiguous provider/category pai
 - Talent detail loads approved/active service IDs and maps the selected category to its exact offer.
 - Booking submission now calls `create_booking_for_service` with `p_service_id`, rather than sending only the category.
 - Customer/Talent booking history prefers the immutable service title snapshot and falls back to the legacy category label.
-- Talent dashboard reads the snapshot fields when migration 60 exists and falls back to the legacy select on environments where those columns are not yet present.
+- Talent dashboard reads the snapshot fields when migration 110 exists and falls back to the legacy select on environments where those columns are not yet present.
 - Booking TypeScript shapes include nullable service identity snapshots for legacy compatibility.
 
 ### Tests
@@ -56,7 +56,7 @@ The production booking table also has a separate `trg_enforce_approved_talent_se
 
 ## Current environment blocker
 
-The connected Supabase project currently lists only its default `main` branch, and that branch reports `MIGRATIONS_FAILED`. No separate healthy staging branch is available in the connected project. Therefore migration 60 and the Stage D SQL checks have not been executed. Do not use the production project as a substitute staging target.
+The connected Supabase project currently lists only its default `main` branch, and that branch reports `MIGRATIONS_FAILED`. No separate healthy staging branch is available in the connected project. Therefore migration 110 and the Stage D SQL checks have not been executed. Do not use the production project as a substitute staging target.
 
 ## Required staging acceptance before merge/release
 
