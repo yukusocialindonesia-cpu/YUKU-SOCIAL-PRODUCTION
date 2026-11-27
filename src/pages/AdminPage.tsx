@@ -520,6 +520,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           } as CustomerKtpItem;
         }));
 
+        // Full moderation fields are available only through the Support-permission-checked RPC.
         const { data: reportRowsRaw, error: reportErr } = await supabase
           .rpc('get_support_admin_reports' as any);
         if (reportErr) throw reportErr;
