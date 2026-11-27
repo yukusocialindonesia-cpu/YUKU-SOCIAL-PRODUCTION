@@ -146,22 +146,6 @@ BEGIN
   END IF;
 
   IF v_booking.payment_route IS NULL THEN
-    IF p_provider = 'manual_qris'::public.payment_provider_type
-       AND NOT EXISTS (
-         SELECT 1 FROM public.qris_payment_settings
-         WHERE id = TRUE AND is_active
-       ) THEN
-      RAISE EXCEPTION 'Pembayaran QRIS sedang tidak aktif.';
-    END IF;
-
-    IF p_provider = 'manual_bank_transfer'::public.payment_provider_type
-       AND NOT EXISTS (
-         SELECT 1 FROM public.bank_transfer_settings
-         WHERE id = TRUE AND is_active
-       ) THEN
-      RAISE EXCEPTION 'Transfer bank sedang tidak aktif.';
-    END IF;
-
     UPDATE public.bookings
     SET payment_route = v_route, updated_at = NOW()
     WHERE id = p_booking_id;
