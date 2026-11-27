@@ -1,0 +1,70 @@
+name: Generate native Android and iOS projects
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/native-mobile-foundation
+    paths:
+      - "capacitor.config.ts"
+      - ".github/workflows/generate-native-projects.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: yuku-native-project-generation
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/native-mobile-foundation
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate app configuration
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          test -n "$VITE_SUPABASE_URL" || { echo "::error::Missing VITE_SUPABASE_URL"; exit 1; }
+          test -n "$VITE_SUPABASE_PUBLISHABLE_KEY" || { echo "::error::Missing VITE_SUPABASE_PUBLISHABLE_KEY"; exit 1; }
+          npm run lint
+          npm run build
+
+      - name: Generate Android project
+        run: |
+          if [ ! -d android ]; then npx cap add android; fi
+
+      - name: Generate iOS project
+        run: |
+          if [ ! -d ios ]; then npx cap add ios; fi
+
+      - name: Sync native projects
+        run: npx cap sync
+
+      - name: Commit native platform projects
+        run: |
+          git add android ios
+          if git diff --cached --quiet; then
+            echo "Native platform projects are already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "build(mobile): generate Android and iOS native projects"
+          git push origin HEAD:feature/native-mobile-foundation
