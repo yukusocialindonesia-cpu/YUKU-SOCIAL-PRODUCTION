@@ -106,7 +106,7 @@ Production also confirms:
 - Unique indexes protect payout idempotency keys, payout provider references, refund provider references, payment booking IDs, payment idempotency keys and provider charge IDs.
 - Finance Admin RPCs row-lock payout/refund records and audit status transitions. Disputed reserved earnings block payout completion.
 - Payout RPC validates bank destination fields syntactically, not ownership against verified identity. Manual Finance verification remains required.
-- New Xendit route selection is currently blocked by `claim_booking_payment_route()`; the Edge Function's Xendit path will fail closed for a new route. Keep it disabled until callback verification/receipt ledger and sandbox tests are complete.
+- Xendit is retired from new booking routes and server-side settlement by branch migration `20261127190000_retire_xendit_booking_checkout.sql`. Historical enum values remain for compatibility; do not remove them until migration history and any external obligations are reconciled.
 
 This is catalog-only validation, not a live payout/refund simulation. No financial rows or bank details were read and no Production changes were made.
 
