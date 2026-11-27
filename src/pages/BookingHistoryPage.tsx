@@ -44,6 +44,9 @@ interface BookingItem {
   customer_id: string;
   talent_id: string;
   activity_category_id: string;
+  service_id?: string | null;
+  service_title_snapshot?: string | null;
+  service_description_snapshot?: string | null;
   booking_mode: 'offline' | 'online';
   start_time: string;
   end_time: string;
@@ -256,7 +259,7 @@ export const BookingHistoryPage: React.FC<BookingHistoryPageProps> = ({ onNaviga
           talentCity: talent?.city,
           customerName: customer?.display_name || 'Customer YUKU',
           customerAvatar: customer?.avatar_url,
-          activityTitle: categoryMap.get(b.activity_category_id) || b.activity_category_id,
+          activityTitle: b.service_title_snapshot || categoryMap.get(b.activity_category_id) || b.activity_category_id,
           refund: refundMap.has(b.id)
             ? {
                 amount: Number(refundMap.get(b.id).refund_amount),
