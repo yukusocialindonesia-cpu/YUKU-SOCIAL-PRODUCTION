@@ -57,6 +57,7 @@ interface BookingItem {
   talent_gross_share: number;
   status: string;
   payment_expires_at: string;
+  // Legacy Xendit value remains readable for historical bookings only.
   payment_route: 'xendit' | 'manual_qris' | 'manual_bank_transfer' | null;
   cancellation_reason: string | null;
   customer_completed_at: string | null;
