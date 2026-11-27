@@ -23,6 +23,7 @@
 --  C13 Signup email/metadata 'admin' TIDAK menghasilkan role admin (migrasi 18)
 --  C14 Booking pending kedaluwarsa tidak memblokir create_booking berikutnya (fix guard 23)
 --  C15 Bucket promotions punya batas ukuran & tipe file (migrasi 23)
+--  C16 Settlement dan route baru menolak provider pensiun
 -- ============================================================================
 
 CREATE TEMP TABLE IF NOT EXISTS _c_results (n INT, name TEXT, passed BOOLEAN, detail TEXT);
@@ -159,7 +160,7 @@ BEGIN
   BEGIN
     PERFORM set_config('request.jwt.claims', format('{"sub":"%s","role":"authenticated"}', v_cust), true);
     SET LOCAL ROLE authenticated;
-    PERFORM public.settle_booking_payment(v_b, 'xendit', 'FAKE-1', 'qris', '{}'::jsonb);
+    PERFORM public.settle_booking_payment(v_b, 'manual_qris', 'FAKE-1', 'qris', '{}'::jsonb);
     RESET ROLE;
     v_msg := 'Customer berhasil melunasi booking sendiri!';
   EXCEPTION WHEN OTHERS THEN
@@ -173,7 +174,7 @@ BEGIN
   BEGIN
     PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
     SET LOCAL ROLE service_role;
-    PERFORM public.settle_booking_payment(v_b, 'xendit', 'INV-C6', 'qris', '{"test":true}'::jsonb);
+    PERFORM public.settle_booking_payment(v_b, 'manual_qris', 'INV-C6', 'qris', '{"test":true}'::jsonb);
     RESET ROLE;
     v_ok := EXISTS (SELECT 1 FROM public.bookings WHERE id = v_b AND status = 'paid_held_in_escrow')
         AND EXISTS (SELECT 1 FROM public.payments WHERE booking_id = v_b AND payment_status = 'settled_held' AND amount = 400000)
@@ -191,7 +192,7 @@ BEGIN
   BEGIN
     PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
     SET LOCAL ROLE service_role;
-    v_ok := public.settle_booking_payment(v_b, 'xendit', 'INV-C6', 'qris', '{"retry":true}'::jsonb);
+    v_ok := public.settle_booking_payment(v_b, 'manual_qris', 'INV-C6', 'qris', '{"retry":true}'::jsonb);
     RESET ROLE;
     v_ok := v_ok AND (SELECT COUNT(*) FROM public.payments WHERE booking_id = v_b) = 1
                  AND (SELECT COUNT(*) FROM public.commission_records WHERE booking_id = v_b) = 1;
@@ -327,7 +328,19 @@ BEGIN
   -- ----------------------------- C15 -----------------------------------------
   v_ok := EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'promotions' AND file_size_limit IS NOT NULL AND allowed_mime_types IS NOT NULL);
   INSERT INTO _c_results VALUES (15, 'Bucket promotions punya batas', v_ok, 'storage.buckets');
-END $$;
+
+  -- ----------------------------- C16 -----------------------------------------
+  v_ok := position('xendit' in lower(pg_get_functiondef(
+      'public.settle_booking_payment(uuid,public.payment_provider_type,text,text,jsonb)'::regprocedure
+    ))) = 0
+    AND EXISTS (
+      SELECT 1 FROM pg_constraint c
+      WHERE c.conrelid = 'public.bookings'::regclass
+        AND c.conname = 'bookings_payment_route_check'
+        AND position('xendit' in lower(pg_get_constraintdef(c.oid))) = 0
+    );
+  INSERT INTO _c_results VALUES (16, 'Provider pensiun ditolak untuk settlement dan route baru', v_ok, 'retirement migration');
+END $;
 
 -- Ringkasan
 SELECT n, name, CASE WHEN passed THEN 'PASS' ELSE 'FAIL' END AS hasil, detail FROM _c_results ORDER BY n;
