@@ -111,6 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const applySession = useCallback(async (nextUser: User | null, forceRoleReload = false) => {
     const requestId = ++requestIdRef.current;
+    const authEventVersion = authEventVersionRef.current;
 
     if (!nextUser) {
       currentUserIdRef.current = null;
@@ -135,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!sameUser) setIsAuthLoading(true);
 
     const nextAccess = await fetchUserAccess(nextUser.id);
-    if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+    if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return; // hasil usang: permintaan atau event auth baru
 
     if (!nextAccess.verified) {
       setUser(nextUser);
@@ -148,11 +149,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const nextRole = nextAccess.role;
     const nextAdminAccess = nextRole === 'admin' ? await fetchAdminAccess() : null;
-    if (requestId !== requestIdRef.current) return; // sudah ada permintaan yang lebih baru
+    if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return; // hasil usang: permintaan atau event auth baru
 
     if (nextAccess.accountStatus !== 'active' && nextAccess.accountStatus !== 'pending_verification') {
       // Tolak sesi jika akun dibatasi, record tidak ada, atau status gagal diverifikasi.
       await supabase.auth.signOut({ scope: 'global' });
+      if (requestId !== requestIdRef.current || authEventVersion !== authEventVersionRef.current) return;
       currentUserIdRef.current = null;
       setUser(null);
       setRole(null);
