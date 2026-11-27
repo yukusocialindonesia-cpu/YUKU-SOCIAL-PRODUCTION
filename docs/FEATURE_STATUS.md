@@ -14,7 +14,7 @@
 | Affiliate | Panel Admin tersedia; Production terakhir diverifikasi 20 Nov 2026: `commission_percent=10.00`, `is_enabled=true` | Jangan mengubah komisi/ledger secara langsung; formula dan dampak harus ditelusuri |
 | Admin | Panel Admin utama dan panel khusus tersedia; akses berbasis izin | Role UI tidak menggantikan RLS dan validasi server |
 | Notifikasi | Kode notifikasi dan Web Push ada | Status konfigurasi provider, permission browser, dan pengiriman aktual harus diuji |
-| Payment provider | Kode memiliki komponen pembayaran Xendit dan QRIS | Keberadaan komponen bukan bukti kredensial, webhook, dan provider live sudah aktif. Jangan mengubah Xendit tanpa persetujuan |
+| Payment provider | Checkout manual QRIS dan transfer bank | Xendit dipensiunkan dari checkout baru; data dan enum historis dipertahankan untuk kompatibilitas. Verifikasi metode aktif dan persetujuan Finance tetap wajib |
 | Deployment | Repository digunakan untuk Production Cloudflare Workers | Status deployment terbaru harus diperiksa dari event/log Cloudflare; status GitHub build saja tidak cukup |
 
 ## Perbaikan akses publik yang diverifikasi 21 November 2026
