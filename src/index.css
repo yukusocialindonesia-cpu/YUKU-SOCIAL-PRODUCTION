@@ -75,11 +75,11 @@ body {
 }
 
 :root {
-  --yuku-primary: #173B70;
+  --yuku-primary: #2563EB;
   --yuku-white: #FFFFFF;
   --yuku-surface: #F5F8FC;
-  --yuku-primary-soft: rgba(23, 59, 112, .08);
-  --yuku-primary-border: rgba(23, 59, 112, .16);
+  --yuku-primary-soft: rgba(37, 99, 235, .08);
+  --yuku-primary-border: rgba(37, 99, 235, .16);
 }
 
 .yuku-home-feed {
@@ -106,6 +106,6 @@ body {
   }
 
   .yuku-home-featured article {
-    box-shadow: 0 4px 14px rgba(23, 59, 112, .06);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, .06);
   }
 }
