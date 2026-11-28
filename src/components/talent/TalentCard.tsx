@@ -76,12 +76,12 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         aria-label={`Lihat profil ${talent.name}`}
         className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.12)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
       >
-        <div className="relative aspect-[0.92/1] w-full overflow-hidden bg-purple-100">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F0EAF5]">
           {hasRealPhoto ? (
             <img
               src={talent.avatarUrl}
               alt={`Foto profil ${talent.name}`}
-              className="h-full w-full object-cover object-[50%_25%] transition-transform duration-300 group-hover:scale-[1.03]"
+              className="h-full w-full object-cover object-[50%_25%] transition-transform duration-500 group-hover:scale-[1.04]"
               loading="lazy"
               decoding="async"
               referrerPolicy="no-referrer"
@@ -92,37 +92,44 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
             </div>
           )}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#160922]/90 via-[#160922]/10 to-black/5" />
           {isNew && (
-            <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-extrabold text-amber-950 shadow">
+            <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[9px] font-extrabold tracking-wide text-[#32134F] shadow-sm">
               BARU
             </span>
           )}
-          <div className="absolute inset-x-2 bottom-2 text-white">
-            <div className="flex items-center justify-between gap-1">
-            <div className="flex min-w-0 items-center gap-1">
-              <h3 className="min-w-0 flex-1 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">
-                {talent.name}
+          {availableToday && (
+            <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-white/35 bg-[#32134F]/80 px-2 py-1 text-[9px] font-bold text-white shadow-sm backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              SIAP
+            </span>
+          )}
+          <div className="absolute inset-x-2 bottom-2.5 text-white">
+            <div className="flex items-center gap-1 min-w-0">
+              <h3 className="min-w-0 truncate text-[12px] min-[390px]:text-[13px] font-extrabold leading-tight drop-shadow">
+                {talent.name}{talent.age ? `, ${talent.age}` : ''}
               </h3>
               {talent.isVerified === true && <VerifiedBadge />}
-              {talent.age && <span className="shrink-0 text-[11px] font-semibold text-white/90">, {talent.age}</span>}
             </div>
+            {talent.headline && (
+              <p className="mt-1 line-clamp-1 text-[10px] font-medium leading-tight text-white/90 drop-shadow">
+                {talent.headline}
+              </p>
+            )}
+            <div className="mt-1.5 flex items-center justify-between gap-1">
+              {talent.city && (
+                <p className="flex min-w-0 items-center gap-1 truncate text-[10px] font-medium text-white/85">
+                  <MapPin className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{talent.city}</span>
+                </p>
+              )}
               {(talent.reviewCount ?? 0) > 0 && talent.rating !== undefined && (
-                <span className="inline-flex shrink-0 items-center gap-0.5 text-[11px] font-bold drop-shadow">
+                <span className="inline-flex shrink-0 items-center gap-0.5 text-[10px] font-bold drop-shadow">
                   <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
                   {talent.rating.toFixed(1)}
                 </span>
               )}
             </div>
-            {talent.city && (
-              <p className="mt-1 flex items-center gap-1 truncate text-[11px] font-medium text-white/90">
-                <MapPin className="h-3 w-3 shrink-0" />
-                <span className="min-w-0 truncate">{talent.city}</span>
-              </p>
-            )}
-            {talent.distanceKm != null && (
-              <p className="mt-0.5 truncate text-[10px] min-[390px]:text-[11px] font-semibold text-emerald-200">± {talent.distanceKm.toFixed(1)} km dari lokasi Anda</p>
-            )}
           </div>
         </div>
       </article>
