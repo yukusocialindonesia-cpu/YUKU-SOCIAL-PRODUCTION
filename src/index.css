@@ -14,6 +14,31 @@
   --color-purple-900: #3D1174;
   --color-purple-950: #260D3D;
 
+  /* Legacy blue/indigo utilities now resolve to the approved purple brand palette */
+  --color-blue-50: #F6F1FF;
+  --color-blue-100: #EEE5FF;
+  --color-blue-200: #DDCCFF;
+  --color-blue-300: #C5A8FF;
+  --color-blue-400: #A77BFF;
+  --color-blue-500: #8B5CF6;
+  --color-blue-600: #7C3AED;
+  --color-blue-700: #6C1DC9;
+  --color-blue-800: #53169D;
+  --color-blue-900: #3D1174;
+  --color-blue-950: #260D3D;
+
+  --color-indigo-50: #F6F1FF;
+  --color-indigo-100: #EEE5FF;
+  --color-indigo-200: #DDCCFF;
+  --color-indigo-300: #C5A8FF;
+  --color-indigo-400: #A77BFF;
+  --color-indigo-500: #8B5CF6;
+  --color-indigo-600: #7C3AED;
+  --color-indigo-700: #6C1DC9;
+  --color-indigo-800: #53169D;
+  --color-indigo-900: #3D1174;
+  --color-indigo-950: #260D3D;
+
   --color-violet-50: #F6F1FF;
   --color-violet-100: #EEE5FF;
   --color-violet-200: #DDCCFF;
