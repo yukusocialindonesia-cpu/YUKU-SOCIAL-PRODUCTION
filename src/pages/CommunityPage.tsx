@@ -198,8 +198,8 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.20),_transparent_42%),linear-gradient(180deg,#FCFAFF_0%,#F8F5FC_48%,#FFFFFF_100%)] pb-8">
-      <section className="relative isolate overflow-hidden border-b border-white/80 bg-gradient-to-br from-white/95 via-[#F7F0FF] to-[#FFF3F7] text-slate-900 shadow-[0_16px_45px_rgba(76,29,149,0.07)]">
+    <div className="min-h-screen bg-[#F8F7FA] pb-8">
+      <section className="hidden">
         <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
         <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-7 sm:px-6 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
@@ -240,7 +240,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 md:py-9 lg:px-8">
+      <div className="mx-auto max-w-5xl px-3 py-3 sm:px-6 md:py-6 lg:px-8">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
             <section className="relative overflow-hidden rounded-[1.6rem] border border-white/90 bg-white/85 p-4 shadow-[0_16px_42px_rgba(76,29,149,0.10)] ring-1 ring-purple-100/80 backdrop-blur-xl sm:rounded-[2rem] sm:p-5">
