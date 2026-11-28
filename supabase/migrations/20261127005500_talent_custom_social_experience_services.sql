@@ -10,6 +10,12 @@ ALTER TABLE public.talent_service_change_log
   ADD CONSTRAINT talent_service_change_log_change_type_check
   CHECK (change_type IN ('submitted','activated','deactivated','price_changed','approved','rejected','disabled_by_admin'));
 
+-- This migration may replay after the earlier custom-service migration.
+-- Drop these named checks first so the replay remains idempotent.
+ALTER TABLE public.talent_services
+  DROP CONSTRAINT IF EXISTS talent_services_custom_title_length,
+  DROP CONSTRAINT IF EXISTS talent_services_custom_description_length;
+
 ALTER TABLE public.talent_services
   ADD CONSTRAINT talent_services_custom_title_length
     CHECK (custom_title IS NULL OR char_length(trim(custom_title)) BETWEEN 3 AND 80),
