@@ -268,3 +268,51 @@ body {
     backdrop-filter: blur(12px);
   }
 }
+
+
+/* YUKU brand lock: exactly two core colors across the product. */
+:root {
+  --yuku-primary: #32134F;
+  --yuku-white: #FFFFFF;
+  --yuku-primary-soft: rgba(50, 19, 79, .10);
+  --yuku-primary-border: rgba(50, 19, 79, .18);
+}
+.bg-yuku-gradient,
+.bg-yuku-accent {
+  background: var(--yuku-primary) !important;
+}
+.text-yuku-gradient {
+  background: none !important;
+  color: var(--yuku-white) !important;
+  -webkit-text-fill-color: var(--yuku-white) !important;
+}
+.yuku-home-feed {
+  color: var(--yuku-white);
+  background: var(--yuku-primary) !important;
+}
+.yuku-home-feed .yuku-home-categories button {
+  color: var(--yuku-white) !important;
+  background: var(--yuku-primary) !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.yuku-home-feed .yuku-home-categories button span:first-child {
+  color: var(--yuku-primary) !important;
+  background: var(--yuku-white) !important;
+}
+.yuku-home-feed .yuku-home-featured article {
+  border: 1px solid rgba(255,255,255,.24) !important;
+  box-shadow: none !important;
+}
+.yuku-home-feed .yuku-home-featured article,
+.yuku-home-feed .yuku-home-featured article * {
+  --tw-ring-color: rgba(255,255,255,.22);
+}
+.yuku-home-feed .yuku-home-featured article button {
+  background: var(--yuku-primary) !important;
+  color: var(--yuku-white) !important;
+}
+.yuku-home-feed .yuku-home-hero img {
+  border-color: rgba(255,255,255,.28) !important;
+}
