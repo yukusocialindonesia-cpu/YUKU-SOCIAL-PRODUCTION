@@ -18,11 +18,9 @@ alter policy talent_media_owner_or_admin_delete on public.talent_media
 using ((auth.uid() = talent_id) or public.has_admin_permission('talent'));
 alter policy talent_media_select_public_or_owner on public.talent_media
 using (public.is_talent_publicly_visible(talent_id) or auth.uid()=talent_id or public.has_admin_permission('talent'));
-alter policy talent_availability_owner_delete on public.talent_availability
-using ((auth.uid()=talent_id) or public.has_admin_permission('talent'));
-alter policy talent_availability_owner_insert on public.talent_availability
-with check ((auth.uid()=talent_id) or public.has_admin_permission('talent'));
-alter policy talent_availability_owner_update on public.talent_availability
+-- The baseline migration defines one FOR ALL owner policy (owner_all),
+-- not separate INSERT/UPDATE/DELETE policies. Scope that existing policy.
+alter policy talent_availability_owner_all on public.talent_availability
 using ((auth.uid()=talent_id) or public.has_admin_permission('talent'))
 with check ((auth.uid()=talent_id) or public.has_admin_permission('talent'));
 alter policy talent_availability_select_visible on public.talent_availability
@@ -71,15 +69,15 @@ using (public.has_admin_permission('finance')) with check (public.has_admin_perm
 -- SUPPORT
 alter policy reports_select_reporter_or_admin on public.reports_complaints
 using (auth.uid()=reporter_id or public.has_admin_permission('support'));
-alter policy reports_update_admin on public.reports_complaints
-using (public.has_admin_permission('support')) with check (public.has_admin_permission('support'));
+-- Direct UPDATE on reports_complaints is intentionally revoked by
+-- 20261127192232_revoke_direct_report_moderation_updates.sql.
+-- Moderation must go through the audited admin_resolve_report() RPC.
 
 -- SUPER ADMIN only
 alter policy admin_audit_logs_select_admin on public.admin_audit_logs using (public.is_super_admin());
-alter policy activity_categories_admin_delete on public.activity_categories using (public.is_super_admin());
-alter policy activity_categories_admin_insert on public.activity_categories with check (public.is_super_admin());
-alter policy activity_categories_admin_update on public.activity_categories using (public.is_super_admin()) with check (public.is_super_admin());
-alter policy activity_categories_select_public on public.activity_categories using (is_active or public.is_super_admin());
+-- activity_categories has only separate anon/authenticated SELECT policies in
+-- 20261121110017_fix_activity_categories_anon_read.sql. It has no admin
+-- INSERT/UPDATE/DELETE policies to alter here; do not invent or broaden them.
 alter policy hero_slides_admin_delete on public.hero_slides using (public.is_super_admin());
 alter policy hero_slides_admin_insert on public.hero_slides with check (public.is_super_admin());
 alter policy hero_slides_admin_update on public.hero_slides using (public.is_super_admin()) with check (public.is_super_admin());

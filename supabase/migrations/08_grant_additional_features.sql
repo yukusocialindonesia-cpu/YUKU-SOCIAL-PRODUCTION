@@ -19,7 +19,7 @@ GRANT SELECT, INSERT ON public.reports_complaints TO authenticated;
 -- 3. NOTIFIKASI PENGGUNA (public.notifications)
 -- RLS Policy: notifications_select_user, notifications_update_user
 GRANT SELECT ON public.notifications TO authenticated;
-GRANT UPDATE (is_read, updated_at) ON public.notifications TO authenticated;
+GRANT UPDATE (is_read) ON public.notifications TO authenticated;
 
 -- 4. KETERSEDIAAN / JADWAL TALENT (public.talent_availability)
 -- RLS Policy: availability_select_public_or_authenticated, availability_manage_talent
@@ -45,9 +45,10 @@ GRANT SELECT ON public.refunds TO authenticated;
 GRANT INSERT (payment_id, customer_id, reason, refund_amount) ON public.refunds TO authenticated;
 
 -- 9. PROGRAM REFERRAL (public.referral_relationships & public.referral_rewards)
--- RLS Policy: referral_relationships_select_parties, referral_relationships_insert_talent
+-- Gunakan nama kolom sesuai skema migration 04.
+-- Migration 14 akan memperketat grant ini dan menyediakan RPC apply_talent_referral_code.
 GRANT SELECT ON public.referral_relationships TO authenticated;
-GRANT INSERT (referring_talent_id, referred_talent_id) ON public.referral_relationships TO authenticated;
+GRANT INSERT (referrer_id, referee_talent_id, referral_code_used) ON public.referral_relationships TO authenticated;
 GRANT SELECT ON public.referral_rewards TO authenticated;
 
 -- 10. KOLOM VERIFIKASI IDENTITAS LEGAL (public.user_identities)
