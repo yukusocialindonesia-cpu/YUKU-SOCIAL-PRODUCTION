@@ -14,8 +14,19 @@ CREATE INDEX IF NOT EXISTS idx_bank_transfer_submissions_admin_user_id
   ON public.bank_transfer_submissions (admin_user_id);
 CREATE INDEX IF NOT EXISTS idx_bank_transfer_submissions_customer_id
   ON public.bank_transfer_submissions (customer_id);
-CREATE INDEX IF NOT EXISTS idx_orders_user_id
-  ON public.orders (user_id);
+
+-- Production has the legacy orders table, while the clean replay baseline
+-- intentionally does not recreate that retired checkout schema. Keep this
+-- historical index migration replay-safe without creating a phantom table.
+DO $$
+BEGIN
+  IF to_regclass('public.orders') IS NOT NULL THEN
+    CREATE INDEX IF NOT EXISTS idx_orders_user_id
+      ON public.orders (user_id);
+  END IF;
+END
+$$;
+
 CREATE INDEX IF NOT EXISTS idx_professional_service_application_status_history_actor_id
   ON public.professional_service_application_status_history (actor_id);
 CREATE INDEX IF NOT EXISTS idx_professional_service_applications_reviewed_by
