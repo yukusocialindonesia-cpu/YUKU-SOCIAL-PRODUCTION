@@ -185,6 +185,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
     }
 
     setIsSaving(true);
+    let newlyUploadedAvatarPath: string | null = null;
     try {
       let avatarUrl = profile.avatar_url;
       if (avatarFile) {
@@ -194,6 +195,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
           .from('avatars')
           .upload(filePath, avatarFile, { contentType: avatarFile.type, upsert: false });
         if (uploadError) throw uploadError;
+        newlyUploadedAvatarPath = filePath;
 
         const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
         avatarUrl = publicUrlData.publicUrl;
@@ -219,8 +221,30 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
       setProfile(data as CustomerProfile);
       setDisplayName(data.display_name || '');
       setAvatarFile(null);
+
+      // Remove the previous customer-owned avatar only after the new profile URL is saved.
+      if (newlyUploadedAvatarPath && profile.avatar_url) {
+        try {
+          const oldUrl = new URL(profile.avatar_url);
+          const marker = '/storage/v1/object/public/avatars/';
+          const markerIndex = oldUrl.pathname.indexOf(marker);
+          const oldPath = markerIndex >= 0
+            ? decodeURIComponent(oldUrl.pathname.slice(markerIndex + marker.length))
+            : '';
+          if (oldPath.startsWith(`${user.id}/customer-avatar-`) && oldPath !== newlyUploadedAvatarPath) {
+            const { error: removeOldError } = await supabase.storage.from('avatars').remove([oldPath]);
+            if (removeOldError) console.warn('YUKU: avatar lama belum berhasil dibersihkan', removeOldError);
+          }
+        } catch (cleanupError) {
+          console.warn('YUKU: gagal memproses pembersihan avatar lama', cleanupError);
+        }
+      }
       setSuccessMessage('Profil berhasil diperbarui.');
     } catch (error: any) {
+      if (newlyUploadedAvatarPath) {
+        const { error: cleanupError } = await supabase.storage.from('avatars').remove([newlyUploadedAvatarPath]);
+        if (cleanupError) console.warn('YUKU: avatar baru gagal dibersihkan setelah penyimpanan profil gagal', cleanupError);
+      }
       console.error('YUKU: gagal menyimpan profil customer', error);
       setErrorMessage(error?.message || 'Profil gagal disimpan. Silakan coba lagi.');
     } finally {
