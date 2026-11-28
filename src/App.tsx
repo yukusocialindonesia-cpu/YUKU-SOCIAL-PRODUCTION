@@ -28,6 +28,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage').then((module) => ({ def
 const RegisterPage = lazy(() => import('./pages/RegisterPage').then((module) => ({ default: module.RegisterPage })));
 const TermsPage = lazy(() => import('./pages/TermsPage').then((module) => ({ default: module.TermsPage })));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((module) => ({ default: module.PrivacyPolicyPage })));
+const AccountDeletionPage = lazy(() => import('./pages/AccountDeletionPage').then((module) => ({ default: module.AccountDeletionPage })));
 const BookingHistoryPage = lazy(() => import('./pages/BookingHistoryPage').then((module) => ({ default: module.BookingHistoryPage })));
 const CustomerProfilePage = lazy(() => import('./pages/CustomerProfilePage').then((module) => ({ default: module.CustomerProfilePage })));
 const TalentDashboardPage = lazy(() => import('./pages/TalentDashboardPage').then((module) => ({ default: module.TalentDashboardPage })));
@@ -59,6 +60,7 @@ export default function App() {
     if (pathname === '/dashboard-talent') return '/dashboard-talent';
     if (pathname === '/riwayat-booking') return '/riwayat-booking';
     if (pathname === '/profil-saya') return '/profil-saya';
+    if (pathname === '/hapus-akun') return '/hapus-akun';
     if (pathname === '/admin/jasa-profesional') return '/admin/jasa-profesional';
     if (pathname === '/admin') return '/admin';
     if (pathname === '/tentang') return '/tentang';
@@ -130,6 +132,8 @@ export default function App() {
       setCurrentPath('/riwayat-booking');
     } else if (pathname === '/profil-saya') {
       setCurrentPath('/profil-saya');
+    } else if (pathname === '/hapus-akun') {
+      setCurrentPath('/hapus-akun');
     } else if (pathname === '/admin/jasa-profesional') {
       setCurrentPath('/admin/jasa-profesional');
     } else if (pathname === '/admin') {
@@ -274,6 +278,8 @@ export default function App() {
         return <BookingHistoryPage onNavigate={handleNavigate} />;
       case '/profil-saya':
         return <CustomerProfilePage onNavigate={handleNavigate} />;
+      case '/hapus-akun':
+        return <AccountDeletionPage />;
       case '/admin/jasa-profesional':
         return <AdminProfessionalServicesPage onNavigate={handleNavigate} />;
       case '/admin':
