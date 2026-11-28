@@ -60,10 +60,10 @@ interface PublicReviewItem {
 
 const AVATAR_GRADIENTS = [
   'from-purple-500 to-fuchsia-500',
-  'from-indigo-500 to-purple-500',
+  'from-purple-600 to-violet-500',
   'from-rose-500 to-orange-400',
   'from-emerald-500 to-teal-500',
-  'from-sky-500 to-indigo-500',
+  'from-violet-500 to-purple-700',
 ];
 function formatClock(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return '0:00';
