@@ -153,10 +153,17 @@ export const HeroSlidesAdminPanel: React.FC = () => {
 
   const handleDelete = (s: HeroSlideRow) =>
     run(async () => {
-      const { error: err } = await supabase.from('hero_slides').delete().eq('id', s.id);
-      if (err) throw new Error(err.message);
       const paths = [s.storage_path, s.mobile_storage_path].filter(Boolean) as string[];
-      if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
+      // Keep the database row until Storage confirms removal; otherwise the slide remains recoverable.
+      if (paths.length) {
+        const { error: storageError } = await supabase.storage.from(BUCKET).remove(paths);
+        if (storageError) throw new Error(`Gagal menghapus file slide: ${storageError.message}`);
+      }
+      const { error: err } = await supabase.from('hero_slides').delete().eq('id', s.id);
+      if (err) {
+        // Best-effort restoration is not safe here because Storage deletion has already succeeded.
+        throw new Error(`File slide sudah dihapus, tetapi record database gagal dihapus: ${err.message}. Muat ulang dan periksa slide ini.`);
+      }
       setConfirmDeleteId(null);
     }, 'Slide dihapus.');
 
