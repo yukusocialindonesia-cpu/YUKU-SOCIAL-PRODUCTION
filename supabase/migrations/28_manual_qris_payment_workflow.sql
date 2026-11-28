@@ -81,6 +81,14 @@ VALUES ('qris-payment-proofs', 'qris-payment-proofs', FALSE, 5242880,
 ON CONFLICT (id) DO UPDATE SET public = FALSE, file_size_limit = 5242880,
   allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'storage' AND tablename = 'objects'
+      AND policyname = 'qris_proof_upload_own_booking'
+  ) THEN
+    EXECUTE $policy$
 CREATE POLICY qris_proof_upload_own_booking ON storage.objects
   FOR INSERT TO authenticated WITH CHECK (
     bucket_id = 'qris-payment-proofs'
@@ -91,6 +99,18 @@ CREATE POLICY qris_proof_upload_own_booking ON storage.objects
         AND b.status = 'pending_payment'::public.booking_status_type
     )
   );
+$policy$;
+  END IF;
+END
+$$;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'storage' AND tablename = 'objects'
+      AND policyname = 'qris_proof_read_owner_or_admin'
+  ) THEN
+    EXECUTE $policy$
 CREATE POLICY qris_proof_read_owner_or_admin ON storage.objects
   FOR SELECT TO authenticated USING (
     bucket_id = 'qris-payment-proofs'
@@ -102,6 +122,10 @@ CREATE POLICY qris_proof_read_owner_or_admin ON storage.objects
       )
     )
   );
+$policy$;
+  END IF;
+END
+$$;
 
 -- Customer submits proof; this never marks the payment settled.
 CREATE OR REPLACE FUNCTION public.submit_qris_payment_proof(
@@ -236,10 +260,46 @@ VALUES ('qris-payment-display', 'qris-payment-display', TRUE, 5242880,
         ARRAY['image/jpeg', 'image/png', 'image/webp'])
 ON CONFLICT (id) DO UPDATE SET public = TRUE, file_size_limit = 5242880,
   allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp'];
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'storage' AND tablename = 'objects'
+      AND policyname = 'qris_display_public_read'
+  ) THEN
+    EXECUTE $policy$
 CREATE POLICY qris_display_public_read ON storage.objects
   FOR SELECT TO public USING (bucket_id = 'qris-payment-display');
+$policy$;
+  END IF;
+END
+$$;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'storage' AND tablename = 'objects'
+      AND policyname = 'qris_display_admin_upload'
+  ) THEN
+    EXECUTE $policy$
 CREATE POLICY qris_display_admin_upload ON storage.objects
   FOR INSERT TO authenticated WITH CHECK (bucket_id = 'qris-payment-display' AND public.is_admin());
+$policy$;
+  END IF;
+END
+$$;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'storage' AND tablename = 'objects'
+      AND policyname = 'qris_display_admin_update'
+  ) THEN
+    EXECUTE $policy$
 CREATE POLICY qris_display_admin_update ON storage.objects
   FOR UPDATE TO authenticated USING (bucket_id = 'qris-payment-display' AND public.is_admin())
   WITH CHECK (bucket_id = 'qris-payment-display' AND public.is_admin());
+$policy$;
+  END IF;
+END
+$$;
