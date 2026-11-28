@@ -81,42 +81,50 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F8F7FA] text-[#32134F]">
-      <section className="px-4 pt-4 pb-2 md:hidden">
+      <section className="px-4 pt-4 pb-3 md:hidden">
         <div className="mb-4">
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#32134F]">YUKU</p>
-          <h1 className="mt-1.5 text-[22px] font-extrabold leading-[1.15] tracking-tight text-[#32134F]">Mau cari apa hari ini?</h1>
-          <p className="mt-1.5 text-[12px] leading-relaxed text-slate-600">Temukan teman nyata atau layanan profesional dalam satu aplikasi.</p>
+          <div className="flex items-center justify-between">
+            <p className="text-[12px] font-black tracking-[0.2em] text-[#32134F]">YUKU</p>
+            <span className="rounded-full border border-[#32134F]/15 bg-white px-2.5 py-1 text-[9px] font-bold tracking-wide text-[#32134F]">SOCIAL PLATFORM</span>
+          </div>
+          <p className="mt-3 text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#32134F]/65">TEMUKAN KONEKSI BARU</p>
+          <h1 className="mt-1 text-[23px] font-extrabold leading-[1.12] tracking-tight text-[#32134F]">Temukan orang.<br />Mulai pengalaman baru.</h1>
+          <p className="mt-2 max-w-[310px] text-[11px] leading-relaxed text-slate-600">Satu tempat untuk menemukan teman aktivitas dan tenaga profesional.</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
             onClick={() => onNavigate('/talent')}
-            className="group flex min-h-[142px] flex-col items-start justify-between rounded-[20px] border border-[#32134F] bg-[#32134F] p-3.5 text-left text-white shadow-[0_8px_20px_rgba(50,19,79,0.13)] transition active:scale-[0.98]"
+            className="group relative flex min-h-[158px] flex-col items-start justify-between overflow-hidden rounded-[20px] border border-[#32134F] bg-[#32134F] p-3.5 text-left text-white shadow-[0_9px_22px_rgba(50,19,79,0.16)] transition active:scale-[0.98]"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15">
+            <span aria-hidden="true" className="pointer-events-none absolute -right-7 -top-7 h-24 w-24 rounded-full border-[14px] border-white/10" />
+            <span aria-hidden="true" className="pointer-events-none absolute bottom-7 right-2 text-[48px] font-black leading-none text-white/[0.07]">01</span>
+            <span className="relative flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15 ring-1 ring-white/15">
               <Users className="h-5 w-5" />
             </span>
-            <span className="mt-3 block">
+            <span className="relative mt-3 block">
               <span className="block text-[14px] font-extrabold leading-tight">Teman Aktivitas</span>
-              <span className="mt-1 block text-[10px] leading-relaxed text-white/80">Ngobrol, hangout, jalan-jalan, dan kegiatan bersama.</span>
+              <span className="mt-1 block text-[10px] leading-relaxed text-white/80">Teman ngobrol, hangout, jalan-jalan, dan lainnya.</span>
             </span>
-            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold">Cari teman <ArrowRight className="h-3.5 w-3.5" /></span>
+            <span className="relative mt-3 inline-flex items-center gap-1 text-[10px] font-extrabold">Jelajahi teman <ArrowRight className="h-3.5 w-3.5" /></span>
           </button>
 
           <button
             type="button"
             onClick={() => onNavigate('/jasa-profesional')}
-            className="group flex min-h-[142px] flex-col items-start justify-between rounded-[20px] border border-[#32134F]/15 bg-white p-3.5 text-left text-[#32134F] shadow-[0_8px_20px_rgba(50,19,79,0.06)] transition active:scale-[0.98]"
+            className="group relative flex min-h-[158px] flex-col items-start justify-between overflow-hidden rounded-[20px] border border-[#32134F]/20 bg-white p-3.5 text-left text-[#32134F] shadow-[0_7px_18px_rgba(50,19,79,0.07)] transition active:scale-[0.98]"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#32134F] text-white">
+            <span aria-hidden="true" className="pointer-events-none absolute -right-7 -top-7 h-24 w-24 rounded-full border-[14px] border-[#32134F]/[0.06]" />
+            <span aria-hidden="true" className="pointer-events-none absolute bottom-7 right-2 text-[48px] font-black leading-none text-[#32134F]/[0.055]">02</span>
+            <span className="relative flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#32134F] text-white">
               <BriefcaseBusiness className="h-5 w-5" />
             </span>
-            <span className="mt-3 block">
+            <span className="relative mt-3 block">
               <span className="block text-[14px] font-extrabold leading-tight">Jasa Profesional</span>
-              <span className="mt-1 block text-[10px] leading-relaxed text-slate-600">Fotografer, MUA, trainer, konsultan, dan ahli.</span>
+              <span className="mt-1 block text-[10px] leading-relaxed text-slate-600">Temukan fotografer, MUA, trainer, dan ahli.</span>
             </span>
-            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold">Cari layanan <ArrowRight className="h-3.5 w-3.5" /></span>
+            <span className="relative mt-3 inline-flex items-center gap-1 text-[10px] font-extrabold">Jelajahi layanan <ArrowRight className="h-3.5 w-3.5" /></span>
           </button>
         </div>
       </section>
