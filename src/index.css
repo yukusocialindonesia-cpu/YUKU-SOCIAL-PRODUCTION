@@ -5,13 +5,12 @@
     scroll-behavior: smooth;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
-  
+
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
-/* Custom brand gradients and utilities */
 .bg-yuku-gradient {
   background: linear-gradient(135deg, #1e0938 0%, #300f5c 50%, #4a154b 100%);
 }
@@ -26,7 +25,6 @@
   background: linear-gradient(135deg, #9333ea 0%, #db2777 50%, #f97316 100%);
 }
 
-/* Subtle YUKU brand watermark, kept behind all page content. */
 html,
 body,
 #root {
@@ -44,11 +42,6 @@ body {
   isolation: isolate;
 }
 
-/*
- * Keep the watermark in the document layer instead of a viewport-fixed layer.
- * This avoids mobile fixed-background compositing issues while allowing the
- * watermark to span the full app height.
- */
 #root::before {
   content: "";
   position: absolute;
@@ -62,7 +55,6 @@ body {
   opacity: 0.025;
 }
 
-/* Keep the app UI above the decorative watermark without blocking interaction. */
 :where(#root) > * {
   position: relative;
   z-index: 1;
@@ -72,7 +64,7 @@ body {
   #root::before {
     background-position: right 8px center;
     background-size: 230px;
-    opacity: 0.035;
+    opacity: 0.025;
   }
 }
 
@@ -82,127 +74,38 @@ body {
   }
 }
 
-
-/* One-time, gentle entrance for the homepage hero slogan. */
-@keyframes hero-slogan-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.hero-slogan-enter {
-  display: inline-block;
-  animation: hero-slogan-fade-up 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.hero-slogan-enter-delay {
-  animation-delay: 180ms;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-slogan-enter {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-
-/* YUKU: satu sistem visual, dua warna inti. */
 :root {
   --yuku-primary: #32134F;
   --yuku-white: #FFFFFF;
+  --yuku-surface: #F8F7FA;
   --yuku-primary-soft: rgba(50, 19, 79, .08);
-  --yuku-primary-border: rgba(50, 19, 79, .18);
-}
-
-.yuku-home-feed .bg-yuku-gradient,
-.yuku-home-feed .bg-yuku-accent {
-  background: var(--yuku-primary) !important;
-}
-
-.yuku-home-feed .text-yuku-gradient {
-  background: none !important;
-  color: var(--yuku-white) !important;
-  -webkit-text-fill-color: var(--yuku-white) !important;
+  --yuku-primary-border: rgba(50, 19, 79, .16);
 }
 
 .yuku-home-feed {
-  color: var(--yuku-white);
-  background: var(--yuku-primary) !important;
-}
-
-.yuku-home-feed > .yuku-home-section,
-.yuku-home-feed > .yuku-home-hero,
-.yuku-home-feed .yuku-home-categories,
-.yuku-home-feed .yuku-home-featured {
-  min-width: 0;
-  background: transparent !important;
-}
-
-.yuku-home-feed h2,
-.yuku-home-feed h3 {
-  color: var(--yuku-white);
-}
-
-.yuku-home-feed .yuku-home-categories > section,
-.yuku-home-feed .yuku-home-featured > section {
-  background: transparent !important;
-}
-
-.yuku-home-feed .yuku-home-categories button {
-  color: var(--yuku-primary) !important;
-  background: var(--yuku-white) !important;
-  border: 1px solid rgba(255,255,255,.9) !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-.yuku-home-feed .yuku-home-categories button span:first-child {
-  color: var(--yuku-white) !important;
-  background: var(--yuku-primary) !important;
-}
-
-.yuku-home-feed .yuku-home-categories button span:last-child {
-  color: var(--yuku-primary) !important;
-}
-
-.yuku-home-feed .yuku-home-featured article {
-  border: 1px solid rgba(50,19,79,.14);
-}
-
-.yuku-home-feed .yuku-home-hero > section {
-  background: transparent !important;
-}
-
-.yuku-home-feed .yuku-home-hero img {
-  border-color: rgba(255,255,255,.35);
+  color: var(--yuku-primary);
+  background: var(--yuku-surface);
 }
 
 .yuku-home-feed button:focus-visible,
 .yuku-home-feed a:focus-visible {
+  outline: 2px solid var(--yuku-primary);
   outline-offset: 3px;
 }
 
 @media (max-width: 640px) {
   .yuku-home-feed {
     min-height: 100dvh;
-    padding-bottom: 8px;
+    padding-bottom: 88px;
   }
-  .yuku-home-hero > section {
-    padding-bottom: 4px;
-  }
+
   .yuku-home-categories > section,
   .yuku-home-featured > section {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
   }
-  .yuku-home-feed .yuku-home-featured article {
-    box-shadow: none;
+
+  .yuku-home-featured article {
+    box-shadow: 0 4px 14px rgba(50, 19, 79, .06);
   }
 }
