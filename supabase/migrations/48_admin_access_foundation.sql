@@ -165,8 +165,10 @@ GRANT EXECUTE ON FUNCTION public.get_admin_access() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.has_admin_permission(text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.is_super_admin() TO authenticated;
 
--- Bootstrap the already-existing owner account as the first Super Admin.
--- This is a trusted migration lookup, not a frontend authorization check.
+-- Bootstrap the owner account when it exists in this database.
+-- A clean local schema replay has no auth.users rows yet, so keep that case
+-- non-blocking. Production owner provisioning remains automatic when the
+-- configured owner account is present; no user is created or elevated here.
 DO $$
 DECLARE
   v_user_id uuid;
@@ -177,25 +179,28 @@ BEGIN
   FROM auth.users
   WHERE lower(email) = lower('yukusocial@gmail.com');
 
-  IF v_count <> 1 OR v_user_id IS NULL THEN
+  IF v_count = 0 THEN
+    RAISE NOTICE
+      'Super Admin bootstrap skipped: yukusocial@gmail.com is not present in this database.';
+  ELSIF v_count <> 1 OR v_user_id IS NULL THEN
     RAISE EXCEPTION
       'Bootstrap Super Admin dihentikan: akun yukusocial@gmail.com harus ditemukan tepat satu kali.';
-  END IF;
+  ELSE
+    IF NOT EXISTS (
+      SELECT 1 FROM public.users
+      WHERE id = v_user_id AND role = 'admin'::public.user_role_type
+    ) THEN
+      RAISE EXCEPTION
+        'Bootstrap Super Admin dihentikan: akun pemilik belum memiliki role admin di public.users.';
+    END IF;
 
-  IF NOT EXISTS (
-    SELECT 1 FROM public.users
-    WHERE id = v_user_id AND role = 'admin'::public.user_role_type
-  ) THEN
-    RAISE EXCEPTION
-      'Bootstrap Super Admin dihentikan: akun pemilik belum memiliki role admin di public.users.';
+    INSERT INTO private.admin_accounts (user_id, admin_level, is_active)
+    VALUES (v_user_id, 'super_admin', true)
+    ON CONFLICT (user_id) DO UPDATE
+      SET admin_level = 'super_admin',
+          is_active = true,
+          updated_at = now();
   END IF;
-
-  INSERT INTO private.admin_accounts (user_id, admin_level, is_active)
-  VALUES (v_user_id, 'super_admin', true)
-  ON CONFLICT (user_id) DO UPDATE
-    SET admin_level = 'super_admin',
-        is_active = true,
-        updated_at = now();
 END;
 $$;
 
