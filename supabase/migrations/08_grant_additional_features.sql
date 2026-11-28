@@ -19,7 +19,7 @@ GRANT SELECT, INSERT ON public.reports_complaints TO authenticated;
 -- 3. NOTIFIKASI PENGGUNA (public.notifications)
 -- RLS Policy: notifications_select_user, notifications_update_user
 GRANT SELECT ON public.notifications TO authenticated;
-GRANT UPDATE (is_read, updated_at) ON public.notifications TO authenticated;
+GRANT UPDATE (is_read) ON public.notifications TO authenticated;
 
 -- 4. KETERSEDIAAN / JADWAL TALENT (public.talent_availability)
 -- RLS Policy: availability_select_public_or_authenticated, availability_manage_talent
