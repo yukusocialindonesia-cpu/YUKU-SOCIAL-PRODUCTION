@@ -416,29 +416,29 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
           </main>
 
           <aside className="hidden space-y-4 lg:block">
-            <section className="rounded-[1.6rem] border border-white bg-white/85 p-5 shadow-[0_12px_34px_rgba(76,29,149,0.075)] ring-1 ring-purple-100/80 backdrop-blur-xl">
+            <section className="rounded-[1.6rem] border border-white bg-white/85 p-5 shadow-[0_4px_18px_rgba(50,19,79,0.05)] ring-1 ring-[#E5DCEB] backdrop-blur-xl">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-extrabold text-slate-900">Jelajahi topik</h3>
-                <Hash className="h-4 w-4 text-purple-600" />
+                <Hash className="h-4 w-4 text-[#32134F]" />
               </div>
               <p className="mt-1 text-xs leading-5 text-slate-500">Pilih ruang obrolan sesuai minatmu.</p>
               <div className="mt-3 space-y-1">
                 {topics.map((topic) => (
                   <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
                     className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2.5 text-left text-xs font-semibold text-slate-600 transition hover:bg-[#F4F0F7] hover:text-[#32134F]">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F4F0F7] text-purple-600"><Hash className="h-3.5 w-3.5" /></span>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F4F0F7] text-[#32134F]"><Hash className="h-3.5 w-3.5" /></span>
                     {topic}
                     <ArrowRight className="ml-auto h-3.5 w-3.5 text-slate-300" />
                   </button>
                 ))}
               </div>
             </section>
-            <section className="overflow-hidden rounded-[1.6rem] border border-white bg-gradient-to-br from-purple-50/95 via-white to-fuchsia-50/95 p-5 shadow-[0_14px_36px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/80">
+            <section className="overflow-hidden rounded-[1.6rem] border border-white bg-white p-5 shadow-[0_4px_18px_rgba(50,19,79,0.05)] ring-1 ring-[#E5DCEB]">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#32134F] shadow-sm"><Users className="h-5 w-5" /></div>
               <h3 className="mt-3 text-sm font-extrabold text-slate-900">Dari kenalan ke aktivitas</h3>
               <p className="mt-2 text-xs leading-5 text-slate-600">Temukan talent, pilih aktivitas yang kamu suka, lalu lakukan booking melalui sistem YUKU.</p>
               <button type="button" onClick={() => onNavigate('/talent')}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110">
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#32134F] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110">
                 Lihat talent <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </section>
