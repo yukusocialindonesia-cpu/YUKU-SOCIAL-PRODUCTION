@@ -115,204 +115,96 @@ body {
 }
 
 
-/* YUKU app-first homepage: deep plum + warm gold, compact mobile feed. */
-.yuku-home-feed {
-  color: #241039;
-  background: #f7f5fa;
-}
-.yuku-home-section {
-  min-width: 0;
-}
-.yuku-home-categories section,
-.yuku-home-featured section {
-  background: #f7f5fa !important;
-}
-.yuku-home-categories section {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-.yuku-home-featured section {
-  padding-top: 10px;
-  padding-bottom: 8px;
-}
-.yuku-home-feed h2 {
-  letter-spacing: -0.035em;
-}
-.yuku-home-feed button:focus-visible,
-.yuku-home-feed a:focus-visible {
-  outline-offset: 3px;
-}
-@media (max-width: 640px) {
-  .yuku-home-feed {
-    padding-bottom: 2px;
-  }
-  .yuku-home-hero > section {
-    padding-bottom: 4px;
-  }
-}
-
-
-/* YUKU premium mobile app skin: official deep-purple palette. */
-.yuku-home-feed {
-  color: #FFFFFF;
-  background:
-    radial-gradient(ellipse at 12% 0%, rgba(117, 65, 200, .28), transparent 38%),
-    radial-gradient(ellipse at 90% 20%, rgba(167, 139, 250, .12), transparent 34%),
-    linear-gradient(180deg, #32134F 0%, #28103F 54%, #32134F 100%);
-}
-.yuku-home-feed .yuku-home-categories,
-.yuku-home-feed .yuku-home-featured,
-.yuku-home-feed > .yuku-home-section,
-.yuku-home-feed > section {
-  background: transparent !important;
-}
-.yuku-home-feed .yuku-home-categories > section,
-.yuku-home-feed .yuku-home-featured > section {
-  background: transparent !important;
-}
-.yuku-home-feed h2,
-.yuku-home-feed h3 {
-  color: #FFFFFF !important;
-}
-.yuku-home-feed p {
-  color: rgba(255, 255, 255, .76);
-}
-.yuku-home-feed .yuku-home-categories button {
-  background: linear-gradient(155deg, #45206D, #32134F) !important;
-  border-color: rgba(167, 139, 250, .34) !important;
-  box-shadow: 0 8px 22px rgba(0,0,0,.24);
-}
-.yuku-home-feed .yuku-home-categories button span:last-child {
-  color: #FFFFFF !important;
-}
-.yuku-home-feed .yuku-home-categories button span:first-child {
-  background: linear-gradient(145deg, #A78BFA, #7541C8) !important;
-  color: #32134F !important;
-}
-.yuku-home-feed .yuku-home-featured > div > div:first-child span,
-.yuku-home-feed .yuku-home-featured > div > div:first-child button {
-  color: #A78BFA !important;
-}
-.yuku-home-feed .yuku-home-featured > section {
-  background: transparent !important;
-}
-.yuku-home-feed .yuku-home-featured article {
-  border: 1px solid rgba(167, 139, 250, .28);
-  box-shadow: 0 12px 30px rgba(0,0,0,.28);
-}
-.yuku-home-feed .yuku-home-hero > section {
-  background: transparent !important;
-}
-.yuku-home-feed .yuku-home-hero img {
-  border-color: rgba(167, 139, 250, .38);
-}
-@media (max-width: 640px) {
-  .yuku-home-feed {
-    min-height: 100dvh;
-    padding-bottom: 8px;
-  }
-  .yuku-home-categories > section,
-  .yuku-home-featured > section {
-    padding-top: 12px !important;
-    padding-bottom: 12px !important;
-  }
-  .yuku-home-feed .yuku-home-hero > section > div:first-child {
-    border-color: rgba(167, 139, 250, .38);
-    box-shadow: 0 12px 32px rgba(0,0,0,.35);
-  }
-}
-
-
-/* Final premium polish: consistent purple-only brand, refined contrast and surfaces. */
-.bg-yuku-gradient {
-  background: linear-gradient(135deg, #32134F 0%, #45206D 55%, #7541C8 100%);
-}
-.text-yuku-gradient {
-  background: linear-gradient(110deg, #A78BFA 0%, #FFFFFF 88%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.bg-yuku-accent {
-  background: linear-gradient(110deg, #7541C8 0%, #A78BFA 100%);
-}
-.yuku-home-feed {
-  background:
-    radial-gradient(ellipse at 14% 0%, rgba(117,65,200,.22), transparent 38%),
-    radial-gradient(ellipse at 88% 18%, rgba(167,139,250,.10), transparent 34%),
-    linear-gradient(180deg, #32134F 0%, #28103F 58%, #32134F 100%);
-}
-.yuku-home-feed .yuku-home-categories button {
-  border-color: rgba(167,139,250,.30) !important;
-  background: linear-gradient(155deg, rgba(69,32,109,.96), rgba(50,19,79,.98)) !important;
-  box-shadow: 0 6px 18px rgba(12,4,24,.22), inset 0 1px 0 rgba(255,255,255,.07);
-}
-.yuku-home-feed .yuku-home-categories button:hover {
-  border-color: rgba(196,181,253,.72) !important;
-  box-shadow: 0 10px 24px rgba(12,4,24,.30), 0 0 0 1px rgba(167,139,250,.12);
-}
-.yuku-home-feed .yuku-home-featured article {
-  border-color: rgba(167,139,250,.25);
-  box-shadow: 0 8px 24px rgba(12,4,24,.24);
-}
-.yuku-home-feed .yuku-home-hero img {
-  border-color: rgba(196,181,253,.40);
-}
-@media (max-width: 640px) {
-  .yuku-home-feed .yuku-home-hero > section > div:first-child {
-    border-color: rgba(196,181,253,.42);
-    box-shadow: 0 8px 24px rgba(12,4,24,.28);
-  }
-  .yuku-home-feed .yuku-home-categories button,
-  .yuku-home-feed .yuku-home-featured article {
-    backdrop-filter: blur(12px);
-  }
-}
-
-
-/* YUKU brand lock: exactly two core colors across the product. */
+/* YUKU: satu sistem visual, dua warna inti. */
 :root {
   --yuku-primary: #32134F;
   --yuku-white: #FFFFFF;
-  --yuku-primary-soft: rgba(50, 19, 79, .10);
+  --yuku-primary-soft: rgba(50, 19, 79, .08);
   --yuku-primary-border: rgba(50, 19, 79, .18);
 }
+
 .bg-yuku-gradient,
 .bg-yuku-accent {
   background: var(--yuku-primary) !important;
 }
+
 .text-yuku-gradient {
   background: none !important;
   color: var(--yuku-white) !important;
   -webkit-text-fill-color: var(--yuku-white) !important;
 }
+
 .yuku-home-feed {
   color: var(--yuku-white);
   background: var(--yuku-primary) !important;
 }
+
+.yuku-home-feed > .yuku-home-section,
+.yuku-home-feed > .yuku-home-hero,
+.yuku-home-feed .yuku-home-categories,
+.yuku-home-feed .yuku-home-featured {
+  min-width: 0;
+  background: transparent !important;
+}
+
+.yuku-home-feed h2,
+.yuku-home-feed h3 {
+  color: var(--yuku-white);
+}
+
+.yuku-home-feed .yuku-home-categories > section,
+.yuku-home-feed .yuku-home-featured > section {
+  background: transparent !important;
+}
+
 .yuku-home-feed .yuku-home-categories button {
-  color: var(--yuku-white) !important;
-  background: var(--yuku-primary) !important;
-  border: 1px solid rgba(255,255,255,.24) !important;
+  color: var(--yuku-primary) !important;
+  background: var(--yuku-white) !important;
+  border: 1px solid rgba(255,255,255,.9) !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
 }
+
 .yuku-home-feed .yuku-home-categories button span:first-child {
-  color: var(--yuku-primary) !important;
-  background: var(--yuku-white) !important;
-}
-.yuku-home-feed .yuku-home-featured article {
-  border: 1px solid rgba(255,255,255,.24) !important;
-  box-shadow: none !important;
-}
-.yuku-home-feed .yuku-home-featured article,
-.yuku-home-feed .yuku-home-featured article * {
-  --tw-ring-color: rgba(255,255,255,.22);
-}
-.yuku-home-feed .yuku-home-featured article button {
-  background: var(--yuku-primary) !important;
   color: var(--yuku-white) !important;
+  background: var(--yuku-primary) !important;
 }
+
+.yuku-home-feed .yuku-home-categories button span:last-child {
+  color: var(--yuku-primary) !important;
+}
+
+.yuku-home-feed .yuku-home-featured article {
+  border: 1px solid rgba(50,19,79,.14);
+}
+
+.yuku-home-feed .yuku-home-hero > section {
+  background: transparent !important;
+}
+
 .yuku-home-feed .yuku-home-hero img {
-  border-color: rgba(255,255,255,.28) !important;
+  border-color: rgba(255,255,255,.35);
+}
+
+.yuku-home-feed button:focus-visible,
+.yuku-home-feed a:focus-visible {
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .yuku-home-feed {
+    min-height: 100dvh;
+    padding-bottom: 8px;
+  }
+  .yuku-home-hero > section {
+    padding-bottom: 4px;
+  }
+  .yuku-home-categories > section,
+  .yuku-home-featured > section {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+  .yuku-home-feed .yuku-home-featured article {
+    box-shadow: none;
+  }
 }
