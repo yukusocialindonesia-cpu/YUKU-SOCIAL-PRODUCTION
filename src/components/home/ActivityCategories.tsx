@@ -52,21 +52,21 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
   const railClass = 'flex gap-2 overflow-x-auto overscroll-x-contain snap-x snap-mandatory pb-2 -mx-4 px-4 sm:mx-0 sm:px-0';
 
   return (
-    <section className="relative bg-white py-3 sm:py-7">
+    <section className="relative bg-transparent py-3 sm:py-7">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-[#C4B5FD]">
+            <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-white/75">
               Temukan Companion
             </span>
             <h2 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-2xl">
               Pilihan Aktivitas
             </h2>
-            <p className="mt-0.5 text-[11px] text-slate-500 sm:text-sm">
+            <p className="mt-0.5 text-[11px] text-white/70 sm:text-sm">
               Pilih aktivitas, temukan teman yang cocok.
             </p>
           </div>
-          <span className="shrink-0 pb-0.5 text-[10px] font-medium text-white/65 sm:text-xs">
+          <span className="shrink-0 pb-0.5 text-[10px] font-medium text-white/60 sm:text-xs">
             Geser untuk lihat
           </span>
         </div>
@@ -74,7 +74,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         {loading ? (
           <div className={railClass} aria-label="Memuat kategori teman">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-[#7541C8]/35 bg-white sm:w-[104px]" />
+              <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-white/20 bg-white/10 sm:w-[104px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -99,13 +99,13 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         ) : (
           <div className={railClass}>
             {categories.map((cat, idx) => {
-              const tones = ['bg-[#7541C8] text-white'];
+              const tones = ['bg-white text-[#32134F]'];
               return (
                 <button
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group flex min-h-[76px] w-[88px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-xl border border-[#E7D8B2] bg-white px-2 py-2 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-[#A78BFA] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] sm:min-h-[88px] sm:w-[104px] sm:gap-2 sm:rounded-2xl sm:py-3"
+                  className="group flex min-h-[76px] w-[88px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-xl border border-white/25 bg-[#32134F] px-2 py-2 text-center transition hover:border-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:min-h-[88px] sm:w-[104px] sm:gap-2 sm:rounded-2xl sm:py-3"
                 >
                   <span className={`flex h-8 w-8 items-center justify-center rounded-xl sm:h-9 sm:w-9 ${tones[idx % tones.length]}`}>
                     {getIcon(cat.iconName)}
