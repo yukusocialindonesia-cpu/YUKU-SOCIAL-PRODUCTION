@@ -2179,7 +2179,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
                               <span>Terkonfirmasi</span>
                             </span>
                           ) : b.status === 'in_progress' ? (
-                            <span className="px-2.5 py-1 bg-blue-100 text-blue-900 text-xs font-bold rounded-lg flex items-center gap-1">
+                            <span className="px-2.5 py-1 bg-purple-100 text-purple-900 text-xs font-bold rounded-lg flex items-center gap-1">
                               <Clock className="w-3.5 h-3.5" />
                               <span>Sedang Berlangsung</span>
                             </span>
