@@ -259,7 +259,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-purple-700">
+          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#D8C8FF]">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Social Experience & Paid Companionship</span>
           </p>
@@ -268,15 +268,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
-          <h1 className="text-[clamp(1.55rem,4.8vw,3.4rem)] leading-[1.06] font-black text-[#1E0938] tracking-tight mb-1 md:mb-4">
+          <h1 className="text-[clamp(1.55rem,4.8vw,3.4rem)] leading-[1.06] font-black text-white tracking-tight mb-1 md:mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.18)]">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
-            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#32105B] to-[#D7A83E] bg-clip-text text-transparent">
+            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#C4B5FD] to-white bg-clip-text text-transparent">
               Real Moments.
             </span>
           </h1>
 
-          <p className="max-w-2xl text-[14px] leading-relaxed sm:text-base md:text-lg md:leading-relaxed text-slate-700">
+          <p className="max-w-2xl text-[14px] leading-relaxed sm:text-base md:text-lg md:leading-relaxed text-white/90">
             Temukan teman terbaik untuk menemani setiap aktivitas dan momen berharga dalam hidupmu.
           </p>
         </div>
@@ -285,8 +285,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <SearchActivityWidget onSearch={onSearch} />
           {/* HP: tiga poin keamanan dalam satu baris (huruf kecil), tombol daftar satu baris penuh di bawahnya.
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
-          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-snug whitespace-nowrap text-slate-800 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Ruang publik & aman</span>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-snug text-white/90 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
+            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[#C4B5FD]" />Ruang publik & aman</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
             <button
