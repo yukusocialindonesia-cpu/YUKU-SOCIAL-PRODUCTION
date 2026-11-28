@@ -193,7 +193,7 @@ export const AccountManagementPanel: React.FC = () => {
                     <p className="mt-0.5 text-[11px] text-slate-400">Bergabung {new Date(account.created_at).toLocaleDateString('id-ID')}</p>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">
-                    <button onClick={() => void runPreflight(account)} disabled={preflightId !== null || busyId !== null} className="inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-indigo-50 px-3 py-2 text-[11px] font-bold text-indigo-700 disabled:opacity-50">
+                    <button onClick={() => void runPreflight(account)} disabled={preflightId !== null || busyId !== null} className="inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-purple-50 px-3 py-2 text-[11px] font-bold text-purple-700 disabled:opacity-50">
                       {preflightId === account.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ClipboardCheck className="h-3.5 w-3.5" />} Periksa kelayakan
                     </button>
                     {account.account_status === 'active' || account.account_status === 'pending_verification' ? (
