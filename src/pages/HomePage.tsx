@@ -81,50 +81,42 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F8F7FA] text-[#32134F]">
-      <section className="px-4 pt-4 pb-3 md:hidden">
-        <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <p className="text-[12px] font-black tracking-[0.2em] text-[#32134F]">YUKU</p>
-            <span className="rounded-full border border-[#32134F]/15 bg-white px-2.5 py-1 text-[9px] font-bold tracking-wide text-[#32134F]">SOCIAL PLATFORM</span>
+      <section className="px-4 pt-3 pb-2 md:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#32134F] text-[15px] font-black tracking-tight text-white shadow-[0_5px_14px_rgba(50,19,79,0.18)]">Y</div>
+            <div className="min-w-0">
+              <p className="text-[17px] font-black leading-none tracking-[-0.04em] text-[#32134F]">YUKU</p>
+              <p className="mt-1 truncate text-[10px] font-medium text-slate-500">Teman, aktivitas & layanan</p>
+            </div>
           </div>
-          <p className="mt-3 text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#32134F]/65">TEMUKAN KONEKSI BARU</p>
-          <h1 className="mt-1 text-[23px] font-extrabold leading-[1.12] tracking-tight text-[#32134F]">Temukan orang.<br />Mulai pengalaman baru.</h1>
-          <p className="mt-2 max-w-[310px] text-[11px] leading-relaxed text-slate-600">Satu tempat untuk menemukan teman aktivitas dan tenaga profesional.</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2.5">
-          <button
-            type="button"
-            onClick={() => onNavigate('/talent')}
-            className="group relative flex min-h-[158px] flex-col items-start justify-between overflow-hidden rounded-[20px] border border-[#32134F] bg-[#32134F] p-3.5 text-left text-white shadow-[0_9px_22px_rgba(50,19,79,0.16)] transition active:scale-[0.98]"
-          >
-            <span aria-hidden="true" className="pointer-events-none absolute -right-7 -top-7 h-24 w-24 rounded-full border-[14px] border-white/10" />
-            <span aria-hidden="true" className="pointer-events-none absolute bottom-7 right-2 text-[48px] font-black leading-none text-white/[0.07]">01</span>
-            <span className="relative flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15 ring-1 ring-white/15">
-              <Users className="h-5 w-5" />
-            </span>
-            <span className="relative mt-3 block">
-              <span className="block text-[14px] font-extrabold leading-tight">Teman Aktivitas</span>
-              <span className="mt-1 block text-[10px] leading-relaxed text-white/80">Teman ngobrol, hangout, jalan-jalan, dan lainnya.</span>
-            </span>
-            <span className="relative mt-3 inline-flex items-center gap-1 text-[10px] font-extrabold">Jelajahi teman <ArrowRight className="h-3.5 w-3.5" /></span>
+          <button type="button" onClick={() => onNavigate('/talent')} aria-label="Cari di YUKU" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#32134F]/10 bg-white text-[#32134F] shadow-sm active:scale-95">
+            <span className="text-lg leading-none">⌕</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => onNavigate('/jasa-profesional')}
-            className="group relative flex min-h-[158px] flex-col items-start justify-between overflow-hidden rounded-[20px] border border-[#32134F]/20 bg-white p-3.5 text-left text-[#32134F] shadow-[0_7px_18px_rgba(50,19,79,0.07)] transition active:scale-[0.98]"
-          >
-            <span aria-hidden="true" className="pointer-events-none absolute -right-7 -top-7 h-24 w-24 rounded-full border-[14px] border-[#32134F]/[0.06]" />
-            <span aria-hidden="true" className="pointer-events-none absolute bottom-7 right-2 text-[48px] font-black leading-none text-[#32134F]/[0.055]">02</span>
-            <span className="relative flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#32134F] text-white">
-              <BriefcaseBusiness className="h-5 w-5" />
+        </div>
+        <div className="mb-2.5 mt-5 flex items-end justify-between gap-2">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#32134F]/55">JELAJAHI YUKU</p>
+            <h1 className="mt-0.5 text-[19px] font-extrabold leading-tight tracking-tight text-[#32134F]">Kamu lagi cari apa?</h1>
+          </div>
+          <span className="pb-0.5 text-[10px] font-semibold text-slate-400">Pilih kategori</span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button type="button" onClick={() => onNavigate('/talent')} className="group relative flex min-h-[112px] flex-col justify-between overflow-hidden rounded-[18px] bg-[#32134F] p-3 text-left text-white shadow-[0_7px_18px_rgba(50,19,79,0.15)] transition active:scale-[0.98]">
+            <span aria-hidden="true" className="pointer-events-none absolute -right-5 -top-7 h-24 w-24 rounded-full border-[13px] border-white/[0.09]" />
+            <span className="relative flex h-9 w-9 items-center justify-center rounded-[12px] bg-white/15"><Users className="h-[18px] w-[18px]" /></span>
+            <span className="relative block">
+              <span className="block text-[13px] font-extrabold leading-tight">Teman Aktivitas</span>
+              <span className="mt-1 block text-[9px] font-medium text-white/75">Cari teman untuk melakukan hal seru</span>
             </span>
-            <span className="relative mt-3 block">
-              <span className="block text-[14px] font-extrabold leading-tight">Jasa Profesional</span>
-              <span className="mt-1 block text-[10px] leading-relaxed text-slate-600">Temukan fotografer, MUA, trainer, dan ahli.</span>
+          </button>
+          <button type="button" onClick={() => onNavigate('/jasa-profesional')} className="group relative flex min-h-[112px] flex-col justify-between overflow-hidden rounded-[18px] border border-[#32134F]/12 bg-white p-3 text-left text-[#32134F] shadow-[0_5px_15px_rgba(50,19,79,0.055)] transition active:scale-[0.98]">
+            <span aria-hidden="true" className="pointer-events-none absolute -right-5 -top-7 h-24 w-24 rounded-full border-[13px] border-[#32134F]/[0.055]" />
+            <span className="relative flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#32134F] text-white"><BriefcaseBusiness className="h-[18px] w-[18px]" /></span>
+            <span className="relative block">
+              <span className="block text-[13px] font-extrabold leading-tight">Jasa Profesional</span>
+              <span className="mt-1 block text-[9px] font-medium text-slate-500">Temukan ahli untuk kebutuhanmu</span>
             </span>
-            <span className="relative mt-3 inline-flex items-center gap-1 text-[10px] font-extrabold">Jelajahi layanan <ArrowRight className="h-3.5 w-3.5" /></span>
           </button>
         </div>
       </section>
@@ -154,7 +146,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       </div>
 
       <div className="yuku-home-section"><ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} /></div>
-      <div className="yuku-home-section"><EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} /></div>
+      <div className="hidden sm:block yuku-home-section"><EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} /></div>
 
       <div className="hidden sm:block yuku-home-section bg-white">
         <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
