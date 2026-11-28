@@ -444,7 +444,7 @@ export const QrisCustomerPaymentPanel: React.FC<Props> = ({
         type="button"
         onClick={submit}
         disabled={busy || !file || (left !== null && left <= 0)}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-indigo-700 px-4 py-3 text-xs font-extrabold text-white shadow-lg shadow-violet-900/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:translate-y-0 disabled:opacity-50"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-700 to-violet-600 px-4 py-3 text-xs font-extrabold text-white shadow-lg shadow-violet-900/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:translate-y-0 disabled:opacity-50"
       >
         {busy
           ? <Loader2 className="h-4 w-4 animate-spin" />
