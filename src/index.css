@@ -166,8 +166,8 @@ body {
 .yuku-home-feed > section {
   background: transparent !important;
 }
-.yuku-home-feed .yuku-home-categories section,
-.yuku-home-feed .yuku-home-featured section {
+.yuku-home-feed .yuku-home-categories > section,
+.yuku-home-feed .yuku-home-featured > section {
   background: transparent !important;
 }
 .yuku-home-feed h2,
@@ -193,6 +193,9 @@ body {
 .yuku-home-feed .yuku-home-featured > div > div:first-child button {
   color: #A78BFA !important;
 }
+.yuku-home-feed .yuku-home-featured > section {
+  background: transparent !important;
+}
 .yuku-home-feed .yuku-home-featured article {
   border: 1px solid rgba(167, 139, 250, .28);
   box-shadow: 0 12px 30px rgba(0,0,0,.28);
@@ -208,8 +211,8 @@ body {
     min-height: 100dvh;
     padding-bottom: 8px;
   }
-  .yuku-home-categories section,
-  .yuku-home-featured section {
+  .yuku-home-categories > section,
+  .yuku-home-featured > section {
     padding-top: 12px !important;
     padding-bottom: 12px !important;
   }
