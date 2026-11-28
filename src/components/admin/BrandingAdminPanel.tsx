@@ -133,11 +133,31 @@ export const BrandingAdminPanel: React.FC = () => {
         .from('branding')
         .upload(path, file, { upsert: false, contentType: file.type });
       if (upErr) throw upErr;
-      await writePath(kind, path);
+      const previousPath = paths[kind];
+      try {
+        await writePath(kind, path);
+      } catch (writeError) {
+        const { error: cleanupError } = await supabase.storage.from('branding').remove([path]);
+        if (cleanupError) console.warn('YUKU: file branding baru gagal dibersihkan', cleanupError);
+        throw writeError;
+      }
+      const otherPath = paths[kind === 'logo' ? 'icon' : 'logo'];
+      if (previousPath && previousPath !== path && previousPath !== otherPath) {
+        const { error: cleanupError } = await supabase.storage.from('branding').remove([previousPath]);
+        if (cleanupError) console.warn('YUKU: file branding lama belum berhasil dibersihkan', cleanupError);
+      }
     }, kind === 'logo' ? 'Logo berhasil diganti.' : 'Ikon berhasil diganti.');
 
   const handleReset = (kind: Kind) => () =>
-    run(() => writePath(kind, null), 'Dikembalikan ke gambar bawaan.');
+    run(async () => {
+      const previousPath = paths[kind];
+      const otherPath = paths[kind === 'logo' ? 'icon' : 'logo'];
+      await writePath(kind, null);
+      if (previousPath && previousPath !== otherPath) {
+        const { error: cleanupError } = await supabase.storage.from('branding').remove([previousPath]);
+        if (cleanupError) console.warn('YUKU: file branding lama belum berhasil dibersihkan', cleanupError);
+      }
+    }, 'Dikembalikan ke gambar bawaan.');
 
   const urlOf = (p: string | null, fallback: string) =>
     p ? supabase.storage.from('branding').getPublicUrl(p).data.publicUrl : fallback;
