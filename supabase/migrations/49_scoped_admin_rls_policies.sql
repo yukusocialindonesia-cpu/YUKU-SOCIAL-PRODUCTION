@@ -69,8 +69,9 @@ using (public.has_admin_permission('finance')) with check (public.has_admin_perm
 -- SUPPORT
 alter policy reports_select_reporter_or_admin on public.reports_complaints
 using (auth.uid()=reporter_id or public.has_admin_permission('support'));
-alter policy reports_update_admin on public.reports_complaints
-using (public.has_admin_permission('support')) with check (public.has_admin_permission('support'));
+-- Direct UPDATE on reports_complaints is intentionally revoked by
+-- 20261127192232_revoke_direct_report_moderation_updates.sql.
+-- Moderation must go through the audited admin_resolve_report() RPC.
 
 -- SUPER ADMIN only
 alter policy admin_audit_logs_select_admin on public.admin_audit_logs using (public.is_super_admin());
