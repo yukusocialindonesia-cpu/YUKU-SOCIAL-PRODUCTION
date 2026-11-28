@@ -358,6 +358,12 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
             </div>
           </div>
         </form>
+
+        <div className="mt-5 rounded-2xl border border-rose-100 bg-white/90 p-5 shadow-sm">
+          <h2 className="text-sm font-bold text-slate-900">Pengelolaan Akun</h2>
+          <p className="mt-1 text-xs leading-5 text-slate-500">Anda dapat mengajukan penutupan akun melalui proses pemeriksaan resmi YUKU.</p>
+          <button type="button" onClick={() => onNavigate('/hapus-akun')} className="mt-3 inline-flex items-center rounded-xl border border-rose-200 px-4 py-2.5 text-sm font-bold text-rose-700 transition hover:bg-rose-50">Pengajuan Hapus Akun</button>
+        </div>
       </div>
     </div>
     </>
