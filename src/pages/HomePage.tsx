@@ -106,15 +106,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </div>
 
-      <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
-      <EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} />
+      <div className="hidden sm:block"><ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} /></div>
+      <div className="hidden sm:block"><EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} /></div>
 
-      <div className="yuku-home-section bg-white">
+      <div className="hidden sm:block yuku-home-section bg-white">
         <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
         <SafetySection />
       </div>
 
-      <div ref={promoSectionRef} className="yuku-home-section bg-[#F7F5FA]">
+      <div ref={promoSectionRef} className="hidden sm:block yuku-home-section bg-[#F7F5FA]">
         <PromoCarousel
           promotions={promotions}
           isLoading={isLoadingPromotions}
@@ -122,13 +122,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </div>
 
+      <div className="hidden sm:block">
       <TalentCtaSection
         onExploreClick={() => onNavigate('/talent')}
         onRegisterCustomerClick={() => onNavigate('/register')}
         onRegisterClick={() => onNavigate('/daftar-talent')}
         onProfessionalRegisterClick={() => onNavigate('/daftar-jasa-profesional')}
       />
-      <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
+      </div>
+      <div className="hidden sm:block"><HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} /></div>
     </div>
   );
 };
