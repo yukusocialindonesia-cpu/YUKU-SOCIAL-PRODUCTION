@@ -24,7 +24,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
   const promoSectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Muat promosi saat mendekati viewport agar tampilan awal tetap ringan.
   useEffect(() => {
     const target = promoSectionRef.current;
     if (!target) return;
@@ -81,33 +80,35 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F7F5FA]">
-      {/* 1. Pintu masuk: pencarian utama dan identitas Social Experience. */}
-      <div className="yuku-home-hero"><HeroSection
-        onExploreClick={() => onNavigate('/talent')}
-        onSearch={handleSearch}
-        onRegisterCustomerClick={() => onNavigate('/register')}
-        onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
-      /></div>
+      <div className="yuku-home-hero">
+        <HeroSection
+          onExploreClick={() => onNavigate('/talent')}
+          onSearch={handleSearch}
+          onRegisterCustomerClick={() => onNavigate('/register')}
+          onSlideLinkClick={(path) => onNavigate(path as AppRoute)}
+        />
+      </div>
 
-      {/* 2. Kebutuhan pelanggan: pilih cara berinteraksi, lalu jenis aktivitas. */}
+      {/* Aktivitas adalah konten utama setelah pencarian, bukan tertutup pilihan mode. */}
       <div className="yuku-home-section yuku-home-categories bg-white">
-        <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
         <ActivityCategories onSelectCategory={handleSelectCategory} />
       </div>
 
-      {/* 3. Social Experience adalah layanan utama YUKU. Harga tetap di halaman profil. */}
-      <div className="yuku-home-section yuku-home-featured"><FeaturedTalentSection
-        onSelectTalent={handleSelectTalent}
-        onViewAllClick={() => onNavigate('/talent')}
-      /></div>
+      {/* Pilihan mode menjadi pintasan sekunder setelah kategori aktivitas. */}
+      <div className="yuku-home-section bg-white">
+        <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
+      </div>
 
-      {/* 4. Lini kedua, dipisahkan jelas dari Paid Companion. */}
+      <div className="yuku-home-section yuku-home-featured">
+        <FeaturedTalentSection
+          onSelectTalent={handleSelectTalent}
+          onViewAllClick={() => onNavigate('/talent')}
+        />
+      </div>
+
       <ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} />
-
-      {/* 5. Community dan Merchant Partner adalah bagian ekosistem, bukan kategori Talent. */}
       <EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} />
 
-      {/* 6. Informasi pendukung diletakkan setelah katalog utama. */}
       <div className="yuku-home-section bg-white">
         <HowItWorksSection onLearnMoreClick={() => onNavigate('/cara-kerja')} />
         <SafetySection />
@@ -127,7 +128,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onRegisterClick={() => onNavigate('/daftar-talent')}
         onProfessionalRegisterClick={() => onNavigate('/daftar-jasa-profesional')}
       />
-
       <HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} />
     </div>
   );

@@ -60,10 +60,10 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
               Temukan Companion
             </span>
             <h2 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-2xl">
-              Cari Berdasarkan Aktivitas
+              Pilihan Aktivitas
             </h2>
             <p className="mt-0.5 text-[11px] text-slate-500 sm:text-sm">
-              Pilih kegiatan yang ingin kamu lakukan bersama teman.
+              Pilih aktivitas, temukan teman yang cocok.
             </p>
           </div>
           <span className="shrink-0 pb-0.5 text-[10px] font-medium text-slate-500 sm:text-xs">
