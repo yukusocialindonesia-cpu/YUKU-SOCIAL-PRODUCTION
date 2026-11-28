@@ -11,48 +11,32 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tampilan ringkas khusus HP */}
         <div className="sm:hidden">
-          <div className="mb-2">
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">
-              Pilih Teman
-            </h2>
-            <p className="mt-0.5 text-[13px] leading-relaxed text-slate-600">
-              Mau bertemu langsung atau ngobrol online?
-            </p>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <h2 className="text-sm font-extrabold tracking-tight text-white">Pilih cara menemani</h2>
+            <span className="text-[10px] text-white/60">Online atau langsung</span>
           </div>
-
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => onSelectMode('offline')}
-              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-amber-100 bg-white p-3 text-left shadow-sm transition hover:border-amber-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="group flex min-h-[52px] min-w-0 items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-left text-white shadow-sm transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C4B5FD]"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-700">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#A78BFA] text-[#32134F]">
                 <MapPin className="h-4 w-4" />
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-bold text-slate-900">Offline</span>
-                <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">
-                  Bertemu langsung
-                </span>
-              </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-amber-600 transition-transform group-hover:translate-x-0.5" />
+              <span className="min-w-0 flex-1 text-[13px] font-bold">Offline</span>
+              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-white/70" />
             </button>
-
             <button
               type="button"
               onClick={() => onSelectMode('online')}
-              className="group flex min-h-[88px] min-w-0 items-center gap-2 rounded-xl border border-purple-100 bg-white p-3 text-left shadow-sm transition hover:border-purple-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="group flex min-h-[52px] min-w-0 items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-left text-white shadow-sm transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C4B5FD]"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-50 text-purple-700">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#A78BFA] text-[#32134F]">
                 <MessageCircle className="h-4 w-4" />
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-bold text-slate-900">Online</span>
-                <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">
-                  Ngobrol dari mana saja
-                </span>
-              </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-purple-600 transition-transform group-hover:translate-x-0.5" />
+              <span className="min-w-0 flex-1 text-[13px] font-bold">Online</span>
+              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-white/70" />
             </button>
           </div>
         </div>
