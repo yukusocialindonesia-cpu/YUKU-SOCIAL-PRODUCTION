@@ -56,17 +56,17 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-white/75">
+            <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-[#32134F]/65">
               Temukan Companion
             </span>
             <h2 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-2xl">
               Pilihan Aktivitas
             </h2>
-            <p className="mt-0.5 text-[11px] text-white/70 sm:text-sm">
+            <p className="mt-0.5 text-[11px] text-slate-500 sm:text-sm">
               Pilih aktivitas, temukan teman yang cocok.
             </p>
           </div>
-          <span className="shrink-0 pb-0.5 text-[10px] font-medium text-white/60 sm:text-xs">
+          <span className="shrink-0 pb-0.5 text-[10px] font-medium text-slate-400 sm:text-xs">
             Geser untuk lihat
           </span>
         </div>
