@@ -6,3 +6,6 @@ verify_jwt = false
 [functions.account-management]
 verify_jwt = true
 
+[functions.account-deletion-request]
+# The endpoint also validates the bearer token with auth.getUser before using service role.
+verify_jwt = true
