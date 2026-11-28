@@ -18,10 +18,10 @@ interface TalentCardProps {
 const PLACEHOLDER_PHOTO_MARKER = 'photo-1534528741775-53994a69daeb';
 
 const GRADIENTS = [
-  'from-purple-600 via-fuchsia-600 to-pink-500',
-  'from-indigo-600 via-purple-600 to-fuchsia-500',
-  'from-fuchsia-600 via-pink-600 to-orange-400',
-  'from-violet-700 via-purple-600 to-sky-500',
+  'from-blue-700 via-blue-600 to-sky-500',
+  'from-blue-800 via-blue-600 to-sky-500',
+  'from-blue-700 via-sky-600 to-cyan-500',
+  'from-blue-900 via-blue-700 to-sky-500',
 ];
 
 function pickGradient(seed: string): string {
@@ -74,9 +74,9 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         role="button"
         tabIndex={0}
         aria-label={`Lihat profil ${talent.name}`}
-        className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(49,19,79,0.12)] ring-1 ring-purple-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+        className="group relative min-w-0 overflow-hidden rounded-[18px] bg-white shadow-[0_5px_18px_rgba(37,99,235,0.12)] ring-1 ring-blue-100/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
       >
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F0EAF5]">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#EFF6FF]">
           {hasRealPhoto ? (
             <img
               src={talent.avatarUrl}
@@ -92,14 +92,14 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
               <span className="text-4xl font-black text-white">{initialsOf(talent.name)}</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#160922]/90 via-[#160922]/10 to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#102B5C]/90 via-[#102B5C]/10 to-black/5" />
           {isNew && (
-            <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[9px] font-extrabold tracking-wide text-[#32134F] shadow-sm">
+            <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[9px] font-extrabold tracking-wide text-[#2563EB] shadow-sm">
               BARU
             </span>
           )}
           {availableToday && (
-            <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-white/35 bg-[#32134F]/80 px-2 py-1 text-[9px] font-bold text-white shadow-sm backdrop-blur">
+            <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-white/35 bg-[#2563EB]/80 px-2 py-1 text-[9px] font-bold text-white shadow-sm backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
               SIAP
             </span>
@@ -148,7 +148,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       role="button"
       tabIndex={0}
       aria-label={`Lihat profil ${talent.name}`}
-      className="group relative h-full min-w-0 bg-white/95 rounded-xl sm:rounded-[26px] overflow-hidden border border-white shadow-[0_8px_24px_rgba(76,29,149,0.09)] hover:shadow-[0_18px_38px_rgba(76,29,149,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-purple-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+      className="group relative h-full min-w-0 bg-white/95 rounded-xl sm:rounded-[26px] overflow-hidden border border-white shadow-[0_8px_24px_rgba(37,99,235,0.09)] hover:shadow-[0_18px_38px_rgba(37,99,235,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col ring-1 ring-blue-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
     >
       {/* Media */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100">
@@ -201,16 +201,16 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       {(availableToday || hasVoice || hasVideo || hasPhoto) && (
         <div className="px-2.5 pt-1 sm:px-5 sm:pt-3 flex flex-wrap gap-1.5">
           {availableToday && (
-            <span className="inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-purple-50 border border-purple-100 text-purple-800 text-[10.5px] font-semibold">
+            <span className="inline-flex items-center gap-1.5 h-6 pl-2 pr-2.5 rounded-full bg-blue-50 border border-blue-100 text-blue-800 text-[10.5px] font-semibold">
               <span className="relative flex shrink-0 w-1.5 h-1.5">
-                <span className="absolute inset-0 rounded-full bg-fuchsia-500 opacity-40 animate-ping motion-reduce:animate-none" />
-                <span className="relative w-1.5 h-1.5 rounded-full bg-fuchsia-600" />
+                <span className="absolute inset-0 rounded-full bg-blue-500 opacity-40 animate-ping motion-reduce:animate-none" />
+                <span className="relative w-1.5 h-1.5 rounded-full bg-blue-600" />
               </span>
               Tersedia hari ini
             </span>
           )}
           {hasVoice && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-fuchsia-800 bg-fuchsia-50 border border-fuchsia-100 px-2 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-800 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">
               <Mic className="w-3 h-3" /> Voice
             </span>
           )}
@@ -230,7 +230,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
       {/* Isi */}
       <div className="p-3.5 pt-3 max-sm:p-2.5 max-sm:pt-2 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 sm:gap-3">
-          <h3 className="font-extrabold text-[#1E0938] text-[14px] sm:text-lg leading-tight group-hover:text-purple-700 transition-colors break-words min-w-0">
+          <h3 className="font-extrabold text-[#173B78] text-[14px] sm:text-lg leading-tight group-hover:text-blue-700 transition-colors break-words min-w-0">
             {talent.name}
             {talent.isVerified === true && <VerifiedBadge className="ml-1.5 -mt-0.5" />}
             {talent.age ? <span className="font-semibold text-slate-500">, {talent.age}</span> : null}
@@ -245,7 +245,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         </div>
 
         {talent.headline && (
-          <p className="mt-1.5 max-sm:mt-1 text-[13px] sm:text-sm font-medium text-purple-800 line-clamp-1">{talent.headline}</p>
+          <p className="mt-1.5 max-sm:mt-1 text-[13px] sm:text-sm font-medium text-blue-800 line-clamp-1">{talent.headline}</p>
         )}
 
         {talent.bio && (
@@ -257,7 +257,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
             {talent.interests.slice(0, 3).map((item) => (
               <span
                 key={item}
-                className="text-[11px] max-sm:text-[10.5px] font-medium text-purple-800 bg-purple-50 border border-purple-100 px-2 max-sm:px-1.5 py-0.5 rounded-full"
+                className="text-[11px] max-sm:text-[10.5px] font-medium text-blue-800 bg-blue-50 border border-blue-100 px-2 max-sm:px-1.5 py-0.5 rounded-full"
               >
                 {item}
               </span>
@@ -266,10 +266,10 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
         )}
 
         <div className="mt-auto pt-3 max-sm:mt-auto max-sm:pt-1">
-          <div className="pt-3 max-sm:pt-1 border-t border-purple-100 flex items-center justify-between gap-3">
+          <div className="pt-3 max-sm:pt-1 border-t border-blue-100 flex items-center justify-between gap-3">
             {showPrice && <div>
               <span className="text-[11px] text-slate-400 block font-medium">Mulai dari</span>
-              <div className="text-sm sm:text-base font-black text-[#1E0938] tabular-nums leading-tight">
+              <div className="text-sm sm:text-base font-black text-[#173B78] tabular-nums leading-tight">
                 {displayedRate ? formatRupiah(displayedRate) : 'Hubungi Talent'}
                 {displayedRate ? (
                   <span className="block sm:inline text-[10px] sm:text-xs font-medium text-slate-500">{displayedRateLabel}</span>
@@ -279,7 +279,7 @@ export const TalentCard: React.FC<TalentCardProps> = ({ talent, onSelect, availa
 
             <span
               aria-hidden="true"
-              className={`inline-flex min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 ${showPrice ? "text-[10px] sm:text-xs shrink-0" : "w-full justify-center text-xs"} font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-600 group-hover:from-purple-800 group-hover:to-fuchsia-700 rounded-full shadow-md shadow-purple-300/40 transition-all`}
+              className={`inline-flex min-h-11 items-center gap-1 px-2 sm:gap-1.5 sm:px-4 py-2.5 sm:py-2 ${showPrice ? "text-[10px] sm:text-xs shrink-0" : "w-full justify-center text-xs"} font-bold text-white bg-gradient-to-r from-blue-700 to-blue-600 group-hover:from-blue-800 group-hover:to-blue-700 rounded-full shadow-md shadow-blue-300/40 transition-all`}
             >
               Lihat Profil
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform" />
