@@ -71,7 +71,7 @@ export const ProfessionalServicesSection: React.FC<{ onViewAll: () => void }> = 
             <h2 className="text-xl font-extrabold tracking-tight text-[#2563EB] sm:text-2xl">Jasa Profesional</h2>
             <p className="mt-1 max-w-xl text-xs leading-relaxed text-slate-500 sm:text-sm">Temukan tenaga ahli dan layanan terpercaya untuk kebutuhan sehari-hari maupun profesional.</p>
           </div>
-          <button type="button" onClick={onViewAll} className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#F8F7FA] px-3 py-2 text-[10px] font-bold text-[#2563EB] transition hover:bg-[#2563EB]/10 sm:text-[11px]">Lihat semua <ArrowRight className="h-3 w-3" /></button>
+          <button type="button" onClick={onViewAll} className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#F5F8FC] px-3 py-2 text-[10px] font-bold text-[#2563EB] transition hover:bg-[#2563EB]/10 sm:text-[11px]">Lihat semua <ArrowRight className="h-3 w-3" /></button>
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -86,7 +86,7 @@ export const ProfessionalServicesSection: React.FC<{ onViewAll: () => void }> = 
                   onClick={() => setExpandedId(expanded ? null : category.id)}
                   className="flex min-h-[112px] w-full flex-col items-start justify-between gap-3 p-3 text-left sm:min-h-[124px] sm:p-4"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F8F7FA] text-[#2563EB]">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F5F8FC] text-[#2563EB]">
                     <Icon className="h-[18px] w-[18px]" />
                   </span>
                   <span className="flex w-full items-center justify-between gap-2">
@@ -95,7 +95,7 @@ export const ProfessionalServicesSection: React.FC<{ onViewAll: () => void }> = 
                   </span>
                 </button>
                 {expanded && (
-                  <div className="border-t border-[#2563EB]/10 bg-[#F8F7FA] px-3 py-3 sm:px-4">
+                  <div className="border-t border-[#2563EB]/10 bg-[#F5F8FC] px-3 py-3 sm:px-4">
                     <p className="mb-2 text-[11px] leading-relaxed text-slate-600">{category.description}</p>
                     <ul className="space-y-2">
                       {(category.professional_service_subcategories || []).map((service) => (

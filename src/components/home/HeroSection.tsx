@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Gambar slide (crossfade): banner rasio tetap di HP, lapisan penuh di layar lebar.
           Rasio 12:5 sama dengan gambar desktop 1920x800, jadi foto tampil utuh di HP. */}
       {/* HP: banner foto di atas (tanpa teks menimpa wajah). md ke atas: lapisan penuh seperti semula. */}
-      <div className="relative mx-3 mt-2 h-[clamp(92px,25vw,142px)] sm:mx-6 sm:h-[clamp(150px,24vw,210px)] rounded-[20px] sm:rounded-[26px] overflow-hidden border border-white/80 shadow-[0_14px_34px_rgba(49,16,91,0.16)] ring-1 ring-[#E9DDF5] md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
+      <div className="relative mx-3 mt-2 h-[clamp(92px,25vw,142px)] sm:mx-6 sm:h-[clamp(150px,24vw,210px)] rounded-[20px] sm:rounded-[26px] overflow-hidden border border-white/80 shadow-[0_14px_34px_rgba(37,99,235,0.12)] ring-1 ring-[#2563EB]/15 md:absolute md:inset-0 md:m-0 md:h-auto md:rounded-none md:overflow-visible md:border-0 md:shadow-none md:ring-0">
         {total > 0 ? (
           slides.map((slide, index) => {
             const isCurrent = index === active;
@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
               >
                 {broken[slide.id] ? (
-                  <div className="w-full h-full bg-[#32134F]" />
+                  <div className="w-full h-full bg-[#1E3A8A]" />
                 ) : (
                   <picture>
                     {slide.mobile_image_url && (
@@ -181,7 +181,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             />
           </div>
         ) : (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-[#32134F] opacity-90 md:rounded-l-[8rem]" />
+          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-[#1E3A8A] opacity-90 md:rounded-l-[8rem]" />
         )}
 
         {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}
@@ -196,7 +196,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             aria-label={slides[active]?.title}
-            className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-700"
+            className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]"
           />
         )}
         {isInternal && (
@@ -204,7 +204,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             type="button"
             onClick={handleBackdropClick}
             aria-label={slides[active]?.title}
-            className="absolute inset-0 w-full h-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-700"
+            className="absolute inset-0 w-full h-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]"
           />
         )}
 
@@ -222,7 +222,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     aria-selected={isCurrent}
                     aria-label={`Slide ${index + 1}: ${slide.title}`}
                     onClick={() => setActive(index)}
-                    className="min-w-[28px] min-h-[40px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700 rounded-lg"
+                    className="min-w-[28px] min-h-[40px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] rounded-lg"
                   >
                     <span
                       className={`block h-2 rounded-full transition-all duration-200 ${
@@ -237,7 +237,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               type="button"
               onClick={prev}
               aria-label="Slide sebelumnya"
-              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-purple-900 shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#1E3A8A] shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -245,7 +245,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               type="button"
               onClick={next}
               aria-label="Slide berikutnya"
-              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-purple-900 shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="hidden md:inline-flex w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#1E3A8A] shadow items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -259,12 +259,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       >
         <div className="md:max-w-xl">
           {/* HP: label kecil di atas judul (tidak menutupi foto) */}
-          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#D8C8FF]">
+          <p className="md:hidden flex items-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#2563EB]">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Social Experience & Paid Companionship</span>
           </p>
-          <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/80 border border-purple-200/80 rounded-full text-purple-900 text-xs font-semibold mb-5">
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-purple-700" />
+          <div className="hidden md:inline-flex max-w-full items-center gap-2 px-3 py-1 bg-white/90 border border-[#2563EB]/15 rounded-full text-[#1E3A8A] text-xs font-semibold mb-5">
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-[#2563EB]" />
             <span className="truncate">Social Experience & Paid Companionship</span>
           </div>
 
@@ -292,7 +292,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <button
               type="button"
               onClick={onRegisterCustomerClick}
-              className="basis-full mt-0 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2 md:py-1.5 rounded-full border border-purple-300 bg-white/90 hover:bg-white font-bold text-purple-800 hover:text-purple-950 shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-700"
+              className="basis-full mt-0 md:mt-0 md:basis-auto w-full md:w-auto text-xs px-4 py-2 md:py-1.5 rounded-full border border-[#2563EB]/25 bg-white/90 hover:bg-white font-bold text-[#1E3A8A] hover:text-[#1E3A8A] shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
             >
               Daftar gratis
             </button>

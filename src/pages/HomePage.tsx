@@ -80,7 +80,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F8F7FA] text-[#2563EB]">
+    <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F5F8FC] text-[#2563EB]">
       <section className="px-4 pt-3 pb-2 md:hidden">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2.5">
@@ -153,7 +153,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <SafetySection />
       </div>
 
-      <div ref={promoSectionRef} className="hidden sm:block yuku-home-section bg-[#F8F7FA]">
+      <div ref={promoSectionRef} className="hidden sm:block yuku-home-section bg-[#F5F8FC]">
         <PromoCarousel
           promotions={promotions}
           isLoading={isLoadingPromotions}
