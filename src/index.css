@@ -150,3 +150,71 @@ body {
     padding-bottom: 4px;
   }
 }
+
+
+/* YUKU premium mobile app skin: deep plum canvas, warm gold actions. */
+.yuku-home-feed {
+  color: #fff7e8;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(112, 35, 180, .38), transparent 38%),
+    radial-gradient(ellipse at 90% 20%, rgba(212, 153, 48, .12), transparent 34%),
+    linear-gradient(180deg, #10051f 0%, #1a0730 54%, #10051f 100%);
+}
+.yuku-home-feed .yuku-home-categories,
+.yuku-home-feed .yuku-home-featured,
+.yuku-home-feed > .yuku-home-section,
+.yuku-home-feed > section {
+  background: transparent !important;
+}
+.yuku-home-feed .yuku-home-categories section,
+.yuku-home-feed .yuku-home-featured section {
+  background: transparent !important;
+}
+.yuku-home-feed h2,
+.yuku-home-feed h3 {
+  color: #fff8eb !important;
+}
+.yuku-home-feed p {
+  color: rgba(255, 248, 235, .72);
+}
+.yuku-home-feed .yuku-home-categories button {
+  background: linear-gradient(155deg, #321052, #1b082d) !important;
+  border-color: rgba(231, 190, 99, .32) !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.24);
+}
+.yuku-home-feed .yuku-home-categories button span:last-child {
+  color: #fff4dc !important;
+}
+.yuku-home-feed .yuku-home-categories button span:first-child {
+  background: linear-gradient(145deg, #f5d37c, #b77a20) !important;
+  color: #28103d !important;
+}
+.yuku-home-feed .yuku-home-featured > div > div:first-child span,
+.yuku-home-feed .yuku-home-featured > div > div:first-child button {
+  color: #f1ce79 !important;
+}
+.yuku-home-feed .yuku-home-featured article {
+  border: 1px solid rgba(230, 190, 104, .26);
+  box-shadow: 0 12px 30px rgba(0,0,0,.28);
+}
+.yuku-home-feed .yuku-home-hero > section {
+  background: transparent !important;
+}
+.yuku-home-feed .yuku-home-hero img {
+  border-color: rgba(235, 197, 111, .35);
+}
+@media (max-width: 640px) {
+  .yuku-home-feed {
+    min-height: 100dvh;
+    padding-bottom: 8px;
+  }
+  .yuku-home-categories section,
+  .yuku-home-featured section {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .yuku-home-feed .yuku-home-hero > section > div:first-child {
+    border-color: rgba(232, 190, 101, .38);
+    box-shadow: 0 12px 32px rgba(0,0,0,.35);
+  }
+}
