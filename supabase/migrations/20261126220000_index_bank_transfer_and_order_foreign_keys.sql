@@ -1,6 +1,6 @@
--- Cover foreign-key columns flagged by the Supabase performance advisor.
--- These indexes keep parent deletes/updates and future admin lookups efficient.
--- Current production tables are empty or near-empty; no data is rewritten.
+-- Cover foreign-key columns for the manual bank-transfer workflow.
+-- The legacy application has no public.orders relation; do not create an
+-- unrelated index against a table that is not part of this schema.
 CREATE INDEX IF NOT EXISTS idx_bank_transfer_audit_logs_actor_user_id
   ON public.bank_transfer_audit_logs (actor_user_id);
 
@@ -18,6 +18,3 @@ CREATE INDEX IF NOT EXISTS idx_bank_transfer_submissions_admin_user_id
 
 CREATE INDEX IF NOT EXISTS idx_bank_transfer_submissions_customer_id
   ON public.bank_transfer_submissions (customer_id);
-
-CREATE INDEX IF NOT EXISTS idx_orders_user_id
-  ON public.orders (user_id);
