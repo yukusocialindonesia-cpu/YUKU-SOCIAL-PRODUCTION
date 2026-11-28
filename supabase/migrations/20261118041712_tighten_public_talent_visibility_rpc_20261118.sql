@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.is_talent_publicly_visible(uuid) FROM PUBLIC, anon, authenticated;
