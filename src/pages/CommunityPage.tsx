@@ -198,11 +198,11 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[#F7F6F9] pb-8">
-      <div className="mx-auto w-full max-w-3xl px-0 py-2 sm:px-5 sm:py-5">
+    <div className="min-h-screen bg-[#F7F6F9] pb-5">
+      <div className="mx-auto w-full max-w-3xl px-3 py-3 sm:px-5 sm:py-5">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
-            <section className="border-y border-[#EAE6EF] bg-white px-4 py-4 sm:rounded-2xl sm:border sm:px-5 sm:shadow-sm">
+            <section className="rounded-2xl border border-[#EAE6EF] bg-white px-3 py-3 shadow-[0_4px_18px_rgba(50,19,79,0.045)] sm:px-5 sm:py-4 sm:shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#32134F] text-xs font-black text-white">
                   {user?.email?.slice(0, 1).toUpperCase() || 'YK'}
@@ -247,11 +247,11 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {notice && <p className="mt-3 rounded-lg bg-purple-50 px-3 py-2 text-[11px] text-purple-800">{notice}</p>}
             </section>
 
-            <div className="mt-5 flex flex-wrap items-end justify-between gap-3 px-4 sm:px-0">
+            <div className="mt-5 flex flex-wrap items-end justify-between gap-3 px-1 sm:px-0">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#765D88]">YUKU SOCIAL</p>
-                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Feed untuk kamu</h2>
-                <p className="mt-1 text-xs text-slate-500">Cerita dan aktivitas terbaru dari komunitas YUKU.</p>
+                <h2 className="mt-1 text-lg font-black tracking-tight text-[#241631] sm:text-2xl">Beranda</h2>
+                <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">Temukan cerita, teman, dan aktivitas.</p>
               </div>
               <button type="button" onClick={() => onNavigate('/talent')}
                 className="inline-flex items-center gap-1.5 text-xs font-extrabold text-purple-800 transition hover:text-fuchsia-700">
@@ -259,11 +259,11 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </button>
             </div>
 
-            <div aria-label="Filter topik komunitas" className="mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-0">
+            <div aria-label="Filter topik komunitas" className="mt-3 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] sm:px-0">
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
                 return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
-                  className={`min-h-11 shrink-0 rounded-full border px-4 py-3 text-[11px] font-bold shadow-sm transition ${active
+                  className={`min-h-9 shrink-0 rounded-full border px-3.5 py-2 text-[11px] font-bold shadow-sm transition ${active
                     ? 'border-purple-700 bg-purple-700 text-white shadow-sm'
                     : 'border-purple-100 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-800'}`}>
                   {topic}
@@ -280,7 +280,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            <div className="mt-2 space-y-2 sm:space-y-4">
+            <div className="mt-2 space-y-3 sm:space-y-4">
               {isLoading ? (
                 <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
               ) : errorMessage ? null : visiblePosts.length === 0 ? (
@@ -316,7 +316,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   )}
                 </div>
               ) : visiblePosts.map((post) => (
-                <article key={post.id} className="border-y border-[#EAE6EF] bg-white px-4 py-4 sm:rounded-2xl sm:border sm:p-5 sm:shadow-sm">
+                <article key={post.id} className="rounded-2xl border border-[#EAE6EF] bg-white px-3.5 py-4 shadow-[0_4px_18px_rgba(50,19,79,0.035)] sm:p-5 sm:shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#32134F] text-xs font-bold text-white">
                       {post.author_display_name.slice(0, 2).toUpperCase()}
