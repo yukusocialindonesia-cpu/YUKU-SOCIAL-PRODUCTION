@@ -46,6 +46,7 @@ import { HeroSlidesAdminPanel } from '../components/admin/HeroSlidesAdminPanel';
 import { AffiliateAdminPanel } from '../components/admin/AffiliateAdminPanel';
 import { AdminManagementPanel } from '../components/admin/AdminManagementPanel';
 import { AccountManagementPanel } from '../components/admin/AccountManagementPanel';
+import { AccountDeletionRequestsPanel } from '../components/admin/AccountDeletionRequestsPanel';
 import { CommunityModerationPanel } from '../components/admin/CommunityModerationPanel';
 import { TalentMediaModerationPanel } from '../components/admin/TalentMediaModerationPanel';
 
@@ -124,7 +125,7 @@ interface CustomerCancellationCaseItem {
   customer_name?: string;
 }
 
-type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'bank_transfer' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management' | 'account_management' | 'community_moderation' | 'media_moderation';
+type AdminTab = 'talents' | 'service_reviews' | 'customer_ktp' | 'payouts' | 'refunds' | 'bookings' | 'reports' | 'promos' | 'qris' | 'bank_transfer' | 'branding' | 'hero' | 'affiliate' | 'overview' | 'admin_management' | 'account_management' | 'account_deletion_requests' | 'community_moderation' | 'media_moderation';
 
 interface AdminBookingItem {
   id: string;
@@ -262,7 +263,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (canAccess('booking')) tabs.push('bookings');
     if (canAccess('finance')) tabs.push('payouts', 'refunds', 'qris', 'bank_transfer', 'affiliate');
     if (canAccess('support')) tabs.push('customer_ktp', 'reports', 'community_moderation');
-    if (isSuperAdmin) tabs.push('overview', 'hero', 'promos', 'branding', 'admin_management', 'account_management');
+    if (isSuperAdmin) tabs.push('overview', 'hero', 'promos', 'branding', 'admin_management', 'account_management', 'account_deletion_requests');
     return tabs;
   }, [adminAccess]);
 
@@ -1438,6 +1439,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           >
             <Users className={`w-3.5 h-3.5 ${activeTab === 'account_management' ? 'text-white' : 'text-indigo-600'}`} />
             <span>Manajemen Akun</span>
+          </button>
+          )}
+          {isSuperAdmin && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('account_deletion_requests')}
+            className={`h-[76px] w-full min-w-0 max-w-[88px] rounded-2xl border-0 bg-transparent px-1 py-1 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 text-center whitespace-normal leading-tight hover:bg-purple-50 [&>svg]:h-7 [&>svg]:w-7 [&>span]:text-[10px] [&>span]:font-semibold sm:h-24 sm:w-24 sm:gap-2.5 sm:[&>svg]:h-8 sm:[&>svg]:w-8 sm:[&>span]:text-[11px] ${activeTab === 'account_deletion_requests' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'}`}
+          >
+            <UserRoundX className={`w-3.5 h-3.5 ${activeTab === 'account_deletion_requests' ? 'text-white' : 'text-rose-600'}`} />
+            <span>Hapus Akun</span>
           </button>
           )}
           {isSuperAdmin && (
