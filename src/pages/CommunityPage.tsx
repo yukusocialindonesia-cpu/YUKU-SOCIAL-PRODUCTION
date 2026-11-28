@@ -198,82 +198,41 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_rgba(216,180,254,0.20),_transparent_42%),linear-gradient(180deg,#FCFAFF_0%,#F8F5FC_48%,#FFFFFF_100%)] pb-8">
-      <section className="relative isolate overflow-hidden border-b border-white/80 bg-gradient-to-br from-white/95 via-[#F7F0FF] to-[#FFF3F7] text-slate-900 shadow-[0_16px_45px_rgba(76,29,149,0.07)]">
-        <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-7 sm:px-6 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
-          <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-white/85 px-3 py-1.5 text-[11px] font-bold tracking-wide text-purple-800 shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" /> RUANG KOMUNITAS YUKU
-            </div>
-            <h1 className="text-3xl font-black leading-tight tracking-tight text-[#1E0938] sm:text-4xl md:text-5xl">
-              Temukan teman.
-              <span className="block bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
-                Mulai cerita baru.
-              </span>
-            </h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-              Berbagi minat, ngobrol dengan orang baru, dan temukan aktivitas seru bersama komunitas YUKU.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/80 px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm">
-                <Users className="h-3.5 w-3.5" /> Kenalan dengan komunitas
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/80 px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm">
-                <ShieldCheck className="h-3.5 w-3.5" /> Ruang yang saling menghargai
-              </span>
-            </div>
-          </div>
-          <div className="w-full rounded-2xl border border-purple-100 bg-white/90 p-4 shadow-[0_12px_35px_rgba(76,29,149,0.10)] md:max-w-xs md:p-5">
-            <p className="text-xs font-semibold text-purple-700">Dari obrolan sederhana...</p>
-            <p className="mt-1 text-lg font-extrabold leading-snug text-[#1E0938]">bisa jadi aktivitas yang berkesan.</p>
-            <div className="my-4 h-px bg-purple-100" />
-            <p className="text-xs leading-5 text-slate-600">
-              Temukan talent dan aktivitas yang cocok, lalu lakukan booking dengan aman melalui YUKU.
-            </p>
-            <button type="button" onClick={() => onNavigate('/talent')}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-3 text-xs font-extrabold text-white shadow-md transition hover:-translate-y-0.5 hover:brightness-105">
-              Jelajahi talent <ArrowUpRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 md:py-9 lg:px-8">
+    <div className="min-h-screen bg-[#F8F7FA] pb-5">
+      <div className="mx-auto w-full max-w-3xl px-3 py-3 sm:px-5 sm:py-5">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
-            <section className="relative overflow-hidden rounded-[1.6rem] border border-white/90 bg-white/85 p-4 shadow-[0_16px_42px_rgba(76,29,149,0.10)] ring-1 ring-purple-100/80 backdrop-blur-xl sm:rounded-[2rem] sm:p-5">
+            <section className="rounded-2xl border border-[#E7E1EA] bg-white px-3 py-3 shadow-[0_4px_18px_rgba(50,19,79,0.045)] sm:px-5 sm:py-4 sm:shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white shadow-sm">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#32134F] text-xs font-black text-white">
                   {user?.email?.slice(0, 1).toUpperCase() || 'YK'}
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm font-extrabold text-slate-900">Apa ceritamu hari ini?</h2>
+                  <h2 className="text-sm font-bold text-[#241631]">Bagikan sesuatu ke YUKU</h2>
                   <p className="mt-0.5 text-[11px] text-slate-500">
-                    {isAuthenticated ? 'Bagikan ide, cerita, atau rencana aktivitas.' : 'Masuk untuk mulai berbagi cerita dengan komunitas.'}
+                    {isAuthenticated ? 'Cerita, ide, atau rencana aktivitasmu.' : 'Masuk untuk mulai berbagi cerita dengan komunitas.'}
                   </p>
                 </div>
               </div>
               {isAuthLoading ? (
-                <div className="mt-4 rounded-xl bg-[#FAF8FC] p-4 text-xs text-slate-500">Memeriksa akun...</div>
+                <div className="mt-4 rounded-xl bg-[#F8F7FA] p-4 text-xs text-slate-500">Memeriksa akun...</div>
               ) : isAuthenticated ? (
                 <>
                   <textarea value={draft} onChange={(event) => setDraft(event.target.value)}
-                    placeholder="Tulis sesuatu yang ingin kamu bagikan..." rows={3} maxLength={1200}
-                    className="mt-4 w-full resize-none rounded-2xl border border-purple-100/90 bg-white/75 p-3.5 text-sm leading-6 text-slate-800 shadow-inner shadow-purple-950/[0.025] outline-none transition placeholder:text-slate-400 focus:border-purple-300 focus:ring-4 focus:ring-purple-100/80" />
+                    placeholder="Apa yang sedang kamu pikirkan?" rows={2} maxLength={1200}
+                    className="mt-3 w-full resize-none rounded-xl border border-[#E7E1EA] bg-[#F8F7FA] p-3 text-sm leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#32134F] focus:ring-2 focus:ring-[#32134F]/10" />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2">
                       <label className="text-[11px] font-bold text-slate-500" htmlFor="community-topic">Topik</label>
                       <select id="community-topic" value={draftTopic}
                         onChange={(event) => setDraftTopic(event.target.value as CommunityTopic)}
-                        className="min-h-11 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100">
+                        className="min-h-11 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-[#E5DCEB] focus:ring-2 focus:ring-[#32134F]/10">
                         {topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
                       </select>
                     </div>
                     <button type="button" onClick={() => void publishPost()}
                       disabled={!draft.trim() || isSubmitting}
-                      className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">
+                      className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#32134F] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#482064] disabled:cursor-not-allowed disabled:opacity-40">
                       <Send className="h-3.5 w-3.5" /> {isSubmitting ? 'Mengirim...' : 'Bagikan'}
                     </button>
                   </div>
@@ -281,32 +240,32 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                 </>
               ) : (
                 <button type="button" onClick={() => onNavigate('/login')}
-                  className="mt-4 flex w-full items-center justify-between rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 text-left text-xs font-bold text-purple-800 transition hover:bg-purple-100">
+                  className="mt-4 flex w-full items-center justify-between rounded-xl border border-[#E5DCEB] bg-[#F4F0F7] px-4 py-3 text-left text-xs font-bold text-[#32134F] transition hover:bg-[#F4F0F7]">
                   Login untuk membuat postingan <ArrowRight className="h-4 w-4" />
                 </button>
               )}
-              {notice && <p className="mt-3 rounded-lg bg-purple-50 px-3 py-2 text-[11px] text-purple-800">{notice}</p>}
+              {notice && <p className="mt-3 rounded-lg bg-[#F4F0F7] px-3 py-2 text-[11px] text-[#32134F]">{notice}</p>}
             </section>
 
-            <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
+            <div className="mt-5 flex flex-wrap items-end justify-between gap-3 px-1 sm:px-0">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-purple-700">Temukan obrolan</p>
-                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Cerita dari komunitas</h2>
-                <p className="mt-1 text-xs text-slate-500">Postingan terbaru dari anggota YUKU.</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6478]">YUKU SOCIAL</p>
+                <h2 className="mt-1 text-lg font-black tracking-tight text-[#241631] sm:text-2xl">Beranda</h2>
+                <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">Temukan cerita, teman, dan aktivitas.</p>
               </div>
               <button type="button" onClick={() => onNavigate('/talent')}
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-purple-800 transition hover:text-fuchsia-700">
+                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#32134F] transition hover:text-[#32134F]">
                 Cari teman <Search className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            <div aria-label="Filter topik komunitas" className="mt-4 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
+            <div aria-label="Filter topik komunitas" className="mt-3 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] sm:px-0">
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
                 return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
-                  className={`min-h-11 shrink-0 rounded-full border px-4 py-3 text-[11px] font-bold shadow-sm transition ${active
-                    ? 'border-purple-700 bg-purple-700 text-white shadow-sm'
-                    : 'border-purple-100 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-800'}`}>
+                  className={`min-h-9 shrink-0 rounded-full border px-3.5 py-2 text-[11px] font-bold shadow-sm transition ${active
+                    ? 'border-[#32134F] bg-[#32134F] text-white shadow-sm'
+                    : 'border-[#E5DCEB] bg-white text-slate-600 hover:border-[#E5DCEB] hover:text-[#32134F]'}`}>
                   {topic}
                 </button>;
               })}
@@ -321,12 +280,12 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            <div className="mt-3 space-y-4">
+            <div className="mt-2 space-y-3 sm:space-y-4">
               {isLoading ? (
                 <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
               ) : errorMessage ? null : visiblePosts.length === 0 ? (
-                <div className="rounded-[1.7rem] border border-dashed border-purple-200/90 bg-white/85 px-5 py-9 text-center shadow-[0_14px_38px_rgba(76,29,149,0.08)] ring-1 ring-white backdrop-blur-lg">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-700">
+                <div className="rounded-[1.7rem] border border-dashed border-[#E5DCEB]/90 bg-white/85 px-5 py-9 text-center shadow-[0_4px_18px_rgba(50,19,79,0.05)] ring-1 ring-white backdrop-blur-lg">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F4F0F7] text-[#32134F]">
                     <MessageCircle className="h-6 w-6" />
                   </div>
                   <h3 className="mt-3 text-sm font-extrabold text-slate-900">
@@ -340,43 +299,43 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   {activeTopic === 'Semua' ? (
                     isAuthenticated ? (
                       <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                        className="mt-4 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800">
+                        className="mt-4 rounded-xl bg-[#32134F] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#32134F]">
                         Buat cerita pertama
                       </button>
                     ) : (
                       <button type="button" onClick={() => onNavigate('/login')}
-                        className="mt-4 rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800">
+                        className="mt-4 rounded-xl bg-[#32134F] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#32134F]">
                         Login untuk mulai berbagi
                       </button>
                     )
                   ) : (
                     <button type="button" onClick={() => setActiveTopic('Semua')}
-                      className="mt-4 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-800 transition hover:bg-purple-100">
+                      className="mt-4 rounded-xl border border-[#E5DCEB] bg-[#F4F0F7] px-4 py-2.5 text-xs font-bold text-[#32134F] transition hover:bg-[#F4F0F7]">
                       Lihat semua cerita
                     </button>
                   )}
                 </div>
               ) : visiblePosts.map((post) => (
-                <article key={post.id} className="group rounded-[1.6rem] border border-white/90 bg-white/90 p-4 shadow-[0_14px_38px_rgba(76,29,149,0.075)] ring-1 ring-purple-100/80 backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-purple-200 hover:shadow-[0_20px_48px_rgba(76,29,149,0.13)] sm:rounded-[2rem] sm:p-5">
+                <article key={post.id} className="rounded-2xl border border-[#E7E1EA] bg-white px-3.5 py-4 shadow-[0_4px_18px_rgba(50,19,79,0.035)] sm:p-5 sm:shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white ring-4 ring-purple-50">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#32134F] text-xs font-bold text-white">
                       {post.author_display_name.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-extrabold text-slate-900">{post.author_display_name}</p>
                       <p className="mt-0.5 truncate text-[10px] text-slate-500">{formatTime(post.created_at)}</p>
                     </div>
-                    <span className="shrink-0 rounded-full bg-purple-50 px-3 py-1.5 text-[10px] font-bold text-purple-800">{post.topic}</span>
+                    <span className="shrink-0 rounded-full bg-[#F4F0F7] px-3 py-1.5 text-[10px] font-semibold text-[#32134F]">{post.topic}</span>
                   </div>
                   <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{post.body}</p>
-                  <div className="mt-4 flex items-center gap-4 border-t border-purple-50 pt-3 sm:gap-5">
+                  <div className="mt-4 flex items-center gap-4 border-t border-[#E7E1EA] pt-3 sm:gap-5">
                     <button type="button" onClick={() => void handleLike(post)} disabled={busyLikeIds.includes(post.id)} aria-pressed={post.likedByMe}
-                      className={`inline-flex min-h-11 items-center gap-2 pr-2 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
+                      className={`inline-flex min-h-11 items-center gap-2 pr-2 text-xs font-bold transition ${post.likedByMe ? 'text-[#32134F]' : 'text-slate-500 hover:text-[#32134F]'}`}>
                       <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes_count} Suka
                     </button>
                     <button type="button" onClick={() => setOpenComments((current) => current === post.id ? null : post.id)}
                       aria-expanded={openComments === post.id}
-                      className="inline-flex min-h-11 items-center gap-2 pr-2 text-xs font-bold text-slate-500 transition hover:text-purple-700">
+                      className="inline-flex min-h-11 items-center gap-2 pr-2 text-xs font-bold text-slate-500 transition hover:text-[#32134F]">
                       <MessageCircle className="h-4 w-4" /> {post.comments_count} Komentar
                     </button>
                     <button type="button" onClick={() => {
@@ -401,7 +360,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                     <div className="mt-3 border-t border-slate-100 pt-3">
                       <div className="space-y-2">
                         {post.comments.map((comment) => (
-                          <div key={comment.id} className="rounded-2xl border border-purple-100/70 bg-white/75 px-3 py-2.5 shadow-sm">
+                          <div key={comment.id} className="rounded-2xl border border-[#E5DCEB]/70 bg-white/75 px-3 py-2.5 shadow-sm">
                             <div className="flex items-start justify-between gap-3">
                               <p className="min-w-0 text-xs leading-5 text-slate-600">
                                 <span className="font-extrabold text-slate-800">{comment.author_display_name}: </span>{comment.body}
@@ -440,14 +399,14 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                             onChange={(event) => setCommentDrafts((current) => ({ ...current, [post.id]: event.target.value }))}
                             onKeyDown={(event) => { if (event.key === 'Enter') void publishComment(post.id); }}
                             maxLength={600} placeholder="Tulis komentar..."
-                            className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100" />
+                            className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-[#E5DCEB] focus:ring-2 focus:ring-[#32134F]/10" />
                           <button type="button" onClick={() => void publishComment(post.id)}
                             disabled={!(commentDrafts[post.id] || '').trim() || busyCommentPostIds.includes(post.id)}
-                            className="rounded-xl bg-purple-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-purple-800 disabled:opacity-40">Kirim</button>
+                            className="rounded-xl bg-[#32134F] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#32134F] disabled:opacity-40">Kirim</button>
                         </div>
                       ) : (
                         <button type="button" onClick={() => onNavigate('/login')}
-                          className="mt-3 text-xs font-bold text-purple-700">Login untuk berkomentar</button>
+                          className="mt-3 text-xs font-bold text-[#32134F]">Login untuk berkomentar</button>
                       )}
                     </div>
                   )}
@@ -457,29 +416,29 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
           </main>
 
           <aside className="hidden space-y-4 lg:block">
-            <section className="rounded-[1.6rem] border border-white bg-white/85 p-5 shadow-[0_12px_34px_rgba(76,29,149,0.075)] ring-1 ring-purple-100/80 backdrop-blur-xl">
+            <section className="rounded-[1.6rem] border border-white bg-white/85 p-5 shadow-[0_4px_18px_rgba(50,19,79,0.05)] ring-1 ring-[#E5DCEB] backdrop-blur-xl">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-extrabold text-slate-900">Jelajahi topik</h3>
-                <Hash className="h-4 w-4 text-purple-600" />
+                <Hash className="h-4 w-4 text-[#32134F]" />
               </div>
               <p className="mt-1 text-xs leading-5 text-slate-500">Pilih ruang obrolan sesuai minatmu.</p>
               <div className="mt-3 space-y-1">
                 {topics.map((topic) => (
                   <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
-                    className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2.5 text-left text-xs font-semibold text-slate-600 transition hover:bg-purple-50 hover:text-purple-800">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50 text-purple-600"><Hash className="h-3.5 w-3.5" /></span>
+                    className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2.5 text-left text-xs font-semibold text-slate-600 transition hover:bg-[#F4F0F7] hover:text-[#32134F]">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F4F0F7] text-[#32134F]"><Hash className="h-3.5 w-3.5" /></span>
                     {topic}
                     <ArrowRight className="ml-auto h-3.5 w-3.5 text-slate-300" />
                   </button>
                 ))}
               </div>
             </section>
-            <section className="overflow-hidden rounded-[1.6rem] border border-white bg-gradient-to-br from-purple-50/95 via-white to-fuchsia-50/95 p-5 shadow-[0_14px_36px_rgba(76,29,149,0.08)] ring-1 ring-purple-100/80">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-purple-700 shadow-sm"><Users className="h-5 w-5" /></div>
+            <section className="overflow-hidden rounded-[1.6rem] border border-white bg-white p-5 shadow-[0_4px_18px_rgba(50,19,79,0.05)] ring-1 ring-[#E5DCEB]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#32134F] shadow-sm"><Users className="h-5 w-5" /></div>
               <h3 className="mt-3 text-sm font-extrabold text-slate-900">Dari kenalan ke aktivitas</h3>
               <p className="mt-2 text-xs leading-5 text-slate-600">Temukan talent, pilih aktivitas yang kamu suka, lalu lakukan booking melalui sistem YUKU.</p>
               <button type="button" onClick={() => onNavigate('/talent')}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 to-fuchsia-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110">
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#32134F] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110">
                 Lihat talent <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </section>

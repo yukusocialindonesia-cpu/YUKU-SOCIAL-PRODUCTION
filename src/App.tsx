@@ -5,7 +5,6 @@
 
 import React, { Suspense, lazy, useState, useEffect, useCallback } from 'react';
 import { MainLayout } from './layouts/MainLayout';
-import { HomePage } from './pages/HomePage';
 
 // Load secondary routes only when a visitor opens them. Keep the homepage eager
 // so the first screen remains available without an additional route-chunk request.
@@ -233,7 +232,7 @@ export default function App() {
   const renderCurrentPage = () => {
     switch (currentPath) {
       case '/':
-        return <HomePage onNavigate={handleNavigate} />;
+        return <CommunityPage onNavigate={handleNavigate} />;
       case '/jasa-profesional':
         return <ProfessionalServicesPage onNavigate={handleNavigate} />;
       case '/daftar-jasa-profesional':
@@ -308,7 +307,7 @@ export default function App() {
       case '/kebijakan-privasi':
         return <PrivacyPolicyPage />;
       default:
-        return <HomePage onNavigate={handleNavigate} />;
+        return <CommunityPage onNavigate={handleNavigate} />;
     }
   };
 
