@@ -18,11 +18,9 @@ alter policy talent_media_owner_or_admin_delete on public.talent_media
 using ((auth.uid() = talent_id) or public.has_admin_permission('talent'));
 alter policy talent_media_select_public_or_owner on public.talent_media
 using (public.is_talent_publicly_visible(talent_id) or auth.uid()=talent_id or public.has_admin_permission('talent'));
-alter policy talent_availability_owner_delete on public.talent_availability
-using ((auth.uid()=talent_id) or public.has_admin_permission('talent'));
-alter policy talent_availability_owner_insert on public.talent_availability
-with check ((auth.uid()=talent_id) or public.has_admin_permission('talent'));
-alter policy talent_availability_owner_update on public.talent_availability
+-- The baseline migration defines one FOR ALL owner policy (owner_all),
+-- not separate INSERT/UPDATE/DELETE policies. Scope that existing policy.
+alter policy talent_availability_owner_all on public.talent_availability
 using ((auth.uid()=talent_id) or public.has_admin_permission('talent'))
 with check ((auth.uid()=talent_id) or public.has_admin_permission('talent'));
 alter policy talent_availability_select_visible on public.talent_availability
