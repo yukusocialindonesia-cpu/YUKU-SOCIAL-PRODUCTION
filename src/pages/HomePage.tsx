@@ -146,6 +146,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       </div>
 
       <div className="yuku-home-section"><ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} /></div>
+      <section className="yuku-home-section px-4 py-3 md:hidden" aria-label="Community YUKU">
+        <button
+          type="button"
+          onClick={() => onNavigate('/komunitas')}
+          className="flex w-full items-center gap-3 rounded-[18px] border border-[#2563EB]/12 bg-white p-3 text-left shadow-[0_5px_16px_rgba(37,99,235,0.06)] transition active:scale-[0.99]"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#2563EB] text-white">
+            <Users className="h-5 w-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13px] font-extrabold text-[#2563EB]">Community YUKU</span>
+            <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">Berbagi cerita, temukan obrolan, dan terhubung dengan komunitas</span>
+          </span>
+          <span className="shrink-0 text-[11px] font-bold text-[#2563EB]">Buka →</span>
+        </button>
+      </section>
       <div className="hidden sm:block yuku-home-section"><EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} /></div>
 
       <div className="hidden sm:block yuku-home-section bg-white">
