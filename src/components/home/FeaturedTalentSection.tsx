@@ -89,16 +89,16 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {/* Section Header */}
         <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
           <div>
-            <span className="text-[10.5px] sm:text-xs font-bold text-[#32134F]/65 tracking-wider uppercase mb-0.5 sm:mb-1 block">
+            <span className="text-[10.5px] sm:text-xs font-bold text-[#173B70]/65 tracking-wider uppercase mb-0.5 sm:mb-1 block">
               TEMUKAN ORANG BARU
             </span>
-            <h2 className="text-lg sm:text-3xl font-extrabold text-[#32134F] tracking-tight">
+            <h2 className="text-lg sm:text-3xl font-extrabold text-[#173B70] tracking-tight">
               Teman yang Bisa Ditemui
             </h2>
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#32134F] hover:text-[#5A2A7A] transition-colors cursor-pointer"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#173B70] hover:text-[#3478D4] transition-colors cursor-pointer"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua</span>
@@ -143,7 +143,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             <button
               type="button"
               onClick={() => setQuickFilter('all')}
-              className="px-4 py-2 bg-purple-700 text-white font-semibold rounded-lg hover:bg-purple-800 transition-colors cursor-pointer"
+              className="px-4 py-2 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors cursor-pointer"
             >
               Tampilkan semua
             </button>
@@ -154,7 +154,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             type="button"
             aria-label="Geser ke kiri"
             onClick={() => scrollByCards(-1)}
-            className="hidden lg:flex absolute -left-4 top-1/3 z-10 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg border border-purple-100 text-purple-800 hover:bg-purple-50 cursor-pointer"
+            className="hidden lg:flex absolute -left-4 top-1/3 z-10 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg border border-blue-100 text-blue-800 hover:bg-blue-50 cursor-pointer"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -162,7 +162,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             type="button"
             aria-label="Geser ke kanan"
             onClick={() => scrollByCards(1)}
-            className="hidden lg:flex absolute -right-4 top-1/3 z-10 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg border border-purple-100 text-purple-800 hover:bg-purple-50 cursor-pointer"
+            className="hidden lg:flex absolute -right-4 top-1/3 z-10 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg border border-blue-100 text-blue-800 hover:bg-blue-50 cursor-pointer"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
