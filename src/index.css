@@ -150,3 +150,74 @@ body {
     padding-bottom: 4px;
   }
 }
+
+
+/* YUKU premium mobile app skin: official deep-purple palette. */
+.yuku-home-feed {
+  color: #FFFFFF;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(117, 65, 200, .28), transparent 38%),
+    radial-gradient(ellipse at 90% 20%, rgba(167, 139, 250, .12), transparent 34%),
+    linear-gradient(180deg, #32134F 0%, #28103F 54%, #32134F 100%);
+}
+.yuku-home-feed .yuku-home-categories,
+.yuku-home-feed .yuku-home-featured,
+.yuku-home-feed > .yuku-home-section,
+.yuku-home-feed > section {
+  background: transparent !important;
+}
+.yuku-home-feed .yuku-home-categories > section,
+.yuku-home-feed .yuku-home-featured > section {
+  background: transparent !important;
+}
+.yuku-home-feed h2,
+.yuku-home-feed h3 {
+  color: #FFFFFF !important;
+}
+.yuku-home-feed p {
+  color: rgba(255, 255, 255, .76);
+}
+.yuku-home-feed .yuku-home-categories button {
+  background: linear-gradient(155deg, #45206D, #32134F) !important;
+  border-color: rgba(167, 139, 250, .34) !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.24);
+}
+.yuku-home-feed .yuku-home-categories button span:last-child {
+  color: #FFFFFF !important;
+}
+.yuku-home-feed .yuku-home-categories button span:first-child {
+  background: linear-gradient(145deg, #A78BFA, #7541C8) !important;
+  color: #32134F !important;
+}
+.yuku-home-feed .yuku-home-featured > div > div:first-child span,
+.yuku-home-feed .yuku-home-featured > div > div:first-child button {
+  color: #A78BFA !important;
+}
+.yuku-home-feed .yuku-home-featured > section {
+  background: transparent !important;
+}
+.yuku-home-feed .yuku-home-featured article {
+  border: 1px solid rgba(167, 139, 250, .28);
+  box-shadow: 0 12px 30px rgba(0,0,0,.28);
+}
+.yuku-home-feed .yuku-home-hero > section {
+  background: transparent !important;
+}
+.yuku-home-feed .yuku-home-hero img {
+  border-color: rgba(167, 139, 250, .38);
+}
+@media (max-width: 640px) {
+  .yuku-home-feed {
+    min-height: 100dvh;
+    padding-bottom: 8px;
+  }
+  .yuku-home-categories > section,
+  .yuku-home-featured > section {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .yuku-home-feed .yuku-home-hero > section > div:first-child {
+    border-color: rgba(167, 139, 250, .38);
+    box-shadow: 0 12px 32px rgba(0,0,0,.35);
+  }
+}
