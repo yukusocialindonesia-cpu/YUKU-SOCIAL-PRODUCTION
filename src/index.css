@@ -1,5 +1,44 @@
 @import "tailwindcss";
 
+/* YUKU Premium Purple — shared brand system for every route */
+@theme {
+  --color-purple-50: #F6F1FF;
+  --color-purple-100: #EEE5FF;
+  --color-purple-200: #DDCCFF;
+  --color-purple-300: #C5A8FF;
+  --color-purple-400: #A77BFF;
+  --color-purple-500: #8B5CF6;
+  --color-purple-600: #7C3AED;
+  --color-purple-700: #6C1DC9;
+  --color-purple-800: #53169D;
+  --color-purple-900: #3D1174;
+  --color-purple-950: #260D3D;
+
+  --color-violet-50: #F6F1FF;
+  --color-violet-100: #EEE5FF;
+  --color-violet-200: #DDCCFF;
+  --color-violet-300: #C5A8FF;
+  --color-violet-400: #A77BFF;
+  --color-violet-500: #8B5CF6;
+  --color-violet-600: #7C3AED;
+  --color-violet-700: #6C1DC9;
+  --color-violet-800: #53169D;
+  --color-violet-900: #3D1174;
+  --color-violet-950: #260D3D;
+
+  --color-fuchsia-50: #F6F1FF;
+  --color-fuchsia-100: #EEE5FF;
+  --color-fuchsia-200: #DDCCFF;
+  --color-fuchsia-300: #C5A8FF;
+  --color-fuchsia-400: #A77BFF;
+  --color-fuchsia-500: #8B5CF6;
+  --color-fuchsia-600: #7C3AED;
+  --color-fuchsia-700: #6C1DC9;
+  --color-fuchsia-800: #53169D;
+  --color-fuchsia-900: #3D1174;
+  --color-fuchsia-950: #260D3D;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -8,21 +47,21 @@
 
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F6F1FF;
+    color: #24133D;
   }
 }
 
-.bg-yuku-gradient {
-  background: linear-gradient(135deg, #0A2A6B 0%, #1E63E9 100%);
+.bg-yuku-gradient,
+.bg-yuku-accent {
+  background: linear-gradient(135deg, #53169D 0%, #6C1DC9 55%, #8B5CF6 100%);
 }
 
 .text-yuku-gradient {
-  background: linear-gradient(135deg, #0A2A6B 0%, #1E63E9 100%);
+  background: linear-gradient(135deg, #53169D 0%, #6C1DC9 55%, #8B5CF6 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.bg-yuku-accent {
-  background: linear-gradient(135deg, #0A2A6B 0%, #1E63E9 100%);
 }
 
 html,
@@ -32,7 +71,7 @@ body,
 }
 
 body {
-  background-color: #F2F6FF;
+  background-color: #F6F1FF;
   background-image: none;
   background-attachment: scroll;
 }
@@ -60,35 +99,23 @@ body {
   z-index: 1;
 }
 
-@media (max-width: 640px) {
-  #root::before {
-    background-position: right 8px center;
-    background-size: 230px;
-    opacity: 0.025;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}
-
 :root {
-  --yuku-primary: #1E63E9;
-  --yuku-primary-dark: #0A2A6B;
-  --yuku-background: #F2F6FF;
+  color-scheme: light;
+  --yuku-primary: #6C1DC9;
+  --yuku-primary-dark: #3D1174;
+  --yuku-primary-royal: #8B5CF6;
+  --yuku-background: #F6F1FF;
   --yuku-white: #FFFFFF;
   --yuku-surface: #FFFFFF;
   --yuku-muted: #8A93A6;
   --yuku-online: #22C55E;
-  --yuku-primary-soft: rgba(30, 99, 233, .08);
-  --yuku-primary-border: rgba(30, 99, 233, .16);
+  --yuku-primary-soft: rgba(108, 29, 201, .08);
+  --yuku-primary-border: rgba(108, 29, 201, .16);
 }
 
 .yuku-home-feed {
-  color: var(--yuku-primary);
-  background: var(--yuku-surface);
+  color: var(--yuku-primary-dark);
+  background: var(--yuku-background);
 }
 
 .yuku-home-feed button:focus-visible,
@@ -98,6 +125,12 @@ body {
 }
 
 @media (max-width: 640px) {
+  #root::before {
+    background-position: right 8px center;
+    background-size: 230px;
+    opacity: 0.025;
+  }
+
   .yuku-home-feed {
     min-height: 100dvh;
     padding-bottom: 88px;
@@ -110,6 +143,12 @@ body {
   }
 
   .yuku-home-featured article {
-    box-shadow: 0 4px 14px rgba(30, 99, 233, .06);
+    box-shadow: 0 4px 14px rgba(108, 29, 201, .08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
