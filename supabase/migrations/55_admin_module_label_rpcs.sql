@@ -22,5 +22,9 @@ revoke all on function public.get_admin_talent_labels(uuid[]) from public,anon;
 revoke all on function public.get_admin_report_booking_summaries(uuid[]) from public,anon;
 grant execute on function public.get_admin_talent_labels(uuid[]) to authenticated;
 grant execute on function public.get_admin_report_booking_summaries(uuid[]) to authenticated;
-alter policy activity_categories_select_public on public.activity_categories
-using (is_active or public.is_super_admin() or public.has_admin_permission('talent'));
+
+-- Activity category SELECT policies are already correctly scoped by
+-- 20261121110017_fix_activity_categories_anon_read.sql:
+-- anon sees active categories; authenticated users see active categories
+-- plus inactive categories when they have the Super Admin/Talent permission.
+-- Do not ALTER a legacy policy name that no longer exists.
