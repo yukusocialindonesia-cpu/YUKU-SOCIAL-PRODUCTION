@@ -74,7 +74,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
   ];
 
   const navShell =
-    'md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+8px)] z-40 mx-auto w-[calc(100%-16px)] sm:w-[calc(100%-24px)] max-w-[480px] rounded-[20px] sm:rounded-[24px] border border-[#2563EB] bg-[#2563EB] px-1.5 sm:px-2 py-0.5 shadow-[0_8px_24px_rgba(37,99,235,0.24)] backdrop-blur-2xl';
+    'md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+8px)] z-40 mx-auto w-[calc(100%-16px)] sm:w-[calc(100%-24px)] max-w-[480px] rounded-[20px] sm:rounded-[24px] border border-[#6C1DC9] bg-[#6C1DC9] px-1.5 sm:px-2 py-0.5 shadow-[0_8px_24px_rgba(108,29,201,0.24)] backdrop-blur-2xl';
 
   if (isAuthLoading) {
     return (
@@ -101,20 +101,20 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPath, o
                 aria-current={active ? 'page' : undefined}
                 className={`group relative flex min-h-[52px] w-full flex-col items-center justify-center gap-1 rounded-[14px] sm:rounded-[18px] px-0.5 sm:px-1 py-1 text-[10px] sm:text-[11px] font-semibold transition-all duration-200 active:scale-95 ${
                   active
-                    ? 'bg-white text-[#2563EB] shadow-[0_2px_8px_rgba(0,0,0,0.16)]'
+                    ? 'bg-white text-[#6C1DC9] shadow-[0_2px_8px_rgba(0,0,0,0.16)]'
                     : 'text-white/75 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <span className={`flex h-6 w-8 sm:h-7 sm:w-9 items-center justify-center rounded-xl transition-all duration-200 ${
                   active
-                    ? 'bg-[#2563EB] text-white'
+                    ? 'bg-[#6C1DC9] text-white'
                     : 'text-white/75 group-hover:text-white'
                 }`}>
                   {item.icon}
                 </span>
                 <span className="max-w-full truncate leading-none">{item.label}</span>
                 {active && (
-                  <span className="absolute -bottom-0.5 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-[#2563EB]" />
+                  <span className="absolute -bottom-0.5 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-[#6C1DC9]" />
                 )}
               </button>
             </li>
