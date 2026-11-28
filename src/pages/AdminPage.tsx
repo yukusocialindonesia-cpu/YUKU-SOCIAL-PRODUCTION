@@ -1400,7 +1400,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 activeTab === 'bank_transfer' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
               }`}
             >
-              <CreditCard className={`w-3.5 h-3.5 ${activeTab === 'bank_transfer' ? 'text-white' : 'text-blue-600'}`} />
+              <CreditCard className={`w-3.5 h-3.5 ${activeTab === 'bank_transfer' ? 'text-white' : 'text-purple-600'}`} />
               <span>Transfer Bank</span>
             </button>
           )}
@@ -1444,7 +1444,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               activeTab === 'account_management' ? 'border-purple-700 bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md' : 'text-slate-700'
             }`}
           >
-            <Users className={`w-3.5 h-3.5 ${activeTab === 'account_management' ? 'text-white' : 'text-indigo-600'}`} />
+            <Users className={`w-3.5 h-3.5 ${activeTab === 'account_management' ? 'text-white' : 'text-purple-600'}`} />
             <span>Manajemen Akun</span>
           </button>
           )}
@@ -1966,7 +1966,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         <div className="text-[10px] text-slate-600">Batas penahanan: {c.admin_hold_until ? new Date(c.admin_hold_until).toLocaleString('id-ID') : 'Belum diperpanjang'}</div>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
-                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'refund_customer')} className="min-h-11 py-2.5 rounded-lg bg-blue-600 text-white text-xs font-bold disabled:opacity-50">Refund Customer</button>
+                        <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'refund_customer')} className="min-h-11 py-2.5 rounded-lg bg-purple-700 text-white text-xs font-bold disabled:opacity-50">Refund Customer</button>
                         <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'compensate_talent')} className="min-h-11 py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-50">Kompensasi Talent</button>
                         <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'extend_hold')} className="min-h-11 py-2.5 rounded-lg bg-amber-600 text-white text-xs font-bold disabled:opacity-50">Perpanjang Tahan</button>
                       </div>
@@ -1987,7 +1987,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           <td className="p-3 text-slate-600">{c.admin_hold_until ? new Date(c.admin_hold_until).toLocaleString('id-ID') : 'Belum diperpanjang'}</td>
                           <td className="p-3">
                             <div className="flex flex-wrap gap-2">
-                              <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'refund_customer')} className="px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold disabled:opacity-50">Refund Customer</button>
+                              <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'refund_customer')} className="px-2.5 py-1.5 rounded-lg bg-purple-700 text-white font-semibold disabled:opacity-50">Refund Customer</button>
                               <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'compensate_talent')} className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold disabled:opacity-50">Kompensasi Talent</button>
                               <button disabled={isSubmittingAction} onClick={() => handleResolveCancellationCase(c, 'extend_hold')} className="px-2.5 py-1.5 rounded-lg bg-amber-600 text-white font-semibold disabled:opacity-50">Perpanjang Tahan</button>
                             </div>
@@ -2229,7 +2229,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           type="button"
                           onClick={() => handleViewCustomerKtp(c)}
                           disabled={loadingCustomerKtpId === c.id}
-                          className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-xs hover:bg-indigo-100 disabled:opacity-50"
+                          className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-purple-50 text-purple-800 font-bold text-xs hover:bg-indigo-100 disabled:opacity-50"
                         >
                           {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
                         </button>
@@ -2725,7 +2725,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     display_name: selectedKtpItem.display_name,
                   })}
                   disabled={loadingCustomerKtpId === selectedKtpItem.id}
-                  className="min-h-11 w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-700 text-white font-bold text-xs hover:bg-indigo-800 disabled:opacity-50"
+                  className="min-h-11 w-full sm:w-auto px-4 py-2.5 rounded-lg bg-purple-700 text-white font-bold text-xs hover:bg-purple-800 disabled:opacity-50"
                 >
                   {loadingCustomerKtpId === selectedKtpItem.id ? 'Membuka foto...' : 'Lihat Foto KTP Talent'}
                 </button>
