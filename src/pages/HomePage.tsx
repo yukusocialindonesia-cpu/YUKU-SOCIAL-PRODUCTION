@@ -89,13 +89,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </div>
 
-      {/* Aktivitas adalah konten utama setelah pencarian, bukan tertutup pilihan mode. */}
       <div className="yuku-home-section yuku-home-categories bg-white">
         <ActivityCategories onSelectCategory={handleSelectCategory} />
       </div>
 
-      {/* Pilihan mode menjadi pintasan sekunder setelah kategori aktivitas. */}
-      <div className="yuku-home-section bg-white">
+      {/* Pintasan mode tetap tersedia di desktop; di HP dihilangkan karena pencarian sudah mencakup filter layanan. */}
+      <div className="hidden sm:block yuku-home-section bg-white">
         <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
       </div>
 
@@ -123,12 +122,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       </div>
 
       <div className="hidden sm:block">
-      <TalentCtaSection
-        onExploreClick={() => onNavigate('/talent')}
-        onRegisterCustomerClick={() => onNavigate('/register')}
-        onRegisterClick={() => onNavigate('/daftar-talent')}
-        onProfessionalRegisterClick={() => onNavigate('/daftar-jasa-profesional')}
-      />
+        <TalentCtaSection
+          onExploreClick={() => onNavigate('/talent')}
+          onRegisterCustomerClick={() => onNavigate('/register')}
+          onRegisterClick={() => onNavigate('/daftar-talent')}
+          onProfessionalRegisterClick={() => onNavigate('/daftar-jasa-profesional')}
+        />
       </div>
       <div className="hidden sm:block"><HomeFaqSection onViewAllFaqClick={() => onNavigate('/faq')} /></div>
     </div>
