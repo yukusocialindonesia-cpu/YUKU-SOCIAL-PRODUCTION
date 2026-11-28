@@ -231,3 +231,63 @@ BEGIN
     CREATE POLICY qris_display_admin_update ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'qris-payment-display' AND public.is_admin()) WITH CHECK (bucket_id = 'qris-payment-display' AND public.is_admin());
   END IF;
 END $$;
+
+
+-- Replay the legacy customer-cancellation tables. Their original migrations use
+-- numeric filenames and are skipped by timestamp-only clean database replay.
+CREATE TABLE IF NOT EXISTS public.customer_cancellation_cases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  booking_id UUID NOT NULL UNIQUE REFERENCES public.bookings(id),
+  payment_id UUID REFERENCES public.payments(id),
+  customer_id UUID NOT NULL REFERENCES public.customer_profiles(id),
+  gross_amount BIGINT NOT NULL CHECK (gross_amount >= 0),
+  automatic_refund_amount BIGINT NOT NULL DEFAULT 0 CHECK (automatic_refund_amount >= 0),
+  retained_pending_admin_amount BIGINT NOT NULL DEFAULT 0 CHECK (retained_pending_admin_amount >= 0),
+  hours_before_session NUMERIC(10,2),
+  policy_code TEXT NOT NULL CHECK (policy_code IN ('unpaid_cancel','more_than_24h','6_to_24h','under_6h')),
+  status TEXT NOT NULL DEFAULT 'pending_admin_review'
+    CHECK (status IN ('no_admin_review_required','pending_admin_review','resolved')),
+  admin_decision TEXT,
+  admin_notes TEXT,
+  resolved_by_admin_id UUID REFERENCES public.users(id),
+  resolved_at TIMESTAMPTZ,
+  admin_hold_until TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (automatic_refund_amount + retained_pending_admin_amount = gross_amount)
+);
+ALTER TABLE public.customer_cancellation_cases ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS customer_cancellation_case_customer_or_admin_select
+  ON public.customer_cancellation_cases;
+DROP POLICY IF EXISTS "customer_cancellation_case_customer_or_admin_select"
+  ON public.customer_cancellation_cases;
+CREATE POLICY "customer_cancellation_case_customer_or_admin_select"
+  ON public.customer_cancellation_cases FOR SELECT
+  USING (customer_id = auth.uid() OR public.is_admin());
+CREATE INDEX IF NOT EXISTS idx_customer_cancellation_cases_admin_hold
+  ON public.customer_cancellation_cases(admin_hold_until)
+  WHERE status = 'pending_admin_review';
+
+CREATE TABLE IF NOT EXISTS public.customer_cancellation_case_decisions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  case_id UUID NOT NULL REFERENCES public.customer_cancellation_cases(id),
+  admin_user_id UUID NOT NULL REFERENCES public.users(id),
+  decision TEXT NOT NULL CHECK (decision IN ('refund_customer','compensate_talent','extend_hold')),
+  amount BIGINT NOT NULL CHECK (amount >= 0),
+  provider_refund_id TEXT,
+  hold_until TIMESTAMPTZ,
+  admin_notes TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (
+    (decision = 'extend_hold' AND hold_until IS NOT NULL AND provider_refund_id IS NULL)
+    OR (decision = 'refund_customer' AND hold_until IS NULL AND provider_refund_id IS NOT NULL)
+    OR (decision = 'compensate_talent' AND hold_until IS NULL AND provider_refund_id IS NULL)
+  )
+);
+ALTER TABLE public.customer_cancellation_case_decisions ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.customer_cancellation_case_decisions FROM PUBLIC, anon, authenticated;
+DROP POLICY IF EXISTS admin_read_cancellation_case_decisions
+  ON public.customer_cancellation_case_decisions;
+CREATE POLICY admin_read_cancellation_case_decisions
+  ON public.customer_cancellation_case_decisions FOR SELECT TO authenticated
+  USING (public.is_admin());
+GRANT SELECT ON public.customer_cancellation_case_decisions TO authenticated;
