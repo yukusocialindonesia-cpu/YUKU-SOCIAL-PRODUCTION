@@ -82,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   if (isAuthLoading) {
     return (
       <header
-        className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white xl:bg-white/75 backdrop-blur-none xl:backdrop-blur-2xl border-b xl:border border-white/80 xl:border-purple-100/80 shadow-[0_8px_28px_-18px_rgba(76,29,149,0.28)] xl:shadow-[0_16px_42px_-20px_rgba(76,29,149,0.22)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
+        className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white xl:bg-white/75 backdrop-blur-none xl:backdrop-blur-2xl border-b xl:border border-white/80 xl:border-blue-100/80 shadow-[0_8px_28px_-18px_rgba(37,99,235,0.10)] xl:shadow-[0_16px_42px_-20px_rgba(37,99,235,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto"
         aria-busy="true"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white xl:bg-white/95 backdrop-blur-none xl:backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-purple-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(76,29,149,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
+    <header className="fixed inset-x-0 top-0 xl:sticky xl:inset-x-auto xl:top-3 z-40 w-full xl:w-[calc(100%-2rem)] bg-white xl:bg-white/95 backdrop-blur-none xl:backdrop-blur-xl border-b xl:border border-slate-200/80 xl:border-blue-100/80 shadow-xs xl:shadow-[0_12px_36px_rgba(37,99,235,0.10)] xl:rounded-2xl xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar 3-Zone Contract: Brand — Links — 1 Primary Action */}
         <div className="flex items-center justify-between gap-8 h-14 min-[376px]:h-14 min-[431px]:h-[60px] lg:h-16 min-[1440px]:h-[76px]">
@@ -123,13 +123,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   onClick={() => handleLinkClick(link.href)}
                   className={`whitespace-nowrap transition-colors relative py-1 cursor-pointer ${
                     isActive
-                      ? 'text-purple-900 font-bold'
-                      : 'hover:text-purple-700 text-slate-600'
+                      ? 'text-blue-800 font-bold'
+                      : 'hover:text-blue-600 text-slate-600'
                   }`}
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-700 to-amber-500 rounded-full" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-amber-500 rounded-full" />
                   )}
                 </button>
               );
@@ -150,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onClick={() => handleLinkClick('/login')}
                 aria-label="Masuk untuk melihat notifikasi"
                 title="Masuk untuk melihat notifikasi"
-                className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-100/80 bg-white/85 text-slate-700 shadow-sm transition hover:border-purple-200 hover:bg-purple-50 hover:text-purple-900"
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-blue-100/80 bg-white/85 text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800"
               >
                 <Bell className="h-4 w-4" />
               </button>
@@ -193,8 +193,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     onClick={() => handleLinkClick('/dashboard-talent')}
                     className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 cursor-pointer ${
                       currentPath === '/dashboard-talent'
-                        ? 'bg-purple-700 text-white border-purple-700 shadow-xs'
-                        : 'bg-purple-50 text-purple-900 border-purple-200 hover:bg-purple-100'
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100'
                     }`}
                     title="Buka Dashboard Talent"
                   >
@@ -237,7 +237,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       onClick={() => handleLinkClick('/riwayat-booking')}
                       className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                         currentPath === '/riwayat-booking'
-                          ? 'bg-purple-700 text-white border-purple-700 shadow-xs'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
                       title="Lihat riwayat booking dan status pesanan customer"
@@ -250,7 +250,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       onClick={() => handleLinkClick('/verifikasi-ktp')}
                       className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                         currentPath === '/verifikasi-ktp'
-                          ? 'bg-purple-700 text-white border-purple-700 shadow-xs'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
                       title="Ajukan atau periksa status verifikasi e-KTP customer"
@@ -265,18 +265,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   <button
                     type="button"
                     onClick={() => setIsAccountMenuOpen((prev) => !prev)}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 hover:bg-purple-100/80 border border-purple-200 rounded-xl transition-colors cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100/80 border border-blue-200 rounded-xl transition-colors cursor-pointer"
                     aria-expanded={isAccountMenuOpen}
                     aria-haspopup="menu"
                   >
-                    <div className="w-6 h-6 rounded-full bg-purple-700 text-white flex items-center justify-center text-xs font-bold">
+                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
                       {displayName.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-xs font-bold text-purple-900 max-w-[120px] truncate">
+                    <span className="text-xs font-bold text-blue-800 max-w-[120px] truncate">
                       {displayName}
                     </span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-purple-700 transition-transform ${
+                      className={`w-3.5 h-3.5 text-blue-600 transition-transform ${
                         isAccountMenuOpen ? 'rotate-180' : ''
                       }`}
                     />
@@ -285,7 +285,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   {isAccountMenuOpen && (
                     <div
                       role="menu"
-                      className="absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-2xl rounded-2xl border border-white shadow-[0_22px_55px_-22px_rgba(76,29,149,0.35)] ring-1 ring-purple-100/70 py-2 z-50"
+                      className="absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-2xl rounded-2xl border border-white shadow-[0_22px_55px_-22px_rgba(37,99,235,0.18)] ring-1 ring-blue-100/70 py-2 z-50"
                     >
                       <div className="px-3.5 py-2 border-b border-slate-100">
                         <div className="text-xs font-bold text-slate-900 truncate">{displayName}</div>
@@ -299,10 +299,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                             role="menuitem"
                             onClick={() => handleLinkClick('/profil-saya')}
                             className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
-                              currentPath === '/profil-saya' ? 'bg-purple-50 text-purple-900 font-bold' : 'text-slate-700 hover:bg-slate-50'
+                              currentPath === '/profil-saya' ? 'bg-blue-50 text-blue-800 font-bold' : 'text-slate-700 hover:bg-slate-50'
                             }`}
                           >
-                            <User className="w-3.5 h-3.5 text-purple-700" />
+                            <User className="w-3.5 h-3.5 text-blue-600" />
                             <span>Profil Saya</span>
                           </button>
                         )}
@@ -312,11 +312,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                           onClick={() => handleLinkClick('/ganti-sandi')}
                           className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
                             currentPath === '/ganti-sandi'
-                              ? 'bg-purple-50 text-purple-900 font-bold'
+                              ? 'bg-blue-50 text-blue-800 font-bold'
                               : 'text-slate-700 hover:bg-slate-50'
                           }`}
                         >
-                          <KeyRound className="w-3.5 h-3.5 text-purple-700" />
+                          <KeyRound className="w-3.5 h-3.5 text-blue-600" />
                           <span>Ganti Kata Sandi</span>
                         </button>
 
@@ -338,14 +338,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               <>
                 <button
                   onClick={() => handleLinkClick('/login')}
-                  className="px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-purple-900 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-blue-800 transition-colors cursor-pointer"
                 >
                   Masuk
                 </button>
 
                 <button
                   onClick={() => handleLinkClick('/register')}
-                  className="min-h-11 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-700 via-fuchsia-700 to-amber-600 hover:from-purple-800 hover:to-amber-700 rounded-lg shadow-xs hover:shadow transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+                  className="min-h-11 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-fuchsia-700 to-amber-600 hover:from-blue-700 hover:to-amber-700 rounded-lg shadow-xs hover:shadow transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5"
                 >
                   <User className="w-3.5 h-3.5" />
                   <span>Daftar Sekarang</span>
@@ -359,7 +359,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className="min-h-11 min-w-11 p-1.5 sm:p-2.5 inline-flex items-center justify-center rounded-xl border border-purple-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-purple-50 hover:text-purple-800 transition-all"
+              className="min-h-11 min-w-11 p-1.5 sm:p-2.5 inline-flex items-center justify-center rounded-xl border border-blue-100/80 bg-white/75 text-slate-600 shadow-sm hover:bg-blue-50 hover:text-blue-700 transition-all"
               aria-label={isMobileMenuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="yuku-mobile-navigation"
@@ -375,16 +375,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
       {isMobileMenuOpen && (
         <div
           id="yuku-mobile-navigation"
-          className="xl:hidden border-t border-purple-100/70 bg-white backdrop-blur-none px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(76,29,149,0.35)] max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] min-[376px]:max-h-[calc(100dvh-3.75rem-4rem-env(safe-area-inset-bottom))] min-[431px]:max-h-[calc(100dvh-4rem-4rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-4rem)] lg:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
+          className="xl:hidden border-t border-blue-100/70 bg-white backdrop-blur-none px-4 pt-4 pb-6 shadow-[0_24px_50px_-28px_rgba(37,99,235,0.18)] max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] min-[376px]:max-h-[calc(100dvh-3.75rem-4rem-env(safe-area-inset-bottom))] min-[431px]:max-h-[calc(100dvh-4rem-4rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-4rem)] lg:max-h-[calc(100dvh-4.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150"
         >
           {currentUser && (
-            <div className="mb-4 p-3.5 bg-gradient-to-br from-purple-50/95 to-fuchsia-50/80 rounded-2xl flex items-center justify-between border border-purple-100/80 shadow-[0_10px_25px_-18px_rgba(109,40,217,0.35)]">
+            <div className="mb-4 p-3.5 bg-gradient-to-br from-blue-50/95 to-fuchsia-50/80 rounded-2xl flex items-center justify-between border border-blue-100/80 shadow-[0_10px_25px_-18px_rgba(37,99,235,0.14)]">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-purple-700 text-white flex items-center justify-center text-xs font-bold">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-purple-950">{displayName}</div>
+                  <div className="text-xs font-bold text-blue-950">{displayName}</div>
                   <div className="text-[11px] text-slate-500 truncate max-w-[180px]">
                     {currentUser.email}
                   </div>
@@ -427,8 +427,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     onClick={() => handleLinkClick('/dashboard-talent')}
                     className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                       currentPath === '/dashboard-talent'
-                        ? 'bg-purple-700 text-white'
-                        : 'bg-purple-50 text-purple-900 hover:bg-purple-100'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-blue-50 text-blue-800 hover:bg-blue-100'
                     }`}
                   >
                     <Sparkles className="w-4 h-4 text-amber-500" />
@@ -441,21 +441,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     <button
                       onClick={() => handleLinkClick('/profil-saya')}
                       className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
-                        currentPath === '/profil-saya' ? 'bg-purple-100 text-purple-900' : 'hover:bg-slate-50 text-slate-700'
+                        currentPath === '/profil-saya' ? 'bg-blue-100 text-blue-800' : 'hover:bg-slate-50 text-slate-700'
                       }`}
                     >
-                      <User className="w-4 h-4 text-purple-700" />
+                      <User className="w-4 h-4 text-blue-600" />
                       <span>Profil Saya</span>
                     </button>
                     <button
                       onClick={() => handleLinkClick('/riwayat-booking')}
                       className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                         currentPath === '/riwayat-booking'
-                          ? 'bg-purple-100 text-purple-900'
+                          ? 'bg-blue-100 text-blue-800'
                           : 'hover:bg-slate-50 text-slate-700'
                       }`}
                     >
-                      <ShoppingBag className="w-4 h-4 text-purple-700" />
+                      <ShoppingBag className="w-4 h-4 text-blue-600" />
                       <span>Riwayat Booking (Customer)</span>
                     </button>
 
@@ -463,7 +463,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       onClick={() => handleLinkClick('/verifikasi-ktp')}
                       className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                         currentPath === '/verifikasi-ktp'
-                          ? 'bg-purple-100 text-purple-900'
+                          ? 'bg-blue-100 text-blue-800'
                           : 'hover:bg-slate-50 text-slate-700'
                       }`}
                     >
@@ -499,11 +499,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   onClick={() => handleLinkClick('/ganti-sandi')}
                   className={`text-left px-3 py-3 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 ${
                     currentPath === '/ganti-sandi'
-                      ? 'bg-purple-100 text-purple-900'
+                      ? 'bg-blue-100 text-blue-800'
                       : 'hover:bg-slate-50 text-slate-700'
                   }`}
                 >
-                  <KeyRound className="w-4 h-4 text-purple-700" />
+                  <KeyRound className="w-4 h-4 text-blue-600" />
                   <span>Ganti Kata Sandi</span>
                 </button>
               </>
@@ -515,7 +515,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onClick={() => handleLinkClick(link.href)}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${
                   currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
-                    ? 'bg-purple-50 text-purple-900 font-bold'
+                    ? 'bg-blue-50 text-blue-800 font-bold'
                     : 'text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -549,13 +549,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 </button>
                 <button
                   onClick={() => handleLinkClick('/register')}
-                  className="w-full py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-purple-700 to-fuchsia-700 rounded-lg shadow-xs"
+                  className="w-full py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-fuchsia-700 rounded-lg shadow-xs"
                 >
                   Daftar Akun Customer
                 </button>
                 <button
                   onClick={() => handleLinkClick('/daftar-talent')}
-                  className="w-full py-2 text-center text-xs font-semibold text-purple-700 hover:text-purple-900 transition-colors"
+                  className="w-full py-2 text-center text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   Ingin bergabung jadi Talent?
                 </button>
