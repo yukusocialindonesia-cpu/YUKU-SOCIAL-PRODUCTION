@@ -137,8 +137,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div
                 key={slide.id}
                 aria-hidden={!isCurrent}
-                className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${
-                  isCurrent ? 'opacity-100' : 'opacity-0'
+                className={`absolute inset-0 transition-[opacity,transform] duration-700 motion-reduce:transition-none ${
+                  isCurrent ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.02]'
                 }`}
               >
                 {broken[slide.id] ? (
