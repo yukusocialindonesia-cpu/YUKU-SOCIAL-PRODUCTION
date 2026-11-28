@@ -123,12 +123,12 @@ body {
   --yuku-primary-border: rgba(50, 19, 79, .18);
 }
 
-.bg-yuku-gradient,
-.bg-yuku-accent {
+.yuku-home-feed .bg-yuku-gradient,
+.yuku-home-feed .bg-yuku-accent {
   background: var(--yuku-primary) !important;
 }
 
-.text-yuku-gradient {
+.yuku-home-feed .text-yuku-gradient {
   background: none !important;
   color: var(--yuku-white) !important;
   -webkit-text-fill-color: var(--yuku-white) !important;
