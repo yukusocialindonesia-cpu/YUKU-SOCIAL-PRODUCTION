@@ -37,9 +37,9 @@ jobs:
       - name: Replay the complete migration history
         run: supabase db reset --local
 
-      - name: Run multi-profile booking authorization contract
+      - name: Run booking authorization policy contract
         shell: bash
         run: |
           set -euo pipefail
           eval "$(supabase status -o env)"
-          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/tests/stage_i_multi_profile_booking_auth.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/tests/stage_i_booking_authorization_contract.sql
