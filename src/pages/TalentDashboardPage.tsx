@@ -1094,16 +1094,17 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     setIsSubmittingAction(true);
     setErrorMessage(null);
 
+    let newlyUploadedAvatarPath: string | null = null;
     try {
       let newAvatarUrl: string | undefined;
       if (profileAvatarFile) {
         const compressedAvatar = await compressProfileImage(profileAvatarFile);
-        const avatarPath = `${currentUser.id}/avatar_${Date.now()}.webp`;
+        newlyUploadedAvatarPath = currentUser.id + '/avatar_' + Date.now() + '.webp';
         const { error: avatarErr } = await supabase.storage
           .from('avatars')
-          .upload(avatarPath, compressedAvatar, { upsert: false, contentType: 'image/webp' });
-        if (avatarErr) throw new Error(`Gagal mengunggah foto profil: ${avatarErr.message}`);
-        newAvatarUrl = supabase.storage.from('avatars').getPublicUrl(avatarPath).data.publicUrl;
+          .upload(newlyUploadedAvatarPath, compressedAvatar, { upsert: false, contentType: 'image/webp' });
+        if (avatarErr) throw new Error('Gagal mengunggah foto profil: ' + avatarErr.message);
+        newAvatarUrl = supabase.storage.from('avatars').getPublicUrl(newlyUploadedAvatarPath).data.publicUrl;
       }
 
       const { error } = await supabase
@@ -1122,12 +1123,33 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
       if (error) throw error;
 
+      if (newlyUploadedAvatarPath && profile?.avatar_url) {
+        try {
+          const oldUrl = new URL(profile.avatar_url);
+          const marker = '/storage/v1/object/public/avatars/';
+          const markerIndex = oldUrl.pathname.indexOf(marker);
+          const oldPath = markerIndex >= 0
+            ? decodeURIComponent(oldUrl.pathname.slice(markerIndex + marker.length))
+            : '';
+          if (oldPath.startsWith(currentUser.id + '/avatar_') && oldPath !== newlyUploadedAvatarPath) {
+            const { error: cleanupError } = await supabase.storage.from('avatars').remove([oldPath]);
+            if (cleanupError) console.warn('YUKU: avatar Talent lama belum berhasil dibersihkan', cleanupError);
+          }
+        } catch (cleanupError) {
+          console.warn('YUKU: gagal memproses pembersihan avatar Talent lama', cleanupError);
+        }
+      }
+
       setIsEditProfileModalOpen(false);
       setProfileAvatarFile(null);
       setSuccessMessage('Profil dan tarif layanan Talent Anda berhasil diperbarui!');
       await loadDashboardData(currentUser.id);
     } catch (err: any) {
-      setErrorMessage(`Gagal memperbarui profil: ${err?.message}`);
+      if (newlyUploadedAvatarPath) {
+        const { error: cleanupError } = await supabase.storage.from('avatars').remove([newlyUploadedAvatarPath]);
+        if (cleanupError) console.warn('YUKU: avatar Talent baru gagal dibersihkan setelah penyimpanan profil gagal', cleanupError);
+      }
+      setErrorMessage('Gagal memperbarui profil: ' + (err?.message || 'Terjadi kesalahan.'));
     } finally {
       setIsSubmittingAction(false);
     }
@@ -1591,16 +1613,20 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
     setSuccessMessage(null);
 
     try {
+      // Remove the private object first; keep its moderation row if Storage rejects deletion.
+      if (item.storage_path) {
+        const { error: storageError } = await supabase.storage.from('talent-media').remove([item.storage_path]);
+        if (storageError) throw new Error('File media gagal dihapus: ' + storageError.message);
+      }
+
       const { error: deleteErr } = await supabase
         .from('talent_media')
         .delete()
         .eq('id', item.id)
         .eq('talent_id', currentUser.id);
 
-      if (deleteErr) throw deleteErr;
-
-      if (item.storage_path) {
-        await supabase.storage.from('talent-media').remove([item.storage_path]);
+      if (deleteErr) {
+        throw new Error('File media sudah dihapus, tetapi data galeri gagal dihapus: ' + deleteErr.message + '. Muat ulang halaman.');
       }
 
       setMediaItems((prev) => prev.filter((m) => m.id !== item.id));
