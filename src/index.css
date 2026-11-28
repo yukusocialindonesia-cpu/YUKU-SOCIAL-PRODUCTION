@@ -12,17 +12,17 @@
 }
 
 .bg-yuku-gradient {
-  background: linear-gradient(135deg, #1e0938 0%, #300f5c 50%, #4a154b 100%);
+  background: linear-gradient(135deg, #0A2A6B 0%, #1E63E9 100%);
 }
 
 .text-yuku-gradient {
-  background: linear-gradient(135deg, #7c3aed 0%, #c026d3 50%, #f97316 100%);
+  background: linear-gradient(135deg, #0A2A6B 0%, #1E63E9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .bg-yuku-accent {
-  background: linear-gradient(135deg, #9333ea 0%, #db2777 50%, #f97316 100%);
+  background: linear-gradient(135deg, #0A2A6B 0%, #1E63E9 100%);
 }
 
 html,
@@ -32,7 +32,7 @@ body,
 }
 
 body {
-  background-color: #F5F8FC;
+  background-color: #F2F6FF;
   background-image: none;
   background-attachment: scroll;
 }
@@ -75,11 +75,15 @@ body {
 }
 
 :root {
-  --yuku-primary: #2563EB;
+  --yuku-primary: #1E63E9;
+  --yuku-primary-dark: #0A2A6B;
+  --yuku-background: #F2F6FF;
   --yuku-white: #FFFFFF;
-  --yuku-surface: #F5F8FC;
-  --yuku-primary-soft: rgba(37, 99, 235, .08);
-  --yuku-primary-border: rgba(37, 99, 235, .16);
+  --yuku-surface: #FFFFFF;
+  --yuku-muted: #8A93A6;
+  --yuku-online: #22C55E;
+  --yuku-primary-soft: rgba(30, 99, 233, .08);
+  --yuku-primary-border: rgba(30, 99, 233, .16);
 }
 
 .yuku-home-feed {
@@ -106,6 +110,6 @@ body {
   }
 
   .yuku-home-featured article {
-    box-shadow: 0 4px 14px rgba(37, 99, 235, .06);
+    box-shadow: 0 4px 14px rgba(30, 99, 233, .06);
   }
 }
