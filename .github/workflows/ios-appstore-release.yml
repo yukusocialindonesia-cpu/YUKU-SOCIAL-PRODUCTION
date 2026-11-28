@@ -52,6 +52,18 @@ jobs:
           npm run lint
           npm run build
 
+      - name: Prepare 1024px App Store icon
+        shell: bash
+        run: |
+          set -euo pipefail
+          ICON_DIR="ios/App/App/Assets.xcassets/AppIcon.appiconset"
+          SOURCE_ICON="$ICON_DIR/AppIcon-512@2x.png"
+          TARGET_ICON="$ICON_DIR/AppIcon-1024.png"
+          test -s "$SOURCE_ICON"
+          sips -z 1024 1024 "$SOURCE_ICON" --out "$TARGET_ICON" >/dev/null
+          test "$(sips -g pixelWidth "$TARGET_ICON" | awk '/pixelWidth/ {print $2}')" = "1024"
+          test "$(sips -g pixelHeight "$TARGET_ICON" | awk '/pixelHeight/ {print $2}')" = "1024"
+
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
