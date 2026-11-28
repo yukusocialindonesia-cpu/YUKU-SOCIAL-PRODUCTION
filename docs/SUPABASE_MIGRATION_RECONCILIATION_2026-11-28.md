@@ -4,8 +4,8 @@
 
 - Target: Supabase Production `sbqvltqzzcsqzijgumld` (`yukuproduction`, region `ap-southeast-1`).
 - Status project: `ACTIVE_HEALTHY`, PostgreSQL 17.12.
-- Migration ledger: **132** entri; versi terakhir **`20261127181622` — `preserve_legacy_verified_customer_identity`**.
-- Folder `supabase/migrations/` pada `main`: **148** file SQL.
+- Migration ledger: **147** entri; versi terakhir **`20261127210418` — `restrict_report_internal_column_reads`** (diverifikasi ulang 28 Nov 2026).
+- Folder `supabase/migrations/` pada `main`: **159** file SQL (dihitung ulang dari Git tree `main`, 28 Nov 2026).
 - Perbandingan nama deskriptif yang dinormalisasi: **96** record remote punya kandidat nama lokal; **36** record remote belum punya pasangan lokal yang meyakinkan; **53** file lokal belum punya pasangan remote.
 - Karena dua nama lokal punya kandidat ganda, 96 pasangan remote hanya mencakup 95 file lokal unik. Pencocokan nama bukan checksum atau bukti isi SQL identik.
 
@@ -15,15 +15,15 @@
 - Ada: `professional_service_applications`, `professional_service_categories`, `professional_talent_services`.
 - Belum ada: `merchant_businesses`, `merchant_memberships`, `merchant_locations`, `professional_provider_profiles`, dan `talent_custom_social_experience_services`.
 - RPC `create_merchant_business` belum ada.
-- Constraint `bookings_payment_route_check` masih mengizinkan `xendit`. Fungsi `claim_booking_payment_route` masih mengenali jalur Xendit untuk booking lama, dan `settle_booking_payment` masih menerima provider Xendit.
+- Migration `20261127192200_retire_xendit_booking_checkout` kini tercatat di ledger Production. Pemeriksaan ulang constraint `bookings_payment_route_check` memastikan hanya `manual_qris` dan `manual_bank_transfer` yang diizinkan; `xendit` sudah tidak diizinkan.
 - Jumlah booking dengan `payment_route = 'xendit'`: **0**. Jumlah baris pembayaran dengan provider Xendit: **0**.
-- Hak UPDATE tabel `reports_complaints` untuk role `authenticated` sudah tidak ada, tetapi masih ditemukan satu policy UPDATE; file lokal `20261127191000_revoke_direct_report_moderation_updates.sql` perlu diperiksa sebagai perubahan yang belum tercatat/baru sebagian tercermin.
+- Pemeriksaan ulang `pg_policies` menemukan **0 policy UPDATE** pada `public.reports_complaints`; migration pencabutan moderasi langsung kini tercatat di Production.
 
 ## Temuan yang harus ditangani
 
-1. **SQL historis hilang dari repository.** Versi remote terakhir `20261127181622 preserve_legacy_verified_customer_identity` sendiri belum memiliki file SQL yang cocok pada `main`. Jangan membuat SQL pengganti berdasarkan tebakan; cari sumber commit, deployment artifact, atau backup yang dapat diverifikasi.
+1. **SQL historis awal masih perlu rekonsiliasi berbasis isi.** Ledger kini mencapai `20261127210418`; file timestamp terbaru ada di repository. Ketidakcocokan versi/nama historis lama tidak boleh diperbaiki dengan menebak atau membuat SQL pengganti. Cocokkan isi, checksum/provenance, dan urutan sebelum menyatakan chain dapat direplay.
 2. **File lokal yang belum terpetakan bukan otomatis pending.** Klasifikasikan setiap file sebagai migration baru, historical rename, sudah tercakup migration lain, superseded, duplikat, atau belum diketahui.
-3. **Xendit belum sepenuhnya dipensiunkan pada database.** File `20261127190000_retire_xendit_booking_checkout.sql` belum tercatat pada ledger Production. File tersebut memuat guard yang akan menghentikan migrasi jika booking lama masih memakai route Xendit; pemeriksaan baca-saja saat ini menemukan 0 booking dan 0 payment Xendit. Tetap perlu review lengkap dan persetujuan sebelum eksekusi.
+3. **Xendit sudah dipensiunkan pada jalur booking baru dan constraint.** Ledger mencatat migration `20261127192200`; pemeriksaan baca-saja menemukan 0 booking Xendit, 0 payment Xendit, dan constraint yang hanya menerima `manual_qris`/`manual_bank_transfer`.
 4. **Merchant/Provider bukan satu batch siap jalan.** Tabel Merchant dan `professional_provider_profiles` belum ada. Migrasi Merchant merujuk ke profil Provider, sehingga urutan dan dependensi wajib diselesaikan dahulu.
 5. **Duplikasi nama lokal:** dua kandidat untuk `harden_professional_application_revision_attestation_fields` (`20261127001000` dan `20261127001500`) dan dua kandidat untuk `talent_custom_social_experience_services` (`20261127003000` dan `20261127005500`). Ada pula prefix legacy `62` yang dipakai dua file: `62_index_admin_audit_actor_foreign_keys.sql` dan `62_scoped_admin_trigger_guard_hardening.sql`.
 
@@ -126,6 +126,18 @@
 43_booking_chat_push_notifications.sql
 ```
 
+## Delta verifikasi Production — 28 November 2026
+
+Pemeriksaan ulang setelah snapshot awal dokumen ini:
+
+- Ledger Production: **147** entri; versi terbaru `20261127210418`.
+- Folder migration pada `main`: **159** file SQL.
+- Xendit: 0 booking dan 0 payment; constraint route tidak lagi mengizinkan `xendit`.
+- Moderasi laporan: 0 policy UPDATE pada `public.reports_complaints`.
+- Tabel Merchant/Provider (`merchant_businesses`, `merchant_memberships`, `merchant_locations`, `professional_provider_profiles`, `talent_custom_social_experience_services`): belum ada di Production. Fitur tersebut tetap belum siap untuk diaktifkan.
+- Project utama Supabase tetap `ACTIVE_HEALTHY`; branch Preview `main` masih melaporkan `MIGRATIONS_FAILED`. Jangan reset/rebase/merge branch atau melakukan migration repair sebelum error log branch ditelaah.
+
+Angka “36 record tanpa pasangan” dan “53 file belum terpetakan” di atas adalah hasil pencocokan snapshot awal berdasarkan nama yang dinormalisasi; **jangan menganggapnya sebagai hitungan terbaru** setelah migration Production bertambah. Perlu rekonsiliasi ulang berdasarkan isi SQL/provenance.
 ## Rencana aman
 
 1. Pulihkan 36 SQL historis yang hilang dari sumber tepercaya; mulai dari versi terakhir `20261127181622`.
