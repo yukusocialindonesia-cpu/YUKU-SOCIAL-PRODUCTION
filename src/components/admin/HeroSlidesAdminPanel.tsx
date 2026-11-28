@@ -108,22 +108,33 @@ export const HeroSlidesAdminPanel: React.FC = () => {
       return;
     }
     run(async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const desktop = await uploadTo('desktop', desktopFile);
-      const mobile = mobileFile ? await uploadTo('mobile', mobileFile) : null;
-      const nextOrder = slides.length ? Math.max(...slides.map((s) => s.sort_order)) + 1 : 0;
-      const { error: insErr } = await supabase.from('hero_slides').insert({
-        title: title.trim() || 'Slide YUKU',
-        image_url: desktop.url,
-        storage_path: desktop.path,
-        mobile_image_url: mobile?.url ?? null,
-        mobile_storage_path: mobile?.path ?? null,
-        link_url: trimmedLink || null,
-        sort_order: nextOrder,
-        is_active: true,
-        created_by: auth.user?.id ?? null,
-      });
-      if (insErr) throw new Error(`Gagal menyimpan slide: ${insErr.message}`);
+      let desktop: Awaited<ReturnType<typeof uploadTo>> | null = null;
+      let mobile: Awaited<ReturnType<typeof uploadTo>> | null = null;
+      try {
+        const { data: auth } = await supabase.auth.getUser();
+        desktop = await uploadTo('desktop', desktopFile);
+        mobile = mobileFile ? await uploadTo('mobile', mobileFile) : null;
+        const nextOrder = slides.length ? Math.max(...slides.map((s) => s.sort_order)) + 1 : 0;
+        const { error: insErr } = await supabase.from('hero_slides').insert({
+          title: title.trim() || 'Slide YUKU',
+          image_url: desktop.url,
+          storage_path: desktop.path,
+          mobile_image_url: mobile?.url ?? null,
+          mobile_storage_path: mobile?.path ?? null,
+          link_url: trimmedLink || null,
+          sort_order: nextOrder,
+          is_active: true,
+          created_by: auth.user?.id ?? null,
+        });
+        if (insErr) throw new Error(`Gagal menyimpan slide: ${insErr.message}`);
+      } catch (error) {
+        const uploadedPaths = [desktop?.path, mobile?.path].filter(Boolean) as string[];
+        if (uploadedPaths.length) {
+          const { error: cleanupError } = await supabase.storage.from(BUCKET).remove(uploadedPaths);
+          if (cleanupError) console.warn('YUKU: file banner gagal dibersihkan setelah upload/database gagal', cleanupError);
+        }
+        throw error;
+      }
       setTitle('');
       setLink('');
       setDesktopFile(null);
@@ -153,10 +164,17 @@ export const HeroSlidesAdminPanel: React.FC = () => {
 
   const handleDelete = (s: HeroSlideRow) =>
     run(async () => {
-      const { error: err } = await supabase.from('hero_slides').delete().eq('id', s.id);
-      if (err) throw new Error(err.message);
       const paths = [s.storage_path, s.mobile_storage_path].filter(Boolean) as string[];
-      if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
+      // Keep the database row until Storage confirms removal; otherwise the slide remains recoverable.
+      if (paths.length) {
+        const { error: storageError } = await supabase.storage.from(BUCKET).remove(paths);
+        if (storageError) throw new Error(`Gagal menghapus file slide: ${storageError.message}`);
+      }
+      const { error: err } = await supabase.from('hero_slides').delete().eq('id', s.id);
+      if (err) {
+        // Best-effort restoration is not safe here because Storage deletion has already succeeded.
+        throw new Error(`File slide sudah dihapus, tetapi record database gagal dihapus: ${err.message}. Muat ulang dan periksa slide ini.`);
+      }
       setConfirmDeleteId(null);
     }, 'Slide dihapus.');
 

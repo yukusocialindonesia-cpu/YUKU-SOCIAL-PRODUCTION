@@ -984,21 +984,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
+    let uploadedPromoPath: string | null = null;
     try {
       const cleanExt = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-      const storagePath = `jelajah-banners/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${cleanExt}`;
+      uploadedPromoPath = `jelajah-banners/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${cleanExt}`;
       const { error: uploadErr } = await supabase.storage
         .from('promotions')
-        .upload(storagePath, file, { upsert: false, contentType: file.type });
+        .upload(uploadedPromoPath, file, { upsert: false, contentType: file.type });
       if (uploadErr) throw new Error(`Gagal mengunggah banner Jelajah: ${uploadErr.message}`);
-      const { data: publicUrlData } = await supabase.storage.from('promotions').getPublicUrl(storagePath);
+      const { data: publicUrlData } = await supabase.storage.from('promotions').getPublicUrl(uploadedPromoPath);
       const finalImageUrl = publicUrlData.publicUrl;
 
       const parsedOrder = parseInt(promoSortOrder, 10);
       const { error: insertErr } = await supabase.from('promotions').insert({
         title: promoTitle.trim() || 'Promo YUKU',
         image_url: finalImageUrl,
-        storage_path: storagePath,
+        storage_path: uploadedPromoPath,
         link_url: promoTargetLink.trim() || null,
         sort_order: Number.isNaN(parsedOrder) ? 0 : parsedOrder,
         is_active: true,
@@ -1006,6 +1007,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       });
 
       if (insertErr) throw new Error(insertErr.message);
+      uploadedPromoPath = null;
       if (promoPreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(promoPreviewUrl);
       setPromoFile(null);
       setPromoPreviewUrl(null);
@@ -1015,6 +1017,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setSuccessMessage('Banner baru berhasil diterbitkan ke halaman Jelajah!');
       await loadAdminData();
     } catch (err: any) {
+      if (uploadedPromoPath) {
+        const { error: cleanupError } = await supabase.storage.from('promotions').remove([uploadedPromoPath]);
+        if (cleanupError) console.warn('YUKU: banner Jelajah gagal dibersihkan setelah penyimpanan gagal', cleanupError);
+      }
       setErrorMessage(`Gagal menerbitkan banner Jelajah: ${err?.message}. Pastikan migrasi 15_promotions.sql sudah dijalankan di Supabase.`);
     } finally {
       setIsUploadingPromo(false);
@@ -1069,16 +1075,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     setErrorMessage(null);
     setSuccessMessage(null);
     try {
+      // Remove the image first and retain the row if Storage refuses deletion.
+      if (poster.storage_path) {
+        const { error: storageError } = await supabase.storage.from('promotions').remove([poster.storage_path]);
+        if (storageError) throw new Error('File banner gagal dihapus: ' + storageError.message);
+      }
+
       const { error } = await supabase
         .from('promotions')
         .delete()
         .eq('id', poster.id);
 
-      if (error) throw error;
-
-      if (poster.storage_path) {
-        await supabase.storage.from('promotions').remove([poster.storage_path]);
-      }
+      if (error) throw new Error('File banner sudah dihapus, tetapi record database gagal dihapus: ' + error.message + '. Muat ulang halaman.');
 
       setConfirmDeletePromoId(null);
       setSuccessMessage(`Poster "${poster.title}" berhasil dihapus.`);
