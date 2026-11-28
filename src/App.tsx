@@ -8,6 +8,7 @@ import { MainLayout } from './layouts/MainLayout';
 
 // Load secondary routes only when a visitor opens them. Keep the homepage eager
 // so the first screen remains available without an additional route-chunk request.
+const HomePage = lazy(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })));
 const ProfessionalServicesPage = lazy(() => import('./pages/ProfessionalServicesPage').then((module) => ({ default: module.ProfessionalServicesPage })));
 const ProfessionalProviderProfilePage = lazy(() => import('./pages/ProfessionalProviderProfilePage').then((module) => ({ default: module.ProfessionalProviderProfilePage })));
 const ProfessionalServiceApplicationPage = lazy(() => import('./pages/ProfessionalServiceApplicationPage').then((module) => ({ default: module.ProfessionalServiceApplicationPage })));
@@ -232,7 +233,7 @@ export default function App() {
   const renderCurrentPage = () => {
     switch (currentPath) {
       case '/':
-        return <CommunityPage onNavigate={handleNavigate} />;
+        return <HomePage onNavigate={handleNavigate} />;
       case '/jasa-profesional':
         return <ProfessionalServicesPage onNavigate={handleNavigate} />;
       case '/daftar-jasa-profesional':
@@ -307,7 +308,7 @@ export default function App() {
       case '/kebijakan-privasi':
         return <PrivacyPolicyPage />;
       default:
-        return <CommunityPage onNavigate={handleNavigate} />;
+        return <HomePage onNavigate={handleNavigate} />;
     }
   };
 
