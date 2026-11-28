@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
               >
                 {broken[slide.id] ? (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#32134F] via-[#7541C8] to-[#A78BFA]" />
                 ) : (
                   <picture>
                     {slide.mobile_image_url && (
@@ -181,7 +181,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             />
           </div>
         ) : (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-purple-600 via-fuchsia-500 to-amber-400 opacity-90 md:rounded-l-[8rem]" />
+          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-[#32134F] via-[#7541C8] to-[#A78BFA] opacity-90 md:rounded-l-[8rem]" />
         )}
 
         {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}
