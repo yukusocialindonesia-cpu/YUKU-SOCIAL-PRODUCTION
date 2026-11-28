@@ -74,7 +74,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         {loading ? (
           <div className={railClass} aria-label="Memuat kategori teman">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-[#E7D8B2] bg-white sm:w-[104px]" />
+              <div key={i} className="h-[76px] w-[88px] shrink-0 animate-pulse rounded-xl border border-[#7541C8]/35 bg-white sm:w-[104px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -99,20 +99,13 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
         ) : (
           <div className={railClass}>
             {categories.map((cat, idx) => {
-              const tones = [
-                'bg-[#32105B] text-white',
-                'bg-[#F0D58B] text-[#32105B]',
-                'bg-[#32105B] text-white',
-                'bg-[#F0D58B] text-[#32105B]',
-                'bg-[#32105B] text-white',
-                'bg-[#F0D58B] text-[#32105B]',
-              ];
+              const tones = ['bg-[#7541C8] text-white'];
               return (
                 <button
                   type="button"
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className="group flex min-h-[76px] w-[88px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-xl border border-[#E7D8B2] bg-white px-2 py-2 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-[#D7A83E] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D7A83E] sm:min-h-[88px] sm:w-[104px] sm:gap-2 sm:rounded-2xl sm:py-3"
+                  className="group flex min-h-[76px] w-[88px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-xl border border-[#E7D8B2] bg-white px-2 py-2 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-[#A78BFA] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] sm:min-h-[88px] sm:w-[104px] sm:gap-2 sm:rounded-2xl sm:py-3"
                 >
                   <span className={`flex h-8 w-8 items-center justify-center rounded-xl sm:h-9 sm:w-9 ${tones[idx % tones.length]}`}>
                     {getIcon(cat.iconName)}
