@@ -28,3 +28,5 @@ jobs:
         run: deno check --node-modules-dir=auto supabase/functions/admin-management/index.ts
       - name: Type-check push notifications
         run: deno check --config supabase/functions/yuku-push/deno.json --node-modules-dir=auto supabase/functions/yuku-push/index.ts
+      - name: Type-check account deletion requests
+        run: deno check --node-modules-dir=auto supabase/functions/account-deletion-request/index.ts
