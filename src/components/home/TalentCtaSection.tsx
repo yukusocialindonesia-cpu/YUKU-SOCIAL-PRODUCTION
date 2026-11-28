@@ -69,7 +69,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
               </div>
 
               <div className="flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                <ShieldCheck className="w-4 h-4 text-violet-300 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-semibold text-[11px] sm:text-sm leading-tight">
                     Cek Detail Sebelum Memesan
@@ -111,7 +111,7 @@ export const TalentCtaSection: React.FC<TalentCtaSectionProps> = ({
                   <span>1. Daftar akun Customer dan lengkapi verifikasi e-KTP 18+.</span>
                 </div>
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
-                  <MapPin className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-violet-300 shrink-0 mt-0.5" />
                   <span>2. Pilih aktivitas, kota, dan Talent yang cocok dengan minatmu.</span>
                 </div>
                 <div className="flex items-start gap-3 pb-3 border-b border-white/10">
