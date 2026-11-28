@@ -2229,7 +2229,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           type="button"
                           onClick={() => handleViewCustomerKtp(c)}
                           disabled={loadingCustomerKtpId === c.id}
-                          className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-purple-50 text-purple-800 font-bold text-xs hover:bg-indigo-100 disabled:opacity-50"
+                          className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-purple-50 text-purple-800 font-bold text-xs hover:bg-purple-100 disabled:opacity-50"
                         >
                           {loadingCustomerKtpId === c.id ? 'Membuka foto...' : 'Lihat Foto KTP'}
                         </button>
