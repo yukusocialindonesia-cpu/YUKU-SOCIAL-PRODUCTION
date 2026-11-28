@@ -583,7 +583,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                 };
                 return (
                   <>
-                    <div className="relative mx-0 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/5] max-h-[65vh] sm:max-h-none bg-slate-900 shadow-md">
+                    <div className="relative mx-0 sm:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden w-full aspect-[4/4.4] max-h-[52vh] sm:max-h-none bg-[#32134F] shadow-md">
                       {heroUrl && !avatarFailed ? (
                         <PhotoLightbox
                           src={heroUrl}
@@ -611,16 +611,16 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                         type="button"
                         onClick={handleShare}
                         aria-label="Bagikan"
-                        className="absolute top-[4.5rem] right-4 md:top-4 w-10 h-10 rounded-full bg-purple-900/70 text-white flex items-center justify-center cursor-pointer"
+                        className="absolute top-[4.5rem] right-4 md:top-4 w-10 h-10 rounded-full bg-[#32134F]/85 text-white flex items-center justify-center cursor-pointer"
                       >
                         <Share2 className="w-5 h-5" />
                       </button>
                     </div>
 
-                    <div className="relative -mt-6 mx-2 rounded-2xl border border-slate-200 bg-white px-4 pt-5 pb-4 shadow-sm space-y-3">
+                    <div className="relative -mt-6 mx-2 rounded-2xl border border-[#E9E2EF] bg-white px-4 pt-4 pb-4 shadow-[0_8px_24px_rgba(50,19,79,0.08)] space-y-3">
                       {/* Nama + rating */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <h1 className="text-xl font-extrabold text-slate-900 inline-flex items-center gap-1.5">
+                        <h1 className="text-xl font-extrabold text-[#241333] inline-flex items-center gap-1.5">
                           {talent.name}
                           {talent.isVerified === true && <VerifiedBadge />}
                         </h1>
@@ -634,7 +634,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       {/* Semua info singkat dalam satu kelompok chip yang rapat */}
                       <div className="flex flex-wrap gap-1.5">
                         {effectiveReviewCount === 0 && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-bold text-purple-700">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#F1EAF6] px-2.5 py-1 text-xs font-bold text-[#32134F]">
                             <Star className="w-3.5 h-3.5 fill-purple-700" /> Talent Baru
                           </span>
                         )}
@@ -679,7 +679,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                       )}
 
                       {voiceMedia.length > 0 && (
-                        <div className="rounded-2xl bg-gradient-to-br from-purple-900 to-purple-700 text-white pl-2 pr-4 h-12 flex items-center gap-3">
+                        <div className="rounded-2xl bg-gradient-to-br from-[#32134F] to-[#4B2670] text-white pl-2 pr-4 h-12 flex items-center gap-3">
                           <button
                             type="button"
                             onClick={toggleVoice}
@@ -722,7 +722,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                               const cat = categories.find((c) => c.id === actId);
                               if (!cat) return null;
                               return (
-                                <span key={actId} className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 border border-purple-100 px-3 py-1.5 text-xs font-semibold text-purple-900">
+                                <span key={actId} className="inline-flex items-center gap-1.5 rounded-full bg-[#F7F3FA] border border-[#E9E2EF] px-3 py-1.5 text-xs font-semibold text-[#32134F]">
                                   <Sparkles className="w-3.5 h-3.5 text-purple-600" />
                                   {cat.title}
                                 </span>
@@ -792,7 +792,7 @@ export const TalentDetailPage: React.FC<TalentDetailPageProps> = ({ talentId, on
                   </div>
 
                   {talent.headline && (
-                    <p className="text-sm font-semibold text-purple-700 mb-3">
+                    <p className="text-sm font-semibold text-[#32134F] mb-3">
                       {talent.headline}
                     </p>
                   )}
