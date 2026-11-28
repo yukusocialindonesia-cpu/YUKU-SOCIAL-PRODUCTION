@@ -307,7 +307,7 @@ export default function App() {
       case '/kebijakan-privasi':
         return <PrivacyPolicyPage />;
       default:
-        return <HomePage onNavigate={handleNavigate} />;
+        return <CommunityPage onNavigate={handleNavigate} />;
     }
   };
 
