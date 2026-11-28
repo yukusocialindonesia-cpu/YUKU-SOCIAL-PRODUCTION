@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Users, BriefcaseBusiness, ArrowRight } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
 import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
@@ -80,7 +81,26 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="yuku-home-feed relative isolate flex min-h-screen flex-col overflow-hidden bg-[#F7F5FA]">
-      <div className="yuku-home-hero">
+      <section className="px-4 pt-3 pb-4 md:hidden">
+        <div className="mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#32134F]/65">Selamat datang di YUKU</p>
+          <h1 className="mt-1 text-xl font-extrabold tracking-tight text-[#32134F]">Temukan layanan yang kamu butuhkan</h1>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <button type="button" onClick={() => onNavigate('/talent')} className="group flex min-h-[142px] flex-col items-start justify-between rounded-2xl border border-[#32134F] bg-[#32134F] p-3.5 text-left text-white shadow-[0_8px_20px_rgba(50,19,79,0.14)] transition active:scale-[0.98]">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15"><Users className="h-5 w-5" /></span>
+            <span><span className="block text-[13px] font-extrabold leading-tight">Social Experience</span><span className="mt-1 block text-[10px] leading-relaxed text-white/80">Temukan teman untuk ngobrol, jalan, dan beraktivitas</span></span>
+            <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold">Jelajahi <ArrowRight className="h-3 w-3" /></span>
+          </button>
+          <button type="button" onClick={() => onNavigate('/jasa-profesional')} className="group flex min-h-[142px] flex-col items-start justify-between rounded-2xl border border-[#32134F]/15 bg-white p-3.5 text-left text-[#32134F] shadow-[0_8px_20px_rgba(50,19,79,0.08)] transition active:scale-[0.98]">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#32134F]/[0.08]"><BriefcaseBusiness className="h-5 w-5" /></span>
+            <span><span className="block text-[13px] font-extrabold leading-tight">Professional Services</span><span className="mt-1 block text-[10px] leading-relaxed text-slate-500">Temukan tenaga ahli dan layanan profesional</span></span>
+            <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold">Jelajahi <ArrowRight className="h-3 w-3" /></span>
+          </button>
+        </div>
+      </section>
+
+      <div className="yuku-home-hero hidden md:block">
         <HeroSection
           onExploreClick={() => onNavigate('/talent')}
           onSearch={handleSearch}
