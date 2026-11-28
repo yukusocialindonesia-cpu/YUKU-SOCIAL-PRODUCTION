@@ -1123,7 +1123,10 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
 
       if (error) throw error;
 
-      if (newlyUploadedAvatarPath && profile?.avatar_url) {
+      // The database now references this object; never roll it back if a later refresh fails.
+      const savedAvatarPath = newlyUploadedAvatarPath;
+      newlyUploadedAvatarPath = null;
+      if (savedAvatarPath && profile?.avatar_url) {
         try {
           const oldUrl = new URL(profile.avatar_url);
           const marker = '/storage/v1/object/public/avatars/';
@@ -1131,7 +1134,7 @@ export const TalentDashboardPage: React.FC<TalentDashboardPageProps> = ({ onNavi
           const oldPath = markerIndex >= 0
             ? decodeURIComponent(oldUrl.pathname.slice(markerIndex + marker.length))
             : '';
-          if (oldPath.startsWith(currentUser.id + '/avatar_') && oldPath !== newlyUploadedAvatarPath) {
+          if (oldPath.startsWith(currentUser.id + '/avatar_') && oldPath !== savedAvatarPath) {
             const { error: cleanupError } = await supabase.storage.from('avatars').remove([oldPath]);
             if (cleanupError) console.warn('YUKU: avatar Talent lama belum berhasil dibersihkan', cleanupError);
           }
