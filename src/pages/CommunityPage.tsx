@@ -198,60 +198,19 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
   const visiblePosts = posts.filter((post) => activeTopic === 'Semua' || post.topic === activeTopic);
 
   return (
-    <div className="min-h-screen bg-[#F8F7FA] pb-8">
-      <section className="hidden">
-        <div className="pointer-events-none absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-fuchsia-300/35 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-orange-300/25 blur-3xl" />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-7 sm:px-6 md:flex-row md:items-center md:justify-between md:py-10 lg:px-8">
-          <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-white/85 px-3 py-1.5 text-[11px] font-bold tracking-wide text-purple-800 shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" /> RUANG KOMUNITAS YUKU
-            </div>
-            <h1 className="text-3xl font-black leading-tight tracking-tight text-[#1E0938] sm:text-4xl md:text-5xl">
-              Temukan teman.
-              <span className="block bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
-                Mulai cerita baru.
-              </span>
-            </h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-              Berbagi minat, ngobrol dengan orang baru, dan temukan aktivitas seru bersama komunitas YUKU.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/80 px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm">
-                <Users className="h-3.5 w-3.5" /> Kenalan dengan komunitas
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-100 bg-white/80 px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm">
-                <ShieldCheck className="h-3.5 w-3.5" /> Ruang yang saling menghargai
-              </span>
-            </div>
-          </div>
-          <div className="w-full rounded-2xl border border-purple-100 bg-white/90 p-4 shadow-[0_12px_35px_rgba(76,29,149,0.10)] md:max-w-xs md:p-5">
-            <p className="text-xs font-semibold text-purple-700">Dari obrolan sederhana...</p>
-            <p className="mt-1 text-lg font-extrabold leading-snug text-[#1E0938]">bisa jadi aktivitas yang berkesan.</p>
-            <div className="my-4 h-px bg-purple-100" />
-            <p className="text-xs leading-5 text-slate-600">
-              Temukan talent dan aktivitas yang cocok, lalu lakukan booking dengan aman melalui YUKU.
-            </p>
-            <button type="button" onClick={() => onNavigate('/talent')}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-3 text-xs font-extrabold text-white shadow-md transition hover:-translate-y-0.5 hover:brightness-105">
-              Jelajahi talent <ArrowUpRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-5xl px-3 py-3 sm:px-6 md:py-6 lg:px-8">
+    <div className="min-h-screen bg-[#F7F6F9] pb-8">
+      <div className="mx-auto w-full max-w-3xl px-0 py-2 sm:px-5 sm:py-5">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
-            <section className="relative overflow-hidden rounded-[1.6rem] border border-white/90 bg-white/85 p-4 shadow-[0_16px_42px_rgba(76,29,149,0.10)] ring-1 ring-purple-100/80 backdrop-blur-xl sm:rounded-[2rem] sm:p-5">
+            <section className="border-y border-[#EAE6EF] bg-white px-4 py-4 sm:rounded-2xl sm:border sm:px-5 sm:shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white shadow-sm">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#32134F] text-xs font-black text-white">
                   {user?.email?.slice(0, 1).toUpperCase() || 'YK'}
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm font-extrabold text-slate-900">Apa ceritamu hari ini?</h2>
+                  <h2 className="text-sm font-bold text-[#241631]">Bagikan sesuatu ke YUKU</h2>
                   <p className="mt-0.5 text-[11px] text-slate-500">
-                    {isAuthenticated ? 'Bagikan ide, cerita, atau rencana aktivitas.' : 'Masuk untuk mulai berbagi cerita dengan komunitas.'}
+                    {isAuthenticated ? 'Cerita, ide, atau rencana aktivitasmu.' : 'Masuk untuk mulai berbagi cerita dengan komunitas.'}
                   </p>
                 </div>
               </div>
@@ -260,8 +219,8 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               ) : isAuthenticated ? (
                 <>
                   <textarea value={draft} onChange={(event) => setDraft(event.target.value)}
-                    placeholder="Tulis sesuatu yang ingin kamu bagikan..." rows={3} maxLength={1200}
-                    className="mt-4 w-full resize-none rounded-2xl border border-purple-100/90 bg-white/75 p-3.5 text-sm leading-6 text-slate-800 shadow-inner shadow-purple-950/[0.025] outline-none transition placeholder:text-slate-400 focus:border-purple-300 focus:ring-4 focus:ring-purple-100/80" />
+                    placeholder="Apa yang sedang kamu pikirkan?" rows={2} maxLength={1200}
+                    className="mt-3 w-full resize-none rounded-xl border border-[#EAE6EF] bg-[#FAF9FB] p-3 text-sm leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#32134F] focus:ring-2 focus:ring-[#32134F]/10" />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2">
                       <label className="text-[11px] font-bold text-slate-500" htmlFor="community-topic">Topik</label>
@@ -273,7 +232,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                     </div>
                     <button type="button" onClick={() => void publishPost()}
                       disabled={!draft.trim() || isSubmitting}
-                      className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-orange-500 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">
+                      className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#32134F] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#482064] disabled:cursor-not-allowed disabled:opacity-40">
                       <Send className="h-3.5 w-3.5" /> {isSubmitting ? 'Mengirim...' : 'Bagikan'}
                     </button>
                   </div>
@@ -288,11 +247,11 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               {notice && <p className="mt-3 rounded-lg bg-purple-50 px-3 py-2 text-[11px] text-purple-800">{notice}</p>}
             </section>
 
-            <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
+            <div className="mt-5 flex flex-wrap items-end justify-between gap-3 px-4 sm:px-0">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-purple-700">Temukan obrolan</p>
-                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Cerita dari komunitas</h2>
-                <p className="mt-1 text-xs text-slate-500">Postingan terbaru dari anggota YUKU.</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#765D88]">YUKU SOCIAL</p>
+                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Feed untuk kamu</h2>
+                <p className="mt-1 text-xs text-slate-500">Cerita dan aktivitas terbaru dari komunitas YUKU.</p>
               </div>
               <button type="button" onClick={() => onNavigate('/talent')}
                 className="inline-flex items-center gap-1.5 text-xs font-extrabold text-purple-800 transition hover:text-fuchsia-700">
@@ -300,7 +259,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </button>
             </div>
 
-            <div aria-label="Filter topik komunitas" className="mt-4 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
+            <div aria-label="Filter topik komunitas" className="mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-0">
               {['Semua', ...topics].map((topic) => {
                 const active = activeTopic === topic;
                 return <button key={topic} type="button" onClick={() => setActiveTopic(topic)}
@@ -321,7 +280,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            <div className="mt-3 space-y-4">
+            <div className="mt-2 space-y-2 sm:space-y-4">
               {isLoading ? (
                 <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-500">Memuat cerita komunitas...</div>
               ) : errorMessage ? null : visiblePosts.length === 0 ? (
@@ -357,19 +316,19 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ onNavigate }) => {
                   )}
                 </div>
               ) : visiblePosts.map((post) => (
-                <article key={post.id} className="group rounded-[1.6rem] border border-white/90 bg-white/90 p-4 shadow-[0_14px_38px_rgba(76,29,149,0.075)] ring-1 ring-purple-100/80 backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-purple-200 hover:shadow-[0_20px_48px_rgba(76,29,149,0.13)] sm:rounded-[2rem] sm:p-5">
+                <article key={post.id} className="border-y border-[#EAE6EF] bg-white px-4 py-4 sm:rounded-2xl sm:border sm:p-5 sm:shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-700 to-fuchsia-600 text-xs font-black text-white ring-4 ring-purple-50">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#32134F] text-xs font-bold text-white">
                       {post.author_display_name.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-extrabold text-slate-900">{post.author_display_name}</p>
                       <p className="mt-0.5 truncate text-[10px] text-slate-500">{formatTime(post.created_at)}</p>
                     </div>
-                    <span className="shrink-0 rounded-full bg-purple-50 px-3 py-1.5 text-[10px] font-bold text-purple-800">{post.topic}</span>
+                    <span className="shrink-0 rounded-full bg-[#F1EDF4] px-3 py-1.5 text-[10px] font-semibold text-[#482064]">{post.topic}</span>
                   </div>
                   <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{post.body}</p>
-                  <div className="mt-4 flex items-center gap-4 border-t border-purple-50 pt-3 sm:gap-5">
+                  <div className="mt-4 flex items-center gap-4 border-t border-[#F0EDF2] pt-3 sm:gap-5">
                     <button type="button" onClick={() => void handleLike(post)} disabled={busyLikeIds.includes(post.id)} aria-pressed={post.likedByMe}
                       className={`inline-flex min-h-11 items-center gap-2 pr-2 text-xs font-bold transition ${post.likedByMe ? 'text-fuchsia-700' : 'text-slate-500 hover:text-fuchsia-700'}`}>
                       <Heart className={`h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} /> {post.likes_count} Suka
