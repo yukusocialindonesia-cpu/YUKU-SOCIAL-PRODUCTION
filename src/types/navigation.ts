@@ -31,7 +31,8 @@ export type AppRoute =
   | '/aktivasi-admin'
   | '/verifikasi-ktp'
   | '/syarat-ketentuan'
-  | '/kebijakan-privasi';
+  | '/kebijakan-privasi'
+  | '/hapus-akun';
 
 export interface NavItem {
   label: string;
