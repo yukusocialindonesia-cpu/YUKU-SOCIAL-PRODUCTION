@@ -1,0 +1,8 @@
+INSERT INTO public.activity_categories (id, title, description, icon_name, examples, is_online_available, is_active) VALUES
+('aktivitas-sosial','Aktivitas Sosial Lainnya','Partner untuk hobi bersama seperti badminton, jogging santai, workshop keramik, board games, hingga belajar bareng.','Users',ARRAY['Olahraga santai (badminton/run)','Board games di kafe','Workshop kreatif','Study companion'],false,true),
+('hadir-acara','Menghadiri Acara','Pendamping formal atau semi-formal untuk kondangan pernikahan, wisuda, gathering kantor, atau expo.','Sparkles',ARRAY['Kondangan pernikahan','Pendamping wisuda','Networking & gala dinner','Seminar/expo'],false,true),
+('jalan-belanja','Jalan-Jalan & Belanja','Teman berjalan santai di mall, hunting fashion, pameran seni, atau keliling spot estetik kota.','ShoppingBag',ARRAY['Thrifting & mall browsing','Styling consultation','City walk','Galeri seni'],false,true),
+('ngobrol-online','Teman Mengobrol Online','Teman bertukar cerita via chat atau voice call yang ramah, mendengarkan tanpa menghakimi, dan menghangatkan suasana.','MessageCircle',ARRAY['Curhat ringan santai','Diskusi buku / film online','Latihan interview & public speaking','Teman ngobrol malam'],true,true),
+('ngopi-makan','Ngopi & Makan Bersama','Teman seru untuk kulineran, mencicipi specialty coffee di kafe baru, atau makan siang santai.','Coffee',ARRAY['Kafe hopping','Fine dining / casual dining','Brunch santai','Food tasting'],false,true),
+('nonton-film','Menonton Film & Konser','Teman nobar bioskop, diskusi film setelah menonton, festival musik, atau teater.','Film',ARRAY['Bioskop XXI/CGV','Film indie & screening','Konser live music','Festival film'],false,true)
+ON CONFLICT (id) DO NOTHING;
