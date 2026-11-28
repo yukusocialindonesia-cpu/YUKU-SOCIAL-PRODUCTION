@@ -155,8 +155,8 @@ revoke all on function public.admin_review_professional_service_application(uuid
   from public, anon;
 grant execute on function public.admin_review_professional_service_application(uuid,text,text,text)
   to authenticated;
-revoke all on function public.admin_review_professional_service_application(uuid,text,text)
-  from public, anon, authenticated;
+-- The legacy three-argument overload may already have been removed by an earlier
+-- migration; DROP IF EXISTS is safe on both clean replay and upgraded databases.
 drop function if exists public.admin_review_professional_service_application(uuid,text,text);
 
 -- Database guard and public listing policy now use the independent provider profile.
