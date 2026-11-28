@@ -84,16 +84,16 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 4);
 
   return (
-    <section className="relative py-2 md:py-12 bg-transparent">
+    <section className="relative py-2.5 md:py-12 bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
           <div>
             <span className="text-[10.5px] sm:text-xs font-bold text-[#2563EB]/65 tracking-wider uppercase mb-0.5 sm:mb-1 block">
-              TEMUKAN ORANG BARU
+              TEMAN AKTIVITAS PILIHAN
             </span>
-            <h2 className="text-lg sm:text-3xl font-extrabold text-[#2563EB] tracking-tight">
-              Teman yang Bisa Ditemui
+            <h2 className="text-[18px] sm:text-3xl font-extrabold text-[#2563EB] tracking-[-0.03em]">
+              Talent Pilihan
             </h2>
           </div>
           <button

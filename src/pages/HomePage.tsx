@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Users, BriefcaseBusiness, ArrowRight } from 'lucide-react';
+import { Users, BriefcaseBusiness, Search } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
 import { ServiceModeSection } from '../components/home/ServiceModeSection';
 import { PromoCarousel } from '../components/home/PromoCarousel';
@@ -90,14 +90,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <p className="mt-1 truncate text-[10px] font-medium text-slate-500">Teman, aktivitas & layanan</p>
             </div>
           </div>
-          <button type="button" onClick={() => onNavigate('/talent')} aria-label="Cari di YUKU" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#2563EB]/10 bg-white text-[#2563EB] shadow-sm active:scale-95">
-            <span className="text-lg leading-none">⌕</span>
+          <button type="button" onClick={() => onNavigate('/talent')} aria-label="Cari di YUKU" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#2563EB]/15 bg-white text-[#2563EB] shadow-[0_4px_12px_rgba(37,99,235,0.08)] transition active:scale-95">
+            <Search className="h-[18px] w-[18px]" strokeWidth={2.2} />
           </button>
         </div>
-        <div className="mb-2.5 mt-5 flex items-end justify-between gap-2">
+        <div className="mb-2.5 mt-4 flex items-end justify-between gap-2">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#2563EB]/55">JELAJAHI YUKU</p>
-            <h1 className="mt-0.5 text-[19px] font-extrabold leading-tight tracking-tight text-[#2563EB]">Kamu lagi cari apa?</h1>
+            <h1 className="mt-0.5 text-[20px] font-extrabold leading-tight tracking-[-0.035em] text-[#2563EB]">Kamu lagi cari apa?</h1>
           </div>
           <span className="pb-0.5 text-[10px] font-semibold text-slate-400">Pilih kategori</span>
         </div>
