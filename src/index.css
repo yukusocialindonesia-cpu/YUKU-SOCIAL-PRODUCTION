@@ -34,10 +34,8 @@ body,
 }
 
 body {
-  background-color: #FAF8FC;
-  background-image:
-    radial-gradient(ellipse at 12% 0%, rgba(196,181,253,0.14), transparent 34%),
-    radial-gradient(ellipse at 92% 18%, rgba(232,121,249,0.08), transparent 30%);
+  background-color: #F8F7FA;
+  background-image: none;
   background-attachment: scroll;
 }
 
@@ -61,7 +59,7 @@ body {
   background-repeat: no-repeat;
   background-position: right 8% center;
   background-size: clamp(220px, 34vw, 420px);
-  opacity: 0.045;
+  opacity: 0.025;
 }
 
 /* Keep the app UI above the decorative watermark without blocking interaction. */
@@ -74,7 +72,7 @@ body {
   #root::before {
     background-position: right 8px center;
     background-size: 230px;
-    opacity: 0.10;
+    opacity: 0.035;
   }
 }
 
