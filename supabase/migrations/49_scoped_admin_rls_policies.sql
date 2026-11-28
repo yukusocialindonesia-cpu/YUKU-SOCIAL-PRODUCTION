@@ -75,10 +75,9 @@ using (auth.uid()=reporter_id or public.has_admin_permission('support'));
 
 -- SUPER ADMIN only
 alter policy admin_audit_logs_select_admin on public.admin_audit_logs using (public.is_super_admin());
-alter policy activity_categories_admin_delete on public.activity_categories using (public.is_super_admin());
-alter policy activity_categories_admin_insert on public.activity_categories with check (public.is_super_admin());
-alter policy activity_categories_admin_update on public.activity_categories using (public.is_super_admin()) with check (public.is_super_admin());
-alter policy activity_categories_select_public on public.activity_categories using (is_active or public.is_super_admin());
+-- activity_categories has only separate anon/authenticated SELECT policies in
+-- 20261121110017_fix_activity_categories_anon_read.sql. It has no admin
+-- INSERT/UPDATE/DELETE policies to alter here; do not invent or broaden them.
 alter policy hero_slides_admin_delete on public.hero_slides using (public.is_super_admin());
 alter policy hero_slides_admin_insert on public.hero_slides with check (public.is_super_admin());
 alter policy hero_slides_admin_update on public.hero_slides using (public.is_super_admin()) with check (public.is_super_admin());
