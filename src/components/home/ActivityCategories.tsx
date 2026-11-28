@@ -56,7 +56,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-purple-700">
+            <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-[#C4B5FD]">
               Temukan Companion
             </span>
             <h2 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-2xl">
@@ -66,7 +66,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
               Pilih aktivitas, temukan teman yang cocok.
             </p>
           </div>
-          <span className="shrink-0 pb-0.5 text-[10px] font-medium text-slate-500 sm:text-xs">
+          <span className="shrink-0 pb-0.5 text-[10px] font-medium text-white/65 sm:text-xs">
             Geser untuk lihat
           </span>
         </div>
@@ -110,7 +110,7 @@ export const ActivityCategories: React.FC<ActivityCategoriesProps> = ({ onSelect
                   <span className={`flex h-8 w-8 items-center justify-center rounded-xl sm:h-9 sm:w-9 ${tones[idx % tones.length]}`}>
                     {getIcon(cat.iconName)}
                   </span>
-                  <span className="line-clamp-2 text-[10px] font-bold leading-tight text-slate-800 group-hover:text-[#32105B] sm:text-[11px]">
+                  <span className="line-clamp-3 text-[10px] font-bold leading-tight text-white group-hover:text-white sm:text-[11px]">
                     {cat.title}
                   </span>
                 </button>
