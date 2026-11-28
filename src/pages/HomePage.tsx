@@ -140,7 +140,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
       <motion.div {...reveal(0.04)} className="yuku-home-section yuku-home-categories">
         <ActivityCategories onSelectCategory={handleSelectCategory} />
-      </div>
+      </motion.div>
 
       <motion.div {...reveal(0.06)} className="hidden sm:block yuku-home-section bg-white">
         <ServiceModeSection onSelectMode={(mode) => onNavigate('/talent', { mode })} />
@@ -153,7 +153,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </motion.div>
 
-      <motion.div {...reveal(0.1)} className="yuku-home-section"><ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} /></div>
+      <motion.div {...reveal(0.1)} className="yuku-home-section"><ProfessionalServicesSection onViewAll={() => onNavigate('/jasa-profesional')} /></motion.div>
       <motion.div {...reveal(0.12)} className="hidden sm:block yuku-home-section"><EcosystemSection onCommunityClick={() => onNavigate('/komunitas')} onMerchantClick={() => onNavigate('/merchant-partner')} /></motion.div>
 
       <motion.div {...reveal(0.14)} className="hidden sm:block yuku-home-section bg-white">
