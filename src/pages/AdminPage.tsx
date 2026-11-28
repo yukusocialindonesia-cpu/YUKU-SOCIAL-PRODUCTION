@@ -2181,7 +2181,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       </div>
 
                       <div>
-                        {c.ktp_verification_status === 'verified' ? (
+                        {c.ktp_verification_status === 'verified' && !c.selfie_storage_path ? (
+                          <span className="px-2.5 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-lg">
+                            Verifikasi lama · selfie belum tercatat
+                          </span>
+                        ) : c.ktp_verification_status === 'verified' ? (
                           <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg">
                             Terverifikasi 18+
                           </span>
