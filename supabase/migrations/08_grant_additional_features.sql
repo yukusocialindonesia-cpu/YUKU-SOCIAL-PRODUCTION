@@ -45,9 +45,10 @@ GRANT SELECT ON public.refunds TO authenticated;
 GRANT INSERT (payment_id, customer_id, reason, refund_amount) ON public.refunds TO authenticated;
 
 -- 9. PROGRAM REFERRAL (public.referral_relationships & public.referral_rewards)
--- RLS Policy: referral_relationships_select_parties, referral_relationships_insert_talent
+-- Gunakan nama kolom sesuai skema migration 04.
+-- Migration 14 akan memperketat grant ini dan menyediakan RPC apply_talent_referral_code.
 GRANT SELECT ON public.referral_relationships TO authenticated;
-GRANT INSERT (referring_talent_id, referred_talent_id) ON public.referral_relationships TO authenticated;
+GRANT INSERT (referrer_id, referee_talent_id, referral_code_used) ON public.referral_relationships TO authenticated;
 GRANT SELECT ON public.referral_rewards TO authenticated;
 
 -- 10. KOLOM VERIFIKASI IDENTITAS LEGAL (public.user_identities)
