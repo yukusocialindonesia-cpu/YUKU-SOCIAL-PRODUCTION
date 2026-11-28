@@ -83,10 +83,10 @@ export const ServiceModeSection: React.FC<ServiceModeSectionProps> = ({ onSelect
               onClick={() => onSelectMode('online')}
               className="group relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-purple-100/90 bg-white p-2.5 sm:p-5 text-left shadow-[0_8px_24px_rgba(124,58,237,0.07)] hover:shadow-[0_16px_34px_rgba(124,58,237,0.14)] hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
-              <span className="mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-md shadow-purple-200/70">
+              <span className="mb-2.5 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br from-purple-700 to-violet-600 text-white shadow-md shadow-purple-200/70">
                 <span className="relative flex items-center justify-center" aria-hidden="true">
                   <Video className="h-5 w-5 sm:h-[22px] sm:w-[22px]" strokeWidth={2} />
-                  <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-indigo-700">
+                  <span className="absolute -right-2 -bottom-1 flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-white bg-white text-purple-700">
                     <MessageCircle className="h-2.5 w-2.5" strokeWidth={2.7} />
                   </span>
                 </span>
