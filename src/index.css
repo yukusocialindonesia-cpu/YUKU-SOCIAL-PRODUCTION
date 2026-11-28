@@ -221,3 +221,50 @@ body {
     box-shadow: 0 12px 32px rgba(0,0,0,.35);
   }
 }
+
+
+/* Final premium polish: consistent purple-only brand, refined contrast and surfaces. */
+.bg-yuku-gradient {
+  background: linear-gradient(135deg, #32134F 0%, #45206D 55%, #7541C8 100%);
+}
+.text-yuku-gradient {
+  background: linear-gradient(110deg, #A78BFA 0%, #FFFFFF 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.bg-yuku-accent {
+  background: linear-gradient(110deg, #7541C8 0%, #A78BFA 100%);
+}
+.yuku-home-feed {
+  background:
+    radial-gradient(ellipse at 14% 0%, rgba(117,65,200,.22), transparent 38%),
+    radial-gradient(ellipse at 88% 18%, rgba(167,139,250,.10), transparent 34%),
+    linear-gradient(180deg, #32134F 0%, #28103F 58%, #32134F 100%);
+}
+.yuku-home-feed .yuku-home-categories button {
+  border-color: rgba(167,139,250,.30) !important;
+  background: linear-gradient(155deg, rgba(69,32,109,.96), rgba(50,19,79,.98)) !important;
+  box-shadow: 0 6px 18px rgba(12,4,24,.22), inset 0 1px 0 rgba(255,255,255,.07);
+}
+.yuku-home-feed .yuku-home-categories button:hover {
+  border-color: rgba(196,181,253,.72) !important;
+  box-shadow: 0 10px 24px rgba(12,4,24,.30), 0 0 0 1px rgba(167,139,250,.12);
+}
+.yuku-home-feed .yuku-home-featured article {
+  border-color: rgba(167,139,250,.25);
+  box-shadow: 0 8px 24px rgba(12,4,24,.24);
+}
+.yuku-home-feed .yuku-home-hero img {
+  border-color: rgba(196,181,253,.40);
+}
+@media (max-width: 640px) {
+  .yuku-home-feed .yuku-home-hero > section > div:first-child {
+    border-color: rgba(196,181,253,.42);
+    box-shadow: 0 8px 24px rgba(12,4,24,.28);
+  }
+  .yuku-home-feed .yuku-home-categories button,
+  .yuku-home-feed .yuku-home-featured article {
+    backdrop-filter: blur(12px);
+  }
+}
