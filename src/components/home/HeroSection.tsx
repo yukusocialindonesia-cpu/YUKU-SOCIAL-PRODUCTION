@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
               >
                 {broken[slide.id] ? (
-                  <div className="w-full h-full bg-gradient-to-br from-[#32134F] via-[#7541C8] to-[#A78BFA]" />
+                  <div className="w-full h-full bg-[#32134F]" />
                 ) : (
                   <picture>
                     {slide.mobile_image_url && (
@@ -181,7 +181,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             />
           </div>
         ) : (
-          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-gradient-to-br from-[#32134F] via-[#7541C8] to-[#A78BFA] opacity-90 md:rounded-l-[8rem]" />
+          <div className="absolute top-0 right-0 h-full w-full md:w-[60%] bg-[#32134F] opacity-90 md:rounded-l-[8rem]" />
         )}
 
         {/* Scrim kiri agar teks tetap terbaca di atas gambar apa pun */}
@@ -271,7 +271,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <h1 className="text-[clamp(1.55rem,4.8vw,3.4rem)] leading-[1.06] font-black text-white tracking-tight mb-1 md:mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.18)]">
             <span className="hero-slogan-enter">Real Friends.</span>{' '}
             <br className="md:hidden" />
-            <span className="hero-slogan-enter hero-slogan-enter-delay bg-gradient-to-r from-[#C4B5FD] to-white bg-clip-text text-transparent">
+            <span className="hero-slogan-enter hero-slogan-enter-delay text-white">
               Real Moments.
             </span>
           </h1>
@@ -287,8 +287,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               Layar sangat sempit: poin boleh turun baris. Layar lebar: satu baris seperti semula. */}
           <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-snug text-white/90 md:justify-start md:gap-x-5 md:gap-y-1.5 md:text-xs">
             <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-white/80" />Ruang publik & aman</span>
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Bukan aplikasi kencan</span>
-            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-purple-600" />Verifikasi 18+</span>
+            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-white/80" />Bukan aplikasi kencan</span>
+            <span className="flex items-center gap-1 md:gap-1.5"><span className="w-1.5 h-1.5 shrink-0 rounded-full bg-white/80" />Verifikasi 18+</span>
             <button
               type="button"
               onClick={onRegisterCustomerClick}
