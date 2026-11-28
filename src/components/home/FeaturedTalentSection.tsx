@@ -89,16 +89,16 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         {/* Section Header */}
         <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
           <div>
-            <span className="text-[10.5px] sm:text-xs font-bold text-[#173B70]/65 tracking-wider uppercase mb-0.5 sm:mb-1 block">
+            <span className="text-[10.5px] sm:text-xs font-bold text-[#2563EB]/65 tracking-wider uppercase mb-0.5 sm:mb-1 block">
               TEMUKAN ORANG BARU
             </span>
-            <h2 className="text-lg sm:text-3xl font-extrabold text-[#173B70] tracking-tight">
+            <h2 className="text-lg sm:text-3xl font-extrabold text-[#2563EB] tracking-tight">
               Teman yang Bisa Ditemui
             </h2>
           </div>
           <button
             onClick={onViewAllClick}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#173B70] hover:text-[#3478D4] transition-colors cursor-pointer"
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#2563EB] hover:text-[#3478D4] transition-colors cursor-pointer"
           >
             <span className="md:hidden">Lihat Semua</span>
             <span className="hidden md:inline">Lihat Semua</span>
