@@ -107,10 +107,10 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
   }, []);
 
   // Beranda menampilkan maksimal enam Talent; daftar lengkap tetap tersedia melalui tombol Lihat Semua.
-  const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 6);
+  const visibleTalents = talents.filter((t) => matchesQuickFilter(t, quickFilter, availableTodayIds)).slice(0, 4);
 
   return (
-    <section ref={sectionRef} className="relative py-2.5 md:py-12 bg-[#F7F5FA]">
+    <section ref={sectionRef} className="relative py-2 md:py-12 bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-end justify-between mb-1.5 md:mb-7 gap-2 md:gap-4">
@@ -133,15 +133,15 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
         </div>
 
         {!loading && !errorMsg && talents.length > 0 && (
-          <div className="mb-1.5 md:mb-6">
+          <div className="mb-1.5 md:mb-6 hidden sm:block">
             <TalentQuickFilter value={quickFilter} onChange={setQuickFilter} showToday={todayReady} />
           </div>
         )}
 
         {loading ? (
-          <div className="flex gap-3 overflow-hidden rounded-[30px] p-1">
+          <div className="flex gap-2 overflow-hidden rounded-[20px] p-1 sm:gap-3 sm:rounded-[30px]">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[420px] w-[76vw] max-w-[300px] shrink-0 rounded-2xl bg-slate-200 animate-pulse sm:h-80 sm:w-[260px]" />
+              <div key={i} className="h-[164px] w-[42vw] max-w-[160px] shrink-0 rounded-2xl bg-slate-200 animate-pulse sm:h-80 sm:w-[260px]" />
             ))}
           </div>
         ) : errorMsg ? (
@@ -199,7 +199,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
             {visibleTalents.map((talent, i) => (
               <motion.div
                 key={talent.id}
-                className="snap-start shrink-0 flex [&>article]:w-full w-[68vw] max-w-[244px] sm:w-[244px] lg:w-[calc((100%-3rem)/4)] rounded-[20px] sm:rounded-[28px] p-0.5"
+                className="snap-start shrink-0 flex [&>article]:w-full w-[42vw] max-w-[160px] min-w-[136px] sm:w-[244px] sm:max-w-none sm:min-w-0 lg:w-[calc((100%-3rem)/4)] rounded-[16px] sm:rounded-[28px] p-0.5"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
@@ -211,6 +211,7 @@ export const FeaturedTalentSection: React.FC<FeaturedTalentSectionProps> = ({
                   availableToday={availableTodayIds.has(talent.id)}
                   mediaTypes={mediaTypesByTalent[talent.id] ?? []}
                   showPrice={false}
+                  compact={true}
                 />
               </motion.div>
             ))}
