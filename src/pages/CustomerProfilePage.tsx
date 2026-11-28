@@ -296,7 +296,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
         </div>
 
         <form onSubmit={handleSave} className="bg-white/85 backdrop-blur-xl rounded-[24px] sm:rounded-[30px] border border-white shadow-[0_24px_60px_-28px_rgba(76,29,149,0.3)] ring-1 ring-violet-100/80 overflow-hidden">
-          <div className="p-5 sm:p-8 border-b border-violet-100/80 bg-gradient-to-br from-white via-violet-50/70 to-indigo-50/60 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          <div className="p-5 sm:p-8 border-b border-violet-100/80 bg-gradient-to-br from-white via-violet-50/70 to-purple-50/60 flex flex-col sm:flex-row items-center sm:items-start gap-4">
             <div className="relative shrink-0">
               <div className="w-24 h-24 rounded-full bg-purple-100 border-[5px] border-white shadow-[0_12px_28px_rgba(76,29,149,0.24)] ring-1 ring-violet-200 overflow-hidden flex items-center justify-center">
                 {currentAvatar ? (
@@ -375,7 +375,7 @@ export const CustomerProfilePage: React.FC<CustomerProfilePageProps> = ({ onNavi
             </div>
 
             <div className="pt-2">
-              <button type="submit" disabled={isSaving} className="w-full sm:w-auto sm:min-w-48 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-indigo-700 text-white text-sm font-bold shadow-[0_12px_26px_-10px_rgba(126,34,206,0.6)] ring-1 ring-white/30 transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-10px_rgba(126,34,206,0.65)] hover:from-purple-800 disabled:opacity-60 disabled:translate-y-0 flex items-center justify-center gap-2">
+              <button type="submit" disabled={isSaving} className="w-full sm:w-auto sm:min-w-48 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-purple-700 to-violet-700 text-white text-sm font-bold shadow-[0_12px_26px_-10px_rgba(126,34,206,0.6)] ring-1 ring-white/30 transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-10px_rgba(126,34,206,0.65)] hover:from-purple-800 disabled:opacity-60 disabled:translate-y-0 flex items-center justify-center gap-2">
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
               </button>
