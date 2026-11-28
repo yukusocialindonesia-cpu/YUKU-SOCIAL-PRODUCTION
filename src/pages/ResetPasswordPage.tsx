@@ -23,6 +23,44 @@ function translateRecoveryError(message?: string): string {
   return message || 'Gagal mengatur ulang kata sandi. Silakan coba lagi.';
 }
 
+
+
+const clearRecoveryCredentialsFromUrl = () => {
+  const url = new URL(window.location.href);
+  const authParams = [
+    'code',
+    'token',
+    'token_hash',
+    'type',
+    'access_token',
+    'refresh_token',
+    'expires_in',
+    'expires_at',
+    'error',
+    'error_code',
+    'error_description',
+    'provider_token',
+    'provider_refresh_token',
+  ];
+
+  authParams.forEach((key) => url.searchParams.delete(key));
+
+  const rawHash = url.hash.startsWith('#') ? url.hash.slice(1) : url.hash;
+  const hashParams = new URLSearchParams(rawHash);
+  const hasAuthHashParams = authParams.some((key) => hashParams.has(key));
+  if (hasAuthHashParams) {
+    authParams.forEach((key) => hashParams.delete(key));
+    const remainingHash = hashParams.toString();
+    url.hash = remainingHash ? `#${remainingHash}` : '';
+  }
+
+  window.history.replaceState(
+    window.history.state,
+    document.title,
+    `${url.pathname}${url.search}${url.hash}`,
+  );
+};
+
 export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
   onNavigate,
   initialRecoveryActive = false,
@@ -39,6 +77,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
 
   useEffect(() => {
     if (initialRecoveryActive) {
+      clearRecoveryCredentialsFromUrl();
       setHasRecoverySession(true);
       setIsCheckingSession(false);
     }
@@ -60,6 +99,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
       Boolean(searchParams.get('error_code'));
 
     if (hasErrorInUrl) {
+      clearRecoveryCredentialsFromUrl();
       setHasRecoverySession(false);
       setIsCheckingSession(false);
       return;
@@ -75,6 +115,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
       if (!isMounted) return;
       if (event === 'PASSWORD_RECOVERY' && session) {
         recoveryDetected = true;
+        clearRecoveryCredentialsFromUrl();
         setHasRecoverySession(true);
         setIsCheckingSession(false);
       } else if (event === 'SIGNED_OUT') {
@@ -89,6 +130,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (!isMounted || recoveryDetected) return;
         if (hasRecoveryParam && session) {
+          clearRecoveryCredentialsFromUrl();
           setHasRecoverySession(true);
         } else {
           setHasRecoverySession(false);
@@ -130,7 +172,14 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
         return;
       }
 
-      setSuccessMsg('Kata sandi berhasil diperbarui. Anda sekarang dapat masuk menggunakan kata sandi baru.');
+      // The recovery credentials are no longer needed after the password is changed.
+      clearRecoveryCredentialsFromUrl();
+      const { error: signOutError } = await supabase.auth.signOut({ scope: 'local' });
+      if (signOutError) {
+        console.warn('Password changed, but the local recovery session could not be closed:', signOutError.message);
+      }
+      setHasRecoverySession(false);
+      setSuccessMsg('Kata sandi berhasil diperbarui. Silakan masuk kembali menggunakan kata sandi baru.');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: any) {

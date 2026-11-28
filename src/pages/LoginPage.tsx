@@ -176,11 +176,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-slate-600">
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="accent-purple-700 rounded" />
-              <span>Ingat saya</span>
-            </label>
+          <div className="flex items-center justify-between text-[11px] text-slate-500">
+            <span>Sesi login tersimpan otomatis di perangkat ini.</span>
             <span className="text-slate-400">Verifikasi 18+</span>
           </div>
 
